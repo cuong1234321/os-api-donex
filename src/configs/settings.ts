@@ -13,6 +13,7 @@ export default {
   videoUploaderEndpoint: process.env.VIDEO_UPLOADER_ENDPOINT || 'https://ft-zcode-storage-service-api-dev-pdpxzax4za-as.a.run.app/videos',
   jwt: {
     adminSecret: 'M85IWlSRy0nqckt3mTZzIsPVjR8cjm29tGevQUIgmrgSmhKjBz7BhySLd0jOhAVQ',
+    userSecret: '3YxD4ONsaTZrp3oQFDtqzE6JgzU31xSCzePLMSlgxknuc3Eb62VRfpScUxQ2z2pP',
     ttl: '30d',
   },
   forgotPasswordTokenExpiresIn: 1,
