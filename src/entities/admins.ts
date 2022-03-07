@@ -13,6 +13,9 @@ const AdminEntity = {
   password: {
     type: DataTypes.STRING(255), allowNull: true,
   },
+  confirmPassword: {
+    type: DataTypes.VIRTUAL,
+  },
   email: {
     type: DataTypes.STRING(255), allowNull: true,
   },
@@ -32,6 +35,12 @@ const AdminEntity = {
   },
   note: {
     type: DataTypes.TEXT, allowNull: true,
+  },
+  forgotPasswordToken: {
+    type: DataTypes.STRING(10), allowNull: true,
+  },
+  forgotPasswordExpireAt: {
+    type: DataTypes.DATE, allowNull: true,
   },
   createdAt: {
     type: DataTypes.DATE,
