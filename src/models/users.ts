@@ -67,6 +67,11 @@ class UserModel extends Model<UserInterface> implements UserInterface {
         where: { phoneNumber },
       };
     },
+    byStatus (status) {
+      return {
+        where: { status },
+      };
+    },
   }
 
   public async validPassword (password: string) {
