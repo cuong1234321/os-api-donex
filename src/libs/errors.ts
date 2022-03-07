@@ -41,3 +41,8 @@ export const MemberNotFound = {
   code: 301,
   message: 'Entered member code is invalid',
 };
+
+export const AccountNotActive = {
+  code: 410,
+  message: 'Account not active',
+};
