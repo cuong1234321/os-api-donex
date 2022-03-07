@@ -11,4 +11,8 @@ export default {
   sessionSecret: 'bUfxkJXG5xOtaOqRyTmXqWGl4ZxNSyAPbJGVfc7DKix2lyBMJn6TtmKQER52q2eC',
   videoStorageHost: process.env.VIDEO_STORAGE_HOST || 'https://flextech-dev.s3-ap-southeast-1.amazonaws.com',
   videoUploaderEndpoint: process.env.VIDEO_UPLOADER_ENDPOINT || 'https://ft-zcode-storage-service-api-dev-pdpxzax4za-as.a.run.app/videos',
+  jwt: {
+    adminSecret: 'M85IWlSRy0nqckt3mTZzIsPVjR8cjm29tGevQUIgmrgSmhKjBz7BhySLd0jOhAVQ',
+    ttl: '30d',
+  },
 };
