@@ -1,4 +1,4 @@
-import SessionController from '@controllers/api/admin/Sessions';
+import SessionController from '@controllers/api/admin/SessionsController';
 import { Router } from 'express';
 
 const router = Router();

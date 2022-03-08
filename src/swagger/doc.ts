@@ -16,6 +16,14 @@ const swaggerDefinition = {
       name: '[ADMIN] CATEGORY',
       description: 'Quản lý danh muc',
     },
+    {
+      name: '[ADMIN] Sessions',
+      description: 'Phiên đăng nhập admin',
+    },
+    {
+      name: '[ADMIN] Passwords',
+      description: '',
+    },
   ],
   securityDefinitions: {
     Bearer: {

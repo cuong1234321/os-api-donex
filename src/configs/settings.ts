@@ -15,4 +15,5 @@ export default {
     adminSecret: 'M85IWlSRy0nqckt3mTZzIsPVjR8cjm29tGevQUIgmrgSmhKjBz7BhySLd0jOhAVQ',
     ttl: '30d',
   },
+  forgotPasswordTokenExpiresIn: 1,
 };
