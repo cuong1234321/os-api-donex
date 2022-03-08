@@ -24,6 +24,10 @@ const swaggerDefinition = {
       name: '[ADMIN] Passwords',
       description: '',
     },
+    {
+      name: '[USER] Sessions',
+      description: 'Phiên đăng nhập user',
+    },
   ],
   securityDefinitions: {
     Bearer: {
