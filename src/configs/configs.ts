@@ -8,7 +8,7 @@ export default {
     SecretKey: process.env.ESMS_SECRET_KEY,
     Brandname: 'FNOTIFY',
     SmsType: '2',
-    campaignid: 'giapha',
+    campaignid: 'DONEX-SPORT',
   },
   mailerTransporter: {
     host: 'smtp.gmail.com',

@@ -39,7 +39,7 @@ const UserEntity = {
   },
   gender: {
     type: DataTypes.ENUM({ values: ['male', 'female', 'other'] }),
-    allowNull: false,
+    allowNull: true,
   },
   status: {
     type: DataTypes.ENUM({ values: ['pending', 'active', 'inactive'] }),

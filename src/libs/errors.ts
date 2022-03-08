@@ -46,3 +46,8 @@ export const AccountNotActive = {
   code: 410,
   message: 'Account not active',
 };
+
+export const InvalidOtp = {
+  code: 420,
+  message: 'Invalid OTP',
+};
