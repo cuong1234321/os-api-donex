@@ -54,15 +54,13 @@ const UserEntity = {
   currentRank: {
     type: DataTypes.INTEGER, allowNull: true,
   },
-  registerVerificationToken: {
-    type: DataTypes.STRING(10),
-  },
   forgotPasswordToken: {
-    type: DataTypes.STRING(10), allowNull: true,
+    type: DataTypes.STRING(100), allowNull: true,
   },
   forgotPasswordExpireAt: {
     type: DataTypes.DATE, allowNull: true,
   },
+
   createdAt: {
     type: DataTypes.DATE,
   },

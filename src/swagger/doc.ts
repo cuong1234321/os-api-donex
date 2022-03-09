@@ -40,6 +40,10 @@ const swaggerDefinition = {
       name: '[USER] Authentication Otps',
       description: 'Quản lý mã xác thực tài khoản',
     },
+    {
+      name: '[USER] Passwords',
+      description: 'Quản lý mật khẩu',
+    },
   ],
   securityDefinitions: {
     Bearer: {
