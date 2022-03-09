@@ -25,6 +25,9 @@ const UserEntity = {
   phoneNumber: {
     type: DataTypes.STRING(255), allowNull: true,
   },
+  username: {
+    type: DataTypes.STRING(255), allowNull: true,
+  },
   password: {
     type: DataTypes.STRING(255), allowNull: true,
   },
@@ -65,6 +68,9 @@ const UserEntity = {
     type: DataTypes.DATE,
   },
   updatedAt: {
+    type: DataTypes.DATE,
+  },
+  deletedAt: {
     type: DataTypes.DATE,
   },
 };

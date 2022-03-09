@@ -7,6 +7,7 @@ interface UserInterface {
   address: string,
   fullName: string,
   phoneNumber: string,
+  username: string,
   password: string,
   confirmPassword?: string,
   email: string,
@@ -20,6 +21,7 @@ interface UserInterface {
   forgotPasswordExpireAt: Date;
   createdAt?: Date,
   updatedAt?: Date,
+  deletedAt: Date,
 };
 
 export default UserInterface;

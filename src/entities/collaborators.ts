@@ -36,6 +36,9 @@ const collaboratorEntity = {
   updatedAt: {
     type: DataTypes.DATE,
   },
+  deletedAt: {
+    type: DataTypes.DATE,
+  },
 };
 
 export default collaboratorEntity;
