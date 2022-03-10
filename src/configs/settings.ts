@@ -17,4 +17,5 @@ export default {
     ttl: '30d',
   },
   forgotPasswordTokenExpiresIn: 1,
+  phonePattern: /^(84|0)[1-9][0-9]{8}$/,
 };

@@ -1,6 +1,7 @@
+import settings from '@configs/settings';
 import AddressBookEntity from '@entities/addressBooks';
 import AddressBookInterface from '@interfaces/addressBooks';
-import { Model, ModelScopeOptions, ModelValidateOptions, Sequelize } from 'sequelize';
+import { Model, ModelScopeOptions, ModelValidateOptions, Sequelize, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 
 class AddressBookModel extends Model<AddressBookInterface> implements AddressBookInterface {
@@ -16,11 +17,46 @@ class AddressBookModel extends Model<AddressBookInterface> implements AddressBoo
   public createdAt?: Date;
   public updatedAt?: Date;
 
-  static readonly hooks: Partial<ModelHooks<AddressBookModel>> = {}
+  static readonly CREATABLE_PARAMETERS = ['fullName', 'phoneNumber', 'address', 'provinceId', 'districtId', 'wardId', 'isDefault'];
+  static readonly UPDATABLE_PARAMETERS = ['fullName', 'phoneNumber', 'address', 'provinceId', 'districtId', 'wardId', 'isDefault'];
 
-  static readonly scopes: ModelScopeOptions = {}
+  static readonly hooks: Partial<ModelHooks<AddressBookModel>> = {
+    async beforeSave (record) {
+      if (record.isDefault) {
+        const addressBook = await AddressBookModel.scope([
+          'byIsDefault',
+          { method: ['byUser', record.userId] },
+        ]).findOne();
+        if (addressBook) { await addressBook.update({ isDefault: false }); }
+      }
+    },
+  }
 
-  static readonly validations: ModelValidateOptions = {}
+  static readonly validations: ModelValidateOptions = {
+    async validatePhoneNumber () {
+      if (!settings.phonePattern.test(this.phoneNumber)) {
+        throw new ValidationErrorItem('Số điện thoại không hợp lệ', 'validatePhoneNumber', 'phoneNumber');
+      }
+    },
+  }
+
+  static readonly scopes: ModelScopeOptions = {
+    byId (id) {
+      return {
+        where: { id },
+      };
+    },
+    byUser (userId) {
+      return {
+        where: { userId },
+      };
+    },
+    byIsDefault () {
+      return {
+        where: { isDefault: true },
+      };
+    },
+  }
 
   public static initialize (sequelize: Sequelize) {
     this.init(AddressBookEntity, {

@@ -28,6 +28,10 @@ const swaggerDefinition = {
       name: '[USER] Sessions',
       description: 'Phiên đăng nhập user',
     },
+    {
+      name: '[USER] AddressBooks',
+      description: 'Quản lý sổ địa chỉ',
+    },
   ],
   securityDefinitions: {
     Bearer: {
