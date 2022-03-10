@@ -4,6 +4,32 @@ import AddressBookModel from '@models/addressBooks';
 import { Request, Response } from 'express';
 
 class AddressController {
+  public async index (req: Request, res: Response) {
+    try {
+      const currentUser = req.currentUser || { id: '123' };
+      const addressBooks = await AddressBookModel.scope([
+        { method: ['byUser', currentUser.id] },
+      ]).findAll();
+      sendSuccess(res, addressBooks);
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async show (req: Request, res: Response) {
+    try {
+      const currentUser = req.currentUser || { id: '123' };
+      const addressBook = await AddressBookModel.scope([
+        { method: ['byUser', currentUser.id] },
+        { method: ['byId', req.params.addressBookId] },
+      ]).findOne();
+      if (!addressBook) { return sendError(res, 404, NoData); }
+      sendSuccess(res, addressBook);
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
   public async create (req: Request, res: Response) {
     try {
       const currentUser = req.currentUser || { id: '123' };
@@ -27,6 +53,21 @@ class AddressController {
       if (!addressBook) { return sendError(res, 404, NoData); }
       await addressBook.update(params);
       sendSuccess(res, addressBook);
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async delete (req: Request, res: Response) {
+    try {
+      const currentUser = req.currentUser || { id: '123' };
+      const addressBook = await AddressBookModel.scope([
+        { method: ['byUser', currentUser.id] },
+        { method: ['byId', req.params.addressBookId] },
+      ]).findOne();
+      if (!addressBook) { return sendError(res, 404, NoData); }
+      await addressBook.destroy();
+      sendSuccess(res, {});
     } catch (error) {
       sendError(res, 500, error.message, error);
     }

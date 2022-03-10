@@ -6,6 +6,44 @@ const router = Router();
 /**
  * @openapi
  * /u/address_books:
+ *   get:
+ *     tags:
+ *      - "[USER] AddressBooks"
+ *     summary: Danh sách sổ địa chỉ
+ *     responses:
+ *       200:
+ *         description: Success.
+ *       500:
+ *         description: Internal errror.
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/', AddressBookController.index);
+
+/**
+ * @openapi
+ * /u/address_books/{addressBookId}:
+ *   get:
+ *     tags:
+ *      - "[USER] AddressBooks"
+ *     summary: Xem chi tiết sổ địa chỉ
+ *     parameters:
+ *      - in: "path"
+ *        name: "addressBookId"
+ *        required: true
+ *     responses:
+ *       200:
+ *         description: Success.
+ *       500:
+ *         description: Internal errror.
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/:addressBookId', AddressBookController.show);
+
+/**
+ * @openapi
+ * /u/address_books:
  *   post:
  *     tags:
  *      - "[USER] AddressBooks"
@@ -93,5 +131,26 @@ router.post('/', AddressBookController.create);
  *      - Bearer: []
  */
 router.patch('/:addressBookId', AddressBookController.update);
+
+/**
+ * @openapi
+ * /u/address_books/{addressBookId}:
+ *   delete:
+ *     tags:
+ *      - "[USER] AddressBooks"
+ *     summary: Xoá sổ địa chỉ
+ *     parameters:
+ *      - in: "path"
+ *        name: "addressBookId"
+ *        required: true
+ *     responses:
+ *       200:
+ *         description: Success.
+ *       500:
+ *         description: Internal errror.
+ *     security:
+ *      - Bearer: []
+ */
+router.delete('/:addressBookId', AddressBookController.delete);
 
 export default router;
