@@ -29,8 +29,16 @@ const swaggerDefinition = {
       description: 'Phiên đăng nhập user',
     },
     {
+      name: '[USER] Accounts',
+      description: 'Quản lý tài khoản user',
+    },
+    {
       name: '[USER] AddressBooks',
       description: 'Quản lý sổ địa chỉ',
+    },
+    {
+      name: '[USER] Authentication Otps',
+      description: 'Quản lý mã xác thực tài khoản',
     },
   ],
   securityDefinitions: {
