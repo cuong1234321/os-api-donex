@@ -5,9 +5,9 @@ dotenv.config();
 
 const swaggerDefinition = {
   info: {
-    title: 'API DONEX-ESPORT',
+    title: 'API DONEX-SPORT',
     version: '1.0.0',
-    description: 'This is the REST API for project DONEX-ESPORT',
+    description: 'This is the REST API for project DONEX-SPORT',
   },
   host: process.env.API_HOST,
   basePath: '/api',
