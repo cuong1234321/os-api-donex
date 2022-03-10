@@ -4,7 +4,7 @@ stages:
 
 variables:
   CI_REGISTRY: gitlab.flextech.asia:5050
-  IMAGE_TAG: $CI_REGISTRY/genealogy/os-api-core:$CI_COMMIT_REF_NAME
+  IMAGE_TAG: $CI_REGISTRY/donex/os-api-core:$CI_COMMIT_REF_NAME
 
 build:
   stage: build
