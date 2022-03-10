@@ -1,6 +1,6 @@
 import CollaboratorEntity from '@entities/collaborators';
 import CollaboratorInterface from '@interfaces/collaborators';
-import { Model, ModelScopeOptions, Sequelize } from 'sequelize';
+import { Model, ModelScopeOptions, Op, Sequelize } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import UserModel from './users';
 
@@ -25,6 +25,31 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
   static readonly hooks: Partial<ModelHooks<CollaboratorModel>> = { }
 
   static readonly scopes: ModelScopeOptions = {
+    byStatus (status) {
+      return {
+        where: { status },
+      };
+    },
+    byGender (gender) {
+      return {
+        where: { gender },
+      };
+    },
+    byFreeWord (freeWord) {
+      return {
+        where: {
+          [Op.or]: [
+            { id: { [Op.like]: `%${freeWord || ''}%` } },
+            {
+              userId: {
+                [Op.in]: Sequelize.literal('(SELECT id FROM users WHERE deletedAt IS NULL AND ' +
+                `(fullName LIKE '%${freeWord}%' OR phoneNumber LIKE '%${freeWord}%' OR username LIKE '%${freeWord}%'))`),
+              },
+            },
+          ],
+        },
+      };
+    },
     withUser () {
       return {
         include: {

@@ -6,6 +6,40 @@ const router = Router();
 
 /**
  * @openapi
+ * /a/collaborators:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] Collaborators"
+ *     summary: Lấy danh sách danh CTV/DL/NPP
+ *     parameters:
+ *      - in: query
+ *        name: "page"
+ *        description: "page"
+ *        type: "string"
+ *      - in: query
+ *        name: "status"
+ *        description: "status"
+ *        type: "string"
+ *      - in: query
+ *        name: "gender"
+ *        description: "Giới tính"
+ *        type: "string"
+ *      - in: query
+ *        name: "freeWord"
+ *        description: "Tìm kiếm theo id, tên, username, sdt"
+ *        type: "string"
+ *     responses:
+ *       200:
+ *         description: "OK"
+ *       500:
+ *         description: "Internal error"
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/', CollaboratorsController.index);
+
+/**
+ * @openapi
  * /a/collaborators/create:
  *   post:
  *     tags:
