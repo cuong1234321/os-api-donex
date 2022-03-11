@@ -150,6 +150,19 @@ class CollaboratorController {
       sendError(res, 500, error.message, error);
     }
   }
+
+  public async show (req: Request, res: Response) {
+    try {
+      const { collaboratorId } = req.params;
+      const collaborator = await CollaboratorModel.scope([
+        'withUser',
+      ]).findByPk(collaboratorId);
+      if (!collaborator) return sendError(res, 404, NoData);
+      sendSuccess(res, { collaborator });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
 }
 
 export default new CollaboratorController();
