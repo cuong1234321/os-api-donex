@@ -29,6 +29,9 @@ const ProductCategoryEntity = {
       return thumbnail;
     },
   },
+  type: {
+    type: DataTypes.STRING(255), allowNull: true,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },

@@ -9,6 +9,7 @@ class ProductCategoryModel extends Model<ProductCategoryInterface> implements Pr
   public name: string;
   public slug: string;
   public thumbnail: string;
+  public type: string;
   public createdAt?: Date;
   public updatedAt?: Date;
 

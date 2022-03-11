@@ -5,6 +5,7 @@ interface ProductCategoryInterface {
   name: string;
   slug: string;
   thumbnail: string;
+  type: string;
   createdAt?: Date;
   updatedAt?: Date;
 };
