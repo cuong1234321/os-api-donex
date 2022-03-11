@@ -12,6 +12,8 @@ class MediaResourceModel extends Model<ProductMediaInterface> implements Product
   public createdAt?: Date;
   public updatedAt?: Date;
 
+  static readonly TYPE_ENUM = { IMAGE: 'image', VIDEO: 'video' }
+
   static readonly hooks: Partial<ModelHooks<MediaResourceModel>> = {
   }
 
