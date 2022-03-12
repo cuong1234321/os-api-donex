@@ -42,8 +42,8 @@ const UserEntity = {
     allowNull: true,
   },
   status: {
-    type: DataTypes.ENUM({ values: ['pending', 'active', 'inactive'] }),
-    defaultValue: 'pending',
+    type: DataTypes.ENUM({ values: ['active', 'inactive'] }),
+    defaultValue: 'active',
   },
   note: {
     type: DataTypes.TEXT, allowNull: true,

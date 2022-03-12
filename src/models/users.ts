@@ -5,7 +5,6 @@ import { ModelHooks } from 'sequelize/types/lib/hooks';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import settings from '@configs/settings';
-import SendSmsService from '@services/smsSender';
 
 class UserModel extends Model<UserInterface> implements UserInterface {
   public id: number;
@@ -31,8 +30,8 @@ class UserModel extends Model<UserInterface> implements UserInterface {
   public createdAt?: Date;
   public updatedAt?: Date;
 
-  public static readonly STATUS_ENUM = { PENDING: 'pending', ACTIVE: 'active', INACTIVE: 'inactive' }
-  public static readonly CREATABLE_PARAMETERS = ['phoneNumber', 'fullName']
+  public static readonly STATUS_ENUM = { ACTIVE: 'active', INACTIVE: 'inactive' }
+  public static readonly CREATABLE_PARAMETERS = ['phoneNumber', 'fullName', 'password', 'confirmPassword']
 
   static readonly hooks: Partial<ModelHooks<UserModel>> = {
     beforeSave (record) {
@@ -55,7 +54,7 @@ class UserModel extends Model<UserInterface> implements UserInterface {
       }
     },
     async validMatchPassword () {
-      if (this.isNewRecord || !this.confirmPassword || this.password === this._previousDataValues.password) return;
+      if (!this.confirmPassword || this.password === this._previousDataValues.password) return;
       if (this.password !== this.confirmPassword && this._previousDataValues.password !== this.confirmPassword) {
         throw new ValidationErrorItem('Xác nhận mật khẩu không khớp.', 'password', 'validMatchPassword', this.confirmPassword);
       }
@@ -82,12 +81,6 @@ class UserModel extends Model<UserInterface> implements UserInterface {
     const token = jwt.sign({ id: this.id }, settings.jwt.userSecret, { expiresIn: settings.jwt.ttl });
     return token;
   };
-
-  public async sendAuthenticateOtp () {
-    const otp = (Math.random() * (999999 - 100000) + 100000).toString().slice(0, 6);
-    await this.update({ registerVerificationToken: otp });
-    SendSmsService.sendAuthenticateOtp(this.phoneNumber, otp);
-  }
 
   public static initialize (sequelize: Sequelize) {
     this.init(UserEntity, {
