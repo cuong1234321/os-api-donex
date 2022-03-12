@@ -1,4 +1,3 @@
-
 interface ProductInterface {
   id: number;
   name: string;
@@ -7,7 +6,7 @@ interface ProductInterface {
   description: string;
   shortDescription: string;
   sizeGuide: string;
-  gender: string;
+  gender: number;
   typeProductId: number;
   status: string;
   isHighlight: boolean;

@@ -1,22 +1,14 @@
 import { DataTypes } from 'sequelize';
 
-const ProductOptionEntity = {
+const ProductCategoryRefEntity = {
   id: {
     type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false,
   },
   productId: {
     type: DataTypes.INTEGER, allowNull: true,
   },
-  key: {
-    type: DataTypes.ENUM({ values: ['size', 'color', 'form'] }),
-    defaultValue: 'size',
-  },
-  value: {
+  productCategoryId: {
     type: DataTypes.INTEGER, allowNull: true,
-  },
-  thumbnail: {
-    type: DataTypes.TEXT,
-    allowNull: true,
   },
   createdAt: {
     type: DataTypes.DATE,
@@ -24,9 +16,6 @@ const ProductOptionEntity = {
   updatedAt: {
     type: DataTypes.DATE,
   },
-  deletedAt: {
-    type: DataTypes.DATE,
-  },
 };
 
-export default ProductOptionEntity;
+export default ProductCategoryRefEntity;

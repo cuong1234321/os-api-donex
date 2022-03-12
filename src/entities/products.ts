@@ -36,8 +36,7 @@ const ProductEntity = {
     type: DataTypes.TEXT, allowNull: true,
   },
   gender: {
-    type: DataTypes.ENUM({ values: ['male', 'female', 'child'] }),
-    defaultValue: 'male',
+    type: DataTypes.INTEGER, allowNull: true,
   },
   typeProductId: {
     type: DataTypes.INTEGER, allowNull: true,
@@ -84,10 +83,10 @@ const ProductEntity = {
     type: DataTypes.INTEGER, allowNull: true,
   },
   skuCode: {
-    type: DataTypes.STRING(50), allowNull: false,
+    type: DataTypes.STRING(50), allowNull: true,
   },
   barCode: {
-    type: DataTypes.STRING(50), allowNull: false,
+    type: DataTypes.STRING(50), allowNull: true,
   },
   createdAt: {
     type: DataTypes.DATE,

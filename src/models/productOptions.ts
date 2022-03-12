@@ -21,7 +21,7 @@ class ProductOptionModel extends Model<ProductOptionInterface> implements Produc
     this.init(ProductOptionEntity, {
       hooks: ProductOptionModel.hooks,
       scopes: ProductOptionModel.scopes,
-      tableName: 'product_optionss',
+      tableName: 'product_options',
       sequelize,
       paranoid: true,
     });

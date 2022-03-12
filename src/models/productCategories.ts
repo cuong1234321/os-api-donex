@@ -2,6 +2,8 @@ import ProductCategoryEntity from '@entities/productCategories';
 import ProductCategoryInterface from '@interfaces/productCategories';
 import { HasManyGetAssociationsMixin, Model, ModelScopeOptions, Sequelize } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
+import ProductCategoryRefModel from './productCategoryRefs';
+import ProductModel from './products';
 
 class ProductCategoryModel extends Model<ProductCategoryInterface> implements ProductCategoryInterface {
   public id: number;
@@ -32,6 +34,8 @@ class ProductCategoryModel extends Model<ProductCategoryInterface> implements Pr
   }
 
   public static associate () {
+    this.hasMany(ProductCategoryRefModel, { as: 'categoryRefs', foreignKey: 'productCategoryId', onDelete: 'CASCADE', hooks: true });
+    this.belongsToMany(ProductModel, { through: ProductCategoryRefModel, as: 'products', foreignKey: 'productCategoryId' });
   }
 }
 
