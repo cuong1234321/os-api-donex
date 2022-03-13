@@ -5,6 +5,7 @@ import sequelize from '@initializers/sequelize';
 import { Transaction } from 'sequelize/types';
 import ProductOptionModel from '@models/productOptions';
 import ProductCategoryRefModel from '@models/productCategoryRefs';
+import ProductVariantModel from '@models/productVariants';
 
 class ProductController {
   public async create (req: Request, res: Response) {
@@ -15,9 +16,11 @@ class ProductController {
           include: [
             { model: ProductCategoryRefModel, as: 'categoryRefs' },
             { model: ProductOptionModel, as: 'options' },
+            { model: ProductVariantModel, as: 'variants' },
           ],
           transaction,
         });
+        await product.updateVariationOptions(transaction);
         return product;
       });
       sendSuccess(res, { product: result });

@@ -85,6 +85,28 @@ const router = Router();
  *                  value:
  *                    type: "number"
  *                    description: "id thuộc tính"
+ *                  optionMappingId:
+ *                    type: "number"
+ *                    description: "Mã phân loại con tự sinh"
+ *            variants:
+ *              type: "array"
+ *              items:
+ *                type: "object"
+ *                properties:
+ *                  name:
+ *                    type: "string"
+ *                    description: ""
+ *                  buyPrice:
+ *                    type: "integer"
+ *                    description: "Đơn giá"
+ *                  sellPrice:
+ *                    type: "integer"
+ *                    description: "Đơn giá"
+ *                  optionMappingIds:
+ *                    type: "array"
+ *                    description: "Mã nhóm phân loại"
+ *                    items:
+ *                      type: "integer"
  *     responses:
  *       200:
  *         description: Return data.

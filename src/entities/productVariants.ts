@@ -4,6 +4,9 @@ const ProductVariantEntity = {
   id: {
     type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false,
   },
+  productId: {
+    type: DataTypes.INTEGER, allowNull: true,
+  },
   name: {
     type: DataTypes.STRING(255),
     allowNull: true,
@@ -12,10 +15,10 @@ const ProductVariantEntity = {
     type: DataTypes.STRING(255), allowNull: true,
   },
   skuCode: {
-    type: DataTypes.STRING(50), allowNull: false,
+    type: DataTypes.STRING(50), allowNull: true,
   },
   barCode: {
-    type: DataTypes.STRING(50), allowNull: false,
+    type: DataTypes.STRING(50), allowNull: true,
   },
   buyPrice: {
     type: DataTypes.INTEGER,
@@ -34,6 +37,9 @@ const ProductVariantEntity = {
   stock: {
     type: DataTypes.INTEGER,
     allowNull: true,
+  },
+  optionMappingIds: {
+    type: DataTypes.VIRTUAL,
   },
   createdAt: {
     type: DataTypes.DATE,

@@ -5,6 +5,7 @@ interface ProductOptionInterface {
   key: string;
   value: number;
   thumbnail: string;
+  optionMappingId?: number;
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;
