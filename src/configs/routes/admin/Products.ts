@@ -1,8 +1,104 @@
 import ProductController from '@controllers/api/admin/ProductController';
 import { withoutSavingUploader } from '@middlewares/uploaders';
-import { Router } from 'express';
+import { Request, Response, Router } from 'express';
 
 const router = Router();
+
+/**
+ * @openapi
+ * /a/products/:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] PRODUCT"
+ *     summary: Danh sách sản phẩm
+ *     description: Danh sách sản phẩm
+ *     parameters:
+ *      - in: query
+ *        name: "page"
+ *        description: "page"
+ *        type: "number"
+ *      - in: query
+ *        name: "limit"
+ *        description: "limit"
+ *        type: "number"
+ *      - in: query
+ *        name: "sku"
+ *        description: "ma sku san pham"
+ *        type: "string"
+ *      - in: query
+ *        name: "name"
+ *        description: "Ten san pham"
+ *        type: "string"
+ *      - in: query
+ *        name: "category"
+ *        description: "Ten danh muc san pham"
+ *        type: "string"
+ *      - in: query
+ *        name: "collectionId"
+ *        description: "Ma bo suu tap san pham"
+ *        type: "number"
+ *      - in: query
+ *        name: "unit"
+ *        description: "don vi"
+ *        type: "string"
+ *      - in: query
+ *        name: "price"
+ *        description: "gia"
+ *        type: "number"
+ *      - in: query
+ *        name: "status"
+ *        description: "Trạng thái hiển thị"
+ *        type: "string"
+ *        enum:
+ *          - active
+ *          - inactive
+ *          - draft
+ *      - in: query
+ *        name: "skuOrder"
+ *        description: "sort"
+ *        type: "enum"
+ *        enum:
+ *          - DESC
+ *          - ASC
+ *      - in: query
+ *        name: "nameOrder"
+ *        description: "sort"
+ *        type: "enum"
+ *        enum:
+ *          - DESC
+ *          - ASC
+ *      - in: query
+ *        name: "CategoryOrder"
+ *        description: "sort"
+ *        type: "enum"
+ *        enum:
+ *          - DESC
+ *          - ASC
+ *      - in: query
+ *        name: "priceOrder"
+ *        description: "sort"
+ *        type: "enum"
+ *        enum:
+ *          - DESC
+ *          - ASC
+ *      - in: query
+ *        name: "statusOrder"
+ *        description: "sort"
+ *        type: "enum"
+ *        enum:
+ *          - DESC
+ *          - ASC
+ *     responses:
+ *       200:
+ *         description: "Upload success"
+ *       404:
+ *         description: Không tìm thấy dữ liệu
+ *       500:
+ *        description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/', (req: Request, res: Response) => ProductController.index(req, res));
 
 /**
  * @openapi
