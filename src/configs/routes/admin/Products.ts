@@ -102,6 +102,29 @@ router.get('/', (req: Request, res: Response) => ProductController.index(req, re
 
 /**
  * @openapi
+ * /a/products/{productId}:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] PRODUCT"
+ *     summary: Thông tin sản phẩm
+ *     parameters:
+ *      - in: "path"
+ *        name: "productId"
+ *        type: "integer"
+ *     responses:
+ *       200:
+ *         description: "Upload success"
+ *       404:
+ *         description: Không tìm thấy dữ liệu
+ *       500:
+ *        description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/:productId', ProductController.show);
+
+/**
+ * @openapi
  * /a/products:
  *   post:
  *     tags:
@@ -258,37 +281,37 @@ router.post('/', ProductController.create);
 router.post('/:productId/upload_medias', withoutSavingUploader.any(), ProductController.uploadMedia);
 
 /**
- * @openapi
- * /a/products/{productId}/upload_option_medias:
- *   post:
- *     tags:
- *      - "[ADMIN] PRODUCT"
- *     summary: Upload Option media
- *     description: Tải lên hình ảnh cho phân loại chính.
- *     consumes:
- *      - "multipart/form-data"
- *     produces:
- *      - "application/json"
- *     parameters:
- *      - in: "path"
- *        name: "productId"
- *        type: "integer"
- *      - in: "formData"
- *        name: "Đặt tên biến theo id của product option media"
- *        description: "File upload"
- *        required: false
- *        allowMultiple: false
- *        type: "file"
- *     responses:
- *       200:
- *         description: "Upload success"
- *       404:
- *         description: Không tìm thấy dữ liệu
- *       500:
- *        description: Lỗi không xác định
- *     security:
- *      - Bearer: []
- */
+  * @openapi
+  * /a/products/{productId}/upload_option_medias:
+  *   post:
+  *     tags:
+  *      - "[ADMIN] PRODUCT"
+  *     summary: Upload Option media
+  *     description: Tải lên hình ảnh cho phân loại chính.
+  *     consumes:
+  *      - "multipart/form-data"
+  *     produces:
+  *      - "application/json"
+  *     parameters:
+  *      - in: "path"
+  *        name: "productId"
+  *        type: "integer"
+  *      - in: "formData"
+  *        name: "Đặt tên biến theo id của product option media"
+  *        description: "File upload"
+  *        required: false
+  *        allowMultiple: false
+  *        type: "file"
+  *     responses:
+  *       200:
+  *         description: "Upload success"
+  *       404:
+  *         description: Không tìm thấy dữ liệu
+  *       500:
+  *        description: Lỗi không xác định
+  *     security:
+  *      - Bearer: []
+  */
 router.post('/:productId/upload_option_medias',
   withoutSavingUploader.any(), ProductController.uploadOptionMedia);
 
