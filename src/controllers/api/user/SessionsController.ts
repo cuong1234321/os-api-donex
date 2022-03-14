@@ -1,4 +1,4 @@
-import { BadAuthentication, AccountNotActive } from '@libs/errors';
+import { BadAuthentication, AccountNotActive, NoData } from '@libs/errors';
 import { sendError, sendSuccess } from '@libs/response';
 import UserModel from '@models/users';
 import { Request, Response } from 'express';
@@ -17,6 +17,17 @@ class SessionController {
       sendSuccess(res, { accessToken, tokenExpireAt: settings.jwt.ttl });
     } catch (error) {
       sendError(res, 500, error.message);
+    }
+  }
+
+  public async getCurrentUser (req: Request, res: Response) {
+    try {
+      let user = req.currentUser;
+      user = await UserModel.findByPk(user.id);
+      if (!user) sendError(res, 404, NoData);
+      sendSuccess(res, { user });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
     }
   }
 }

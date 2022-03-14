@@ -47,6 +47,11 @@ class AdminModel extends Model<AdminInterface> implements AdminInterface {
         where: { email },
       };
     },
+    byStatus (status) {
+      return {
+        where: { status },
+      };
+    },
   }
 
   static readonly validations: ModelValidateOptions = {
