@@ -1,5 +1,6 @@
 interface ProductVariantInterface {
   id: number;
+  productId: number;
   name: string;
   slug: string;
   skuCode: string;
@@ -7,6 +8,7 @@ interface ProductVariantInterface {
   buyPrice: string;
   sellPrice: string;
   stock: number;
+  optionMappingIds?: number[]
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;

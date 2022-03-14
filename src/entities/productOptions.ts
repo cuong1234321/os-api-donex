@@ -18,6 +18,9 @@ const ProductOptionEntity = {
     type: DataTypes.TEXT,
     allowNull: true,
   },
+  optionMappingId: {
+    type: DataTypes.VIRTUAL,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },

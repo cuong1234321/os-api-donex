@@ -2,9 +2,12 @@ import ProductVariantEntity from '@entities/productVariants';
 import ProductVariantInterface from '@interfaces/productVariants';
 import { Model, ModelScopeOptions, ModelValidateOptions, Sequelize } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
+import ProductOptionModel from './productOptions';
+import ProductVariantOptionModel from './productVariantOptions';
 
 class ProductVariantModel extends Model<ProductVariantInterface> implements ProductVariantInterface {
   public id: number;
+  public productId: number;
   public name: string;
   public slug: string;
   public skuCode: string;
@@ -12,6 +15,7 @@ class ProductVariantModel extends Model<ProductVariantInterface> implements Prod
   public buyPrice: string;
   public sellPrice: string;
   public stock: number;
+  optionMappingIds?: number[]
 
   public createdAt?: Date;
   public updatedAt?: Date;
@@ -37,6 +41,8 @@ class ProductVariantModel extends Model<ProductVariantInterface> implements Prod
   }
 
   public static associate () {
+    this.belongsToMany(ProductOptionModel, { through: ProductVariantOptionModel, as: 'options', foreignKey: 'variantId' });
+    this.hasMany(ProductVariantOptionModel, { as: 'variantOptions', foreignKey: 'variantId' });
   }
 }
 

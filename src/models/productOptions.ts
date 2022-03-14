@@ -2,6 +2,8 @@ import ProductOptionEntity from '@entities/productOptions';
 import ProductOptionInterface from '@interfaces/productOptions';
 import { Model, ModelScopeOptions, Sequelize } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
+import ProductVariantOptionModel from './productVariantOptions';
+import ProductVariantModel from './productVariants';
 
 class ProductOptionModel extends Model<ProductOptionInterface> implements ProductOptionInterface {
   public id: number;
@@ -9,9 +11,12 @@ class ProductOptionModel extends Model<ProductOptionInterface> implements Produc
   public key: string;
   public value: number;
   public thumbnail: string;
+  public optionMappingId?: number;
   public createdAt?: Date;
   public updatedAt?: Date;
   public deletedAt?: Date;
+
+  static readonly TYPE_ENUM = { color: 'color', size: 'size', form: 'form' }
 
   static readonly hooks: Partial<ModelHooks<ProductOptionModel>> = { }
 
@@ -28,6 +33,7 @@ class ProductOptionModel extends Model<ProductOptionInterface> implements Produc
   }
 
   public static associate () {
+    this.belongsToMany(ProductVariantModel, { through: ProductVariantOptionModel, as: 'variants', foreignKey: 'optionId' });
   }
 }
 
