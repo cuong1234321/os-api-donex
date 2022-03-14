@@ -60,6 +60,34 @@ class NewsController {
       sendError(res, 500, error.message, error);
     }
   }
+
+  public async active (req: Request, res: Response) {
+    try {
+      const { newsId } = req.params;
+      const news = await NewsModel.findByPk(newsId);
+      if (!news || news.status === NewsModel.STATUS_ENUM.ACTIVE) return sendError(res, 404, NoData);
+      await news.update({
+        status: NewsModel.STATUS_ENUM.ACTIVE,
+      });
+      sendSuccess(res, { news });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async inactive (req: Request, res: Response) {
+    try {
+      const { newsId } = req.params;
+      const news = await NewsModel.findByPk(newsId);
+      if (!news || news.status !== NewsModel.STATUS_ENUM.ACTIVE) return sendError(res, 404, NoData);
+      await news.update({
+        status: NewsModel.STATUS_ENUM.INACTIVE,
+      });
+      sendSuccess(res, { news });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
 }
 
 export default new NewsController();
