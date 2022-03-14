@@ -16,8 +16,8 @@ class NewsModel extends Model<NewsInterface> implements NewsInterface {
   public updatedAt?: Date;
 
   public static readonly STATUS_ENUM = { DRAFT: 'draft', ACTIVE: 'active', INACTIVE: 'inactive' }
-
   public static readonly CREATABLE_PARAMETERS = ['title', 'content', 'categoryNewsId']
+  public static readonly UPDATABLE_PARAMETERS = ['title', 'content', 'categoryNewsId']
 
   static readonly hooks: Partial<ModelHooks<NewsModel>> = { }
 
