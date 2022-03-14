@@ -5,6 +5,9 @@ import { ModelHooks } from 'sequelize/types/lib/hooks';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import settings from '@configs/settings';
+import dayjs from 'dayjs';
+import SendSmsService from '@services/smsSender';
+import randomString from 'randomstring';
 
 class UserModel extends Model<UserInterface> implements UserInterface {
   public id: number;
@@ -24,8 +27,7 @@ class UserModel extends Model<UserInterface> implements UserInterface {
   public note: string;
   public defaultRank: number;
   public currentRank: number;
-  public registerVerificationToken: string;
-  public forgotPasswordToken: number;
+  public forgotPasswordToken: string;
   public forgotPasswordExpireAt: Date;
   public createdAt?: Date;
   public updatedAt?: Date;
@@ -80,6 +82,32 @@ class UserModel extends Model<UserInterface> implements UserInterface {
     } catch (error) {
       return false;
     }
+  }
+
+  public async sendOtp () {
+    const token = (Math.random() * (999999 - 100000) + 100000).toString().slice(0, 6);
+    const expireAt = (dayjs().add(settings.forgotPasswordTokenExpiresIn, 'day'));
+    await this.update(
+      {
+        forgotPasswordToken: token,
+        forgotPasswordExpireAt: expireAt,
+      },
+    );
+    await SendSmsService.sendAuthenticateOtp(this.phoneNumber, token);
+  }
+
+  public async checkValidForgotPasswordToken (token: string) {
+    return this.forgotPasswordToken === token && (!this.forgotPasswordExpireAt || dayjs(this.forgotPasswordExpireAt).subtract(dayjs().valueOf(), 'ms').valueOf() > 0);
+  }
+
+  public async genLifetimeForgotPasswordToken () {
+    const token = randomString.generate(64);
+    await this.update(
+      {
+        forgotPasswordToken: token,
+        forgotPasswordExpireAt: null,
+      },
+    );
   }
 
   public async generateAccessToken () {

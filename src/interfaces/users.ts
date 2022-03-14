@@ -1,4 +1,3 @@
-
 interface UserInterface {
   id: number,
   adminId: number,
@@ -17,8 +16,7 @@ interface UserInterface {
   note: string,
   defaultRank: number,
   currentRank: number,
-  registerVerificationToken: string;
-  forgotPasswordToken: number;
+  forgotPasswordToken: string;
   forgotPasswordExpireAt: Date;
   createdAt?: Date,
   updatedAt?: Date,
