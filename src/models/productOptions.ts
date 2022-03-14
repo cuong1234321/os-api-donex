@@ -20,7 +20,23 @@ class ProductOptionModel extends Model<ProductOptionInterface> implements Produc
 
   static readonly hooks: Partial<ModelHooks<ProductOptionModel>> = { }
 
-  static readonly scopes: ModelScopeOptions = { }
+  static readonly scopes: ModelScopeOptions = {
+    byId (id) {
+      return {
+        where: { id },
+      };
+    },
+    byKey (key) {
+      return {
+        where: { key },
+      };
+    },
+    byProductId (productId) {
+      return {
+        where: { productId },
+      };
+    },
+  }
 
   public static initialize (sequelize: Sequelize) {
     this.init(ProductOptionEntity, {

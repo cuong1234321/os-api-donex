@@ -1,10 +1,9 @@
-
 interface ProductMediaInterface {
   id: number;
-  type: string;
+  productId: number;
   source: string;
-  uploadableType: string;
-  uploadableId: string;
+  type: string;
+  isThumbnail: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 };

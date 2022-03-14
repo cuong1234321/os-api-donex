@@ -6,6 +6,7 @@ import MColorModel from './mColors';
 import MSizeModel from './mSizes';
 import ProductCategoryModel from './productCategories';
 import ProductCategoryRefModel from './productCategoryRefs';
+import ProductMediaModel from './productMedias';
 import ProductOptionModel from './productOptions';
 import ProductVariantOptionModel from './productVariantOptions';
 import ProductVariantModel from './productVariants';
@@ -46,6 +47,7 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
     { categoryRefs: ['productCategoryId'] },
     { options: ['key', 'value', 'optionMappingId'] },
     { variants: ['name', 'buyPrice', 'sellPrice', 'stock', 'skuCode', { optionMappingIds: new Array(0) }] },
+    { medias: ['isThumbnail'] },
   ];
 
   static readonly hooks: Partial<ModelHooks<ProductModel>> = {
@@ -130,6 +132,7 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
     this.belongsToMany(ProductCategoryModel, { through: ProductCategoryRefModel, as: 'categories', foreignKey: 'productId', onDelete: 'CASCADE', hooks: true });
     this.hasMany(ProductOptionModel, { as: 'options', foreignKey: 'productId', onDelete: 'CASCADE', hooks: true });
     this.hasMany(ProductVariantModel, { as: 'variants', foreignKey: 'productId', onDelete: 'CASCADE', hooks: true });
+    this.hasMany(ProductMediaModel, { as: 'medias', foreignKey: 'productId', onDelete: 'CASCADE', hooks: true });
   }
 }
 
