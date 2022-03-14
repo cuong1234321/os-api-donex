@@ -29,6 +29,10 @@ const swaggerDefinition = {
       description: 'Quản lý CTV/DL/NPP',
     },
     {
+      name: '[ADMIN] News',
+      description: 'Quản lý tin tức',
+    },
+    {
       name: '[USER] Sessions',
       description: 'Phiên đăng nhập user',
     },

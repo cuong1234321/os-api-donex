@@ -6,6 +6,7 @@ import ProductRouter from './Products';
 import CollaboratorsRouter from './Collaborators';
 import UserRouter from './Users';
 import ProductCategoryRouter from './ProductCategories';
+import NewsRouter from './News';
 
 const router = Router();
 
@@ -15,5 +16,6 @@ router.use('/products', adminPassport.authenticate('jwt', { session: false }), P
 router.use('/collaborators', adminPassport.authenticate('jwt', { session: false }), CollaboratorsRouter);
 router.use('/users', UserRouter);
 router.use('/product_categories', ProductCategoryRouter);
+router.use('/news', NewsRouter);
 
 export default router;
