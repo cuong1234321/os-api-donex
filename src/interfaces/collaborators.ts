@@ -1,3 +1,4 @@
+import UserModel from '@models/users';
 
 interface CollaboratorInterface {
   id: number,
@@ -9,6 +10,9 @@ interface CollaboratorInterface {
   paperProofBack: string;
   createdAt?: Date,
   updatedAt?: Date,
+  deletedAt: Date,
+
+  user?: UserModel,
 };
 
 export default CollaboratorInterface;

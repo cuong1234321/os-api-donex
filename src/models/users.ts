@@ -18,6 +18,7 @@ class UserModel extends Model<UserInterface> implements UserInterface {
   public address: string;
   public fullName: string;
   public phoneNumber: string;
+  public username: string;
   public password: string;
   public confirmPassword?: string;
   public email: string;
@@ -31,6 +32,7 @@ class UserModel extends Model<UserInterface> implements UserInterface {
   public forgotPasswordExpireAt: Date;
   public createdAt?: Date;
   public updatedAt?: Date;
+  public deletedAt: Date;
 
   public static readonly STATUS_ENUM = { ACTIVE: 'active', INACTIVE: 'inactive' }
   public static readonly CREATABLE_PARAMETERS = ['phoneNumber', 'fullName', 'password', 'confirmPassword']
@@ -121,6 +123,7 @@ class UserModel extends Model<UserInterface> implements UserInterface {
       scopes: UserModel.scopes,
       validate: UserModel.validations,
       tableName: 'users',
+      paranoid: true,
       sequelize,
     });
   }
