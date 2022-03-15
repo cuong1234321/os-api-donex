@@ -1,6 +1,9 @@
 import ProductEntity from '@entities/products';
+import ProductMediaInterface from '@interfaces/productMedia';
+import ProductOptionInterface from '@interfaces/productOptions';
 import ProductInterface from '@interfaces/products';
-import { BelongsToManyGetAssociationsMixin, HasManyGetAssociationsMixin, Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, Transaction } from 'sequelize';
+import { BelongsToManySetAssociationsMixin, BelongsToManyGetAssociationsMixin, HasManyGetAssociationsMixin, Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, Transaction } from 'sequelize';
+import ProductVariantInterface from '@interfaces/productVariants';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import MColorModel from './mColors';
 import MSizeModel from './mSizes';
@@ -50,6 +53,15 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
     { options: ['key', 'value', 'optionMappingId'] },
     { variants: ['name', 'buyPrice', 'sellPrice', 'stock', 'skuCode', { optionMappingIds: new Array(0) }] },
     { medias: ['isThumbnail'] },
+  ];
+
+  static readonly UPDATABLE_PARAMETERS = [
+    'name', 'description', 'shortDescription', 'status', 'gender', 'typeProductId', 'sizeGuide', 'isHighlight',
+    'isNew', 'weight', 'length', 'width', 'height', 'unit', 'minStock', 'maxStock', 'isHighlight', 'isNew', 'inFlashSale',
+    { categoryRefs: ['productCategoryId'] },
+    { options: ['id', 'key', 'value', 'optionMappingId'] },
+    { variants: ['id', 'name', 'buyPrice', 'sellPrice', 'stock', 'skuCode', { optionMappingIds: new Array(0) }] },
+    { medias: ['id', 'isThumbnail'] },
   ];
 
   static readonly hooks: Partial<ModelHooks<ProductModel>> = {
@@ -423,6 +435,8 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
     await ProductMediaModel.destroy({ where: { productId: this.id }, individualHooks: true });
   }
 
+  public setCategories: BelongsToManySetAssociationsMixin<ProductCategoryModel, number>;
+
   public async generateSkuCode () {
     let code = '';
     const characters = '0123456789';
@@ -464,7 +478,93 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
       const skuCode = `${this.skuCode}-${color.code}-${size.code}`;
       await variant.update({ skuCode: skuCode }, { transaction });
     }
-    await ProductVariantOptionModel.bulkCreate(variantOptionAttributes, { transaction });
+    const variationOptions = await ProductVariantOptionModel.bulkCreate(variantOptionAttributes, { transaction });
+    await ProductVariantOptionModel.destroy({
+      where: {
+        variantId: this.variants.map((variant) => variant.id),
+        id: { [Op.notIn]: variationOptions.map((option) => option.id) },
+      },
+      transaction,
+    });
+  }
+
+  public async updateCategories (attributes: any[], transaction?: Transaction) {
+    if (!attributes || !attributes.length) return;
+    const categories = await ProductCategoryModel.scope([{ method: ['byId', attributes.map(attribute => attribute.productCategoryId)] }]).findAll();
+    await this.setCategories(categories, { transaction });
+  }
+
+  public async updateMedias (medias: any[], transaction?: Transaction) {
+    if (!medias) return;
+    medias.forEach((record: any) => {
+      record.productId = this.id;
+    });
+    const results = await ProductMediaModel.bulkCreate(medias, {
+      updateOnDuplicate: ProductMediaModel.UPDATABLE_ON_DUPLICATE_PARAMETERS as (keyof ProductMediaInterface)[],
+      individualHooks: true,
+      transaction,
+    });
+    await ProductMediaModel.destroy({
+      where: { productId: this.id, id: { [Op.notIn]: results.map((media) => media.id) } },
+      individualHooks: true,
+      transaction,
+    });
+  }
+
+  public async updateVariants (variants: any[], transaction?: Transaction) {
+    if (!variants) return;
+    variants.forEach((record: any) => {
+      record.productId = this.id;
+    });
+    const results = await ProductVariantModel.bulkCreate(variants, {
+      updateOnDuplicate: ProductVariantModel.UPDATABLE_ON_DUPLICATE_PARAMETERS as (keyof ProductVariantInterface)[],
+      individualHooks: true,
+      transaction,
+    });
+    await ProductVariantModel.destroy({
+      where: { productId: this.id, id: { [Op.notIn]: results.map((variant) => variant.id) } },
+      individualHooks: true,
+      transaction,
+    });
+    return results;
+  }
+
+  public async updateOptions (options: any[], transaction?: Transaction) {
+    if (!options) return;
+    options.forEach((record: any) => {
+      record.productId = this.id;
+    });
+    const optionResults = await ProductOptionModel.bulkCreate(options, {
+      updateOnDuplicate: ProductOptionModel.UPDATABLE_ON_DUPLICATE_PARAMETERS as (keyof ProductOptionInterface)[],
+      individualHooks: true,
+      transaction,
+    });
+    await ProductOptionModel.destroy({
+      where: { productId: this.id, id: { [Op.notIn]: optionResults.map((option) => option.id) } },
+      individualHooks: true,
+      transaction,
+    });
+    return optionResults;
+  }
+
+  public async reloadWithDetail () {
+    await this.reload({
+      include: [
+        { model: ProductMediaModel, as: 'medias' },
+        { model: ProductCategoryModel, as: 'categories' },
+        {
+          model: ProductOptionModel,
+          as: 'options',
+        },
+        {
+          model: ProductVariantModel,
+          as: 'variants',
+          include: [
+            { model: ProductOptionModel, as: 'options' },
+          ],
+        },
+      ],
+    });
   }
 
   public static initialize (sequelize: Sequelize) {

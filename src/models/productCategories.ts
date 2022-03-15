@@ -37,6 +37,11 @@ class ProductCategoryModel extends Model<ProductCategoryInterface> implements Pr
         },
       };
     },
+    byId (id) {
+      return {
+        where: { id },
+      };
+    },
   }
 
   public static async getCategoryIdsByParentId (categoryIds: string[]) {
