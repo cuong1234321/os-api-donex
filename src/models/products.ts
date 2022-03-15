@@ -1,6 +1,6 @@
 import ProductEntity from '@entities/products';
 import ProductInterface from '@interfaces/products';
-import { Model, ModelScopeOptions, ModelValidateOptions, Sequelize, Transaction } from 'sequelize';
+import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, Transaction } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import MColorModel from './mColors';
 import MSizeModel from './mSizes';
@@ -41,6 +41,8 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
   public variants?: ProductVariantModel[];
   public options?: ProductOptionModel[];
 
+  static readonly STATUS_ENUM = { DRAFT: 'draft', ACTIVE: 'active', INACTIVE: 'inActive' };
+
   static readonly CREATABLE_PARAMETERS = [
     'name', 'description', 'shortDescription', 'status', 'gender', 'typeProductId', 'sizeGuide', 'isHighlight',
     'isNew', 'weight', 'length', 'width', 'height', 'unit', 'minStock', 'maxStock',
@@ -55,12 +57,20 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
       record.skuCode = await record.generateSkuCode();
       record.barCode = await record.generateBarCode();
     },
+    async afterDestroy (record) {
+      await record.deleteProductDetail();
+    },
   }
 
   static readonly validations: ModelValidateOptions = {
   }
 
   static readonly scopes: ModelScopeOptions = {
+    byId (id) {
+      return {
+        where: { id },
+      };
+    },
     bySkuCode (skuCode) {
       return {
         where: { skuCode },
@@ -71,6 +81,26 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
         where: { barCode },
       };
     },
+    isNotActive () {
+      return {
+        where: {
+          status: { [Op.notIn]: [ProductModel.STATUS_ENUM.ACTIVE] },
+        },
+      };
+    },
+    isActive () {
+      return {
+        where: {
+          status: ProductModel.STATUS_ENUM.ACTIVE,
+        },
+      };
+    },
+  }
+
+  public async deleteProductDetail () {
+    await ProductOptionModel.destroy({ where: { productId: this.id }, individualHooks: true });
+    await ProductVariantModel.destroy({ where: { productId: this.id }, individualHooks: true });
+    await ProductMediaModel.destroy({ where: { productId: this.id }, individualHooks: true });
   }
 
   public async generateSkuCode () {
@@ -124,6 +154,7 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
       validate: ProductModel.validations,
       tableName: 'products',
       sequelize,
+      paranoid: true,
     });
   }
 
