@@ -42,6 +42,11 @@ export const MemberNotFound = {
   message: 'Entered member code is invalid',
 };
 
+export const FileIsNotSupport = {
+  code: 305,
+  message: 'The file is not in the required format',
+};
+
 export const AccountNotActive = {
   code: 410,
   message: 'Account not active',
