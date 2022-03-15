@@ -21,6 +21,7 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
 
   public static readonly INFORMATION_PARAMETERS = ['fullName', 'dateOfBirth', 'phoneNumber', 'username', 'password', 'email', 'provinceId', 'districtId', 'wardId', 'address', 'defaultRank']
   public static readonly CREATABLE_PARAMETERS = ['type', 'parentId']
+  public static readonly UPDATABLE_PARAMETERS = ['type', 'parentId']
 
   static readonly hooks: Partial<ModelHooks<CollaboratorModel>> = { }
 
