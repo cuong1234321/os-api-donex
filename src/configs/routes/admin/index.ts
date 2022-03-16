@@ -7,6 +7,7 @@ import CollaboratorsRouter from './Collaborators';
 import UserRouter from './Users';
 import ProductCategoryRouter from './ProductCategories';
 import NewsRouter from './News';
+import SelectionRouter from './Selections';
 
 const router = Router();
 
@@ -17,5 +18,6 @@ router.use('/collaborators', adminPassport.authenticate('jwt', { session: false 
 router.use('/users', UserRouter);
 router.use('/product_categories', ProductCategoryRouter);
 router.use('/news', NewsRouter);
+router.use('/selections', SelectionRouter);
 
 export default router;

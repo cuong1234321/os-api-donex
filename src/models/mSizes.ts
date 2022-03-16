@@ -9,7 +9,15 @@ class MSizeModel extends Model<MSizeInterface> implements MSizeInterface {
   public createdAt?: Date;
   public updatedAt?: Date;
 
-  static readonly scopes: ModelScopeOptions = {}
+  static readonly TYPE_ENUM = { CLOTHES: 'clothes', CHILDREN: 'children', SHOES: 'shoes' }
+
+  static readonly scopes: ModelScopeOptions = {
+    byType (type) {
+      return {
+        where: { type },
+      };
+    },
+  }
 
   public static initialize (sequelize: Sequelize) {
     this.init(MSizeEntity, {

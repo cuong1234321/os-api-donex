@@ -33,6 +33,18 @@ const swaggerDefinition = {
       description: 'Quản lý tin tức',
     },
     {
+      name: '[ADMIN] SELECTION',
+      description: 'Quản lý selection',
+    },
+    {
+      name: '[ADMIN] Users',
+      description: 'Quản lý user',
+    },
+    {
+      name: '[ADMIN] PRODUCT',
+      description: 'Quản lý sản phẩm',
+    },
+    {
       name: '[USER] Sessions',
       description: 'Phiên đăng nhập user',
     },
