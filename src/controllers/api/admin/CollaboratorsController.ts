@@ -5,8 +5,29 @@ import sequelize from '@initializers/sequelize';
 import CollaboratorModel from '@models/collaborators';
 import UserModel from '@models/users';
 import ImageUploaderService from '@services/imageUploader';
+import settings from '@configs/settings';
 
 class CollaboratorController {
+  public async index (req: Request, res: Response) {
+    try {
+      const page = req.query.page as string || '1';
+      const limit = parseInt(settings.defaultPerPage);
+      const offset = (parseInt(page, 10) - 1) * limit;
+      const scope: any = [
+        'withUser',
+      ];
+      const { status, gender, freeWord } = req.query;
+      if (status) scope.push({ method: ['byStatus', status] });
+      if (gender) scope.push({ method: ['byGender', gender] });
+      if (freeWord) scope.push({ method: ['byFreeWord', freeWord] });
+      const { rows, count } = await CollaboratorModel.scope(scope).findAndCountAll({ limit, offset });
+      const totalPending = await CollaboratorModel.scope([{ method: ['byStatus', 'pending'] }]).count();
+      sendSuccess(res, { totalPending, rows, pagination: { total: count, page, perPage: limit } });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
   public async create (req: Request, res: Response) {
     try {
       const userParams = req.parameters.permit(CollaboratorModel.INFORMATION_PARAMETERS).value();
