@@ -6,6 +6,7 @@ import AccountsRouter from './Accounts';
 import AuthenticationOtpsRouter from './AuthenticationOtps';
 import PasswordRouter from './Passwords';
 import ProductRouter from './Products';
+import HomepageRouter from './Homepages';
 
 const router = Router();
 
@@ -15,5 +16,6 @@ router.use('/accounts', AccountsRouter);
 router.use('/authentication_otps', AuthenticationOtpsRouter);
 router.use('/passwords', PasswordRouter);
 router.use('/products', ProductRouter);
+router.use('/homepages', HomepageRouter);
 
 export default router;
