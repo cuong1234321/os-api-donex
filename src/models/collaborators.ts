@@ -1,6 +1,6 @@
 import CollaboratorEntity from '@entities/collaborators';
 import CollaboratorInterface from '@interfaces/collaborators';
-import { Model, ModelScopeOptions, Op, Sequelize } from 'sequelize';
+import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import UserModel from './users';
 
@@ -24,6 +24,9 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
   public static readonly UPDATABLE_PARAMETERS = ['type', 'parentId']
 
   static readonly hooks: Partial<ModelHooks<CollaboratorModel>> = { }
+
+  static readonly validations: ModelValidateOptions = {
+  }
 
   static readonly scopes: ModelScopeOptions = {
     byStatus (status) {
@@ -59,12 +62,24 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
         },
       };
     },
+    byUserId (userId) {
+      return {
+        where: { userId },
+      };
+    },
+  }
+
+  public async checkStatus (status: string) {
+    if (this.status !== status) {
+      throw new ValidationErrorItem(`status is not ${status}.`, 'status', 'validStatus', this.status);
+    }
   }
 
   public static initialize (sequelize: Sequelize) {
     this.init(CollaboratorEntity, {
       hooks: CollaboratorModel.hooks,
       scopes: CollaboratorModel.scopes,
+      validate: CollaboratorModel.validations,
       tableName: 'collaborators',
       paranoid: true,
       sequelize,

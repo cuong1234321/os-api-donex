@@ -47,4 +47,26 @@ router.patch('/:userId/active', UserController.active);
  */
 router.patch('/:userId/inactive', UserController.inactive);
 
+/**
+ * @openapi
+ * /a/users/{userId}:
+ *   delete:
+ *     tags:
+ *      - "[ADMIN] Users"
+ *     summary: Xóa TK user
+ *     parameters:
+ *      - in: path
+ *        name: "userId"
+ *        description: "userId"
+ *        type: "string"
+ *     responses:
+ *       200:
+ *         description: Return data.
+ *       500:
+ *         description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.delete('/:userId', UserController.delete);
+
 export default router;
