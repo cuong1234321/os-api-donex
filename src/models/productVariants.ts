@@ -22,12 +22,19 @@ class ProductVariantModel extends Model<ProductVariantInterface> implements Prod
   public deletedAt?: Date;
 
   static readonly hooks: Partial<ModelHooks<ProductVariantModel>> = {
+    async afterDestroy (record) {
+      await record.deleteVariantOption();
+    },
   }
 
   static readonly validations: ModelValidateOptions = {
   }
 
   static readonly scopes: ModelScopeOptions = {
+  }
+
+  public async deleteVariantOption () {
+    await ProductVariantOptionModel.destroy({ where: { variantId: this.id }, individualHooks: true });
   }
 
   public static initialize (sequelize: Sequelize) {
@@ -37,6 +44,7 @@ class ProductVariantModel extends Model<ProductVariantInterface> implements Prod
       validate: ProductVariantModel.validations,
       tableName: 'product_variants',
       sequelize,
+      paranoid: true,
     });
   }
 

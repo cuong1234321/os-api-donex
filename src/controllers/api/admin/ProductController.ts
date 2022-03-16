@@ -77,6 +77,51 @@ class ProductController {
       sendError(res, 500, error.message, error);
     }
   }
+
+  public async active (req: Request, res: Response) {
+    try {
+      const product = await ProductModel.scope([
+        { method: ['byId', req.params.productId] },
+        'isNotActive',
+      ]).findOne();
+      if (!product) {
+        return sendError(res, 404, NoData);
+      }
+      await product.update({ status: ProductModel.STATUS_ENUM.ACTIVE });
+      sendSuccess(res, { });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async inActive (req: Request, res: Response) {
+    try {
+      const product = await ProductModel.scope([
+        { method: ['byId', req.params.productId] },
+        'isActive',
+      ]).findOne();
+      if (!product) {
+        return sendError(res, 404, NoData);
+      }
+      await product.update({ status: ProductModel.STATUS_ENUM.INACTIVE });
+      sendSuccess(res, { });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async delete (req: Request, res: Response) {
+    try {
+      const product = await ProductModel.findByPk(req.params.productId);
+      if (!product) {
+        return sendError(res, 404, NoData);
+      }
+      await product.destroy();
+      sendSuccess(res, { });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
 }
 
 export default new ProductController();

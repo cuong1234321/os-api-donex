@@ -196,4 +196,76 @@ router.post('/:productId/upload_medias', withoutSavingUploader.any(), ProductCon
 router.post('/:productId/upload_option_medias',
   withoutSavingUploader.any(), ProductController.uploadOptionMedia);
 
+/**
+ * @openapi
+ * /a/products/{productId}/active:
+ *   patch:
+ *     tags:
+ *      - "[ADMIN] PRODUCT"
+ *     summary: Mo kinh doanh san pham
+ *     description: Mo kinh doanh san pham
+ *     parameters:
+ *      - in: "path"
+ *        name: "productId"
+ *        type: "integer"
+ *     responses:
+ *       200:
+ *         description: "Upload success"
+ *       404:
+ *         description: Không tìm thấy dữ liệu
+ *       500:
+ *        description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.patch('/:productId/active', ProductController.active);
+
+/**
+ * @openapi
+ * /a/products/{productId}/inactive:
+ *   patch:
+ *     tags:
+ *      - "[ADMIN] PRODUCT"
+ *     summary: Ngung kinh doanh san pham
+ *     description: Ngung kinh doanh san pham
+ *     parameters:
+ *      - in: "path"
+ *        name: "productId"
+ *        type: "integer"
+ *     responses:
+ *       200:
+ *         description: "Upload success"
+ *       404:
+ *         description: Không tìm thấy dữ liệu
+ *       500:
+ *        description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.patch('/:productId/inactive', ProductController.inActive);
+
+/**
+ * @openapi
+ * /a/products/{productId}:
+ *   delete:
+ *     tags:
+ *      - "[ADMIN] PRODUCT"
+ *     summary: Xóa product
+ *     description: Xóa sản phẩm
+ *     parameters:
+ *      - in: "path"
+ *        name: "productId"
+ *        type: "integer"
+ *     responses:
+ *       200:
+ *         description: "Upload success"
+ *       404:
+ *         description: Không tìm thấy dữ liệu
+ *       500:
+ *        description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.delete('/:productId', ProductController.delete);
+
 export default router;
