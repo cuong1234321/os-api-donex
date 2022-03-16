@@ -81,6 +81,13 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
         where: { barCode },
       };
     },
+    isActive () {
+      return {
+        where: {
+          status: ProductModel.STATUS_ENUM.ACTIVE,
+        },
+      };
+    },
     isNotActive () {
       return {
         where: {
@@ -88,11 +95,149 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
         },
       };
     },
-    isActive () {
+    byCategory (categoryIds) {
+      return {
+        include: [
+          {
+            model: ProductCategoryModel,
+            as: 'categories',
+            required: true,
+            where: {
+              id: categoryIds,
+              type: ProductCategoryModel.TYPE_ENUM.NONE,
+            },
+          },
+        ],
+      };
+    },
+    byCollectionId (collectionIds) {
+      return {
+        include: [
+          {
+            model: ProductCategoryModel,
+            as: 'collections',
+            required: true,
+            where: {
+              id: collectionIds,
+            },
+          },
+        ],
+      };
+    },
+    byGenderId (genderIds) {
+      return {
+        include: [
+          {
+            model: ProductCategoryModel,
+            as: 'genders',
+            required: true,
+            where: {
+              id: genderIds,
+            },
+          },
+        ],
+      };
+    },
+    byProductTypeId (productTypeIds) {
+      return {
+        include: [
+          {
+            model: ProductCategoryModel,
+            as: 'productType',
+            required: true,
+            where: {
+              id: productTypeIds,
+            },
+          },
+        ],
+      };
+    },
+    byFreeWord (freeWord) {
       return {
         where: {
-          status: ProductModel.STATUS_ENUM.ACTIVE,
+          name: { [Op.like]: `%${freeWord || ''}%` },
         },
+      };
+    },
+    byPriceRange (fromPrice, toPrice) {
+      const priceConditions = [];
+      if (fromPrice) {
+        priceConditions.push({
+          [Op.and]: [
+            Sequelize.where(Sequelize.literal('(SELECT MIN(sellPrice) from product_variants where product_variants.productId = ProductModel.id)'), {
+              [Op.gte]: fromPrice,
+            }),
+          ],
+        });
+      }
+      if (toPrice) {
+        priceConditions.push({
+          [Op.and]: [
+            Sequelize.where(Sequelize.literal('(SELECT MIN(sellPrice) from product_variants where product_variants.productId = ProductModel.id)'), {
+              [Op.lte]: toPrice,
+            }),
+          ],
+        });
+      }
+      return {
+        where: {
+          [Op.and]: priceConditions,
+        },
+      };
+    },
+    byColor (colorIds) {
+      return {
+        include: [
+          {
+            model: ProductOptionModel,
+            as: 'colors',
+            attributes: [],
+            required: true,
+            where: {
+              value: colorIds,
+            },
+          },
+        ],
+      };
+    },
+    bySize (sizeIds) {
+      return {
+        include: [
+          {
+            model: ProductOptionModel,
+            as: 'sizes',
+            attributes: [],
+            required: true,
+            where: {
+              value: sizeIds,
+            },
+          },
+        ],
+      };
+    },
+    withThumbnail () {
+      return {
+        include: [{
+          model: ProductMediaModel,
+          as: 'medias',
+          required: false,
+          where: {
+            isThumbnail: true,
+          },
+        }],
+      };
+    },
+    bySorting (orderConditions) {
+      return {
+        attributes: {
+          include: [
+            [
+              Sequelize.literal('(SELECT MIN(sellPrice) from product_variants where product_variants.productId = ProductModel.id)'),
+              'price',
+            ],
+          ],
+        },
+        order: orderConditions,
       };
     },
   }
@@ -162,8 +307,13 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
     this.hasMany(ProductCategoryRefModel, { as: 'categoryRefs', foreignKey: 'productId', onDelete: 'CASCADE', hooks: true });
     this.belongsToMany(ProductCategoryModel, { through: ProductCategoryRefModel, as: 'categories', foreignKey: 'productId', onDelete: 'CASCADE', hooks: true });
     this.hasMany(ProductOptionModel, { as: 'options', foreignKey: 'productId', onDelete: 'CASCADE', hooks: true });
+    this.hasMany(ProductOptionModel, { as: 'colors', foreignKey: 'productId', scope: { key: ProductOptionModel.TYPE_ENUM.color } });
+    this.hasMany(ProductOptionModel, { as: 'sizes', foreignKey: 'productId', scope: { key: ProductOptionModel.TYPE_ENUM.size } });
     this.hasMany(ProductVariantModel, { as: 'variants', foreignKey: 'productId', onDelete: 'CASCADE', hooks: true });
     this.hasMany(ProductMediaModel, { as: 'medias', foreignKey: 'productId', onDelete: 'CASCADE', hooks: true });
+    this.belongsToMany(ProductCategoryModel, { through: ProductCategoryRefModel, as: 'collections', foreignKey: 'productId', onDelete: 'CASCADE', hooks: true, scope: { type: ProductCategoryModel.TYPE_ENUM.COLLECTION } });
+    this.belongsTo(ProductCategoryModel, { as: 'genders', foreignKey: 'gender' });
+    this.belongsTo(ProductCategoryModel, { as: 'productType', foreignKey: 'typeProductId' });
   }
 }
 
