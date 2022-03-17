@@ -240,6 +240,94 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
         order: orderConditions,
       };
     },
+    bySkuCodeName (name) {
+      return {
+        where: { skuCode: { [Op.like]: `%${name || ''}%` } },
+      };
+    },
+    byStatus (status) {
+      return {
+        where: { status },
+      };
+    },
+    byName (name) {
+      return {
+        where: { name: { [Op.like]: `%${name || ''}%` } },
+      };
+    },
+    byCategoryName (name) {
+      return {
+        include: [
+          {
+            model: ProductCategoryRefModel,
+            as: 'categoryRefs',
+            required: true,
+            attributes: [],
+            where: {
+              productCategoryId: { [Op.in]: Sequelize.literal(`(SELECT id FROM product_categories WHERE type = "none" AND name LIKE '%${name}%')`) },
+            },
+          },
+        ],
+      };
+    },
+    byUnit (unit) {
+      return {
+        where: { unit },
+      };
+    },
+    byPrice (price) {
+      return {
+        where: {
+          [Op.and]: [
+            Sequelize.where(Sequelize.cast(Sequelize.literal('(SELECT MIN(sellPrice) from product_variants where product_variants.productId = ProductModel.id)'), 'SIGNED'), {
+              [Op.between]: [price, price],
+            }),
+          ],
+        },
+      };
+    },
+    withCollections () {
+      return {
+        include: [
+          {
+            model: ProductCategoryModel,
+            as: 'collections',
+          },
+        ],
+      };
+    },
+    withCategories () {
+      return {
+        include: [
+          {
+            model: ProductCategoryModel,
+            as: 'categories',
+            where: {
+              type: ProductCategoryModel.TYPE_ENUM.NONE,
+            },
+          },
+        ],
+      };
+    },
+    bySortOrder (orderConditions) {
+      orderConditions.push([Sequelize.literal('createdAt'), 'DESC']);
+      return {
+        attributes: {
+          include: [
+            [
+              Sequelize.literal('(SELECT MIN(sellPrice) from product_variants where product_variants.productId = ProductModel.id)'),
+              'price',
+            ],
+            [
+              Sequelize.literal('(SELECT product_categories.name FROM product_categories INNER JOIN product_category_refs ON ' +
+              'product_categories.id = product_category_refs.productCategoryId WHERE product_categories.type = "none" AND product_category_refs.productId = ProductModel.id LIMIT 1)'),
+              'category',
+            ],
+          ],
+        },
+        order: orderConditions,
+      };
+    },
   }
 
   public async deleteProductDetail () {
