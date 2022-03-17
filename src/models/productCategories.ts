@@ -17,7 +17,7 @@ class ProductCategoryModel extends Model<ProductCategoryInterface> implements Pr
 
   static readonly TYPE_ENUM = { NONE: 'none', COLLECTION: 'collection', GENDER: 'gender', PRODUCT_TYPE: 'productType' };
 
-  static readonly CREATABLE_PARAMETERS = ['parentId', 'name', 'thumbnail'];
+  static readonly CREATABLE_PARAMETERS = ['parentId', 'name', 'type'];
   static readonly UPDATABLE_PARAMETERS = ['parentId', 'name', 'thumbnail'];
 
   static readonly hooks: Partial<ModelHooks<ProductCategoryModel>> = { }
@@ -42,6 +42,21 @@ class ProductCategoryModel extends Model<ProductCategoryInterface> implements Pr
         where: { id },
       };
     },
+  }
+
+  public static async getHierarchy (type: any) {
+    const scopes: any = [];
+    if (type) scopes.push({ method: ['byType', type] });
+    const productCategories = await ProductCategoryModel.scope(scopes).findAll();
+    const parentNodes = productCategories.filter(productCategory => productCategory.parentId === null);
+    const result = parentNodes.map(node => node.levelDistribution(productCategories));
+    return result;
+  }
+
+  private levelDistribution (productCategories: ProductCategoryModel[]) {
+    const directChildren = productCategories.filter(productCategory => productCategory.parentId === this.id);
+    this.setDataValue('children', directChildren.map(child => child.levelDistribution(productCategories)));
+    return this;
   }
 
   public static async getCategoryIdsByParentId (categoryIds: string[]) {

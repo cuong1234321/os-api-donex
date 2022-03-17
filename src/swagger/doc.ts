@@ -13,7 +13,7 @@ const swaggerDefinition = {
   basePath: '/api',
   tags: [
     {
-      name: '[ADMIN] CATEGORY',
+      name: '[ADMIN] PRODUCT CATEGORY',
       description: 'Quản lý danh muc',
     },
     {
@@ -51,6 +51,10 @@ const swaggerDefinition = {
     {
       name: '[USER] PRODUCTS',
       description: 'Quản lý sản phẩm',
+    },
+    {
+      name: '[USER] Homepage',
+      description: 'Trang chủ',
     },
   ],
   securityDefinitions: {
