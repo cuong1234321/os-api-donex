@@ -5,6 +5,7 @@ import AddressBookRouter from './AddressBooks';
 import AccountsRouter from './Accounts';
 import AuthenticationOtpsRouter from './AuthenticationOtps';
 import PasswordRouter from './Passwords';
+import ProductRouter from './Products';
 
 const router = Router();
 
@@ -13,5 +14,6 @@ router.use('/address_books', userPassport.authenticate('jwt', { session: false }
 router.use('/accounts', AccountsRouter);
 router.use('/authentication_otps', AuthenticationOtpsRouter);
 router.use('/passwords', PasswordRouter);
+router.use('/products', ProductRouter);
 
 export default router;
