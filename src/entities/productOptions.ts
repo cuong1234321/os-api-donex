@@ -1,3 +1,4 @@
+import settings from '@configs/settings';
 import { DataTypes } from 'sequelize';
 
 const ProductOptionEntity = {
@@ -17,6 +18,12 @@ const ProductOptionEntity = {
   thumbnail: {
     type: DataTypes.TEXT,
     allowNull: true,
+    get (): string {
+      const thumbnail = this.getDataValue('thumbnail') !== null
+        ? `${settings.imageStorageHost}/${this.getDataValue('thumbnail')}`
+        : null;
+      return thumbnail;
+    },
   },
   optionMappingId: {
     type: DataTypes.VIRTUAL,
