@@ -108,6 +108,31 @@ class ProductController {
     }
   }
 
+  public async show (req: Request, res: Response) {
+    try {
+      const product = await ProductModel.scope([
+        { method: ['byId', req.params.productId] },
+        'withCollections',
+        'withCategories',
+        'withProductType',
+        'withGender',
+      ]).findOne();
+      if (!product) {
+        return sendError(res, 404, NoData);
+      }
+      const options = await ProductOptionModel.scope([
+        { method: ['byProductId', product.id] },
+        'withValueName',
+      ]).findAll();
+      product.setDataValue('options', options);
+      product.setDataValue('medias', await product.getMedias());
+      product.setDataValue('variants', await product.getVariantDetail());
+      sendSuccess(res, { product });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
   public async inActive (req: Request, res: Response) {
     try {
       const product = await ProductModel.scope([
