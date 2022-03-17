@@ -24,7 +24,20 @@ class ProductCategoryModel extends Model<ProductCategoryInterface> implements Pr
 
   public getChildren: HasManyGetAssociationsMixin<ProductCategoryModel>;
 
-  static readonly scopes: ModelScopeOptions = { }
+  static readonly scopes: ModelScopeOptions = {
+    byType (type) {
+      return {
+        where: { type },
+      };
+    },
+    notChildren () {
+      return {
+        where: {
+          parentId: null,
+        },
+      };
+    },
+  }
 
   public static async getCategoryIdsByParentId (categoryIds: string[]) {
     const categories = await ProductCategoryModel.findAll();

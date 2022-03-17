@@ -95,6 +95,25 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
         },
       };
     },
+    isFlashSale () {
+      return {
+        where: {
+          inFlashSale: true,
+        },
+      };
+    },
+    isHighlight () {
+      return {
+        where: {
+          isHighlight: true,
+        },
+      };
+    },
+    newest () {
+      return {
+        order: [['createdAt', 'DESC']],
+      };
+    },
     byCategory (categoryIds) {
       return {
         include: [
@@ -327,6 +346,18 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
             },
           },
         ],
+      };
+    },
+    withPrice () {
+      return {
+        attributes: {
+          include: [
+            [
+              Sequelize.literal('(SELECT MIN(sellPrice) from product_variants where product_variants.productId = ProductModel.id)'),
+              'price',
+            ],
+          ],
+        },
       };
     },
     bySortOrder (orderConditions) {
