@@ -8,6 +8,7 @@ interface CollaboratorInterface {
   status: string,
   paperProofFront: string;
   paperProofBack: string;
+  rejectionReason: string;
   createdAt?: Date,
   updatedAt?: Date,
   deletedAt: Date,

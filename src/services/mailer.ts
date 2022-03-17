@@ -6,6 +6,7 @@ import Mail from 'nodemailer/lib/mailer';
 import handlebars from 'handlebars';
 import settings from '@configs/settings';
 import AdminInterface from '@interfaces/admins';
+import CollaboratorModel from '@models/collaborators';
 
 class MailerService {
   public static async forgotPassWord (admin: AdminInterface, otp: string) {
@@ -21,6 +22,38 @@ class MailerService {
       expireTime: settings.forgotPasswordTokenExpiresIn * 24,
     };
     const templateName = 'forgotPasswordMailer';
+    await this.sendMail(mailerOptions, templateName, templateArgs);
+  }
+
+  public static async sendCollaboratorLoginInfo (collaborator: any, password: string) {
+    const mailerOptions: Mail.Options = {
+      from: 'Admin',
+      to: collaborator.user.email,
+      subject: '[DONEX-SPORT] Thông tin đăng nhập',
+    };
+    const templateArgs = {
+      username: collaborator.user.username,
+      password: password,
+      accountType: collaborator.type === CollaboratorModel.TYPE_ENUM.COLLABORATOR ? 'cộng tác viên' : 'đại lý',
+      url: `${process.env.SELLER_HOST}`,
+      name: collaborator.user.fullName,
+    };
+    const templateName = 'sendCollaboratorLoginInfo';
+    await this.sendMail(mailerOptions, templateName, templateArgs);
+  }
+
+  public static async sendRejectCollaboratorRequest (collaborator: any) {
+    const mailerOptions: Mail.Options = {
+      from: 'Admin',
+      to: collaborator.user.email,
+      subject: '[DONEX-SPORT] Từ chối đăng ký',
+    };
+    const templateArgs = {
+      accountType: collaborator.type === CollaboratorModel.TYPE_ENUM.COLLABORATOR ? 'cộng tác viên' : 'đại lý',
+      rejectionReason: collaborator.rejectionReason,
+      name: collaborator.user.fullName,
+    };
+    const templateName = 'sendRejectCollaboratorRequest';
     await this.sendMail(mailerOptions, templateName, templateArgs);
   }
 

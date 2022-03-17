@@ -30,6 +30,10 @@ const collaboratorEntity = {
     type: DataTypes.STRING(255),
     allowNull: true,
   },
+  rejectionReason: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },

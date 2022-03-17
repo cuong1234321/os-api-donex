@@ -279,4 +279,68 @@ router.get('/:collaboratorId', CollaboratorsController.show);
  */
 router.delete('/:collaboratorId', CollaboratorsController.delete);
 
+/**
+ * @openapi
+ * /a/collaborators/{collaboratorId}/verify:
+ *   patch:
+ *     tags:
+ *      - "[ADMIN] Collaborators"
+ *     summary: Duyệt đơn ĐK TK CTV/ĐL/NPP
+ *     parameters:
+ *      - in: path
+ *        name: "collaboratorId"
+ *        description: "collaboratorId"
+ *        type: number
+ *      - in: "body"
+ *        name: "body"
+ *        description: "thông tin CTV"
+ *        schema:
+ *          type: "object"
+ *          properties:
+ *            parentId:
+ *              type: "number"
+ *            username:
+ *              type: "string"
+ *            password:
+ *              type: "string"
+ *     responses:
+ *       200:
+ *         description: Return data.
+ *       500:
+ *         description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.patch('/:collaboratorId/verify', CollaboratorsController.verify);
+
+/**
+  * @openapi
+  * /a/collaborators/{collaboratorId}/reject:
+  *   patch:
+  *     tags:
+  *      - "[ADMIN] Collaborators"
+  *     summary: Từ chối đơn ĐK TK CTV/ĐL/NPP
+  *     parameters:
+  *      - in: path
+  *        name: "collaboratorId"
+  *        description: "collaboratorId"
+  *        type: number
+  *      - in: "body"
+  *        name: "body"
+  *        description: "thông tin CTV"
+  *        schema:
+  *          type: "object"
+  *          properties:
+  *            rejectionReason:
+  *              type: "string"
+  *     responses:
+  *       200:
+  *         description: Return data.
+  *       500:
+  *         description: Lỗi không xác định
+  *     security:
+  *      - Bearer: []
+  */
+router.patch('/:collaboratorId/reject', CollaboratorsController.reject);
+
 export default router;
