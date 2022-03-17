@@ -72,6 +72,30 @@ const router = Router();
  */
 
 router.get('/', ProductsController.index);
+
+/**
+ * @openapi
+ * /u/products/verify:
+ *   get:
+ *     tags:
+ *      - "[USER] PRODUCTS"
+ *     summary: Xac thuc sản phẩm
+ *     parameters:
+ *      - in: "query"
+ *        name: "sku"
+ *        type: "string"
+ *     responses:
+ *       200:
+ *         description: "Upload success"
+ *       404:
+ *         description: Không tìm thấy dữ liệu
+ *       500:
+ *        description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/verify', ProductsController.verifyProduct);
+
 /**
  * @openapi
  * /u/products/{productId}:
