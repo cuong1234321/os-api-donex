@@ -235,4 +235,26 @@ router.patch('/:collaboratorId/active', CollaboratorsController.active);
  */
 router.patch('/:collaboratorId/inactive', CollaboratorsController.inactive);
 
+/**
+ * @openapi
+ * /a/collaborators/{collaboratorId}:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] Collaborators"
+ *     summary: Lấy thông tin CTV/DL/NPP
+ *     parameters:
+ *      - in: path
+ *        name: "collaboratorId"
+ *        description: "collaboratorId"
+ *        type: number
+ *     responses:
+ *       200:
+ *         description: Return data.
+ *       500:
+ *         description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/:collaboratorId', CollaboratorsController.show);
+
 export default router;
