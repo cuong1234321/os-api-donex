@@ -1,6 +1,5 @@
-import ProductController from '@controllers/api/user/ProductsController';
+import ProductsController from '@controllers/api/user/ProductsController';
 import { Router } from 'express';
-
 const router = Router();
 
 /**
@@ -72,6 +71,28 @@ const router = Router();
  *      - Bearer: []
  */
 
-router.get('/', ProductController.index);
+router.get('/', ProductsController.index);
+/**
+ * @openapi
+ * /u/products/{productId}:
+ *   get:
+ *     tags:
+ *      - "[USER] PRODUCTS"
+ *     summary: Thông tin sản phẩm
+ *     parameters:
+ *      - in: "path"
+ *        name: "productId"
+ *        type: "integer"
+ *     responses:
+ *       200:
+ *         description: "Upload success"
+ *       404:
+ *         description: Không tìm thấy dữ liệu
+ *       500:
+ *        description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/:productId', ProductsController.show);
 
 export default router;

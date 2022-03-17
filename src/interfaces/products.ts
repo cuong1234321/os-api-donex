@@ -1,3 +1,7 @@
+import ProductMediaModel from '@models/productMedias';
+import ProductOptionModel from '@models/productOptions';
+import ProductVariantModel from '@models/productVariants';
+
 interface ProductInterface {
   id: number;
   name: string;
@@ -24,6 +28,10 @@ interface ProductInterface {
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;
+
+  options?: ProductOptionModel[];
+  medias?: ProductMediaModel[];
+  variants?: ProductVariantModel[];
 };
 
 export default ProductInterface;

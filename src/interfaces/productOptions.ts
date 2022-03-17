@@ -9,6 +9,8 @@ interface ProductOptionInterface {
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;
+
+  valueName?: any;
 };
 
 export default ProductOptionInterface;

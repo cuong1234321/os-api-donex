@@ -1,6 +1,6 @@
 import ProductEntity from '@entities/products';
 import ProductInterface from '@interfaces/products';
-import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, Transaction } from 'sequelize';
+import { BelongsToManyGetAssociationsMixin, HasManyGetAssociationsMixin, Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, Transaction } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import MColorModel from './mColors';
 import MSizeModel from './mSizes';
@@ -270,6 +270,16 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
         ],
       };
     },
+    withCollections () {
+      return {
+        include: [
+          {
+            model: ProductCategoryModel,
+            as: 'collections',
+          },
+        ],
+      };
+    },
     byUnit (unit) {
       return {
         where: { unit },
@@ -286,12 +296,22 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
         },
       };
     },
-    withCollections () {
+    withGender () {
       return {
         include: [
           {
             model: ProductCategoryModel,
-            as: 'collections',
+            as: 'genders',
+          },
+        ],
+      };
+    },
+    withProductType () {
+      return {
+        include: [
+          {
+            model: ProductCategoryModel,
+            as: 'productType',
           },
         ],
       };
@@ -328,6 +348,31 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
         order: orderConditions,
       };
     },
+  }
+
+  public getVariants: HasManyGetAssociationsMixin<ProductVariantModel>;
+  public getMedias: HasManyGetAssociationsMixin<ProductMediaModel>;
+  public getCategories: BelongsToManyGetAssociationsMixin<ProductCategoryModel>;
+
+  public async getVariantDetail () {
+    const variants = await this.getVariants({
+      include: [
+        { model: ProductOptionModel, as: 'options' },
+      ],
+    });
+    const sizes = await MSizeModel.findAll();
+    const colors = await MColorModel.findAll();
+    for (const variant of variants) {
+      variant.getDataValue('options').forEach((option: any) => {
+        if (option.key === ProductOptionModel.TYPE_ENUM.color) {
+          option.setDataValue('valueName', colors.find((record: any) => record.id === option.value).colorCode);
+        }
+        if (option.key === ProductOptionModel.TYPE_ENUM.size) {
+          option.setDataValue('valueName', sizes.find((record: any) => record.id === option.value).code);
+        }
+      });
+    }
+    return variants;
   }
 
   public async deleteProductDetail () {

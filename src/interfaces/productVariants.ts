@@ -1,3 +1,5 @@
+import ProductOptionModel from '@models/productOptions';
+
 interface ProductVariantInterface {
   id: number;
   productId: number;
@@ -12,6 +14,8 @@ interface ProductVariantInterface {
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;
+
+  options?: ProductOptionModel[];
 };
 
 export default ProductVariantInterface;
