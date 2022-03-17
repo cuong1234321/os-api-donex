@@ -257,4 +257,26 @@ router.patch('/:collaboratorId/inactive', CollaboratorsController.inactive);
  */
 router.get('/:collaboratorId', CollaboratorsController.show);
 
+/**
+ * @openapi
+ * /a/collaborators/{collaboratorId}:
+ *   delete:
+ *     tags:
+ *      - "[ADMIN] Collaborators"
+ *     summary: Xóa TK CTV/DL/NPP
+ *     parameters:
+ *      - in: path
+ *        name: "collaboratorId"
+ *        description: "collaboratorId"
+ *        type: "string"
+ *     responses:
+ *       200:
+ *         description: Return data.
+ *       500:
+ *         description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.delete('/:collaboratorId', CollaboratorsController.delete);
+
 export default router;

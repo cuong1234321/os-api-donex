@@ -78,6 +78,12 @@ class UserModel extends Model<UserInterface> implements UserInterface {
     },
   }
 
+  public async checkStatus (status: string) {
+    if (this.status !== status) {
+      throw new ValidationErrorItem(`status is not ${status}.`, 'status', 'validStatus', this.status);
+    }
+  }
+
   public async validPassword (password: string) {
     try {
       return await bcrypt.compare(password, this.password);
