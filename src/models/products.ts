@@ -379,6 +379,17 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
         order: orderConditions,
       };
     },
+    verifyProduct (code) {
+      return {
+        where: {
+          [Op.or]: [
+            { barCode: code },
+            { skuCode: code },
+            { id: { [Op.in]: Sequelize.literal(`(SELECT productId FROM product_variants WHERE skuCode = '${code}')`) } },
+          ],
+        },
+      };
+    },
   }
 
   public getVariants: HasManyGetAssociationsMixin<ProductVariantModel>;

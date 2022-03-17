@@ -69,6 +69,21 @@ class ProductController {
       sendError(res, 500, error.message, error);
     }
   }
+
+  public async verifyProduct (req: Request, res: Response) {
+    try {
+      const { sku } = req.query;
+      const product = await ProductModel.scope([
+        { method: ['verifyProduct', sku] },
+        'isActive',
+        'withThumbnail',
+      ]).findOne();
+      if (!product) { return sendError(res, 404, NoData); }
+      sendSuccess(res, product);
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
 }
 
 export default new ProductController();
