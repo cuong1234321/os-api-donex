@@ -110,6 +110,46 @@ class CollaboratorController {
       sendError(res, 500, error.message, error);
     }
   }
+
+  public async active (req: Request, res: Response) {
+    try {
+      const { collaboratorId } = req.params;
+      const collaborator = await CollaboratorModel.findByPk(collaboratorId);
+      if (!collaborator || collaborator.status !== CollaboratorModel.STATUS_ENUM.INACTIVE) return sendError(res, 404, NoData);
+      await collaborator.update({
+        status: CollaboratorModel.STATUS_ENUM.ACTIVE,
+      });
+      await collaborator.reload({
+        include: {
+          model: UserModel,
+          as: 'user',
+        },
+      });
+      sendSuccess(res, { collaborator });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async inactive (req: Request, res: Response) {
+    try {
+      const { collaboratorId } = req.params;
+      const collaborator = await CollaboratorModel.findByPk(collaboratorId);
+      if (!collaborator || collaborator.status !== CollaboratorModel.STATUS_ENUM.ACTIVE) return sendError(res, 404, NoData);
+      await collaborator.update({
+        status: CollaboratorModel.STATUS_ENUM.INACTIVE,
+      });
+      await collaborator.reload({
+        include: {
+          model: UserModel,
+          as: 'user',
+        },
+      });
+      sendSuccess(res, { collaborator });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
 }
 
 export default new CollaboratorController();

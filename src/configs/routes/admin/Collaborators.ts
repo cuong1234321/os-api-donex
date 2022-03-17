@@ -191,4 +191,48 @@ router.post('/:collaboratorId/upload_paper_proof',
  */
 router.patch('/:collaboratorId', CollaboratorsController.update);
 
+/**
+ * @openapi
+ * /a/collaborators/{collaboratorId}/active:
+ *   patch:
+ *     tags:
+ *      - "[ADMIN] Collaborators"
+ *     summary: Mở khóa TK CTV/DL/NPP
+ *     parameters:
+ *      - in: path
+ *        name: "collaboratorId"
+ *        description: "collaboratorId"
+ *        type: "string"
+ *     responses:
+ *       200:
+ *         description: Return data.
+ *       500:
+ *         description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.patch('/:collaboratorId/active', CollaboratorsController.active);
+
+/**
+ * @openapi
+ * /a/collaborators/{collaboratorId}/inactive:
+ *   patch:
+ *     tags:
+ *      - "[ADMIN] Collaborators"
+ *     summary: Khóa TK CTV/DL/NPP
+ *     parameters:
+ *      - in: path
+ *        name: "collaboratorId"
+ *        description: "collaboratorId"
+ *        type: "string"
+ *     responses:
+ *       200:
+ *         description: Return data.
+ *       500:
+ *         description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.patch('/:collaboratorId/inactive', CollaboratorsController.inactive);
+
 export default router;
