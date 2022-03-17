@@ -91,7 +91,7 @@ router.get('/', CollaboratorsController.index);
  *     security:
  *      - Bearer: []
  */
-router.post('/create', CollaboratorsController.create);
+router.post('/', CollaboratorsController.create);
 
 /**
  * @openapi
@@ -131,5 +131,64 @@ router.post('/create', CollaboratorsController.create);
  */
 router.post('/:collaboratorId/upload_paper_proof',
   withoutSavingUploader.any(), CollaboratorsController.uploadPaperProof);
+
+/**
+ * @openapi
+ * /a/collaborators/{collaboratorId}:
+ *   patch:
+ *     tags:
+ *      - "[ADMIN] Collaborators"
+ *     summary: Cập nhật TK CTV/ĐL/NPP
+ *     parameters:
+ *      - in: path
+ *        name: "collaboratorId"
+ *        description: "collaboratorId"
+ *        type: "string"
+ *      - in: "body"
+ *        name: "body"
+ *        description: "thông tin CTV"
+ *        schema:
+ *          type: "object"
+ *          properties:
+ *            fullName:
+ *              type: "string"
+ *            parentId:
+ *              type: "number"
+ *            dateOfBirth:
+ *              type: "string"
+ *              description: "YYYY-DD-MM"
+ *            phoneNumber:
+ *              type: "string"
+ *            username:
+ *              type: "string"
+ *            password:
+ *              type: "string"
+ *            email:
+ *              type: "string"
+ *            provinceId:
+ *              type: number
+ *            districtId:
+ *              type: number
+ *            wardId:
+ *              type: number
+ *            address:
+ *              type: "string"
+ *            defaultRank:
+ *              type: number
+ *            type:
+ *              type: "string"
+ *              enum:
+ *                 - collaborator
+ *                 - agency
+ *                 - distributor
+ *     responses:
+ *       200:
+ *         description: Return data.
+ *       500:
+ *         description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.patch('/:collaboratorId', CollaboratorsController.update);
 
 export default router;

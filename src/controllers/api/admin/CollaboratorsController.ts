@@ -6,6 +6,7 @@ import CollaboratorModel from '@models/collaborators';
 import UserModel from '@models/users';
 import ImageUploaderService from '@services/imageUploader';
 import settings from '@configs/settings';
+import { NoData } from '@libs/errors';
 
 class CollaboratorController {
   public async index (req: Request, res: Response) {
@@ -71,6 +72,32 @@ class CollaboratorController {
       await collaborator.update({
         paperProofFront: paperProofFront,
         paperProofBack: paperProofBack,
+      });
+      await collaborator.reload({
+        include: {
+          model: UserModel,
+          as: 'user',
+        },
+      });
+      sendSuccess(res, { collaborator });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async update (req: Request, res: Response) {
+    try {
+      const { collaboratorId } = req.params;
+      const collaborator = await CollaboratorModel.findByPk(collaboratorId);
+      if (!collaborator) return sendError(res, 404, NoData);
+      const user = await UserModel.findByPk(collaborator.userId);
+      if (!user) return sendError(res, 404, NoData);
+      const userParams = req.parameters.permit(CollaboratorModel.INFORMATION_PARAMETERS).value();
+      const collaboratorParams = req.parameters.permit(CollaboratorModel.UPDATABLE_PARAMETERS).value();
+      if (collaboratorParams.type === CollaboratorModel.TYPE_ENUM.DISTRIBUTOR) collaboratorParams.parentId = null;
+      await sequelize.transaction(async (transaction: Transaction) => {
+        await user.update(userParams, { transaction });
+        await collaborator.update(collaboratorParams, { transaction });
       });
       await collaborator.reload({
         include: {
