@@ -5,8 +5,19 @@ import MDistrictModel from '@models/mDistricts';
 import MWardModel from '@models/mWards';
 import MColorModel from '@models/mColors';
 import MSizeModel from '@models/mSizes';
+import ProductCategoryModel from '@models/productCategories';
 
 class SelectionController {
+  public async productCategories (req: Request, res: Response) {
+    try {
+      const { type } = req.query;
+      const productCategories = await ProductCategoryModel.getHierarchy(type);
+      sendSuccess(res, { productCategories });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
   public async districtSelections (req: Request, res: Response) {
     try {
       const districts = await MDistrictModel.scope([{ method: ['byProvince', req.query.provinceId] }]).findAll();

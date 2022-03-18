@@ -1,5 +1,5 @@
 
-interface AdminInterface {
+interface AddressBookInterface {
   id: number,
   userId: number;
   fullName: string,
@@ -13,4 +13,4 @@ interface AdminInterface {
   updatedAt?: Date,
 };
 
-export default AdminInterface;
+export default AddressBookInterface;

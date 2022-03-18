@@ -5,6 +5,7 @@ import UserModel from '@models/users';
 import sequelize from '@initializers/sequelize';
 import { Transaction } from 'sequelize/types';
 import ImageUploaderService from '@services/imageUploader';
+import { NoData } from '@libs/errors';
 
 class CollaboratorController {
   public async register (req: Request, res: Response) {
@@ -52,6 +53,36 @@ class CollaboratorController {
         },
       });
       sendSuccess(res, { collaborator });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async index (req: Request, res: Response) {
+    try {
+      const collaborators = await CollaboratorModel.scope([
+        { method: ['byStatus', CollaboratorModel.STATUS_ENUM.ACTIVE] },
+        { method: ['byType', req.query.type] },
+        'withoutChildren',
+        'withUser',
+      ]).findAll();
+      sendSuccess(res, collaborators);
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async show (req: Request, res: Response) {
+    try {
+      const collaborator = await CollaboratorModel.scope([
+        { method: ['byId', req.params.collaboratorId] },
+        { method: ['byStatus', CollaboratorModel.STATUS_ENUM.ACTIVE] },
+        'withoutChildren',
+        'withUser',
+        'addressInfo',
+      ]).findOne();
+      if (!collaborator) { return sendError(res, 404, NoData); }
+      sendSuccess(res, collaborator);
     } catch (error) {
       sendError(res, 500, error.message, error);
     }

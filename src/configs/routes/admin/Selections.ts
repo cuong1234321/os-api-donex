@@ -110,4 +110,30 @@ router.get('/sizes', SelectionController.sizeSelections);
 
 router.get('/colors', SelectionController.colorSelections);
 
+/**
+ * @openapi
+ * /a/selections/product_categories:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] SELECTION"
+ *     summary: danh sách danh mục
+ *     parameters:
+ *      - in: "query"
+ *        name: type
+ *        description: "Loai danh muc"
+ *        enum:
+ *         - none
+ *         - gender
+ *         - collection
+ *         - productType
+ *     responses:
+ *       200:
+ *         description: "Upload success"
+ *       500:
+ *         description: "Upload failed"
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/', SelectionController.productCategories);
+
 export default router;

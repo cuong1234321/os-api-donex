@@ -76,6 +76,10 @@ const swaggerDefinition = {
       name: '[USER] Homepage',
       description: 'Trang chủ',
     },
+    {
+      name: '[USER] Collaborators',
+      description: 'Quan ly ctv/dl',
+    },
   ],
   securityDefinitions: {
     Bearer: {
