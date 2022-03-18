@@ -6,6 +6,40 @@ const router = Router();
 /**
  * @openapi
  * /a/news:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] News"
+ *     summary: Lấy danh sách tin tức
+ *     parameters:
+ *      - in: query
+ *        name: "page"
+ *        description: "page"
+ *        type: "string"
+ *      - in: query
+ *        name: "status"
+ *        description: "status"
+ *        type: "string"
+ *      - in: query
+ *        name: "categoryId"
+ *        description: "Danh mục"
+ *        type: "string"
+ *      - in: query
+ *        name: "freeWord"
+ *        description: "Tìm kiếm theo tên"
+ *        type: "string"
+ *     responses:
+ *       200:
+ *         description: "OK"
+ *       500:
+ *         description: "Internal error"
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/', NewsController.index);
+
+/**
+ * @openapi
+ * /a/news:
  *   post:
  *     tags:
  *      - "[ADMIN] News"
@@ -26,6 +60,9 @@ const router = Router();
  *            content:
  *              type: "string"
  *              description: "Nội dung tin tức"
+ *            publicAt:
+ *              type: "string"
+ *              description: "Ngày giờ kích hoạt"
  *     responses:
  *       200:
  *         description: Return data.

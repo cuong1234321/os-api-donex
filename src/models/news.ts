@@ -1,6 +1,6 @@
 import NewsEntity from '@entities/news';
 import NewsInterface from '@interfaces/news';
-import { Model, ModelScopeOptions, Sequelize } from 'sequelize';
+import { Model, ModelScopeOptions, Op, Sequelize } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 
 class NewsModel extends Model<NewsInterface> implements NewsInterface {
@@ -22,6 +22,21 @@ class NewsModel extends Model<NewsInterface> implements NewsInterface {
   static readonly hooks: Partial<ModelHooks<NewsModel>> = { }
 
   static readonly scopes: ModelScopeOptions = {
+    byStatus (status) {
+      return {
+        where: { status },
+      };
+    },
+    byCategory (categoryId) {
+      return {
+        where: { categoryId },
+      };
+    },
+    byFreeWord (freeWord) {
+      return {
+        where: { title: { [Op.like]: `%${freeWord || ''}%` } },
+      };
+    },
   }
 
   public static initialize (sequelize: Sequelize) {
