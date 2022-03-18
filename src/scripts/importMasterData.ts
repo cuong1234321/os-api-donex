@@ -2,7 +2,7 @@ import { importMasterData } from '../database/masters/masterImporter';
 import { importAdministrativeMaps } from '../database/masters/importAdministrativeMaps';
 
 const execute = async () => {
-  for (const tableName of ['m_colors', 'm_sizes', 'm_forms']) {
+  for (const tableName of ['m_colors', 'm_sizes', 'm_forms', 'm_user_types']) {
     await importMasterData(tableName);
   }
   await importAdministrativeMaps();
