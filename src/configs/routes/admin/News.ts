@@ -138,4 +138,52 @@ router.patch('/:newsId', NewsController.update);
  */
 router.get('/:newsId', NewsController.show);
 
+/**
+ * @openapi
+ * /a/news/{newsId}/active:
+ *   patch:
+ *     tags:
+ *      - "[ADMIN] News"
+ *     summary: active tin tức
+ *     parameters:
+ *      - in: path
+ *        name: "newsId"
+ *        description: "newsId"
+ *        type: number
+ *     responses:
+ *       200:
+ *         description: Return data.
+ *       404:
+ *         description: Không tìm thấy dữ liệu
+ *       500:
+ *         description: Error can't get data.
+ *     security:
+ *      - Bearer: []
+ */
+router.patch('/:newsId/active', NewsController.active);
+
+/**
+ * @openapi
+ * /a/news/{newsId}/inactive:
+ *   patch:
+ *     tags:
+ *      - "[ADMIN] News"
+ *     summary: active tin tức
+ *     parameters:
+ *      - in: path
+ *        name: "newsId"
+ *        description: "newsId"
+ *        type: number
+ *     responses:
+ *       200:
+ *         description: Return data.
+ *       404:
+ *         description: Không tìm thấy dữ liệu
+ *       500:
+ *         description: Error can't get data.
+ *     security:
+ *      - Bearer: []
+ */
+router.patch('/:newsId/inactive', NewsController.inactive);
+
 export default router;

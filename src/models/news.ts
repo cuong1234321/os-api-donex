@@ -1,6 +1,7 @@
 import NewsEntity from '@entities/news';
 import NewsInterface from '@interfaces/news';
 import { Model, ModelScopeOptions, Op, Sequelize } from 'sequelize';
+import dayjs from 'dayjs';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 
 class NewsModel extends Model<NewsInterface> implements NewsInterface {
@@ -19,7 +20,16 @@ class NewsModel extends Model<NewsInterface> implements NewsInterface {
   public static readonly CREATABLE_PARAMETERS = ['title', 'content', 'categoryNewsId']
   public static readonly UPDATABLE_PARAMETERS = ['title', 'content', 'categoryNewsId']
 
-  static readonly hooks: Partial<ModelHooks<NewsModel>> = { }
+  static readonly hooks: Partial<ModelHooks<NewsModel>> = {
+    beforeSave (record: any) {
+      if (record.dataValues.status === NewsModel.STATUS_ENUM.ACTIVE && record._previousDataValues.status !== NewsModel.STATUS_ENUM.ACTIVE) {
+        record.publicAt = dayjs();
+      }
+      if (record.dataValues.status === NewsModel.STATUS_ENUM.INACTIVE && record._previousDataValues.status !== NewsModel.STATUS_ENUM.INACTIVE) {
+        record.publicAt = null;
+      }
+    },
+  }
 
   static readonly scopes: ModelScopeOptions = {
     byStatus (status) {
