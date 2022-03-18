@@ -8,6 +8,8 @@ interface ProductCategoryInterface {
   type: string;
   createdAt?: Date;
   updatedAt?: Date;
+
+  children?: ProductCategoryInterface[];
 };
 
 export default ProductCategoryInterface;
