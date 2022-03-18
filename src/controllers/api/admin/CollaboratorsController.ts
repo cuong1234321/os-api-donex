@@ -7,6 +7,7 @@ import UserModel from '@models/users';
 import ImageUploaderService from '@services/imageUploader';
 import settings from '@configs/settings';
 import { NoData } from '@libs/errors';
+import MailerService from '@services/mailer';
 
 class CollaboratorController {
   public async index (req: Request, res: Response) {
@@ -172,6 +173,69 @@ class CollaboratorController {
       await collaborator.checkStatus(CollaboratorModel.STATUS_ENUM.INACTIVE);
       await collaborator.destroy();
       sendSuccess(res, { });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async verify (req: Request, res: Response) {
+    try {
+      const { collaboratorId } = req.params;
+      const collaborator = await CollaboratorModel.findByPk(collaboratorId);
+      if (!collaborator) return sendError(res, 404, NoData);
+      collaborator.checkStatus(CollaboratorModel.STATUS_ENUM.PENDING);
+      const user = await UserModel.findByPk(collaborator.userId);
+      if (!user) return sendError(res, 404, NoData);
+      const { username, password, defaultRank, parentId } = req.body;
+      const userParams = {
+        username,
+        password,
+        defaultRank,
+        status: UserModel.STATUS_ENUM.ACTIVE,
+      };
+      const collaboratorParams = {
+        parentId,
+        status: CollaboratorModel.STATUS_ENUM.ACTIVE,
+      };
+      await sequelize.transaction(async (transaction: Transaction) => {
+        await user.update(userParams, { transaction });
+        await collaborator.update(collaboratorParams, { transaction });
+      });
+      await collaborator.reload({
+        include: {
+          model: UserModel,
+          as: 'user',
+        },
+      });
+      await MailerService.sendCollaboratorLoginInfo(collaborator, userParams.password);
+      sendSuccess(res, {});
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async reject (req: Request, res: Response) {
+    try {
+      const { collaboratorId } = req.params;
+      const collaborator = await CollaboratorModel.findByPk(collaboratorId);
+      if (!collaborator) return sendError(res, 404, NoData);
+      collaborator.checkStatus(CollaboratorModel.STATUS_ENUM.PENDING);
+      const user = await UserModel.findByPk(collaborator.userId);
+      if (!user) return sendError(res, 404, NoData);
+      const { rejectionReason } = req.body;
+      const collaboratorParams = {
+        rejectionReason,
+        status: CollaboratorModel.STATUS_ENUM.REJECTED,
+      };
+      await collaborator.update(collaboratorParams);
+      await collaborator.reload({
+        include: {
+          model: UserModel,
+          as: 'user',
+        },
+      });
+      MailerService.sendRejectCollaboratorRequest(collaborator);
+      sendSuccess(res, {});
     } catch (error) {
       sendError(res, 500, error.message, error);
     }

@@ -12,6 +12,7 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
   public status: string;
   public paperProofFront: string;
   public paperProofBack: string;
+  public rejectionReason: string;
   public createdAt?: Date;
   public updatedAt?: Date;
   public deletedAt: Date;

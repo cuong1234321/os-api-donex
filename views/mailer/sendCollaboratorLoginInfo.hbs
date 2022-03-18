@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Static Template</title>
+  </head>
+
+  <body
+    style="
+      background-color: #ddd;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    "
+  >
+    <table style="width: 650px;" cellspacing="0" cellpadding="0" align="center">
+      <thead></thead>
+      <thead></thead>
+      <thead></thead>
+      <tbody>
+        <tr style="height: 15vh; width: 100%; background-color: blue;">
+          <td />
+          <td />
+          <td />
+        </tr>
+
+        <tr>
+          <td style="text-align: center; width: 100%;">
+            <div
+              style="
+                margin-top: -50px;
+                text-align: start;
+                border: 15px;
+                padding: 20px;
+                background-color: #fff;
+              "
+            >
+            <div> Xin chào {{name}}, </div>
+            <div> Yêu cầu đăng ký tài khoản {{accountType}} của bạn đã được phê duyệt. </div>
+            <div> Thông tin đăng nhập: </div>
+            <div> Username: {{username}}</div>
+            <div> Password: {{password}}</div>
+            <div> Nhấn vào
+               <a
+                href="{{url}}"
+              > đây</a> để đến hệ thống {{accountType}}.
+            </div>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </body>
+</html>
