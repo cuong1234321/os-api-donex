@@ -1,6 +1,6 @@
 import UserEntity from '@entities/users';
 import UserInterface from '@interfaces/users';
-import { Model, ModelScopeOptions, ModelValidateOptions, Sequelize, ValidationErrorItem } from 'sequelize';
+import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
@@ -80,6 +80,24 @@ class UserModel extends Model<UserInterface> implements UserInterface {
     byStatus (status) {
       return {
         where: { status },
+      };
+    },
+    withOutCollaborator () {
+      return {
+        where: {
+          id: {
+            [Op.notIn]: Sequelize.literal('(SELECT userId FROM collaborators WHERE deletedAt IS NULL)'),
+          },
+        },
+      };
+    },
+    byCollaboratorType (type) {
+      return {
+        include: {
+          model: CollaboratorModel,
+          as: 'collaborator',
+          where: { type },
+        },
       };
     },
   }

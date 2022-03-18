@@ -1,6 +1,7 @@
 import { Model, ModelScopeOptions, Sequelize } from 'sequelize';
 import MarketingNotificationTargetsEntity from '@entities/marketingNotificationTargets';
 import MarketingNotificationTargetsInterface from '@interfaces/marketingNotificationTargets';
+import MUserTypesModel from './mUserTypes';
 
 class MarketingNotificationTargetsModel extends Model<MarketingNotificationTargetsInterface> implements MarketingNotificationTargetsInterface {
   public id: number;
@@ -22,7 +23,9 @@ class MarketingNotificationTargetsModel extends Model<MarketingNotificationTarge
     });
   }
 
-  public static associate () { }
+  public static associate () {
+    this.belongsTo(MUserTypesModel, { as: 'target', foreignKey: 'targetId' });
+  }
 }
 
 export default MarketingNotificationTargetsModel;
