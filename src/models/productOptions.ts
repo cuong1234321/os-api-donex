@@ -18,6 +18,8 @@ class ProductOptionModel extends Model<ProductOptionInterface> implements Produc
 
   static readonly TYPE_ENUM = { color: 'color', size: 'size', form: 'form' }
 
+  static readonly UPDATABLE_ON_DUPLICATE_PARAMETERS = ['id', 'name', 'optionMappingId'];
+
   static readonly hooks: Partial<ModelHooks<ProductOptionModel>> = { }
 
   static readonly scopes: ModelScopeOptions = {

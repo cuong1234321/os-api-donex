@@ -49,6 +49,30 @@ class ProductController {
     }
   }
 
+  public async update (req: Request, res: Response) {
+    try {
+      const product = await ProductModel.findByPk(req.params.productId);
+      if (!product) {
+        return sendError(res, 404, NoData);
+      }
+      const params = req.parameters.permit(ProductModel.UPDATABLE_PARAMETERS).value();
+      await sequelize.transaction(async (transaction: Transaction) => {
+        await product.update(params, { transaction });
+        await product.updateMedias(params.medias, transaction);
+        const variants = await product.updateVariants(params.variants, transaction);
+        const options = await product.updateOptions(params.options, transaction);
+        await product.updateCategories(params.categoryRefs, transaction);
+        product.variants = variants;
+        product.options = options;
+        await product.updateVariationOptions(transaction);
+      });
+      await product.reloadWithDetail();
+      sendSuccess(res, { product });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
   public async uploadMedia (req: Request, res: Response) {
     try {
       const product = await ProductModel.findByPk(req.params.productId);
