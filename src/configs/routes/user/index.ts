@@ -7,6 +7,7 @@ import AuthenticationOtpsRouter from './AuthenticationOtps';
 import PasswordRouter from './Passwords';
 import ProductRouter from './Products';
 import HomepageRouter from './Homepages';
+import CollaboratorRouter from './Collaborators';
 
 const router = Router();
 
@@ -17,5 +18,6 @@ router.use('/authentication_otps', AuthenticationOtpsRouter);
 router.use('/passwords', PasswordRouter);
 router.use('/products', ProductRouter);
 router.use('/homepages', HomepageRouter);
+router.use('/collaborators', CollaboratorRouter);
 
 export default router;

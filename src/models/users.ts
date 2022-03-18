@@ -8,6 +8,7 @@ import settings from '@configs/settings';
 import dayjs from 'dayjs';
 import SendSmsService from '@services/smsSender';
 import randomString from 'randomstring';
+import CollaboratorModel from './collaborators';
 
 class UserModel extends Model<UserInterface> implements UserInterface {
   public id: number;
@@ -36,6 +37,10 @@ class UserModel extends Model<UserInterface> implements UserInterface {
 
   public static readonly STATUS_ENUM = { ACTIVE: 'active', INACTIVE: 'inactive' }
   public static readonly CREATABLE_PARAMETERS = ['phoneNumber', 'fullName', 'password', 'confirmPassword']
+
+  public static readonly CREATABLE_COLLABORATOR_PARAMETERS = ['phoneNumber', 'fullName', 'email', 'provinceId', 'districtId', 'wardId', 'address',
+    { collaborator: ['type'] },
+  ]
 
   static readonly hooks: Partial<ModelHooks<UserModel>> = {
     beforeSave (record) {
@@ -135,6 +140,7 @@ class UserModel extends Model<UserInterface> implements UserInterface {
   }
 
   public static associate () {
+    this.hasOne(CollaboratorModel, { as: 'collaborator', foreignKey: 'userId' });
   }
 }
 
