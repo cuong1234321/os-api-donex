@@ -34,6 +34,14 @@ const collaboratorEntity = {
     type: DataTypes.TEXT,
     allowNull: true,
   },
+  openTime: {
+    type: DataTypes.TIME,
+    allowNull: true,
+  },
+  closeTime: {
+    type: DataTypes.TIME,
+    allowNull: true,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },

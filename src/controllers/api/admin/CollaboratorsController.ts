@@ -8,20 +8,22 @@ import ImageUploaderService from '@services/imageUploader';
 import settings from '@configs/settings';
 import { NoData } from '@libs/errors';
 import MailerService from '@services/mailer';
+import CollaboratorWorkingDayModel from '@models/collaboratorWorkingDays';
 
 class CollaboratorController {
   public async index (req: Request, res: Response) {
     try {
       const page = req.query.page as string || '1';
-      const limit = parseInt(settings.defaultPerPage);
+      const limit = parseInt(req.query.limit as string) || parseInt(settings.defaultPerPage);
       const offset = (parseInt(page, 10) - 1) * limit;
       const scope: any = [
         'withUser',
+        'withWorkingDay',
       ];
-      const { status, gender, freeWord } = req.query;
+      const { status, freeWord, type } = req.query;
       if (status) scope.push({ method: ['byStatus', status] });
-      if (gender) scope.push({ method: ['byGender', gender] });
       if (freeWord) scope.push({ method: ['byFreeWord', freeWord] });
+      if (type) scope.push({ method: ['byType', type] });
       const { rows, count } = await CollaboratorModel.scope(scope).findAndCountAll({ limit, offset });
       const totalPending = await CollaboratorModel.scope([{ method: ['byStatus', 'pending'] }]).count();
       sendSuccess(res, { totalPending, rows, pagination: { total: count, page, perPage: limit } });
@@ -37,18 +39,18 @@ class CollaboratorController {
       const collaboratorParams = req.parameters.permit(CollaboratorModel.CREATABLE_PARAMETERS).value();
       collaboratorParams.status = CollaboratorModel.STATUS_ENUM.ACTIVE;
       if (collaboratorParams.type === CollaboratorModel.TYPE_ENUM.DISTRIBUTOR) collaboratorParams.parentId = null;
+      const { collaboratorWorkingDays } = req.body;
       let collaborator: any;
       await sequelize.transaction(async (transaction: Transaction) => {
         const user = await UserModel.create(userParams, { transaction });
         collaboratorParams.userId = user.id;
         collaborator = await CollaboratorModel.create(collaboratorParams, { transaction });
+        for (const element of collaboratorWorkingDays) {
+          element.collaboratorId = collaborator.id;
+        }
+        await CollaboratorWorkingDayModel.bulkCreate(collaboratorWorkingDays);
       });
-      await collaborator.reload({
-        include: {
-          model: UserModel,
-          as: 'user',
-        },
-      });
+      await collaborator.reloadCollaborator();
       sendSuccess(res, { collaborator });
     } catch (error) {
       sendError(res, 500, error.message, error);
@@ -74,12 +76,7 @@ class CollaboratorController {
         paperProofFront: paperProofFront,
         paperProofBack: paperProofBack,
       });
-      await collaborator.reload({
-        include: {
-          model: UserModel,
-          as: 'user',
-        },
-      });
+      await collaborator.reloadCollaborator();
       sendSuccess(res, { collaborator });
     } catch (error) {
       sendError(res, 500, error.message, error);
@@ -95,17 +92,18 @@ class CollaboratorController {
       if (!user) return sendError(res, 404, NoData);
       const userParams = req.parameters.permit(CollaboratorModel.INFORMATION_PARAMETERS).value();
       const collaboratorParams = req.parameters.permit(CollaboratorModel.UPDATABLE_PARAMETERS).value();
+      const { collaboratorWorkingDays } = req.body;
+      for (const element of collaboratorWorkingDays) {
+        element.collaboratorId = collaboratorId;
+      }
       if (collaboratorParams.type === CollaboratorModel.TYPE_ENUM.DISTRIBUTOR) collaboratorParams.parentId = null;
       await sequelize.transaction(async (transaction: Transaction) => {
         await user.update(userParams, { transaction });
         await collaborator.update(collaboratorParams, { transaction });
+        await CollaboratorWorkingDayModel.updateListCollaboratorWorkingDay(collaboratorWorkingDays, transaction);
       });
-      await collaborator.reload({
-        include: {
-          model: UserModel,
-          as: 'user',
-        },
-      });
+
+      await collaborator.reloadCollaborator();
       sendSuccess(res, { collaborator });
     } catch (error) {
       sendError(res, 500, error.message, error);
@@ -120,12 +118,7 @@ class CollaboratorController {
       await collaborator.update({
         status: CollaboratorModel.STATUS_ENUM.ACTIVE,
       });
-      await collaborator.reload({
-        include: {
-          model: UserModel,
-          as: 'user',
-        },
-      });
+      await collaborator.reloadCollaborator();
       sendSuccess(res, { collaborator });
     } catch (error) {
       sendError(res, 500, error.message, error);
@@ -140,12 +133,7 @@ class CollaboratorController {
       await collaborator.update({
         status: CollaboratorModel.STATUS_ENUM.INACTIVE,
       });
-      await collaborator.reload({
-        include: {
-          model: UserModel,
-          as: 'user',
-        },
-      });
+      await collaborator.reloadCollaborator();
       sendSuccess(res, { collaborator });
     } catch (error) {
       sendError(res, 500, error.message, error);
@@ -157,6 +145,7 @@ class CollaboratorController {
       const { collaboratorId } = req.params;
       const collaborator = await CollaboratorModel.scope([
         'withUser',
+        'withWorkingDay',
       ]).findByPk(collaboratorId);
       if (!collaborator) return sendError(res, 404, NoData);
       sendSuccess(res, { collaborator });
@@ -201,13 +190,8 @@ class CollaboratorController {
         await user.update(userParams, { transaction });
         await collaborator.update(collaboratorParams, { transaction });
       });
-      await collaborator.reload({
-        include: {
-          model: UserModel,
-          as: 'user',
-        },
-      });
-      await MailerService.sendCollaboratorLoginInfo(collaborator, userParams.password);
+      await collaborator.reloadCollaborator();
+      MailerService.sendCollaboratorLoginInfo(collaborator, userParams.password);
       sendSuccess(res, {});
     } catch (error) {
       sendError(res, 500, error.message, error);
@@ -228,12 +212,7 @@ class CollaboratorController {
         status: CollaboratorModel.STATUS_ENUM.REJECTED,
       };
       await collaborator.update(collaboratorParams);
-      await collaborator.reload({
-        include: {
-          model: UserModel,
-          as: 'user',
-        },
-      });
+      await collaborator.reloadCollaborator();
       MailerService.sendRejectCollaboratorRequest(collaborator);
       sendSuccess(res, {});
     } catch (error) {
