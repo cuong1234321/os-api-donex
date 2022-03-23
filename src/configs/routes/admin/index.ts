@@ -7,6 +7,7 @@ import UserRouter from './Users';
 import ProductCategoryRouter from './ProductCategories';
 import NewsRouter from './News';
 import SelectionRouter from './Selections';
+import AdminRouter from './Admins';
 
 const router = Router();
 
@@ -18,5 +19,6 @@ router.use('/users', UserRouter);
 router.use('/product_categories', ProductCategoryRouter);
 router.use('/news', NewsRouter);
 router.use('/selections', SelectionRouter);
+router.use('/admins', AdminRouter);
 
 export default router;

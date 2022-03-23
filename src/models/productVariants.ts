@@ -21,7 +21,7 @@ class ProductVariantModel extends Model<ProductVariantInterface> implements Prod
   public updatedAt?: Date;
   public deletedAt?: Date;
 
-  static readonly UPDATABLE_ON_DUPLICATE_PARAMETERS = ['id', 'sku', 'unitPrice', 'stock', { optionMappingIds: new Array(0) }];
+  static readonly UPDATABLE_ON_DUPLICATE_PARAMETERS = ['id', 'sku', 'buyPrice', 'sellPrice', 'stock', { optionMappingIds: new Array(0) }];
 
   static readonly hooks: Partial<ModelHooks<ProductVariantModel>> = {
     async afterDestroy (record) {

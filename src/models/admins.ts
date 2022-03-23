@@ -11,6 +11,8 @@ import MailerService from '@services/mailer';
 class AdminModel extends Model<AdminInterface> implements AdminInterface {
   public id: number;
   public fullName: string;
+  public username: string;
+  public avatar: string;
   public phoneNumber: string;
   public password: string;
   public confirmPassword?: string;
@@ -25,6 +27,8 @@ class AdminModel extends Model<AdminInterface> implements AdminInterface {
   public createdAt?: Date;
   public updatedAt?: Date;
 
+  static readonly CREATABLE_PARAMETERS = ['fullName', 'username', 'phoneNumber', 'gender', 'email', 'dateOfBirth', 'note']
+
   public static readonly STATUS_ENUM = { ACTIVE: 'active', INACTIVE: 'inactive' }
 
   static readonly hooks: Partial<ModelHooks<AdminModel>> = {
@@ -36,10 +40,58 @@ class AdminModel extends Model<AdminInterface> implements AdminInterface {
     },
   }
 
+  static readonly validations: ModelValidateOptions = {
+    async validMatchPassword () {
+      if (this.isNewRecord || !this.confirmPassword || this.password === this._previousDataValues.password) return;
+      if (this.password !== this.confirmPassword && this._previousDataValues.password !== this.confirmPassword) {
+        throw new ValidationErrorItem('Xác nhận mật khẩu không khớp.', 'password', 'validMatchPassword', this.confirmPassword);
+      }
+    },
+    async uniquePhoneNumber () {
+      if (this.phoneNumber) {
+        const existedRecord = await AdminModel.scope([{ method: ['byPhoneNumber', this.phoneNumber] }]).findOne();
+        if (existedRecord && existedRecord.id !== this.id) {
+          throw new ValidationErrorItem('Số điện thoại đã được sử dụng.', 'uniquePhoneNumber', 'phoneNumber', this.phoneNumber);
+        }
+      }
+    },
+    async uniqueUsername () {
+      if (this.username) {
+        const existedRecord = await AdminModel.scope([{ method: ['byUsername', this.username] }]).findOne();
+        if (existedRecord && existedRecord.id !== this.id) {
+          throw new ValidationErrorItem('Tài khoản đã được sử dụng.', 'uniqueUsername', 'username', this.username);
+        }
+      }
+    },
+    async uniqueEmail () {
+      if (this.email) {
+        const existedRecord = await AdminModel.scope([{ method: ['byEmail', this.email] }]).findOne();
+        if (existedRecord && existedRecord.id !== this.id) {
+          throw new ValidationErrorItem('Email đã được sử dụng.', 'uniqueEmail', 'email', this.email);
+        }
+      }
+    },
+    async validatePhoneNumber () {
+      if (!settings.phonePattern.test(this.phoneNumber)) {
+        throw new ValidationErrorItem('Số điện thoại không hợp lệ', 'validatePhoneNumber', 'phoneNumber');
+      }
+    },
+    async validateEmail () {
+      if (!settings.emailPattern.test(this.email)) {
+        throw new ValidationErrorItem('Email không hợp lệ', 'validateEmail', 'email');
+      }
+    },
+  }
+
   static readonly scopes: ModelScopeOptions = {
     byPhoneNumber (phoneNumber) {
       return {
         where: { phoneNumber },
+      };
+    },
+    byUsername (username) {
+      return {
+        where: { username },
       };
     },
     byEmail (email) {
@@ -51,15 +103,6 @@ class AdminModel extends Model<AdminInterface> implements AdminInterface {
       return {
         where: { status },
       };
-    },
-  }
-
-  static readonly validations: ModelValidateOptions = {
-    async validMatchPassword () {
-      if (this.isNewRecord || !this.confirmPassword || this.password === this._previousDataValues.password) return;
-      if (this.password !== this.confirmPassword && this._previousDataValues.password !== this.confirmPassword) {
-        throw new ValidationErrorItem('Xác nhận mật khẩu không khớp.', 'password', 'validMatchPassword', this.confirmPassword);
-      }
     },
   }
 
