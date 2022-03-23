@@ -57,6 +57,24 @@ class MailerService {
     await this.sendMail(mailerOptions, templateName, templateArgs);
   }
 
+  public static async createAdmin (admin: any, passwordDefault: any) {
+    const mailerOptions: Mail.Options = {
+      from: 'Admin',
+      to: admin.email,
+      subject: '[DONEX-SPORT] Thông tin tài khoản nhân viên',
+    };
+    const templateArgs = {
+      url: process.env.ADMIN_HOST,
+      name: admin.fullName,
+      email: admin.email,
+      phoneNumber: admin.phoneNumber,
+      username: admin.username,
+      password: passwordDefault,
+    };
+    const templateName = 'sendAdminInfo';
+    await this.sendMail(mailerOptions, templateName, templateArgs);
+  }
+
   private static async sendMail (args: Mail.Options, templateName: string, templateArgs: any = {}) {
     const transporter = nodemailer.createTransport(configs.mailerTransporter);
     const templateSrc = path.join(__dirname, `../../views/mailer/${templateName}.hbs`);

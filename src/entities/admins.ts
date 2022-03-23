@@ -7,6 +7,12 @@ const AdminEntity = {
   fullName: {
     type: DataTypes.STRING(255), allowNull: true,
   },
+  avatar: {
+    type: DataTypes.TEXT, allowNull: true,
+  },
+  username: {
+    type: DataTypes.STRING(255), allowNull: false,
+  },
   phoneNumber: {
     type: DataTypes.STRING(255), allowNull: true,
   },

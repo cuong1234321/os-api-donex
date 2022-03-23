@@ -18,9 +18,11 @@ export default {
   },
   forgotPasswordTokenExpiresIn: 1,
   phonePattern: /^(84|0)[1-9][0-9]{8}$/,
+  emailPattern: /^(([A-Za-z0-9]{1,}(\.)?)*[A-Za-z0-9]{1,})@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z0-9]+\.)+[a-zA-Z]{2,}))$/,
   minuteOfOtpExpires: 15,
   prefix: {
     imageMime: 'image',
     videoMime: 'video',
   },
+  passwordAdminDefault: 'Aa@123456',
 };

@@ -41,6 +41,10 @@ const swaggerDefinition = {
       description: 'Quản lý user',
     },
     {
+      name: '[ADMIN] ADMINS',
+      description: 'Quản lý admin',
+    },
+    {
       name: '[ADMIN] PRODUCT',
       description: 'Quản lý sản phẩm',
     },
