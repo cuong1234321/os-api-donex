@@ -109,9 +109,21 @@ router.get('/', CollaboratorsController.index);
  *            openTime:
  *              type: "string"
  *              description: "hhmmss"
+ *              default: "070000"
  *            closeTime:
  *              type: "string"
  *              description: "hhmmss"
+ *              default: "173000"
+ *            collaboratorMedia:
+ *              type: "array"
+ *              items:
+ *                type: "object"
+ *                properties:
+ *                  type:
+ *                    type: "string"
+ *                    enum:
+ *                      - inside
+ *                      - outside
  *     responses:
  *       200:
  *         description: Return data.
@@ -233,6 +245,18 @@ router.post('/:collaboratorId/upload_paper_proof',
  *            closeTime:
  *              type: "string"
  *              description: "hhmmss"
+ *            media:
+ *              type: "array"
+ *              items:
+ *                type: "object"
+ *                properties:
+ *                  id:
+ *                    type: number
+ *                  type:
+ *                    type: "string"
+ *                    enum:
+ *                      - inside
+ *                      - outside
  *     responses:
  *       200:
  *         description: Return data.
@@ -394,5 +418,38 @@ router.patch('/:collaboratorId/verify', CollaboratorsController.verify);
   *      - Bearer: []
   */
 router.patch('/:collaboratorId/reject', CollaboratorsController.reject);
+
+/**
+ * @openapi
+ * /a/collaborators/{collaboratorId}/upload_medias:
+ *   post:
+ *     tags:
+ *      - "[ADMIN] Collaborators"
+ *     summary: Upload media
+ *     consumes:
+ *      - "multipart/form-data"
+ *     produces:
+ *      - "application/json"
+ *     parameters:
+ *      - in: "path"
+ *        name: "productId"
+ *        type: "integer"
+ *      - in: "formData"
+ *        name: "Đặt tên biến theo id của collaborator media"
+ *        description: "File upload"
+ *        required: false
+ *        allowMultiple: false
+ *        type: "file"
+ *     responses:
+ *       200:
+ *         description: "Upload success"
+ *       404:
+ *         description: Không tìm thấy dữ liệu
+ *       500:
+ *        description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.post('/:collaboratorId/upload_medias', withoutSavingUploader.any(), CollaboratorsController.uploadMedia);
 
 export default router;

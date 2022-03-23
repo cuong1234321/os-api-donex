@@ -6,9 +6,10 @@ import CollaboratorModel from '@models/collaborators';
 import UserModel from '@models/users';
 import ImageUploaderService from '@services/imageUploader';
 import settings from '@configs/settings';
-import { NoData } from '@libs/errors';
+import { FileIsNotSupport, NoData } from '@libs/errors';
 import MailerService from '@services/mailer';
 import CollaboratorWorkingDayModel from '@models/collaboratorWorkingDays';
+import CollaboratorMediaModel from '@models/collaboratorMedia';
 
 class CollaboratorController {
   public async index (req: Request, res: Response) {
@@ -19,6 +20,7 @@ class CollaboratorController {
       const scope: any = [
         'withUser',
         'withWorkingDay',
+        'withMedia',
       ];
       const { status, freeWord, type } = req.query;
       if (status) scope.push({ method: ['byStatus', status] });
@@ -39,7 +41,7 @@ class CollaboratorController {
       const collaboratorParams = req.parameters.permit(CollaboratorModel.CREATABLE_PARAMETERS).value();
       collaboratorParams.status = CollaboratorModel.STATUS_ENUM.ACTIVE;
       if (collaboratorParams.type === CollaboratorModel.TYPE_ENUM.DISTRIBUTOR) collaboratorParams.parentId = null;
-      const { collaboratorWorkingDays } = req.body;
+      const { collaboratorWorkingDays, collaboratorMedia } = req.body;
       let collaborator: any;
       await sequelize.transaction(async (transaction: Transaction) => {
         const user = await UserModel.create(userParams, { transaction });
@@ -48,7 +50,11 @@ class CollaboratorController {
         for (const element of collaboratorWorkingDays) {
           element.collaboratorId = collaborator.id;
         }
-        await CollaboratorWorkingDayModel.bulkCreate(collaboratorWorkingDays);
+        await CollaboratorWorkingDayModel.bulkCreate(collaboratorWorkingDays, { transaction });
+        for (const element of collaboratorMedia) {
+          element.collaboratorId = collaborator.id;
+        }
+        await CollaboratorMediaModel.bulkCreate(collaboratorMedia, { transaction });
       });
       await collaborator.reloadCollaborator();
       sendSuccess(res, { collaborator });
@@ -101,8 +107,8 @@ class CollaboratorController {
         await user.update(userParams, { transaction });
         await collaborator.update(collaboratorParams, { transaction });
         await CollaboratorWorkingDayModel.updateListCollaboratorWorkingDay(collaboratorWorkingDays, transaction);
+        await collaborator.updateMedias(req.body.media, transaction);
       });
-
       await collaborator.reloadCollaborator();
       sendSuccess(res, { collaborator });
     } catch (error) {
@@ -146,6 +152,7 @@ class CollaboratorController {
       const collaborator = await CollaboratorModel.scope([
         'withUser',
         'withWorkingDay',
+        'withMedia',
       ]).findByPk(collaboratorId);
       if (!collaborator) return sendError(res, 404, NoData);
       sendSuccess(res, { collaborator });
@@ -215,6 +222,27 @@ class CollaboratorController {
       await collaborator.reloadCollaborator();
       MailerService.sendRejectCollaboratorRequest(collaborator);
       sendSuccess(res, {});
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async uploadMedia (req: Request, res: Response) {
+    try {
+      const collaborator = await CollaboratorModel.findByPk(req.params.collaboratorId);
+      if (!collaborator) return sendError(res, 404, NoData);
+      const files: any[] = req.files as any[];
+      for (const file of files) {
+        const attribute: any = {};
+        if (file.mimetype.split('/')[0] === settings.prefix.imageMime) {
+          attribute.source = await ImageUploaderService.singleUpload(file);
+          attribute.collaboratorId = collaborator.id;
+        } else {
+          return sendError(res, 403, FileIsNotSupport);
+        }
+        await CollaboratorMediaModel.update(attribute, { where: { collaboratorId: collaborator.id, id: file.fieldname } });
+      }
+      sendSuccess(res, { });
     } catch (error) {
       sendError(res, 500, error.message, error);
     }
