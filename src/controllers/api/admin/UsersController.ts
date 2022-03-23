@@ -5,6 +5,7 @@ import sequelize from '@initializers/sequelize';
 import CollaboratorModel from '@models/collaborators';
 import UserModel from '@models/users';
 import { NoData } from '@libs/errors';
+import ImageUploaderService from '@services/imageUploader';
 
 class UserController {
   public async active (req: Request, res: Response) {
@@ -53,6 +54,21 @@ class UserController {
         });
       }
       sendSuccess(res, { });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async uploadAvatar (req: Request, res: Response) {
+    try {
+      const { userId } = req.params;
+      const user = await UserModel.findByPk(userId);
+      if (!user) return sendError(res, 404, NoData);
+      const avatar = await ImageUploaderService.singleUpload(req.file);
+      await user.update({
+        avatar,
+      });
+      sendSuccess(res, { user });
     } catch (error) {
       sendError(res, 500, error.message, error);
     }

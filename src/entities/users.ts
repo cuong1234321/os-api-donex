@@ -1,3 +1,4 @@
+import settings from '@configs/settings';
 import { DataTypes } from 'sequelize';
 
 const UserEntity = {
@@ -63,7 +64,16 @@ const UserEntity = {
   forgotPasswordExpireAt: {
     type: DataTypes.DATE, allowNull: true,
   },
-
+  avatar: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+    get (): string {
+      const avatar = this.getDataValue('avatar') !== null
+        ? `${settings.imageStorageHost}/${this.getDataValue('avatar')}`
+        : null;
+      return avatar;
+    },
+  },
   createdAt: {
     type: DataTypes.DATE,
   },

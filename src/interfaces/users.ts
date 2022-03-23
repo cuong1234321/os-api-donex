@@ -19,6 +19,7 @@ interface UserInterface {
   currentRank: number,
   forgotPasswordToken: string;
   forgotPasswordExpireAt: Date;
+  avatar: string;
   createdAt?: Date,
   updatedAt?: Date,
   deletedAt: Date,
