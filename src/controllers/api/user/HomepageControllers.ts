@@ -1,5 +1,6 @@
 import settings from '@configs/settings';
 import { sendError, sendSuccess } from '@libs/response';
+import NewsModel from '@models/news';
 import ProductCategoryModel from '@models/productCategories';
 import ProductModel from '@models/products';
 import { Request, Response } from 'express';
@@ -11,14 +12,15 @@ class HomepageController {
         'notChildren',
         { method: ['byType', ProductCategoryModel.TYPE_ENUM.NONE] },
       ]).findAll();
-      const product = await this.HomepageProduct();
-      sendSuccess(res, { categories, product });
+      const product = await this.homepageProduct();
+      const news = await this.homepageNews();
+      sendSuccess(res, { categories, product, news });
     } catch (error) {
       sendError(res, 500, error.message, error);
     }
   }
 
-  private async HomepageProduct () {
+  private async homepageProduct () {
     const flashSaleProducts = await ProductModel.scope([
       'withPrice',
       'withThumbnail',
@@ -38,6 +40,13 @@ class HomepageController {
       'isHighlight',
     ]).findAll({ limit: parseInt(settings.defaultPerPage) });
     return { flashSaleProducts, newProducts, highLightProducts };
+  }
+
+  private async homepageNews () {
+    const news = await NewsModel.scope([
+      { method: ['byStatus', NewsModel.STATUS_ENUM.ACTIVE] },
+    ]).findAll({ limit: parseInt(settings.defaultPerPage) });
+    return news;
   }
 }
 

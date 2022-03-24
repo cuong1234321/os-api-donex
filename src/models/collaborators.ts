@@ -30,9 +30,39 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
   }
 
   static readonly scopes: ModelScopeOptions = {
+    addressInfo () {
+      return {
+        attributes: {
+          include: [
+            [
+              Sequelize.literal('(SELECT title FROM m_provinces INNER JOIN users ON users.provinceId = m_provinces.id WHERE users.id = CollaboratorModel.userId)'),
+              'provinceTitle',
+            ],
+            [
+              Sequelize.literal('(SELECT title FROM m_districts INNER JOIN users ON users.districtId = m_districts.id WHERE users.id = CollaboratorModel.userId)'),
+              'districtTitle',
+            ],
+            [
+              Sequelize.literal('(SELECT title FROM m_wards INNER JOIN users ON users.wardId = m_wards.id WHERE users.id = CollaboratorModel.userId)'),
+              'wardTitle',
+            ],
+          ],
+        },
+      };
+    },
+    byId (id) {
+      return {
+        where: { id },
+      };
+    },
     byStatus (status) {
       return {
         where: { status },
+      };
+    },
+    byType (type) {
+      return {
+        where: { type },
       };
     },
     byGender (gender) {
@@ -66,6 +96,13 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
     byUserId (userId) {
       return {
         where: { userId },
+      };
+    },
+    withoutChildren () {
+      return {
+        where: {
+          parentId: null,
+        },
       };
     },
   }
