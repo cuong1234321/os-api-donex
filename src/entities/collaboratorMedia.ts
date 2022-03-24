@@ -1,31 +1,24 @@
 import settings from '@configs/settings';
 import { DataTypes } from 'sequelize';
 
-const ProductMediaEntity = {
+const CollaboratorMediaEntity = {
   id: {
     type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false,
   },
-  productId: {
+  collaboratorId: {
     type: DataTypes.INTEGER, allowNull: false,
   },
   source: {
-    type: DataTypes.TEXT,
+    type: DataTypes.STRING(255),
     allowNull: true,
     get (): string {
       if (!this.getDataValue('source')) return;
-      const source = this.getDataValue('type') === 'video'
-        ? `${settings.videoStorageHost}/${this.getDataValue('source')}`
-        : `${settings.imageStorageHost}/${this.getDataValue('source')}`;
+      const source = `${settings.imageStorageHost}/${this.getDataValue('source')}`;
       return source;
     },
   },
   type: {
-    type: DataTypes.ENUM({ values: ['image', 'video'] }),
-    defaultValue: 'image',
-  },
-  isThumbnail: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: false,
+    type: DataTypes.ENUM({ values: ['inside', 'outside'] }), allowNull: true,
   },
   createdAt: {
     type: DataTypes.DATE,
@@ -35,4 +28,4 @@ const ProductMediaEntity = {
   },
 };
 
-export default ProductMediaEntity;
+export default CollaboratorMediaEntity;
