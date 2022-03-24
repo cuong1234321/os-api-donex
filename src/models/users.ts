@@ -31,6 +31,7 @@ class UserModel extends Model<UserInterface> implements UserInterface {
   public currentRank: number;
   public forgotPasswordToken: string;
   public forgotPasswordExpireAt: Date;
+  public avatar: string;
   public createdAt?: Date;
   public updatedAt?: Date;
   public deletedAt: Date;
