@@ -2,6 +2,7 @@ import CollaboratorEntity from '@entities/collaborators';
 import CollaboratorInterface from '@interfaces/collaborators';
 import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
+import CollaboratorWorkingDayModel from './collaboratorWorkingDays';
 import UserModel from './users';
 
 class CollaboratorModel extends Model<CollaboratorInterface> implements CollaboratorInterface {
@@ -13,6 +14,8 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
   public paperProofFront: string;
   public paperProofBack: string;
   public rejectionReason: string;
+  public openTime: Date;
+  public closeTime: Date;
   public createdAt?: Date;
   public updatedAt?: Date;
   public deletedAt: Date;
@@ -21,8 +24,8 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
   public static readonly STATUS_ENUM = { PENDING: 'pending', ACTIVE: 'active', INACTIVE: 'inactive', REJECTED: 'rejected' }
 
   public static readonly INFORMATION_PARAMETERS = ['fullName', 'dateOfBirth', 'phoneNumber', 'username', 'password', 'email', 'provinceId', 'districtId', 'wardId', 'address', 'defaultRank']
-  public static readonly CREATABLE_PARAMETERS = ['type', 'parentId']
-  public static readonly UPDATABLE_PARAMETERS = ['type', 'parentId']
+  public static readonly CREATABLE_PARAMETERS = ['type', 'parentId', 'openTime', 'closeTime']
+  public static readonly UPDATABLE_PARAMETERS = ['type', 'parentId', 'openTime', 'closeTime']
 
   static readonly hooks: Partial<ModelHooks<CollaboratorModel>> = { }
 
@@ -65,11 +68,6 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
         where: { type },
       };
     },
-    byGender (gender) {
-      return {
-        where: { gender },
-      };
-    },
     byFreeWord (freeWord) {
       return {
         where: {
@@ -105,12 +103,35 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
         },
       };
     },
+    withWorkingDay () {
+      return {
+        include: [{
+          model: CollaboratorWorkingDayModel,
+          as: 'workingDays',
+        }],
+      };
+    },
   }
 
   public async checkStatus (status: string) {
     if (this.status !== status) {
       throw new ValidationErrorItem(`status is not ${status}.`, 'status', 'validStatus', this.status);
     }
+  }
+
+  public async reloadCollaborator () {
+    await this.reload({
+      include: [
+        {
+          model: UserModel,
+          as: 'user',
+        },
+        {
+          model: CollaboratorWorkingDayModel,
+          as: 'workingDays',
+        },
+      ],
+    });
   }
 
   public static initialize (sequelize: Sequelize) {
@@ -126,6 +147,7 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
 
   public static associate () {
     this.belongsTo(UserModel, { as: 'user', foreignKey: 'userId' });
+    this.hasMany(CollaboratorWorkingDayModel, { as: 'workingDays', foreignKey: 'collaboratorId', onDelete: 'CASCADE', hooks: true });
   }
 }
 

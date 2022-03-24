@@ -9,6 +9,8 @@ interface CollaboratorInterface {
   paperProofFront: string;
   paperProofBack: string;
   rejectionReason: string;
+  openTime: Date;
+  closeTime: Date;
   createdAt?: Date,
   updatedAt?: Date,
   deletedAt: Date,
