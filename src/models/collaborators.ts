@@ -1,8 +1,10 @@
 import CollaboratorEntity from '@entities/collaborators';
+import CollaboratorMediaInterface from '@interfaces/collaboratorMedia';
 import CollaboratorInterface from '@interfaces/collaborators';
-import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, ValidationErrorItem } from 'sequelize';
+import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, Transaction, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import CollaboratorWorkingDayModel from './collaboratorWorkingDays';
+import CollaboratorMediaModel from './collaboratorMedia';
 import UserModel from './users';
 
 class CollaboratorModel extends Model<CollaboratorInterface> implements CollaboratorInterface {
@@ -111,6 +113,14 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
         }],
       };
     },
+    withMedia () {
+      return {
+        include: {
+          model: CollaboratorMediaModel,
+          as: 'media',
+        },
+      };
+    },
   }
 
   public async checkStatus (status: string) {
@@ -130,7 +140,29 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
           model: CollaboratorWorkingDayModel,
           as: 'workingDays',
         },
+        {
+          model: CollaboratorMediaModel,
+          as: 'media',
+        },
       ],
+    });
+  }
+
+  public async updateMedias (medias: any[], transaction?: Transaction) {
+    if (!medias) return;
+    medias.forEach((record: any) => {
+      record.collaboratorId = this.id;
+    });
+
+    const results = await CollaboratorMediaModel.bulkCreate(medias, {
+      updateOnDuplicate: CollaboratorMediaModel.UPDATABLE_ON_DUPLICATE_PARAMETERS as (keyof CollaboratorMediaInterface)[],
+      individualHooks: true,
+      transaction,
+    });
+    await CollaboratorMediaModel.destroy({
+      where: { collaboratorId: this.id, id: { [Op.notIn]: results.map((media) => media.id) } },
+      individualHooks: true,
+      transaction,
     });
   }
 
@@ -148,6 +180,7 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
   public static associate () {
     this.belongsTo(UserModel, { as: 'user', foreignKey: 'userId' });
     this.hasMany(CollaboratorWorkingDayModel, { as: 'workingDays', foreignKey: 'collaboratorId', onDelete: 'CASCADE', hooks: true });
+    this.hasMany(CollaboratorMediaModel, { as: 'media', foreignKey: 'collaboratorId', onDelete: 'CASCADE', hooks: true });
   }
 }
 

@@ -12,12 +12,22 @@ class CollaboratorMediaModel extends Model<CollaboratorMediaInterface> implement
   public updatedAt?: Date;
 
   static readonly TYPE_ENUM = { INSIDE: 'inside', OUTSIDE: 'outside' }
+  static readonly UPDATABLE_ON_DUPLICATE_PARAMETERS = ['id', 'type']
+  static readonly UPDATABLE_PARAMETERS = ['id', 'type']
 
   static readonly hooks: Partial<ModelHooks<CollaboratorMediaModel>> = { }
 
   static readonly validations: ModelValidateOptions = { }
 
-  static readonly scopes: ModelScopeOptions = { }
+  static readonly scopes: ModelScopeOptions = {
+    byCollaboratorId (collaboratorId) {
+      return {
+        where: {
+          collaboratorId,
+        },
+      };
+    },
+  }
 
   public static initialize (sequelize: Sequelize) {
     this.init(CollaboratorMediaEntity, {
