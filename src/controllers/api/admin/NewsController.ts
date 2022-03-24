@@ -88,6 +88,18 @@ class NewsController {
       sendError(res, 500, error.message, error);
     }
   }
+
+  public async delete (req: Request, res: Response) {
+    try {
+      const { newsId } = req.params;
+      const news = await NewsModel.findByPk(newsId);
+      if (!news) return sendError(res, 404, NoData);
+      await news.destroy();
+      sendSuccess(res, {});
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
 }
 
 export default new NewsController();

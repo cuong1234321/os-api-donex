@@ -186,4 +186,28 @@ router.patch('/:newsId/active', NewsController.active);
  */
 router.patch('/:newsId/inactive', NewsController.inactive);
 
+/**
+ * @openapi
+ * /a/news/{newsId}:
+ *   delete:
+ *     tags:
+ *      - "[ADMIN] News"
+ *     summary: Xóa tin tức
+ *     parameters:
+ *      - in: path
+ *        name: "newsId"
+ *        description: "newsId"
+ *        type: number
+ *     responses:
+ *       200:
+ *         description: Return data.
+ *       404:
+ *         description: Không tìm thấy dữ liệu
+ *       500:
+ *         description: Error can't get data.
+ *     security:
+ *      - Bearer: []
+ */
+router.delete('/:newsId', NewsController.delete);
+
 export default router;
