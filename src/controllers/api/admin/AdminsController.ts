@@ -61,6 +61,74 @@ class AdminController {
       sendError(res, 500, error.message, error);
     }
   }
+
+  public async update (req: Request, res: Response) {
+    try {
+      const admin = await AdminModel.findByPk(req.params.adminId);
+      if (!admin) { return sendError(res, 404, NoData); }
+      const params = req.parameters.permit(AdminModel.UPDATABLE_PARAMETERS).value();
+      await admin.update(params);
+      sendSuccess(res, admin);
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async active (req: Request, res: Response) {
+    try {
+      const admin = await AdminModel.scope([
+        { method: ['byId', req.params.adminId] },
+        { method: ['byStatus', AdminModel.STATUS_ENUM.INACTIVE] },
+      ]).findOne();
+      if (!admin) {
+        return sendError(res, 404, NoData);
+      }
+      await admin.update({ status: AdminModel.STATUS_ENUM.ACTIVE });
+      sendSuccess(res, { });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async inActive (req: Request, res: Response) {
+    try {
+      const admin = await AdminModel.scope([
+        { method: ['byId', req.params.adminId] },
+        { method: ['byStatus', AdminModel.STATUS_ENUM.ACTIVE] },
+      ]).findOne();
+      if (!admin) {
+        return sendError(res, 404, NoData);
+      }
+      await admin.update({ status: AdminModel.STATUS_ENUM.INACTIVE });
+      sendSuccess(res, { });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async changePassword (req: Request, res: Response) {
+    try {
+      const admin = await AdminModel.findByPk(req.params.adminId);
+      if (!admin) { return sendError(res, 404, NoData); }
+      const { password } = req.body;
+      await admin.update({ password });
+      MailerService.changePasswordAdmin(admin, password);
+      sendSuccess(res, admin);
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async delete (req: Request, res: Response) {
+    try {
+      const admin = await AdminModel.findByPk(req.params.adminId);
+      if (!admin) { return sendError(res, 404, NoData); }
+      await admin.destroy();
+      sendSuccess(res, {});
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
 }
 
 export default new AdminController();

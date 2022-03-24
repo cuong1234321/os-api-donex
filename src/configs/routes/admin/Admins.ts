@@ -128,6 +128,126 @@ router.post('/', AdminController.create);
 
 /**
  * @openapi
+ * /a/admins/{adminId}:
+ *   patch:
+ *     tags:
+ *      - "[ADMIN] ADMINS"
+ *     summary: Cap nhat admin
+ *     parameters:
+ *      - in: path
+ *        name: "adminId"
+ *        type: "number"
+ *      - in: "body"
+ *        name: "body"
+ *        description: "thông tin admin"
+ *        schema:
+ *          type: "object"
+ *          properties:
+ *            phoneNumber:
+ *              type: "string"
+ *            fullName:
+ *              type: "string"
+ *            email:
+ *              type: "string"
+ *            gender:
+ *              type: "string"
+ *              enum:
+ *               - male
+ *               - female
+ *               - other
+ *            dateOfBirth:
+ *              type: "string"
+ *              default: "2000/01/01"
+ *            note:
+ *              type: "string"
+ *     responses:
+ *       200:
+ *         description: Return data.
+ *       500:
+ *         description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.patch('/:adminId', AdminController.update);
+
+/**
+ * @openapi
+ * /a/admins/{adminId}/active:
+ *   patch:
+ *     tags:
+ *      - "[ADMIN] ADMINS"
+ *     summary: Mo hoat dong nhan vien
+ *     parameters:
+ *      - in: "path"
+ *        name: "adminId"
+ *        type: "integer"
+ *     responses:
+ *       200:
+ *         description: "Upload success"
+ *       404:
+ *         description: Không tìm thấy dữ liệu
+ *       500:
+ *        description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.patch('/:adminId/active', AdminController.active);
+
+/**
+  * @openapi
+  * /a/admins/{adminId}/inactive:
+  *   patch:
+  *     tags:
+  *      - "[ADMIN] ADMINS"
+  *     summary: Khoa tai khoan nhan vien
+  *     parameters:
+  *      - in: "path"
+  *        name: "adminId"
+  *        type: "integer"
+  *     responses:
+  *       200:
+  *         description: "Upload success"
+  *       404:
+  *         description: Không tìm thấy dữ liệu
+  *       500:
+  *        description: Lỗi không xác định
+  *     security:
+  *      - Bearer: []
+  */
+router.patch('/:adminId/inactive', AdminController.inActive);
+
+/**
+ * @openapi
+ * /a/admins/{adminId}/change_password:
+ *   patch:
+ *     tags:
+ *      - "[ADMIN] ADMINS"
+ *     summary: thay doi password
+ *     parameters:
+ *      - in: path
+ *        name: "adminId"
+ *        type: "number"
+ *      - in: "body"
+ *        name: "body"
+ *        description: "thông tin admin"
+ *        schema:
+ *          type: "object"
+ *          properties:
+ *            password:
+ *              type: "string"
+ *              default: "Aa@123456"
+ *     responses:
+ *       200:
+ *         description: Return data.
+ *       500:
+ *         description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.patch('/:adminId/change_password', AdminController.changePassword);
+
+/**
+ * @openapi
  * /a/admins/{adminId}/avatar:
  *   patch:
  *     tags:
@@ -160,5 +280,26 @@ router.post('/', AdminController.create);
 router.patch('/:adminId/avatar',
   withoutSavingUploader.single('avatar'),
   AdminController.uploadAvatar);
+
+/**
+ * @openapi
+ * /a/admins/{adminId}:
+ *   delete:
+ *     tags:
+ *      - "[ADMIN] ADMINS"
+ *     summary: thay doi password
+ *     parameters:
+ *      - in: path
+ *        name: "adminId"
+ *        type: "number"
+ *     responses:
+ *       200:
+ *         description: Return data.
+ *       500:
+ *         description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.delete('/:adminId', AdminController.delete);
 
 export default router;
