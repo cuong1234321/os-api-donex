@@ -1,6 +1,6 @@
 import AdminEntity from '@entities/admins';
 import AdminInterface from '@interfaces/admins';
-import { Model, ModelScopeOptions, ModelValidateOptions, Sequelize, ValidationErrorItem } from 'sequelize';
+import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
@@ -102,6 +102,37 @@ class AdminModel extends Model<AdminInterface> implements AdminInterface {
     byStatus (status) {
       return {
         where: { status },
+      };
+    },
+    byGender (gender) {
+      return {
+        where: { gender },
+      };
+    },
+    byFreeWord (freeWord) {
+      return {
+        where: {
+          [Op.or]: [
+            { id: { [Op.like]: `%${freeWord || ''}%` } },
+            { fullName: { [Op.like]: `%${freeWord || ''}%` } },
+            { username: { [Op.like]: `%${freeWord || ''}%` } },
+            { phoneNumber: { [Op.like]: `%${freeWord || ''}%` } },
+          ],
+        },
+      };
+    },
+    bySortOrder (orderConditions) {
+      orderConditions.push([Sequelize.literal('createdAt'), 'DESC']);
+      return {
+        attributes: {
+          include: [
+            [
+              Sequelize.literal('(SELECT SUBSTRING_INDEX(fullName, " ", -1) AS last_name  FROM admins WHERE id = AdminModel.id)'),
+              'lastName',
+            ],
+          ],
+        },
+        order: orderConditions,
       };
     },
   }

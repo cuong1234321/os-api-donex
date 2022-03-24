@@ -59,7 +59,7 @@ router.post('/', CollaboratorController.register);
 /**
  * @openapi
  * /u/collaborators/{collaboratorId}/upload_paper_proof:
- *   post:
+ *   patch:
  *     tags:
  *      - "[USER] Collaborators"
  *     summary: Tải lên ảnh CCCD
@@ -92,7 +92,7 @@ router.post('/', CollaboratorController.register);
  *     security:
  *      - Bearer: []
  */
-router.post('/:collaboratorId/upload_paper_proof',
+router.patch('/:collaboratorId/upload_paper_proof',
   withoutSavingUploader.any(), CollaboratorController.uploadPaperProof);
 
 /**
