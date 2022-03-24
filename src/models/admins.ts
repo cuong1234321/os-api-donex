@@ -26,8 +26,10 @@ class AdminModel extends Model<AdminInterface> implements AdminInterface {
   public forgotPasswordExpireAt: Date;
   public createdAt?: Date;
   public updatedAt?: Date;
+  public deletedAt?: Date;
 
   static readonly CREATABLE_PARAMETERS = ['fullName', 'username', 'phoneNumber', 'gender', 'email', 'dateOfBirth', 'note']
+  static readonly UPDATABLE_PARAMETERS = ['fullName', 'phoneNumber', 'gender', 'email', 'dateOfBirth', 'note']
 
   public static readonly STATUS_ENUM = { ACTIVE: 'active', INACTIVE: 'inactive' }
 
@@ -84,6 +86,11 @@ class AdminModel extends Model<AdminInterface> implements AdminInterface {
   }
 
   static readonly scopes: ModelScopeOptions = {
+    byId (id) {
+      return {
+        where: { id },
+      };
+    },
     byPhoneNumber (phoneNumber) {
       return {
         where: { phoneNumber },
@@ -172,6 +179,7 @@ class AdminModel extends Model<AdminInterface> implements AdminInterface {
       scopes: AdminModel.scopes,
       validate: AdminModel.validations,
       tableName: 'admins',
+      paranoid: true,
       sequelize,
     });
   }
