@@ -1,6 +1,7 @@
 import { Model, ModelScopeOptions, ModelValidateOptions, Sequelize, ValidationErrorItem } from 'sequelize';
 import PopupEntity from '@entities/popups';
 import PopupInterface from '@interfaces/popups';
+import dayjs from 'dayjs';
 
 class PopupModel extends Model<PopupInterface> implements PopupInterface {
   public id: number;
@@ -14,10 +15,11 @@ class PopupModel extends Model<PopupInterface> implements PopupInterface {
   public createdAt?: Date;
   public updatedAt?: Date;
 
-  static readonly STATUS_ENUM = { ACTIVE: 'active', INACTIVE: 'inActive' };
-
   static readonly CREATABLE_PARAMETERS = ['title', 'link', 'frequency', 'applyAt', 'applyTo'];
   static readonly UPDATABLE_PARAMETERS = ['title', 'link', 'status', 'frequency', 'applyAt', 'applyTo'];
+
+  static readonly STATUS_ENUM = { ACTIVE: 'active', INACTIVE: 'inactive' }
+  static readonly STATUSREF_ENUM = { ACTIVE: 'active', INACTIVE: 'inactive', OUT_OF_DATE: 'outOfDate', INCOMING: 'incoming' }
 
   static readonly validations: ModelValidateOptions = {
     async validApplyTime () {
@@ -27,7 +29,29 @@ class PopupModel extends Model<PopupInterface> implements PopupInterface {
     },
   }
 
-  static readonly scopes: ModelScopeOptions = {}
+  static readonly scopes: ModelScopeOptions = {
+    bySortOrder (orderConditions) {
+      orderConditions.push([Sequelize.literal('createdAt'), 'DESC']);
+      return {
+        order: orderConditions,
+      };
+    },
+  }
+
+  public static getStatus (popups: any) {
+    popups.forEach((popup: any) => {
+      if (popup.status === PopupModel.STATUS_ENUM.INACTIVE) {
+        popup.setDataValue('statusRef', PopupModel.STATUSREF_ENUM.INACTIVE);
+      } else if (popup.applyAt > dayjs() && popup.status === PopupModel.STATUS_ENUM.ACTIVE) {
+        popup.setDataValue('statusRef', PopupModel.STATUSREF_ENUM.INCOMING);
+      } else if (popup.applyTo && popup.applyTo < dayjs() && popup.status === PopupModel.STATUS_ENUM.ACTIVE) {
+        popup.setDataValue('statusRef', PopupModel.STATUSREF_ENUM.OUT_OF_DATE);
+      } else {
+        popup.setDataValue('statusRef', PopupModel.STATUSREF_ENUM.ACTIVE);
+      }
+    });
+    return popups;
+  }
 
   public static initialize (sequelize: Sequelize) {
     this.init(PopupEntity, {

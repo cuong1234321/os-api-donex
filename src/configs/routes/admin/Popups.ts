@@ -6,6 +6,42 @@ const router = Router();
 
 /**
  * @openapi
+ * /a/popups:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] POPUPS"
+ *     summary: danh sach popup
+ *     parameters:
+ *      - in: query
+ *        name: "page"
+ *        description: "page"
+ *        type: "number"
+ *      - in: query
+ *        name: "size"
+ *        description: "limit"
+ *        type: "number"
+ *      - in: "query"
+ *        name: "applyAtOrder"
+ *        enum:
+ *         - DESC
+ *         - ASC
+ *      - in: "query"
+ *        name: "applyToOrder"
+ *        enum:
+ *         - DESC
+ *         - ASC
+ *     responses:
+ *       200:
+ *         description: Return data.
+ *       500:
+ *         description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/', PopupController.index);
+
+/**
+ * @openapi
  * /a/popups/{popupId}:
  *   get:
  *     tags:
@@ -62,6 +98,46 @@ router.post('/', PopupController.create);
 
 /**
  * @openapi
+ * /a/popups/{popupId}:
+ *   patch:
+ *     tags:
+ *      - "[ADMIN] POPUPS"
+ *     summary: Cap nhat popup
+ *     parameters:
+ *      - in: "path"
+ *        name: "popupId"
+ *        required: true
+ *        type: "number"
+ *      - in: "body"
+ *        name: "body"
+ *        description: "thông tin admin"
+ *        schema:
+ *          type: "object"
+ *          properties:
+ *            title:
+ *              type: "string"
+ *            link:
+ *              type: "string"
+ *            status:
+ *              type: "string"
+ *            frequency:
+ *              type: "number"
+ *            applyAt:
+ *              type: "Date"
+ *            applyTo:
+ *              type: "Date"
+ *     responses:
+ *       200:
+ *         description: Return data.
+ *       500:
+ *         description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.patch('/:popupId', PopupController.update);
+
+/**
+ * @openapi
  * /a/popups/{popupId}/image:
  *   patch:
  *     tags:
@@ -94,5 +170,27 @@ router.post('/', PopupController.create);
 router.patch('/:popupId/image',
   withoutSavingUploader.single('image'),
   PopupController.uploadImage);
+
+/**
+ * @openapi
+ * /a/popups/{popupId}:
+ *   delete:
+ *     tags:
+ *      - "[ADMIN] POPUPS"
+ *     summary: Xoa popup
+ *     parameters:
+ *      - in: "path"
+ *        name: "popupId"
+ *        required: true
+ *        type: "number"
+ *     responses:
+ *       200:
+ *         description: Return data.
+ *       500:
+ *         description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.delete('/:popupId', PopupController.delete);
 
 export default router;

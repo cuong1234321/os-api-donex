@@ -9,6 +9,8 @@ interface PopupInterface {
   status: string;
   createdAt?: Date;
   updatedAt?: Date;
+
+  statusRef?: string;
 };
 
 export default PopupInterface;
