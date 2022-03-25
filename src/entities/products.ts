@@ -45,6 +45,9 @@ const ProductEntity = {
     type: DataTypes.ENUM({ values: ['draft', 'active', 'inactive'] }),
     defaultValue: 'draft',
   },
+  sizeType: {
+    type: DataTypes.ENUM({ values: ['clothes', 'children', 'shoes'] }),
+  },
   isHighlight: {
     type: DataTypes.BOOLEAN, defaultValue: false,
   },

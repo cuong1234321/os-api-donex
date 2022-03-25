@@ -37,6 +37,7 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
   public maxStock: number;
   public skuCode: string;
   public barCode: string;
+  public sizeType: string;
 
   public createdAt?: Date;
   public updatedAt?: Date;
@@ -48,7 +49,7 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
 
   static readonly CREATABLE_PARAMETERS = [
     'name', 'description', 'shortDescription', 'status', 'gender', 'typeProductId', 'sizeGuide', 'isHighlight',
-    'isNew', 'weight', 'length', 'width', 'height', 'unit', 'minStock', 'maxStock',
+    'isNew', 'weight', 'length', 'width', 'height', 'unit', 'minStock', 'maxStock', 'sizeType',
     { categoryRefs: ['productCategoryId'] },
     { options: ['key', 'value', 'optionMappingId'] },
     { variants: ['name', 'buyPrice', 'sellPrice', 'stock', 'skuCode', { optionMappingIds: new Array(0) }] },
@@ -57,7 +58,7 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
 
   static readonly UPDATABLE_PARAMETERS = [
     'name', 'description', 'shortDescription', 'status', 'gender', 'typeProductId', 'sizeGuide', 'isHighlight',
-    'isNew', 'weight', 'length', 'width', 'height', 'unit', 'minStock', 'maxStock', 'isHighlight', 'isNew', 'inFlashSale',
+    'isNew', 'weight', 'length', 'width', 'height', 'unit', 'minStock', 'maxStock', 'isHighlight', 'isNew', 'inFlashSale', 'sizeType',
     { categoryRefs: ['productCategoryId'] },
     { options: ['id', 'key', 'value', 'optionMappingId'] },
     { variants: ['id', 'name', 'buyPrice', 'sellPrice', 'stock', 'skuCode', { optionMappingIds: new Array(0) }] },

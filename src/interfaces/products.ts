@@ -25,6 +25,7 @@ interface ProductInterface {
   maxStock: number,
   skuCode: string,
   barCode: string,
+  sizeType: string,
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;

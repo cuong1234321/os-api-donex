@@ -186,6 +186,12 @@ router.get('/:productId', ProductController.show);
  *              type: "number"
  *              description: "Chiều cao"
  *              default: null
+ *            sizeType:
+ *              type: "string"
+ *              enum:
+ *               - clothes
+ *               - children
+ *               - shoes
  *            categoryRefs:
  *              type: "array"
  *              items:
@@ -464,6 +470,12 @@ router.delete('/:productId', ProductController.delete);
  *            inFlashSale:
  *              type: "boolean"
  *              description: ""
+ *            sizeType:
+ *              type: "string"
+ *              enum:
+ *               - clothes
+ *               - children
+ *               - shoes
  *            categoryRefs:
  *              type: "array"
  *              items:
