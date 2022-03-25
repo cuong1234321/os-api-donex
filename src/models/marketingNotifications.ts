@@ -1,6 +1,6 @@
 import MarketingNotificationsEntity from '@entities/marketingNotifications';
 import MarketingNotificationsInterface from '@interfaces/marketingNotifications';
-import { Model, ModelScopeOptions, Op, Sequelize } from 'sequelize';
+import { Model, ModelScopeOptions, Op, Sequelize, Transaction } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import dayjs from 'dayjs';
 import SendSystemNotificationWorker from '@workers/SendSystemNotification';
@@ -33,6 +33,11 @@ class MarketingNotificationsModel extends Model<MarketingNotificationsInterface>
   public static readonly CREATABLE_PARAMETERS = [
     'title', 'content', 'link', 'isSentImmediately', 'sendAt',
     { notificationTargets: ['targetId', 'type'] },
+  ]
+
+  public static readonly UPDATABLE_PARAMETERS = [
+    'title', 'content', 'link', 'sendAt',
+    { notificationTargets: ['id', 'targetId'] },
   ]
 
   static readonly hooks: Partial<ModelHooks<MarketingNotificationsModel>> = {
@@ -186,15 +191,39 @@ class MarketingNotificationsModel extends Model<MarketingNotificationsInterface>
     }
   }
 
+  public async updateNotificationTarget (notificationTargets: any[], transaction?: Transaction) {
+    if (!notificationTargets) return;
+    notificationTargets.forEach((record: any) => {
+      record.notificationId = this.id;
+    });
+    const results = await MarketingNotificationTargetsModel.bulkCreate(notificationTargets, {
+      updateOnDuplicate: MarketingNotificationTargetsModel.UPDATABLE_ON_DUPLICATE_PARAMETERS as (keyof MarketingNotificationTargetInterface)[],
+      individualHooks: true,
+      transaction,
+    });
+    await MarketingNotificationTargetsModel.destroy({
+      where: { notificationId: this.id, id: { [Op.notIn]: results.map((notificationTarget) => notificationTarget.id) } },
+      individualHooks: true,
+      transaction,
+    });
+  }
+
   public async reloadNotification () {
     await this.reload({
-      include: {
-        model: MarketingNotificationTargetsModel,
-        as: 'notificationTargets',
-        include: [
-          { model: MUserTypeModel, as: 'target' },
-        ],
-      },
+      include: [
+        {
+          model: MarketingNotificationTargetsModel,
+          as: 'notificationTargets',
+          include: [
+            { model: MUserTypeModel, as: 'target' },
+          ],
+        },
+        {
+          model: AdminModel,
+          as: 'owner',
+          attributes: ['fullName'],
+        },
+      ],
     });
   }
 

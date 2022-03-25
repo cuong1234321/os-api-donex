@@ -5,6 +5,7 @@ import { Transaction } from 'sequelize/types';
 import sequelize from '@initializers/sequelize';
 import MarketingNotificationTargetsModel from '@models/marketingNotificationTargets';
 import settings from '@configs/settings';
+import { NoData } from '@libs/errors';
 
 class MarketingNotificationsController {
   public async index (req: Request, res: Response) {
@@ -27,6 +28,19 @@ class MarketingNotificationsController {
     }
   }
 
+  public async show (req: Request, res: Response) {
+    try {
+      const notification = await MarketingNotificationsModel.scope([
+        'withOwner',
+        'withNotificationTarget',
+      ]).findByPk(req.params.notificationId);
+      if (!notification) return sendError(res, 404, NoData);
+      sendSuccess(res, { notification });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
   public async create (req: Request, res: Response) {
     try {
       const admin = req.currentAdmin || { id: 1 };
@@ -42,6 +56,24 @@ class MarketingNotificationsController {
         return product;
       });
       sendSuccess(res, { marketingNotification: result });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async update (req: Request, res: Response) {
+    try {
+      const params = req.parameters.permit(MarketingNotificationsModel.UPDATABLE_PARAMETERS).value();
+      const notification = await MarketingNotificationsModel.scope([
+        { method: ['byStatus', MarketingNotificationsModel.STATUS_ENUM.PENDING] },
+      ]).findByPk(req.params.notificationId);
+      if (!notification) return sendError(res, 404, NoData);
+      await sequelize.transaction(async (transaction: Transaction) => {
+        await notification.update(params, { transaction });
+        await notification.updateNotificationTarget(params.notificationTargets, transaction);
+      });
+      await notification.reloadNotification();
+      sendSuccess(res, { notification });
     } catch (error) {
       sendError(res, 500, error.message, error);
     }

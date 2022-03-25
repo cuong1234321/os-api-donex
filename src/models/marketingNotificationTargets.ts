@@ -14,6 +14,7 @@ class MarketingNotificationTargetsModel extends Model<MarketingNotificationTarge
   static readonly scopes: ModelScopeOptions = {}
 
   public static readonly TYPE_ENUM = { USER_TYPE: 'userType' }
+  static readonly UPDATABLE_ON_DUPLICATE_PARAMETERS = ['id', 'targetId'];
 
   public static initialize (sequelize: Sequelize) {
     this.init(MarketingNotificationTargetsEntity, {
