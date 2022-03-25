@@ -6,6 +6,44 @@ const router = Router();
 /**
  * @openapi
  * /a/notifications:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] Notifications"
+ *     summary: Lấy danh sách thông báo
+ *     parameters:
+ *      - in: query
+ *        name: "page"
+ *        description: "page"
+ *        type: "string"
+ *      - in: query
+ *        name: "limit"
+ *        description: "số bản ghi trong 1 trang"
+ *        type: "string"
+ *      - in: query
+ *        name: "status"
+ *        description: "status"
+ *        type: "string"
+ *      - in: query
+ *        name: "freeWord"
+ *        description: "Tìm kiếm theo tên thông báo, tên người tạo"
+ *        type: "string"
+ *      - in: query
+ *        name: "listTarget"
+ *        description: "list id notificationTarget (cách nhau bởi dấu , )"
+ *        type: "string"
+ *     responses:
+ *       200:
+ *         description: "OK"
+ *       500:
+ *         description: "Internal error"
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/', MarketingNotificationController.index);
+
+/**
+ * @openapi
+ * /a/notifications:
  *   post:
  *     tags:
  *      - "[ADMIN] Notifications"

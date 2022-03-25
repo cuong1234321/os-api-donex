@@ -1,6 +1,6 @@
 import MarketingNotificationsEntity from '@entities/marketingNotifications';
 import MarketingNotificationsInterface from '@interfaces/marketingNotifications';
-import { Model, ModelScopeOptions, Sequelize } from 'sequelize';
+import { Model, ModelScopeOptions, Op, Sequelize } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import dayjs from 'dayjs';
 import SendSystemNotificationWorker from '@workers/SendSystemNotification';
@@ -10,6 +10,7 @@ import UserModel from './users';
 import CollaboratorModel from './collaborators';
 import MarketingNotificationTargetsModel from './marketingNotificationTargets';
 import MUserTypeModel from './mUserTypes';
+import AdminModel from './admins';
 
 class MarketingNotificationsModel extends Model<MarketingNotificationsInterface> implements MarketingNotificationsInterface {
   public id: number;
@@ -39,12 +40,67 @@ class MarketingNotificationsModel extends Model<MarketingNotificationsInterface>
       if (record.isSentImmediately) {
         record.sendNotifications();
       } else {
-        await record.scheduleDelivery();
+        record.scheduleDelivery();
       }
     },
   }
 
   static readonly scopes: ModelScopeOptions = {
+    byStatus (status) {
+      return {
+        where: { status },
+      };
+    },
+    byTarget (listTarget) {
+      const arrTarget = listTarget.split(',');
+      return {
+        include: [{
+          model: MarketingNotificationTargetsModel,
+          as: 'notificationTargets',
+          where: {
+            targetId: {
+              [Op.in]: arrTarget,
+            },
+          },
+        }],
+      };
+    },
+    byFreeWord (freeWord) {
+      return {
+        where: {
+          [Op.or]: [
+            { title: { [Op.like]: `%${freeWord || ''}%` } },
+            {
+              ownerId: {
+                [Op.in]: Sequelize.literal(`(SELECT id FROM admins WHERE deletedAt IS NULL AND fullName LIKE '%${freeWord}%')`),
+              },
+            },
+          ],
+        },
+      };
+    },
+    withOwner () {
+      return {
+        include: {
+          model: AdminModel,
+          as: 'owner',
+          attributes: ['fullName'],
+        },
+      };
+    },
+    withNotificationTarget () {
+      return {
+        include: [{
+          model: MarketingNotificationTargetsModel,
+          as: 'notificationTargets',
+          include: [{
+            model: MUserTypeModel,
+            as: 'target',
+            attributes: ['name'],
+          }],
+        }],
+      };
+    },
   }
 
   public async sendNotifications () {
@@ -122,6 +178,7 @@ class MarketingNotificationsModel extends Model<MarketingNotificationsInterface>
 
   public async scheduleDelivery () {
     if (this.sendAt) {
+      await this.reloadNotification();
       const sendNotifyWorkerInstance = new SendSystemNotificationWorker(this);
       if (this.jobId) await sendNotifyWorkerInstance.cancelJob();
       const job = await sendNotifyWorkerInstance.scheduleJob();
@@ -153,6 +210,7 @@ class MarketingNotificationsModel extends Model<MarketingNotificationsInterface>
 
   public static associate () {
     this.hasMany(MarketingNotificationTargetsModel, { as: 'notificationTargets', foreignKey: 'notificationId', onDelete: 'CASCADE', hooks: true });
+    this.belongsTo(AdminModel, { as: 'owner', foreignKey: 'ownerId' });
   }
 }
 
