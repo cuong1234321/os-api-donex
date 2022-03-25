@@ -208,6 +208,13 @@ class MarketingNotificationsModel extends Model<MarketingNotificationsInterface>
     });
   }
 
+  public async cancelDelivery () {
+    const sendNotifyWorkerInstance = new SendSystemNotificationWorker(this);
+    if (this.jobId) {
+      await sendNotifyWorkerInstance.cancelJob();
+    }
+  }
+
   public async reloadNotification () {
     await this.reload({
       include: [
