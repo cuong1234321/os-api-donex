@@ -39,6 +39,11 @@ const router = Router();
  *                  targetId:
  *                    type: "integer"
  *                    description: "Id đối tượng nhận thông báo"
+ *                  type:
+ *                    type: "string"
+ *                    description: "kiểu đối tượng nhận thông báo"
+ *                    enum:
+ *                      - userType
  *     responses:
  *       200:
  *         description: Return data.
