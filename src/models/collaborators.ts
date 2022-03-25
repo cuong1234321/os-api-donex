@@ -18,6 +18,10 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
   public rejectionReason: string;
   public openTime: Date;
   public closeTime: Date;
+  public lat: string;
+  public long: string;
+  public title: string;
+
   public createdAt?: Date;
   public updatedAt?: Date;
   public deletedAt: Date;
@@ -26,8 +30,8 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
   public static readonly STATUS_ENUM = { PENDING: 'pending', ACTIVE: 'active', INACTIVE: 'inactive', REJECTED: 'rejected' }
 
   public static readonly INFORMATION_PARAMETERS = ['fullName', 'dateOfBirth', 'phoneNumber', 'username', 'password', 'email', 'provinceId', 'districtId', 'wardId', 'address', 'defaultRank']
-  public static readonly CREATABLE_PARAMETERS = ['type', 'parentId', 'openTime', 'closeTime']
-  public static readonly UPDATABLE_PARAMETERS = ['type', 'parentId', 'openTime', 'closeTime']
+  public static readonly CREATABLE_PARAMETERS = ['type', 'parentId', 'openTime', 'closeTime', 'lat', 'long', 'title']
+  public static readonly UPDATABLE_PARAMETERS = ['type', 'parentId', 'openTime', 'closeTime', 'lat', 'long', 'title']
 
   static readonly hooks: Partial<ModelHooks<CollaboratorModel>> = { }
 

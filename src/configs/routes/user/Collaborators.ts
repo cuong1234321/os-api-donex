@@ -46,6 +46,12 @@ const router = Router();
  *                    enum:
  *                    - collaborator
  *                    - agency
+ *                  lat:
+ *                    type: "string"
+ *                  long:
+ *                    type: "string"
+ *                  title:
+ *                    type: "string"
  *     responses:
  *       200:
  *         description: Return data.
@@ -55,6 +61,45 @@ const router = Router();
  *      - Bearer: []
  */
 router.post('/', CollaboratorController.register);
+
+/**
+ * @openapi
+ * /u/collaborators/{collaboratorId}/upload_store:
+ *   post:
+ *     tags:
+ *      - "[USER] Collaborators"
+ *     summary: Tải lên ảnh cửa hàng
+ *     consumes:
+ *      - "multipart/form-data"
+ *     produces:
+ *      - "application/json"
+ *     parameters:
+ *      - in: path
+ *        name: "collaboratorId"
+ *        description: "collaboratorId"
+ *        type: "string"
+ *      - in: "formData"
+ *        name: "inside"
+ *        description: "File upload"
+ *        required: false
+ *        allowMultiple: true
+ *        type: "file"
+ *      - in: "formData"
+ *        name: "outside"
+ *        description: "File upload"
+ *        required: false
+ *        allowMultiple: true
+ *        type: "file"
+ *     responses:
+ *       200:
+ *         description: "Upload success"
+ *       500:
+ *         description: "Upload failed"
+ *     security:
+ *      - Bearer: []
+ */
+router.post('/:collaboratorId/upload_store',
+  withoutSavingUploader.any(), CollaboratorController.uploadCollaboratorMedia);
 
 /**
  * @openapi

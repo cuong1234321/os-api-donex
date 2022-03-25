@@ -134,6 +134,6 @@ router.get('/colors', SelectionController.colorSelections);
  *     security:
  *      - Bearer: []
  */
-router.get('/', SelectionController.productCategories);
+router.get('/product_categories', SelectionController.productCategories);
 
 export default router;

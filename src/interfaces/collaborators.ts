@@ -11,6 +11,10 @@ interface CollaboratorInterface {
   rejectionReason: string;
   openTime: Date;
   closeTime: Date;
+  lat: string,
+  long: string,
+  title: string,
+
   createdAt?: Date,
   updatedAt?: Date,
   deletedAt: Date,
