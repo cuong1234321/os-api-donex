@@ -6,6 +6,7 @@ import sequelize from '@initializers/sequelize';
 import { Transaction } from 'sequelize/types';
 import ImageUploaderService from '@services/imageUploader';
 import { NoData } from '@libs/errors';
+import CollaboratorMediaModel from '@models/collaboratorMedia';
 
 class CollaboratorController {
   public async register (req: Request, res: Response) {
@@ -83,6 +84,26 @@ class CollaboratorController {
       ]).findOne();
       if (!collaborator) { return sendError(res, 404, NoData); }
       sendSuccess(res, collaborator);
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async uploadCollaboratorMedia (req: Request, res: Response) {
+    try {
+      const { collaboratorId } = req.params;
+      const files: any = req.files as any[];
+      const collaborator = await CollaboratorModel.findByPk(collaboratorId);
+      if (!collaborator) { return sendError(res, 404, NoData); }
+      for (const file of files) {
+        const params: any = {
+          collaboratorId,
+          type: file.fieldname,
+          source: await ImageUploaderService.singleUpload(file),
+        };
+        await CollaboratorMediaModel.create(params);
+      }
+      sendSuccess(res, { });
     } catch (error) {
       sendError(res, 500, error.message, error);
     }

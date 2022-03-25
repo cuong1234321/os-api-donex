@@ -42,6 +42,18 @@ const collaboratorEntity = {
     type: DataTypes.TIME,
     allowNull: true,
   },
+  lat: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+  },
+  long: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+  },
+  title: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },

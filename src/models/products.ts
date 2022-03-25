@@ -307,6 +307,7 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
         include: [
           {
             model: ProductCategoryModel,
+            required: false,
             as: 'collections',
           },
         ],
@@ -333,6 +334,7 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
         include: [
           {
             model: ProductCategoryModel,
+            required: false,
             as: 'genders',
           },
         ],
@@ -343,6 +345,7 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
         include: [
           {
             model: ProductCategoryModel,
+            required: false,
             as: 'productType',
           },
         ],
@@ -354,6 +357,7 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
           {
             model: ProductCategoryModel,
             as: 'categories',
+            required: false,
             where: {
               type: ProductCategoryModel.TYPE_ENUM.NONE,
             },
