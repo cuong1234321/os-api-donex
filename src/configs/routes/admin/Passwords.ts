@@ -31,6 +31,34 @@ router.post('/forgot_password', PasswordController.forgotPassword);
 
 /**
   * @openapi
+  * /a/passwords/verify_otp:
+  *   post:
+  *     tags:
+  *      - "[ADMIN] Passwords"
+  *     summary: verify otp
+  *     parameters:
+  *      - in: "body"
+  *        name: "body"
+  *        description: ""
+  *        schema:
+  *          type: "object"
+  *          properties:
+  *            email:
+  *              type: "string"
+  *            otp:
+  *              type: "string"
+  *     responses:
+  *       200:
+  *         description: Return data.
+  *       500:
+  *         description: Lỗi không xác định
+  *     security:
+  *      - Bearer: []
+  */
+router.post('/verify_otp', PasswordController.verifyOtp);
+
+/**
+  * @openapi
   * /a/passwords:
   *   post:
   *     tags:
