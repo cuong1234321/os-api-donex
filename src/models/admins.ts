@@ -7,6 +7,7 @@ import jwt from 'jsonwebtoken';
 import settings from '@configs/settings';
 import dayjs from 'dayjs';
 import MailerService from '@services/mailer';
+import randomString from 'randomstring';
 
 class AdminModel extends Model<AdminInterface> implements AdminInterface {
   public id: number;
@@ -170,7 +171,17 @@ class AdminModel extends Model<AdminInterface> implements AdminInterface {
   }
 
   public async checkValidForgotPasswordToken (token: string) {
-    return this.forgotPasswordToken === token && dayjs(this.forgotPasswordExpireAt).subtract(dayjs().valueOf(), 'ms').valueOf() > 0;
+    return this.forgotPasswordToken === token && (!this.forgotPasswordExpireAt || dayjs(this.forgotPasswordExpireAt).subtract(dayjs().valueOf(), 'ms').valueOf() > 0);
+  }
+
+  public async genLifetimeForgotPasswordToken () {
+    const token = randomString.generate(64);
+    await this.update(
+      {
+        forgotPasswordToken: token,
+        forgotPasswordExpireAt: null,
+      },
+    );
   }
 
   public static initialize (sequelize: Sequelize) {

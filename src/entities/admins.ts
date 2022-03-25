@@ -43,7 +43,7 @@ const AdminEntity = {
     type: DataTypes.TEXT, allowNull: true,
   },
   forgotPasswordToken: {
-    type: DataTypes.STRING(10), allowNull: true,
+    type: DataTypes.STRING(100), allowNull: true,
   },
   forgotPasswordExpireAt: {
     type: DataTypes.DATE, allowNull: true,

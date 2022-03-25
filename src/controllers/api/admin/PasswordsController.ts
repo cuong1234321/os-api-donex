@@ -18,6 +18,21 @@ class PasswordController {
     }
   }
 
+  public async verifyOtp (req: Request, res: Response) {
+    try {
+      const { email, otp } = req.body;
+      const admin = await AdminModel.scope([
+        { method: ['byEmail', email] },
+      ]).findOne();
+      if (!admin || !admin.checkValidForgotPasswordToken(otp)) sendError(res, 404, NoData);
+      await admin.genLifetimeForgotPasswordToken();
+      await admin.reload();
+      sendSuccess(res, { token: admin.forgotPasswordToken });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
   public async resetPassword (req:Request, res:Response) {
     try {
       const email = req.query.email as string;
