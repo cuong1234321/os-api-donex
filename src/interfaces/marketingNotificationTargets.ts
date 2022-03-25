@@ -5,6 +5,7 @@ interface MarketingNotificationTargetInterface {
   type: string;
   createdAt?: Date;
   updatedAt?: Date;
+  deletedAt?: Date;
 };
 
 export default MarketingNotificationTargetInterface;

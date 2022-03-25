@@ -192,4 +192,26 @@ router.patch('/:notificationId', MarketingNotificationController.update);
  */
 router.patch('/:notificationId/send_now', MarketingNotificationController.sendNow);
 
+/**
+ * @openapi
+ * /a/notifications/{notificationId}:
+ *   delete:
+ *     tags:
+ *      - "[ADMIN] Notifications"
+ *     summary: Xóa thông báo
+ *     parameters:
+ *      - in: path
+ *        name: notificationId
+ *        type: integer
+ *        require: true
+ *     responses:
+ *       200:
+ *         description: Return data.
+ *       500:
+ *         description: Internal error.
+ *     security:
+ *      - Bearer: []
+ */
+router.delete('/:notificationId', MarketingNotificationController.delete);
+
 export default router;

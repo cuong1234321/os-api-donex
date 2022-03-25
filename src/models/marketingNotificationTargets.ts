@@ -10,6 +10,7 @@ class MarketingNotificationTargetsModel extends Model<MarketingNotificationTarge
   public type: string;
   public createdAt?: Date;
   public updatedAt?: Date;
+  public deletedAt?: Date;
 
   static readonly scopes: ModelScopeOptions = {}
 
@@ -21,6 +22,7 @@ class MarketingNotificationTargetsModel extends Model<MarketingNotificationTarge
       tableName: 'marketing_notification_targets',
       scopes: MarketingNotificationTargetsModel.scopes,
       sequelize,
+      paranoid: true,
     });
   }
 
