@@ -9,7 +9,7 @@ import UserNotificationsModel from './userNotifications';
 import UserModel from './users';
 import CollaboratorModel from './collaborators';
 import MarketingNotificationTargetsModel from './marketingNotificationTargets';
-import MNotificationReceivinTargetsModel from './mNotificationReceivinTargets';
+import MUserTypeModel from './mUserTypes';
 
 class MarketingNotificationsModel extends Model<MarketingNotificationsInterface> implements MarketingNotificationsInterface {
   public id: number;
@@ -31,7 +31,7 @@ class MarketingNotificationsModel extends Model<MarketingNotificationsInterface>
 
   public static readonly CREATABLE_PARAMETERS = [
     'title', 'content', 'link', 'isSentImmediately', 'sendAt',
-    { notificationTargets: ['targetId'] },
+    { notificationTargets: ['targetId', 'type'] },
   ]
 
   static readonly hooks: Partial<ModelHooks<MarketingNotificationsModel>> = {
@@ -51,7 +51,8 @@ class MarketingNotificationsModel extends Model<MarketingNotificationsInterface>
     if (this.status === MarketingNotificationsModel.STATUS_ENUM.SENDED) return;
     await this.reloadNotification();
     let notifications: any[] = [];
-    if (this.notificationTargets.find((element: any) => element.target.name === 'user')) {
+    if (this.notificationTargets.find((element: any) => element.target.name === 'user' &&
+    element.type === MarketingNotificationTargetsModel.TYPE_ENUM.USER_TYPE)) {
       const users: any = await UserModel.findAll();
       const userNotifications = users.map((user: any) => {
         return {
@@ -63,7 +64,8 @@ class MarketingNotificationsModel extends Model<MarketingNotificationsInterface>
       });
       notifications = notifications.concat([...userNotifications]);
     }
-    if (this.notificationTargets.find((element: any) => element.target.name === 'collaborator')) {
+    if (this.notificationTargets.find((element: any) => element.target.name === 'collaborator' &&
+    element.type === MarketingNotificationTargetsModel.TYPE_ENUM.USER_TYPE)) {
       const collaborators: any = await CollaboratorModel.scope([
         { method: ['byType', CollaboratorModel.TYPE_ENUM.COLLABORATOR] },
         'withUser',
@@ -78,7 +80,8 @@ class MarketingNotificationsModel extends Model<MarketingNotificationsInterface>
       });
       notifications = notifications.concat([...userNotifications]);
     }
-    if (this.notificationTargets.find((element: any) => element.target.name === 'agency')) {
+    if (this.notificationTargets.find((element: any) => element.target.name === 'agency' &&
+    element.type === MarketingNotificationTargetsModel.TYPE_ENUM.USER_TYPE)) {
       const agency: any = await CollaboratorModel.scope([
         { method: ['byType', CollaboratorModel.TYPE_ENUM.AGENCY] },
         'withUser',
@@ -93,7 +96,8 @@ class MarketingNotificationsModel extends Model<MarketingNotificationsInterface>
       });
       notifications = notifications.concat([...userNotifications]);
     }
-    if (this.notificationTargets.find((element: any) => element.target.name === 'sendToDistributor')) {
+    if (this.notificationTargets.find((element: any) => element.target.name === 'sendToDistributor' &&
+    element.type === MarketingNotificationTargetsModel.TYPE_ENUM.USER_TYPE)) {
       const distributors: any = await CollaboratorModel.scope([
         { method: ['byType', CollaboratorModel.TYPE_ENUM.DISTRIBUTOR] },
         'withUser',
@@ -131,7 +135,7 @@ class MarketingNotificationsModel extends Model<MarketingNotificationsInterface>
         model: MarketingNotificationTargetsModel,
         as: 'notificationTargets',
         include: [
-          { model: MNotificationReceivinTargetsModel, as: 'target' },
+          { model: MUserTypeModel, as: 'target' },
         ],
       },
     });
