@@ -245,7 +245,7 @@ router.post('/:collaboratorId/upload_paper_proof',
  *            closeTime:
  *              type: "string"
  *              description: "hhmmss"
- *            media:
+ *            collaboratorMedia:
  *              type: "array"
  *              items:
  *                type: "object"

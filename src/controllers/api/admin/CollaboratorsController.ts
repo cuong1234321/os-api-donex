@@ -26,7 +26,7 @@ class CollaboratorController {
       if (status) scope.push({ method: ['byStatus', status] });
       if (freeWord) scope.push({ method: ['byFreeWord', freeWord] });
       if (type) scope.push({ method: ['byType', type] });
-      const { rows, count } = await CollaboratorModel.scope(scope).findAndCountAll({ limit, offset });
+      const { rows, count } = await CollaboratorModel.scope(scope).findAndCountAll({ limit, offset, distinct: true, col: 'CollaboratorModel.id' });
       const totalPending = await CollaboratorModel.scope([{ method: ['byStatus', 'pending'] }]).count();
       sendSuccess(res, { totalPending, rows, pagination: { total: count, page, perPage: limit } });
     } catch (error) {
@@ -107,7 +107,7 @@ class CollaboratorController {
         await user.update(userParams, { transaction });
         await collaborator.update(collaboratorParams, { transaction });
         await CollaboratorWorkingDayModel.updateListCollaboratorWorkingDay(collaboratorWorkingDays, transaction);
-        await collaborator.updateMedias(req.body.media, transaction);
+        await collaborator.updateMedias(req.body.collaboratorMedia, transaction);
       });
       await collaborator.reloadCollaborator();
       sendSuccess(res, { collaborator });
