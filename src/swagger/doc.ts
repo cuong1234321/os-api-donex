@@ -49,6 +49,10 @@ const swaggerDefinition = {
       description: 'Quản lý sản phẩm',
     },
     {
+      name: '[ADMIN] POPUPS',
+      description: 'Quản lý popup',
+    },
+    {
       name: '[USER] Sessions',
       description: 'Phiên đăng nhập user',
     },
