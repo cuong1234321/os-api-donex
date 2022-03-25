@@ -170,4 +170,26 @@ router.post('/', MarketingNotificationController.create);
  */
 router.patch('/:notificationId', MarketingNotificationController.update);
 
+/**
+ * @openapi
+ * /a/notifications/{notificationId}/send_now:
+ *   patch:
+ *     tags:
+ *      - "[ADMIN] Notifications"
+ *     summary: Gửi ngay
+ *     parameters:
+ *      - in: path
+ *        name: notificationId
+ *        type: integer
+ *        require: true
+ *     responses:
+ *       200:
+ *         description: Return data.
+ *       500:
+ *         description: Internal error.
+ *     security:
+ *      - Bearer: []
+ */
+router.patch('/:notificationId/send_now', MarketingNotificationController.sendNow);
+
 export default router;

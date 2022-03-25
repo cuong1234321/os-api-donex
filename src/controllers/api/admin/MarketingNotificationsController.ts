@@ -78,6 +78,22 @@ class MarketingNotificationsController {
       sendError(res, 500, error.message, error);
     }
   }
+
+  public async sendNow (req: Request, res: Response) {
+    try {
+      const notification = await MarketingNotificationsModel.scope([
+        { method: ['byStatus', MarketingNotificationsModel.STATUS_ENUM.PENDING] },
+      ]).findByPk(req.params.notificationId);
+      if (!notification) return sendError(res, 404, NoData);
+      await notification.cancelDelivery();
+      await notification.update({
+        isSentImmediately: true,
+      });
+      sendSuccess(res, { });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
 }
 
 export default new MarketingNotificationsController();
