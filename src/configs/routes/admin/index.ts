@@ -8,6 +8,7 @@ import ProductCategoryRouter from './ProductCategories';
 import NewsRouter from './News';
 import SelectionRouter from './Selections';
 import AdminRouter from './Admins';
+import PopupRouter from './Popups';
 
 const router = Router();
 
@@ -20,5 +21,6 @@ router.use('/product_categories', ProductCategoryRouter);
 router.use('/news', NewsRouter);
 router.use('/selections', SelectionRouter);
 router.use('/admins', AdminRouter);
+router.use('/popups', PopupRouter);
 
 export default router;
