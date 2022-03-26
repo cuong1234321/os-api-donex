@@ -94,6 +94,18 @@ class MarketingNotificationsController {
       sendError(res, 500, error.message, error);
     }
   }
+
+  public async delete (req: Request, res: Response) {
+    try {
+      const notification = await MarketingNotificationsModel.findByPk(req.params.notificationId);
+      if (!notification) return sendError(res, 404, NoData);
+      await notification.cancelDelivery();
+      await notification.destroy();
+      sendSuccess(res, { });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
 }
 
 export default new MarketingNotificationsController();

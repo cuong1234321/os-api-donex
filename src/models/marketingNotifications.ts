@@ -48,6 +48,9 @@ class MarketingNotificationsModel extends Model<MarketingNotificationsInterface>
         record.scheduleDelivery();
       }
     },
+    async afterDestroy (record) {
+      await MarketingNotificationTargetsModel.destroy({ where: { notificationId: record.id }, individualHooks: true });
+    },
   }
 
   static readonly scopes: ModelScopeOptions = {
