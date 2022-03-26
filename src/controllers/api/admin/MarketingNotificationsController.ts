@@ -6,6 +6,7 @@ import sequelize from '@initializers/sequelize';
 import MarketingNotificationTargetsModel from '@models/marketingNotificationTargets';
 import settings from '@configs/settings';
 import { NoData } from '@libs/errors';
+import ImageUploaderService from '@services/imageUploader';
 
 class MarketingNotificationsController {
   public async index (req: Request, res: Response) {
@@ -74,6 +75,21 @@ class MarketingNotificationsController {
       });
       await notification.reloadNotification();
       sendSuccess(res, { notification });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async uploadThumbnail (req: Request, res: Response) {
+    try {
+      const { notificationId } = req.params;
+      const notification = await MarketingNotificationsModel.findByPk(notificationId);
+      if (!notification) return sendError(res, 404, NoData);
+      const thumbnail = await ImageUploaderService.singleUpload(req.file);
+      await notification.update({
+        thumbnail,
+      });
+      sendSuccess(res, { user: notification });
     } catch (error) {
       sendError(res, 500, error.message, error);
     }

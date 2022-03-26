@@ -4,6 +4,7 @@ import settings from '@configs/settings';
 import NewsModel from '@models/news';
 import NewsCategoryModel from '@models/newsCategories';
 import { NoData } from '@libs/errors';
+import ImageUploaderService from '@services/imageUploader';
 
 class NewsController {
   public async index (req: Request, res: Response) {
@@ -45,6 +46,21 @@ class NewsController {
       if (!newsCategory) params.categoryId = null;
       await news.update(params);
       sendSuccess(res, news);
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async uploadThumbnail (req: Request, res: Response) {
+    try {
+      const { newsId } = req.params;
+      const news = await NewsModel.findByPk(newsId);
+      if (!news) return sendError(res, 404, NoData);
+      const thumbnail = await ImageUploaderService.singleUpload(req.file);
+      await news.update({
+        thumbnail,
+      });
+      sendSuccess(res, { user: news });
     } catch (error) {
       sendError(res, 500, error.message, error);
     }

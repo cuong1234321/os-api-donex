@@ -8,6 +8,7 @@ interface MarketingNotificationInterface {
   sendAt: Date;
   status: string;
   jobId: number;
+  thumbnail: string;
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt: Date;

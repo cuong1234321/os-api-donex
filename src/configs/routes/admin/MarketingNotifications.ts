@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import MarketingNotificationController from '@controllers/api/admin/MarketingNotificationsController';
+import { withoutSavingUploader } from '@middlewares/uploaders';
 
 const router = Router();
 
@@ -169,6 +170,38 @@ router.post('/', MarketingNotificationController.create);
  *      - Bearer: []
  */
 router.patch('/:notificationId', MarketingNotificationController.update);
+
+/**
+ * @openapi
+ * /a/notifications/{notificationId}/upload_thumbnail:
+ *   patch:
+ *     tags:
+ *      - "[ADMIN] Notifications"
+ *     summary: Tải lên thumbnail
+ *     consumes:
+ *      - "multipart/form-data"
+ *     produces:
+ *      - "application/json"
+ *     parameters:
+ *      - in: "formData"
+ *        name: "thumbnail"
+ *        description: "File upload"
+ *        required: false
+ *        allowMultiple: true
+ *        type: "file"
+ *      - in: "path"
+ *        name: "notificationId"
+ *        required: true
+ *     responses:
+ *       200:
+ *         description: "Upload success"
+ *       500:
+ *         description: "Upload failed"
+ *     security:
+ *      - Bearer: []
+ */
+router.patch('/:notificationId/upload_thumbnail',
+  withoutSavingUploader.single('thumbnail'), MarketingNotificationController.uploadThumbnail);
 
 /**
  * @openapi

@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import NewsController from '@controllers/api/admin/NewsController';
+import { withoutSavingUploader } from '@middlewares/uploaders';
 
 const router = Router();
 
@@ -113,6 +114,37 @@ router.post('/', NewsController.create);
  *      - Bearer: []
  */
 router.patch('/:newsId', NewsController.update);
+
+/**
+ * @openapi
+ * /a/news/{newsId}/upload_thumbnail:
+ *   patch:
+ *     tags:
+ *      - "[ADMIN] News"
+ *     summary: Tải lên thumbnail
+ *     consumes:
+ *      - "multipart/form-data"
+ *     produces:
+ *      - "application/json"
+ *     parameters:
+ *      - in: "formData"
+ *        name: "thumbnail"
+ *        description: "File upload"
+ *        required: false
+ *        allowMultiple: true
+ *        type: "file"
+ *      - in: "path"
+ *        name: "newsId"
+ *        required: true
+ *     responses:
+ *       200:
+ *         description: "Upload success"
+ *       500:
+ *         description: "Upload failed"
+ *     security:
+ *      - Bearer: []
+ */
+router.patch('/:newsId/upload_thumbnail', withoutSavingUploader.single('thumbnail'), NewsController.uploadThumbnail);
 
 /**
  * @openapi
