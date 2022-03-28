@@ -43,6 +43,41 @@ class ProductCategoryController {
       sendError(res, 500, error.message, error);
     }
   }
+
+  public async show (req: Request, res: Response) {
+    try {
+      let productCategory = await ProductCategoryModel.findByPk(req.params.productCategoryId);
+      if (!productCategory) return sendError(res, 404, NoData);
+      const productCategories = await ProductCategoryModel.findAll();
+      productCategory = await ProductCategoryModel.getHierarchyByParentNodes([productCategory], productCategories);
+      sendSuccess(res, { productCategory });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async update (req: Request, res: Response) {
+    try {
+      const params = req.parameters.permit(ProductCategoryModel.UPDATABLE_PARAMETERS).value();
+      const productCategory = await ProductCategoryModel.findByPk(req.params.productCategoryId);
+      if (!productCategory) return sendError(res, 404, NoData);
+      await productCategory.update(params);
+      sendSuccess(res, { productCategory });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async delete (req: Request, res: Response) {
+    try {
+      const productCategory = await ProductCategoryModel.findByPk(req.params.productCategoryId);
+      if (!productCategory) return sendError(res, 404, NoData);
+      await productCategory.destroy();
+      sendSuccess(res, { });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
 }
 
 export default new ProductCategoryController();
