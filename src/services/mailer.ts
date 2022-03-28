@@ -75,6 +75,24 @@ class MailerService {
     await this.sendMail(mailerOptions, templateName, templateArgs);
   }
 
+  public static async createUser (user: any, passwordDefault: any) {
+    const mailerOptions: Mail.Options = {
+      from: 'Admin',
+      to: user.email,
+      subject: '[DONEX-SPORT] Thông tin tài khoản khách hàng',
+    };
+    const templateArgs = {
+      url: process.env.CLIENT_HOST,
+      name: user.fullName,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+      username: user.username,
+      password: passwordDefault,
+    };
+    const templateName = 'sendAdminInfo';
+    await this.sendMail(mailerOptions, templateName, templateArgs);
+  }
+
   public static async changePasswordAdmin (admin: any, password: any) {
     const mailerOptions: Mail.Options = {
       from: 'Admin',
