@@ -214,6 +214,9 @@ router.get('/:productId', ProductController.show);
  *                  optionMappingId:
  *                    type: "number"
  *                    description: "Mã phân loại con tự sinh"
+ *                  thumbnail:
+ *                    type: "string"
+ *                    default: null
  *            variants:
  *              type: "array"
  *              items:
@@ -241,6 +244,9 @@ router.get('/:productId', ProductController.show);
  *                  isThumbnail:
  *                    type: "boolean"
  *                    description: "Thumbnail"
+ *                  source:
+ *                    type: "string"
+ *                    default: null
  *     responses:
  *       200:
  *         description: Return data.
