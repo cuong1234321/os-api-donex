@@ -89,4 +89,34 @@ router.post('/verify_otp', PasswordController.verifyOtp);
   */
 router.post('/', PasswordController.resetPassword);
 
+/**
+  * @openapi
+  * /u/passwords/change_password:
+  *   patch:
+  *     tags:
+  *      - "[USER] Passwords"
+  *     summary: thay đổi mật khẩu
+  *     parameters:
+  *      - in: "body"
+  *        name: "body"
+  *        description: ""
+  *        schema:
+  *          type: "object"
+  *          properties:
+  *            oldPassword:
+  *              type: "string"
+  *            newPassword:
+  *              type: "string"
+  *            confirmPassword:
+  *              type: "string"
+  *     responses:
+  *       200:
+  *         description: Return data.
+  *       500:
+  *         description: Lỗi không xác định
+  *     security:
+  *      - Bearer: []
+  */
+router.patch('/change_password', PasswordController.changePassword);
+
 export default router;
