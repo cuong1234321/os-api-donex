@@ -66,3 +66,8 @@ export const invalidParameter = {
   code: 415,
   message: 'invalid parameter',
 };
+
+export const alreadyFavoriteProduct = {
+  code: 435,
+  message: 'you already favorite this product',
+};
