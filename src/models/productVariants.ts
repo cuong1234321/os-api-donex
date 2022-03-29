@@ -3,7 +3,9 @@ import ProductVariantInterface from '@interfaces/productVariants';
 import { Model, ModelScopeOptions, ModelValidateOptions, Sequelize } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import ProductOptionModel from './productOptions';
+import ProductModel from './products';
 import ProductVariantOptionModel from './productVariantOptions';
+import SaleCampaignProductModel from './saleCampaignProducts';
 
 class ProductVariantModel extends Model<ProductVariantInterface> implements ProductVariantInterface {
   public id: number;
@@ -53,6 +55,8 @@ class ProductVariantModel extends Model<ProductVariantInterface> implements Prod
   public static associate () {
     this.belongsToMany(ProductOptionModel, { through: ProductVariantOptionModel, as: 'options', foreignKey: 'variantId' });
     this.hasMany(ProductVariantOptionModel, { as: 'variantOptions', foreignKey: 'variantId' });
+    this.hasMany(SaleCampaignProductModel, { as: 'saleCampaigns', foreignKey: 'productVariantId' });
+    this.belongsTo(ProductModel, { as: 'product', foreignKey: 'productId' });
   }
 }
 
