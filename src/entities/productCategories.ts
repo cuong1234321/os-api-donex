@@ -38,6 +38,9 @@ const ProductCategoryEntity = {
   updatedAt: {
     type: DataTypes.DATE,
   },
+  deletedAt: {
+    type: DataTypes.DATE,
+  },
 };
 
 export default ProductCategoryEntity;

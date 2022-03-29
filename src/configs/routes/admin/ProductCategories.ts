@@ -67,6 +67,27 @@ router.get('/',
 
 /**
  * @openapi
+ * /a/product_categories/{productCategoryId}:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] PRODUCT CATEGORY"
+ *     summary: chi tiet category
+ *     parameters:
+ *      - in: "path"
+ *        name: "productCategoryId"
+ *        required: true
+ *     responses:
+ *       200:
+ *         description: "Upload success"
+ *       500:
+ *         description: "Upload failed"
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/:productCategoryId', ProductCategoryController.show);
+
+/**
+ * @openapi
  * /a/product_categories/{productCategoryId}/upload_thumbnail:
  *   patch:
  *     tags:
@@ -96,5 +117,61 @@ router.get('/',
  */
 router.patch('/:productCategoryId/upload_thumbnail',
   withoutSavingUploader.single('thumbnail'), ProductCategoryController.uploadThumbnail);
+
+/**
+* @openapi
+* /a/product_categories/{productCategoryId}:
+*   patch:
+*     tags:
+*      - "[ADMIN] PRODUCT CATEGORY"
+*     summary: chỉnh sửa danh mục
+*     parameters:
+*      - in: "path"
+*        name: "productCategoryId"
+*        required: true
+*      - in: "body"
+*        name: "body"
+*        description: "Thông tin product category"
+*        schema:
+*          type: "object"
+*          properties:
+*            name:
+*              type: "string"
+*              description: "Tên danh mục"
+*              default: "Name example"
+*            parentId:
+*              type: "integer"
+*              description: "id danh mục cha"
+*              default: null
+*     responses:
+*       200:
+*         description: "Upload success"
+*       500:
+*         description: "Upload failed"
+*     security:
+*      - Bearer: []
+*/
+router.patch('/:productCategoryId', ProductCategoryController.update);
+
+/**
+* @openapi
+* /a/product_categories/{productCategoryId}:
+*   delete:
+*     tags:
+*      - "[ADMIN] PRODUCT CATEGORY"
+*     summary: Xóa category
+*     parameters:
+*      - in: "path"
+*        name: "productCategoryId"
+*        required: true
+*     responses:
+*       200:
+*         description: "Upload success"
+*       500:
+*         description: "Upload failed"
+*     security:
+*      - Bearer: []
+*/
+router.delete('/:productCategoryId', ProductCategoryController.delete);
 
 export default router;

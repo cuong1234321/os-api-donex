@@ -8,6 +8,7 @@ interface ProductCategoryInterface {
   type: string;
   createdAt?: Date;
   updatedAt?: Date;
+  deletedAt?: Date;
 
   children?: ProductCategoryInterface[];
 };
