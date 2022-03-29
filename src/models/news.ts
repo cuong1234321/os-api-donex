@@ -32,14 +32,19 @@ class NewsModel extends Model<NewsInterface> implements NewsInterface {
   }
 
   static readonly scopes: ModelScopeOptions = {
+    byId (id) {
+      return {
+        where: { id },
+      };
+    },
     byStatus (status) {
       return {
         where: { status },
       };
     },
-    byCategory (categoryId) {
+    byCategory (newsCategoryId) {
       return {
-        where: { categoryId },
+        where: { newsCategoryId },
       };
     },
     byFreeWord (freeWord) {
