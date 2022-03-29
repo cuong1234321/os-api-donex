@@ -56,3 +56,13 @@ export const InvalidOtp = {
   code: 420,
   message: 'Invalid OTP',
 };
+
+export const InvalidPassword = {
+  code: 425,
+  message: 'invalid password',
+};
+
+export const invalidParameter = {
+  code: 415,
+  message: 'invalid parameter',
+};
