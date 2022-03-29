@@ -8,6 +8,7 @@ import { NoData } from '@libs/errors';
 import ImageUploaderService from '@services/imageUploader';
 import settings from '@configs/settings';
 import { Sequelize } from 'sequelize';
+import MailerService from '@services/mailer';
 
 class UserController {
   public async index (req: Request, res: Response) {
@@ -102,6 +103,41 @@ class UserController {
         avatar,
       });
       sendSuccess(res, { user });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async show (req: Request, res: Response) {
+    try {
+      const user = await UserModel.findByPk(req.params.userId);
+      if (!user) { return sendError(res, 404, NoData); }
+      sendSuccess(res, user);
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async update (req: Request, res: Response) {
+    try {
+      const user = await UserModel.findByPk(req.params.userId);
+      if (!user) { return sendError(res, 404, NoData); }
+      const params = req.parameters.permit(UserModel.UPDATABLE_PARAMETERS).value();
+      await user.update(params);
+      sendSuccess(res, user);
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async changePassword (req: Request, res: Response) {
+    try {
+      const user = await UserModel.findByPk(req.params.userId);
+      if (!user) { return sendError(res, 404, NoData); }
+      const { password } = req.body;
+      await user.update({ password });
+      MailerService.changePasswordUser(user, password);
+      sendSuccess(res, user);
     } catch (error) {
       sendError(res, 500, error.message, error);
     }

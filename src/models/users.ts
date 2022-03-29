@@ -40,6 +40,7 @@ class UserModel extends Model<UserInterface> implements UserInterface {
   public static readonly STATUS_ENUM = { ACTIVE: 'active', INACTIVE: 'inactive' }
   public static readonly CREATABLE_PARAMETERS = ['phoneNumber', 'fullName', 'password', 'confirmPassword']
   public static readonly USER_CREATABLE_PARAMETERS = ['phoneNumber', 'fullName', 'username', 'gender', 'dateOfBirth', 'email', 'note']
+  static readonly UPDATABLE_PARAMETERS = ['fullName', 'phoneNumber', 'gender', 'email', 'dateOfBirth', 'note']
 
   public static readonly CREATABLE_COLLABORATOR_PARAMETERS = ['phoneNumber', 'fullName', 'email', 'provinceId', 'districtId', 'wardId', 'address', 'dateOfBirth',
     { collaborator: ['type', 'lat', 'long', 'title'] },
