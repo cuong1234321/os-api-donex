@@ -8,6 +8,7 @@ import PasswordRouter from './Passwords';
 import ProductRouter from './Products';
 import HomepageRouter from './Homepages';
 import CollaboratorRouter from './Collaborators';
+import NewsRouter from './News';
 
 const router = Router();
 
@@ -19,5 +20,6 @@ router.use('/passwords', PasswordRouter);
 router.use('/products', ProductRouter);
 router.use('/homepages', HomepageRouter);
 router.use('/collaborators', CollaboratorRouter);
+router.use('/news', NewsRouter);
 
 export default router;
