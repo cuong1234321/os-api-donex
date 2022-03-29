@@ -6,8 +6,41 @@ import CollaboratorModel from '@models/collaborators';
 import UserModel from '@models/users';
 import { NoData } from '@libs/errors';
 import ImageUploaderService from '@services/imageUploader';
+import settings from '@configs/settings';
+import { Sequelize } from 'sequelize';
 
 class UserController {
+  public async index (req: Request, res: Response) {
+    try {
+      const page = req.query.page as string || '1';
+      const limit = parseInt(req.query.size as string) || parseInt(settings.defaultPerPage);
+      const offset = (parseInt(page, 10) - 1) * limit;
+      const orderConditions: any = [];
+      const { freeWord, gender, status, nameOrder } = req.query;
+      const scopes: any = [];
+      if (freeWord) { scopes.push({ method: ['byFreeWord', freeWord] }); }
+      if (gender) { scopes.push({ method: ['byGender', gender] }); }
+      if (status) { scopes.push({ method: ['byStatus', status] }); }
+      if (nameOrder) orderConditions.push([Sequelize.literal('lastName'), nameOrder]);
+      scopes.push({ method: ['bySortOrder', orderConditions] });
+      const users = await UserModel.scope(scopes).findAndCountAll({ limit, offset, distinct: true, col: 'UserModel.id' });
+      sendSuccess(res, { users: users.rows, pagination: { total: users.count, page, perPage: limit } });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async create (req: Request, res: Response) {
+    try {
+      const params = req.parameters.permit(UserModel.USER_CREATABLE_PARAMETERS).value();
+      params.password = settings.passwordAdminDefault;
+      const user = await UserModel.create(params);
+      sendSuccess(res, user);
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
   public async active (req: Request, res: Response) {
     try {
       const { userId } = req.params;

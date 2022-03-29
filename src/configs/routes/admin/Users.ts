@@ -6,6 +6,103 @@ const router = Router();
 
 /**
  * @openapi
+ * /a/users/:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] Users"
+ *     summary: Danh sách khách hàng
+ *     description: Danh sách khách hàng
+ *     parameters:
+ *      - in: query
+ *        name: "page"
+ *        description: "page"
+ *        type: "number"
+ *      - in: query
+ *        name: "size"
+ *        description: "size"
+ *        type: "number"
+ *      - in: query
+ *        name: "freeWord"
+ *        description: "freeWord"
+ *        type: "string"
+ *      - in: query
+ *        name: "gender"
+ *        description: "gioi tinh"
+ *        type: "string"
+ *        enum:
+ *         - male
+ *         - female
+ *         - other
+ *      - in: query
+ *        name: "status"
+ *        description: "trang thai"
+ *        type: "string"
+ *        enum:
+ *          - active
+ *          - inactive
+ *      - in: query
+ *        name: "nameOrder"
+ *        description: "sort"
+ *        type: "enum"
+ *        enum:
+ *          - DESC
+ *          - ASC
+ *     responses:
+ *       200:
+ *         description: "Upload success"
+ *       404:
+ *         description: Không tìm thấy dữ liệu
+ *       500:
+ *        description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/', UserController.index);
+/**
+ * @openapi
+ * /a/users:
+ *   post:
+ *     tags:
+ *      - "[ADMIN] Users"
+ *     summary: Thêm mới khách hàng
+ *     parameters:
+ *      - in: "body"
+ *        name: "body"
+ *        description: "thông tin khách hàng"
+ *        schema:
+ *          type: "object"
+ *          properties:
+ *            phoneNumber:
+ *              type: "string"
+ *            fullName:
+ *              type: "string"
+ *            username:
+ *              type: "string"
+ *            email:
+ *              type: "string"
+ *            gender:
+ *              type: "string"
+ *              enum:
+ *               - male
+ *               - female
+ *               - other
+ *            dateOfBirth:
+ *              type: "string"
+ *              default: "2000/01/01"
+ *            note:
+ *              type: "string"
+ *     responses:
+ *       200:
+ *         description: Return data.
+ *       500:
+ *         description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.post('/', UserController.create);
+
+/**
+ * @openapi
  * /a/users/{userId}/active:
  *   patch:
  *     tags:

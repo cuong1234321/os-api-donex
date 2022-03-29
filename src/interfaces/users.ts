@@ -22,7 +22,7 @@ interface UserInterface {
   avatar: string;
   createdAt?: Date,
   updatedAt?: Date,
-  deletedAt: Date,
+  deletedAt?: Date,
 };
 
 export default UserInterface;

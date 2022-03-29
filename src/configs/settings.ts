@@ -25,4 +25,5 @@ export default {
     videoMime: 'video',
   },
   passwordAdminDefault: 'Aa@123456',
+  defaultUserPassword: 'Aa@123456',
 };

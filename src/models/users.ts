@@ -8,6 +8,7 @@ import settings from '@configs/settings';
 import dayjs from 'dayjs';
 import SendSmsService from '@services/smsSender';
 import randomString from 'randomstring';
+import MailerService from '@services/mailer';
 import CollaboratorModel from './collaborators';
 
 class UserModel extends Model<UserInterface> implements UserInterface {
@@ -34,10 +35,11 @@ class UserModel extends Model<UserInterface> implements UserInterface {
   public avatar: string;
   public createdAt?: Date;
   public updatedAt?: Date;
-  public deletedAt: Date;
+  public deletedAt?: Date;
 
   public static readonly STATUS_ENUM = { ACTIVE: 'active', INACTIVE: 'inactive' }
   public static readonly CREATABLE_PARAMETERS = ['phoneNumber', 'fullName', 'password', 'confirmPassword']
+  public static readonly USER_CREATABLE_PARAMETERS = ['phoneNumber', 'fullName', 'username', 'gender', 'dateOfBirth', 'email', 'note']
 
   public static readonly CREATABLE_COLLABORATOR_PARAMETERS = ['phoneNumber', 'fullName', 'email', 'provinceId', 'districtId', 'wardId', 'address', 'dateOfBirth',
     { collaborator: ['type', 'lat', 'long', 'title'] },
@@ -48,6 +50,11 @@ class UserModel extends Model<UserInterface> implements UserInterface {
       if (record.password && record.password !== record.previous('password')) {
         const salt = bcrypt.genSaltSync();
         record.password = bcrypt.hashSync(record.password, salt);
+      }
+    },
+    afterCreate (record) {
+      if (record.email) {
+        MailerService.createUser(record, settings.defaultUserPassword);
       }
     },
   }
@@ -69,6 +76,32 @@ class UserModel extends Model<UserInterface> implements UserInterface {
         throw new ValidationErrorItem('Xác nhận mật khẩu không khớp.', 'password', 'validMatchPassword', this.confirmPassword);
       }
     },
+    async uniqueUsername () {
+      if (this.username) {
+        const existedRecord = await UserModel.scope([{ method: ['byUsername', this.username] }]).findOne();
+        if (existedRecord && existedRecord.id !== this.id) {
+          throw new ValidationErrorItem('Tài khoản đã được sử dụng.', 'uniqueUsername', 'username', this.username);
+        }
+      }
+    },
+    async uniqueEmail () {
+      if (this.email) {
+        const existedRecord = await UserModel.scope([{ method: ['byEmail', this.email] }]).findOne();
+        if (existedRecord && existedRecord.id !== this.id) {
+          throw new ValidationErrorItem('Email đã được sử dụng.', 'uniqueEmail', 'email', this.email);
+        }
+      }
+    },
+    async validatePhoneNumber () {
+      if (!settings.phonePattern.test(this.phoneNumber)) {
+        throw new ValidationErrorItem('Số điện thoại không hợp lệ', 'validatePhoneNumber', 'phoneNumber');
+      }
+    },
+    async validateEmail () {
+      if (!settings.emailPattern.test(this.email)) {
+        throw new ValidationErrorItem('Email không hợp lệ', 'validateEmail', 'email');
+      }
+    },
   }
 
   static readonly scopes: ModelScopeOptions = {
@@ -77,9 +110,49 @@ class UserModel extends Model<UserInterface> implements UserInterface {
         where: { phoneNumber },
       };
     },
+    byUsername (username) {
+      return {
+        where: { username },
+      };
+    },
+    byEmail (email) {
+      return {
+        where: { email },
+      };
+    },
     byStatus (status) {
       return {
         where: { status },
+      };
+    },
+    byGender (gender) {
+      return {
+        where: { gender },
+      };
+    },
+    byFreeWord (freeWord) {
+      return {
+        where: {
+          [Op.or]: [
+            { fullName: { [Op.like]: `%${freeWord || ''}%` } },
+            { username: { [Op.like]: `%${freeWord || ''}%` } },
+            { phoneNumber: { [Op.like]: `%${freeWord || ''}%` } },
+          ],
+        },
+      };
+    },
+    bySortOrder (orderConditions) {
+      orderConditions.push([Sequelize.literal('createdAt'), 'DESC']);
+      return {
+        attributes: {
+          include: [
+            [
+              Sequelize.literal('(SELECT SUBSTRING_INDEX(fullName, " ", -1) AS last_name  FROM users WHERE id = UserModel.id)'),
+              'lastName',
+            ],
+          ],
+        },
+        order: orderConditions,
       };
     },
     withOutCollaborator () {
