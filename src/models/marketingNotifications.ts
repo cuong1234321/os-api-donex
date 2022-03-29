@@ -22,6 +22,7 @@ class MarketingNotificationsModel extends Model<MarketingNotificationsInterface>
   public sendAt: Date;
   public status: string;
   public jobId: number;
+  public thumbnail: string;
   public createdAt?: Date;
   public updatedAt?: Date;
   public deletedAt: Date;

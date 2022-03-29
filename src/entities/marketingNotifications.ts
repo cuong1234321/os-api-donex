@@ -1,3 +1,4 @@
+import settings from '@configs/settings';
 import { DataTypes } from 'sequelize';
 
 const MarketingNotificationEntity = {
@@ -33,6 +34,16 @@ const MarketingNotificationEntity = {
   jobId: {
     type: DataTypes.INTEGER,
     allowNull: true,
+  },
+  thumbnail: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+    get (): string {
+      const thumbnail = this.getDataValue('thumbnail') !== null
+        ? `${settings.imageStorageHost}/${this.getDataValue('thumbnail')}`
+        : null;
+      return thumbnail;
+    },
   },
   createdAt: {
     type: DataTypes.DATE,

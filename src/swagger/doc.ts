@@ -33,6 +33,14 @@ const swaggerDefinition = {
       description: 'Quản lý tin tức',
     },
     {
+      name: '[ADMIN] Notifications',
+      description: 'Quản lý Thông báo',
+    },
+    {
+      name: '[ADMIN] POPUPS',
+      description: 'Quản lý popup',
+    },
+    {
       name: '[ADMIN] SELECTION',
       description: 'Quản lý selection',
     },
@@ -47,10 +55,6 @@ const swaggerDefinition = {
     {
       name: '[ADMIN] PRODUCT',
       description: 'Quản lý sản phẩm',
-    },
-    {
-      name: '[ADMIN] POPUPS',
-      description: 'Quản lý popup',
     },
     {
       name: '[USER] Sessions',

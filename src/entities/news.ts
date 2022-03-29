@@ -1,3 +1,4 @@
+import settings from '@configs/settings';
 import { DataTypes } from 'sequelize';
 
 const NewsEntity = {
@@ -21,7 +22,14 @@ const NewsEntity = {
     },
   },
   thumbnail: {
-    type: DataTypes.STRING(255), allowNull: true,
+    type: DataTypes.STRING(255),
+    allowNull: true,
+    get (): string {
+      const thumbnail = this.getDataValue('thumbnail') !== null
+        ? `${settings.imageStorageHost}/${this.getDataValue('thumbnail')}`
+        : null;
+      return thumbnail;
+    },
   },
   newsCategoryId: {
     type: DataTypes.NUMBER, allowNull: true,
