@@ -56,6 +56,26 @@ class AddressBookModel extends Model<AddressBookInterface> implements AddressBoo
         where: { isDefault: true },
       };
     },
+    addressInfo () {
+      return {
+        attributes: {
+          include: [
+            [
+              Sequelize.literal('(SELECT title FROM m_provinces WHERE m_provinces.id = AddressBookModel.provinceId)'),
+              'provinceTitle',
+            ],
+            [
+              Sequelize.literal('(SELECT title FROM m_districts WHERE m_districts.id = AddressBookModel.districtId)'),
+              'districtTitle',
+            ],
+            [
+              Sequelize.literal('(SELECT title FROM m_wards WHERE m_wards.id = AddressBookModel.wardId)'),
+              'wardTitle',
+            ],
+          ],
+        },
+      };
+    },
   }
 
   public static initialize (sequelize: Sequelize) {

@@ -6,9 +6,10 @@ import { Request, Response } from 'express';
 class AddressController {
   public async index (req: Request, res: Response) {
     try {
-      const currentUser = req.currentUser || { id: '123' };
+      const currentUser = req.currentUser;
       const addressBooks = await AddressBookModel.scope([
         { method: ['byUser', currentUser.id] },
+        'addressInfo',
       ]).findAll();
       sendSuccess(res, addressBooks);
     } catch (error) {
@@ -18,10 +19,11 @@ class AddressController {
 
   public async show (req: Request, res: Response) {
     try {
-      const currentUser = req.currentUser || { id: '123' };
+      const currentUser = req.currentUser;
       const addressBook = await AddressBookModel.scope([
         { method: ['byUser', currentUser.id] },
         { method: ['byId', req.params.addressBookId] },
+        'addressInfo',
       ]).findOne();
       if (!addressBook) { return sendError(res, 404, NoData); }
       sendSuccess(res, addressBook);
@@ -32,7 +34,7 @@ class AddressController {
 
   public async create (req: Request, res: Response) {
     try {
-      const currentUser = req.currentUser || { id: '123' };
+      const currentUser = req.currentUser;
       const params = req.parameters.permit(AddressBookModel.CREATABLE_PARAMETERS).value();
       params.userId = currentUser.id;
       const addressBook = await AddressBookModel.create(params);
@@ -44,7 +46,7 @@ class AddressController {
 
   public async update (req: Request, res: Response) {
     try {
-      const currentUser = req.currentUser || { id: '123' };
+      const currentUser = req.currentUser;
       const params = req.parameters.permit(AddressBookModel.UPDATABLE_PARAMETERS).value();
       const addressBook = await AddressBookModel.scope([
         { method: ['byUser', currentUser.id] },
@@ -60,7 +62,7 @@ class AddressController {
 
   public async delete (req: Request, res: Response) {
     try {
-      const currentUser = req.currentUser || { id: '123' };
+      const currentUser = req.currentUser;
       const addressBook = await AddressBookModel.scope([
         { method: ['byUser', currentUser.id] },
         { method: ['byId', req.params.addressBookId] },
