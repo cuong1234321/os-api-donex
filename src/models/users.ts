@@ -252,8 +252,7 @@ class UserModel extends Model<UserInterface> implements UserInterface {
     });
   }
 
-  public static associate () {
-  }
+  public static associate () { }
 }
 
 export default UserModel;

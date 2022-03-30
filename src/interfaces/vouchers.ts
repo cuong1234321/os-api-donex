@@ -6,6 +6,7 @@ interface VoucherInterface {
   activeAt: Date;
   createdAt?: Date;
   updatedAt?: Date;
+  deletedAt?: Date;
 };
 
 export default VoucherInterface;

@@ -69,6 +69,10 @@ const swaggerDefinition = {
       description: 'Quản lý sản phẩm con',
     },
     {
+      name: '[ADMIN] VOUCHER APPLICATION',
+      description: 'Quản lý Chương trình khuyến mãi',
+    },
+    {
       name: '[USER] Sessions',
       description: 'Phiên đăng nhập user',
     },

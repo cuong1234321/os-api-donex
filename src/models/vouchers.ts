@@ -12,6 +12,7 @@ class VoucherModel extends Model<VoucherInterface> implements VoucherInterface {
   public activeAt: Date;
   public createdAt?: Date;
   public updatedAt?: Date;
+  public deletedAt?: Date;
 
   static readonly hooks: Partial<ModelHooks<VoucherModel>> = { }
 

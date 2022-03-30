@@ -14,6 +14,7 @@ import PopupRouter from './Popups';
 import MarketingNotificationsRouter from './MarketingNotifications';
 import NewsCategoryRouter from './NewsCategories';
 import ProductVariantRouter from './ProductVariants';
+import VoucherApplicationRouter from './VoucherApplications';
 
 const router = Router();
 
@@ -32,5 +33,6 @@ router.use('/popups', PopupRouter);
 router.use('/notifications', MarketingNotificationsRouter);
 router.use('/news_categories', NewsCategoryRouter);
 router.use('/variants', ProductVariantRouter);
+router.use('/voucher_applications', VoucherApplicationRouter);
 
 export default router;

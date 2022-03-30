@@ -24,6 +24,9 @@ const VoucherEntity = {
   updatedAt: {
     type: DataTypes.DATE,
   },
+  deletedAt: {
+    type: DataTypes.DATE,
+  },
 };
 
 export default VoucherEntity;
