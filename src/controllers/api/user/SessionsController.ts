@@ -23,7 +23,10 @@ class SessionController {
   public async getCurrentUser (req: Request, res: Response) {
     try {
       let user = req.currentUser;
-      user = await UserModel.findByPk(user.id);
+      user = await UserModel.scope([
+        { method: ['byId', user.id] },
+        'addressInfo',
+      ]).findOne();
       if (!user) sendError(res, 404, NoData);
       sendSuccess(res, { user });
     } catch (error) {

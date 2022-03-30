@@ -39,6 +39,7 @@ class UserModel extends Model<UserInterface> implements UserInterface {
   public static readonly STATUS_ENUM = { ACTIVE: 'active', INACTIVE: 'inactive' }
   public static readonly CREATABLE_PARAMETERS = ['phoneNumber', 'fullName', 'password', 'confirmPassword']
   public static readonly USER_CREATABLE_PARAMETERS = ['phoneNumber', 'fullName', 'username', 'gender', 'dateOfBirth', 'email', 'note']
+  public static readonly USER_UPDATABLE_PARAMETERS = ['phoneNumber', 'fullName', 'dateOfBirth']
   static readonly UPDATABLE_PARAMETERS = ['fullName', 'phoneNumber', 'gender', 'email', 'dateOfBirth', 'note']
 
   public static readonly CREATABLE_COLLABORATOR_PARAMETERS = ['phoneNumber', 'fullName', 'email', 'provinceId', 'districtId', 'wardId', 'address', 'dateOfBirth',
@@ -100,6 +101,11 @@ class UserModel extends Model<UserInterface> implements UserInterface {
   }
 
   static readonly scopes: ModelScopeOptions = {
+    byId (id) {
+      return {
+        where: { id },
+      };
+    },
     byPhoneNumber (phoneNumber) {
       return {
         where: { phoneNumber },
@@ -165,6 +171,26 @@ class UserModel extends Model<UserInterface> implements UserInterface {
           model: CollaboratorModel,
           as: 'collaborator',
           where: { type },
+        },
+      };
+    },
+    addressInfo () {
+      return {
+        attributes: {
+          include: [
+            [
+              Sequelize.literal('(SELECT title FROM m_provinces WHERE m_provinces.id = UserModel.provinceId)'),
+              'provinceTitle',
+            ],
+            [
+              Sequelize.literal('(SELECT title FROM m_districts WHERE m_districts.id = UserModel.districtId)'),
+              'districtTitle',
+            ],
+            [
+              Sequelize.literal('(SELECT title FROM m_wards WHERE m_wards.id = UserModel.wardId)'),
+              'wardTitle',
+            ],
+          ],
         },
       };
     },
