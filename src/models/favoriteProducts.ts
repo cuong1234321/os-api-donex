@@ -2,6 +2,7 @@ import FavoriteProductEntity from '@entities/favoriteProducts';
 import FavoriteProductInterface from '@interfaces/favoriteProducts';
 import { Model, ModelScopeOptions, ModelValidateOptions, Sequelize } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
+import ProductMediaModel from './productMedias';
 import ProductModel from './products';
 
 class FavoriteProductModel extends Model<FavoriteProductInterface> implements FavoriteProductInterface {
@@ -24,6 +25,37 @@ class FavoriteProductModel extends Model<FavoriteProductInterface> implements Fa
     byProduct (productId) {
       return {
         where: { productId },
+      };
+    },
+    bySorting (sortBy, sortOrder) {
+      return {
+        order: [[Sequelize.literal(sortBy), sortOrder]],
+      };
+    },
+    withProduct () {
+      return {
+        include: [
+          {
+            model: ProductModel,
+            as: 'product',
+            attributes: {
+              include: [
+                [
+                  Sequelize.literal('(SELECT MIN(sellPrice) from product_variants where product_variants.productId = `product`.id)'),
+                  'price',
+                ],
+              ],
+            },
+            include: [{
+              model: ProductMediaModel,
+              as: 'medias',
+              required: false,
+              where: {
+                isThumbnail: true,
+              },
+            }],
+          },
+        ],
       };
     },
   }
