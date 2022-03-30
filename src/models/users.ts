@@ -8,7 +8,6 @@ import settings from '@configs/settings';
 import dayjs from 'dayjs';
 import SendSmsService from '@services/smsSender';
 import randomString from 'randomstring';
-import MailerService from '@services/mailer';
 import CollaboratorModel from './collaborators';
 
 class UserModel extends Model<UserInterface> implements UserInterface {
@@ -51,11 +50,6 @@ class UserModel extends Model<UserInterface> implements UserInterface {
       if (record.password && record.password !== record.previous('password')) {
         const salt = bcrypt.genSaltSync();
         record.password = bcrypt.hashSync(record.password, salt);
-      }
-    },
-    afterCreate (record) {
-      if (record.email) {
-        MailerService.createUser(record, settings.defaultUserPassword);
       }
     },
   }

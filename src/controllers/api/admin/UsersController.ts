@@ -34,8 +34,9 @@ class UserController {
   public async create (req: Request, res: Response) {
     try {
       const params = req.parameters.permit(UserModel.USER_CREATABLE_PARAMETERS).value();
-      params.password = settings.passwordAdminDefault;
+      params.password = settings.defaultUserPassword;
       const user = await UserModel.create(params);
+      MailerService.createUser(user, settings.defaultUserPassword);
       sendSuccess(res, user);
     } catch (error) {
       sendError(res, 500, error.message, error);
