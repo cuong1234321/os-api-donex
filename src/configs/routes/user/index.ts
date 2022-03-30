@@ -16,6 +16,7 @@ import CollaboratorRouter from './Collaborators';
 import UserNotificationRouter from './UserNotifications';
 import UserVoucherRouter from './UserVouchers';
 import UploadRouter from './Uploads';
+import TermRouter from './Terms';
 
 const router = Router();
 
@@ -35,5 +36,6 @@ router.use('/collaborators', CollaboratorRouter);
 router.use('/user_notifications', userPassport.authenticate('jwt', { session: false }), UserNotificationRouter);
 router.use('/user_vouchers', userPassport.authenticate('jwt', { session: false }), UserVoucherRouter);
 router.use('/uploads', UploadRouter);
+router.use('/terms', TermRouter);
 
 export default router;

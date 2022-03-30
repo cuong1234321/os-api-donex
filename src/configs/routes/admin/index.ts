@@ -17,6 +17,7 @@ import ProductVariantRouter from './ProductVariants';
 import VoucherApplicationRouter from './VoucherApplications';
 import RankRouter from './Ranks';
 import UploadRouter from './Uploads';
+import TermRouter from './Terms';
 
 const router = Router();
 
@@ -38,5 +39,6 @@ router.use('/variants', ProductVariantRouter);
 router.use('/voucher_applications', VoucherApplicationRouter);
 router.use('/ranks', RankRouter);
 router.use('/uploads', UploadRouter);
+router.use('/terms', TermRouter);
 
 export default router;
