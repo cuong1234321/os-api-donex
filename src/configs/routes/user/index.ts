@@ -11,6 +11,7 @@ import CollaboratorRouter from './Collaborators';
 import NewsRouter from './News';
 import FavoriteProductRouter from './FavoriteProducts';
 import SystemSettingRouter from './SystemSetting';
+import NewsCategoryRouter from './NewsCategories';
 
 const router = Router();
 
@@ -25,5 +26,6 @@ router.use('/collaborators', CollaboratorRouter);
 router.use('/news', NewsRouter);
 router.use('/favorite_products', userPassport.authenticate('jwt', { session: false }), FavoriteProductRouter);
 router.use('/system_setting', SystemSettingRouter);
+router.use('/news_categories', NewsCategoryRouter);
 
 export default router;

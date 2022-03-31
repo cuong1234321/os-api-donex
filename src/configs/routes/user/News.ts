@@ -19,6 +19,10 @@ const router = Router();
  *        name: "categoryId"
  *        description: "Danh mục"
  *        type: "string"
+ *      - in: query
+ *        name: "freeWord"
+ *        description: "Tìm kiếm theo tên"
+ *        type: "string"
  *     responses:
  *       200:
  *         description: "OK"

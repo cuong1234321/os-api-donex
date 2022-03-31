@@ -10,11 +10,12 @@ class NewsController {
       const page = req.query.page as string || '1';
       const limit = parseInt(settings.defaultPerPage);
       const offset = (parseInt(page, 10) - 1) * limit;
-      const { categoryId } = req.query;
+      const { categoryId, freeWord } = req.query;
       const scopes: any = [
         { method: ['byStatus', NewsModel.STATUS_ENUM.ACTIVE] },
       ];
       if (categoryId) scopes.push({ method: ['byCategory', categoryId] });
+      if (freeWord) scopes.push({ method: ['byFreeWord', freeWord] });
       const { rows, count } = await NewsModel.scope(scopes).findAndCountAll({ limit, offset });
       sendSuccess(res, { news: rows, pagination: { total: count, page, perPage: limit } });
     } catch (error) {

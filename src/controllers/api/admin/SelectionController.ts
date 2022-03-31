@@ -6,6 +6,7 @@ import MWardModel from '@models/mWards';
 import MColorModel from '@models/mColors';
 import MSizeModel from '@models/mSizes';
 import ProductCategoryModel from '@models/productCategories';
+import NewsCategoryModel from '@models/newsCategories';
 
 class SelectionController {
   public async productCategories (req: Request, res: Response) {
@@ -63,6 +64,18 @@ class SelectionController {
       }
       const sizes = await MSizeModel.scope(scopes).findAll();
       sendSuccess(res, sizes);
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async newsCategorySelections (req: Request, res: Response) {
+    try {
+      const { freeWord } = req.query;
+      const newsCategories = await NewsCategoryModel.scope([
+        { method: ['byFreeWord', freeWord] },
+      ]).findAll();
+      sendSuccess(res, newsCategories);
     } catch (error) {
       sendError(res, 500, error.message, error);
     }

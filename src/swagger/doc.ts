@@ -61,6 +61,10 @@ const swaggerDefinition = {
       description: 'Quản lý chương trình giảm giá',
     },
     {
+      name: '[ADMIN] News Categories',
+      description: 'Quản lý Danh mục tin tức',
+    },
+    {
       name: '[USER] Sessions',
       description: 'Phiên đăng nhập user',
     },
@@ -99,6 +103,10 @@ const swaggerDefinition = {
     {
       name: '[USER] SYSTEM SETTING',
       description: 'Cài đặt hệ thống',
+    },
+    {
+      name: '[USER] News Categories',
+      description: 'Danh mục tin tức',
     },
   ],
   securityDefinitions: {

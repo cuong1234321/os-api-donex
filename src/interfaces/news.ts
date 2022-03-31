@@ -6,6 +6,8 @@ interface NewsInterface {
   newsCategoryId: number;
   publicAt: Date;
   status: string;
+  slug: string;
+  views: number;
   deletedAt: Date;
   createdAt?: Date;
   updatedAt?: Date;

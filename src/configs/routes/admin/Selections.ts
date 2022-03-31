@@ -136,4 +136,26 @@ router.get('/colors', SelectionController.colorSelections);
  */
 router.get('/product_categories', SelectionController.productCategories);
 
+/**
+ * @openapi
+ * /a/selections/news_categories:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] SELECTION"
+ *     summary: Lấy danh sách danh mục tin tức
+ *     parameters:
+ *       - in: "query"
+ *         name: "freeWord"
+ *         description: "freeWord"
+ *         type: "string"
+ *     responses:
+ *       200:
+ *         description: "OK"
+ *       500:
+ *         description: "Internal error"
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/', SelectionController.newsCategorySelections);
+
 export default router;

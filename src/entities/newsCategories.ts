@@ -12,16 +12,8 @@ const NewsCategoriesEntity = {
       notEmpty: { msg: 'Tiêu đề không được bỏ trống.' },
     },
   },
-  description: {
-    type: DataTypes.TEXT,
-    allowNull: true,
-  },
-  avatar: {
+  slug: {
     type: DataTypes.STRING(255), allowNull: true,
-  },
-  status: {
-    type: DataTypes.ENUM({ values: ['active', 'inactive'] }),
-    defaultValue: 'active',
   },
   deletedAt: {
     type: DataTypes.DATE,
