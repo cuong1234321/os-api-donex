@@ -35,7 +35,7 @@ class NewsModel extends Model<NewsInterface> implements NewsInterface {
 
   static readonly validations: ModelValidateOptions = {
     async validateCategory () {
-      const blogCategory = await NewsModel.findByPk(this?.newsCategoryId);
+      const blogCategory = await NewsCategoryModel.findByPk(this?.newsCategoryId);
       if (!blogCategory) {
         throw new ValidationErrorItem('Danh mục không hợp lệ', 'validateCategory', 'newsCategoryId', this.newsCategoryId);
       }
