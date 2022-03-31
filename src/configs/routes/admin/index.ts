@@ -13,6 +13,7 @@ import AdminRouter from './Admins';
 import PopupRouter from './Popups';
 import MarketingNotificationsRouter from './MarketingNotifications';
 import NewsCategoryRouter from './NewsCategories';
+import ProductVariantRouter from './ProductVariants';
 
 const router = Router();
 
@@ -30,5 +31,6 @@ router.use('/admins', AdminRouter);
 router.use('/popups', PopupRouter);
 router.use('/notifications', MarketingNotificationsRouter);
 router.use('/news_categories', NewsCategoryRouter);
+router.use('/variants', ProductVariantRouter);
 
 export default router;

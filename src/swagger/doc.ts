@@ -65,6 +65,10 @@ const swaggerDefinition = {
       description: 'Quản lý Danh mục tin tức',
     },
     {
+      name: '[ADMIN] PRODUCT VARIANTS',
+      description: 'Quản lý sản phẩm con',
+    },
+    {
       name: '[USER] Sessions',
       description: 'Phiên đăng nhập user',
     },
