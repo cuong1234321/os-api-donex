@@ -1,15 +1,9 @@
+import settings from '@configs/settings';
 import { DataTypes } from 'sequelize';
 
 const collaboratorEntity = {
   id: {
     type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false,
-  },
-  userId: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    validator: {
-      notNull: { msg: 'UserId không được bỏ trống.' },
-    },
   },
   parentId: {
     type: DataTypes.INTEGER, allowNull: true,
@@ -50,9 +44,73 @@ const collaboratorEntity = {
     type: DataTypes.STRING(255),
     allowNull: true,
   },
-  title: {
+  addressTitle: {
     type: DataTypes.STRING(255),
     allowNull: true,
+  },
+  provinceId: {
+    type: DataTypes.INTEGER, allowNull: true,
+  },
+  districtId: {
+    type: DataTypes.INTEGER, allowNull: true,
+  },
+  wardId: {
+    type: DataTypes.INTEGER, allowNull: true,
+  },
+  address: {
+    type: DataTypes.STRING(255), allowNull: true,
+  },
+  fullName: {
+    type: DataTypes.STRING(255),
+    allowNull: false,
+    validator: {
+      notNull: { msg: 'Tên không được bỏ trống.' },
+    },
+  },
+  phoneNumber: {
+    type: DataTypes.STRING(15),
+    allowNull: false,
+    validator: {
+      notNull: { msg: 'SĐT không được bỏ trống.' },
+    },
+  },
+  username: {
+    type: DataTypes.STRING(255), allowNull: true,
+  },
+  password: {
+    type: DataTypes.STRING(255), allowNull: true,
+  },
+  confirmPassword: {
+    type: DataTypes.VIRTUAL,
+  },
+  email: {
+    type: DataTypes.STRING(255),
+    allowNull: false,
+    validator: {
+      notNull: { msg: 'Email không được bỏ trống.' },
+    },
+  },
+  dateOfBirth: {
+    type: DataTypes.DATE, allowNull: true,
+  },
+  defaultRank: {
+    type: DataTypes.INTEGER, allowNull: true,
+  },
+  forgotPasswordToken: {
+    type: DataTypes.STRING(100), allowNull: true,
+  },
+  forgotPasswordExpireAt: {
+    type: DataTypes.DATE, allowNull: true,
+  },
+  avatar: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+    get (): string {
+      const avatar = this.getDataValue('avatar') !== null
+        ? `${settings.imageStorageHost}/${this.getDataValue('avatar')}`
+        : null;
+      return avatar;
+    },
   },
   createdAt: {
     type: DataTypes.DATE,
