@@ -112,6 +112,10 @@ const swaggerDefinition = {
       name: '[USER] News Categories',
       description: 'Danh mục tin tức',
     },
+    {
+      name: '[USER] Users',
+      description: 'Thông tin user',
+    },
   ],
   securityDefinitions: {
     Bearer: {
