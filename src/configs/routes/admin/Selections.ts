@@ -156,6 +156,6 @@ router.get('/product_categories', SelectionController.productCategories);
  *     security:
  *      - Bearer: []
  */
-router.get('/', SelectionController.newsCategorySelections);
+router.get('/news_categories', SelectionController.newsCategorySelections);
 
 export default router;
