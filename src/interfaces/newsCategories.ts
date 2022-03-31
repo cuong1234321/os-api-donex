@@ -1,9 +1,7 @@
 interface NewsCategoriesInterface {
   id: number;
   title: string;
-  description: string;
-  avatar: string;
-  status: string;
+  slug: string;
   deletedAt: Date;
   createdAt?: Date;
   updatedAt?: Date;

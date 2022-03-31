@@ -1,23 +1,38 @@
 import NewsCategoriesEntity from '@entities/newsCategories';
 import NewsCategoriesInterface from '@interfaces/newsCategories';
-import { Model, ModelScopeOptions, Sequelize } from 'sequelize';
+import SlugGeneration from '@libs/slugGeneration';
+import { Model, ModelScopeOptions, Op, Sequelize } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
+import NewsModel from './news';
 
 class NewsCategoryModel extends Model<NewsCategoriesInterface> implements NewsCategoriesInterface {
   public id: number;
   public title: string;
-  public description: string;
-  public avatar: string;
-  public status: string;
+  public slug: string;
   public deletedAt: Date;
   public createdAt?: Date;
   public updatedAt?: Date;
 
-  public static readonly STATUS_ENUM = { ACTIVE: 'active', INACTIVE: 'inactive' }
+  public static readonly CREATABLE_PARAMETERS = ['title']
+  public static readonly UPDATABLE_PARAMETERS = ['title']
 
-  static readonly hooks: Partial<ModelHooks<NewsCategoryModel>> = { }
+  static readonly hooks: Partial<ModelHooks<NewsCategoryModel>> = {
+    async afterDestroy (record, options) {
+      await NewsModel.destroy({ where: { newsCategoryId: record.id }, individualHooks: true, transaction: options.transaction });
+    },
+    beforeSave (record: any) {
+      record.slug = SlugGeneration.execute(record.title);
+    },
+  }
 
   static readonly scopes: ModelScopeOptions = {
+    byFreeWord (keyWord) {
+      return {
+        where: {
+          title: { [Op.like]: `%${keyWord || ''}%` },
+        },
+      };
+    },
   }
 
   public static initialize (sequelize: Sequelize) {
@@ -31,6 +46,7 @@ class NewsCategoryModel extends Model<NewsCategoriesInterface> implements NewsCa
   }
 
   public static associate () {
+    this.hasMany(NewsModel, { as: 'news', foreignKey: 'newsCategoryId' });
   }
 }
 

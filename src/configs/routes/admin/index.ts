@@ -12,6 +12,7 @@ import SystemSettingRouter from './SystemSetting';
 import AdminRouter from './Admins';
 import PopupRouter from './Popups';
 import MarketingNotificationsRouter from './MarketingNotifications';
+import NewsCategoryRouter from './NewsCategories';
 
 const router = Router();
 
@@ -28,5 +29,6 @@ router.use('/system_setting', SystemSettingRouter);
 router.use('/admins', AdminRouter);
 router.use('/popups', PopupRouter);
 router.use('/notifications', MarketingNotificationsRouter);
+router.use('/news_categories', NewsCategoryRouter);
 
 export default router;

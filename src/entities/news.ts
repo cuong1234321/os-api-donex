@@ -32,7 +32,7 @@ const NewsEntity = {
     },
   },
   newsCategoryId: {
-    type: DataTypes.NUMBER, allowNull: true,
+    type: DataTypes.NUMBER, allowNull: false,
   },
   publicAt: {
     type: DataTypes.DATE,
@@ -40,6 +40,12 @@ const NewsEntity = {
   status: {
     type: DataTypes.ENUM({ values: ['draft', 'active', 'inactive'] }),
     defaultValue: 'draft',
+  },
+  slug: {
+    type: DataTypes.STRING(255), allowNull: true,
+  },
+  views: {
+    type: DataTypes.INTEGER, defaultValue: 0,
   },
   deletedAt: {
     type: DataTypes.DATE,

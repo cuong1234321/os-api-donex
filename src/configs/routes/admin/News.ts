@@ -56,14 +56,11 @@ router.get('/', NewsController.index);
  *              type: "string"
  *              description: "Tiêu đề tin tức"
  *            newsCategoryId:
- *              type: "string"
+ *              type: "number"
  *              description: "Id danh mục tin tức"
  *            content:
  *              type: "string"
  *              description: "Nội dung tin tức"
- *            publicAt:
- *              type: "string"
- *              description: "Ngày giờ kích hoạt"
  *     responses:
  *       200:
  *         description: Return data.

@@ -2,7 +2,6 @@ import { sendError, sendSuccess } from '@libs/response';
 import { Request, Response } from 'express';
 import settings from '@configs/settings';
 import NewsModel from '@models/news';
-import NewsCategoryModel from '@models/newsCategories';
 import { NoData } from '@libs/errors';
 import ImageUploaderService from '@services/imageUploader';
 
@@ -10,14 +9,19 @@ class NewsController {
   public async index (req: Request, res: Response) {
     try {
       const page = req.query.page as string || '1';
-      const limit = parseInt(settings.defaultPerPage);
+      const limit = parseInt(req.query.size as string) || parseInt(settings.defaultNewsPerPage);
       const offset = (parseInt(page, 10) - 1) * limit;
+      const sortBy = req.query.sortBy || 'createdAt';
+      const sortOrder = req.query.sortOrder || 'DESC';
       const { status, categoryId, freeWord } = req.query;
-      const scope: any = [];
-      if (status) scope.push({ method: ['byStatus', status] });
-      if (categoryId) scope.push({ method: ['byCategory', categoryId] });
-      if (freeWord) scope.push({ method: ['byFreeWord', freeWord] });
-      const { rows, count } = await NewsModel.scope(scope).findAndCountAll({ limit, offset });
+      const scopes: any = [
+        'withNewCategory',
+        { method: ['bySortOrder', sortBy, sortOrder] },
+      ];
+      if (status) scopes.push({ method: ['byStatus', status] });
+      if (categoryId) scopes.push({ method: ['byCategory', categoryId] });
+      if (freeWord) scopes.push({ method: ['byFreeWord', freeWord] });
+      const { rows, count } = await NewsModel.scope(scopes).findAndCountAll({ limit, offset });
       sendSuccess(res, { rows, pagination: { total: count, page, perPage: limit } });
     } catch (error) {
       sendError(res, 500, error.message, error);
@@ -27,8 +31,6 @@ class NewsController {
   public async create (req: Request, res: Response) {
     try {
       const params = req.parameters.permit(NewsModel.CREATABLE_PARAMETERS).value();
-      const newsCategory = await NewsCategoryModel.findByPk(params.categoryId);
-      if (!newsCategory) params.categoryId = null;
       const news = await NewsModel.create(params);
       sendSuccess(res, news);
     } catch (error) {
@@ -42,8 +44,6 @@ class NewsController {
       const news = await NewsModel.findByPk(newsId);
       if (!news) return sendError(res, 404, NoData);
       const params = req.parameters.permit(NewsModel.UPDATABLE_PARAMETERS).value();
-      const newsCategory = await NewsCategoryModel.findByPk(params.categoryId);
-      if (!newsCategory) params.categoryId = null;
       await news.update(params);
       sendSuccess(res, news);
     } catch (error) {
@@ -60,7 +60,7 @@ class NewsController {
       await news.update({
         thumbnail,
       });
-      sendSuccess(res, { user: news });
+      sendSuccess(res, { });
     } catch (error) {
       sendError(res, 500, error.message, error);
     }
@@ -69,7 +69,10 @@ class NewsController {
   public async show (req: Request, res: Response) {
     try {
       const { newsId } = req.params;
-      const news = await NewsModel.findByPk(newsId);
+      const news = await NewsModel.scope([
+        'withNewCategory',
+        { method: ['byId', newsId] },
+      ]).findOne();
       if (!news) sendError(res, 404, NoData);
       sendSuccess(res, { news });
     } catch (error) {
@@ -80,8 +83,11 @@ class NewsController {
   public async active (req: Request, res: Response) {
     try {
       const { newsId } = req.params;
-      const news = await NewsModel.findByPk(newsId);
-      if (!news || news.status === NewsModel.STATUS_ENUM.ACTIVE) return sendError(res, 404, NoData);
+      const news = await NewsModel.scope([
+        { method: ['byId', newsId] },
+        { method: ['byStatus', [NewsModel.STATUS_ENUM.INACTIVE, NewsModel.STATUS_ENUM.DRAFT]] },
+      ]).findOne();
+      if (!news) return sendError(res, 404, NoData);
       await news.update({
         status: NewsModel.STATUS_ENUM.ACTIVE,
       });
@@ -94,8 +100,11 @@ class NewsController {
   public async inactive (req: Request, res: Response) {
     try {
       const { newsId } = req.params;
-      const news = await NewsModel.findByPk(newsId);
-      if (!news || news.status !== NewsModel.STATUS_ENUM.ACTIVE) return sendError(res, 404, NoData);
+      const news = await NewsModel.scope([
+        { method: ['byId', newsId] },
+        { method: ['byStatus', [NewsModel.STATUS_ENUM.ACTIVE, NewsModel.STATUS_ENUM.DRAFT]] },
+      ]).findOne();
+      if (!news) return sendError(res, 404, NoData);
       await news.update({
         status: NewsModel.STATUS_ENUM.INACTIVE,
       });
@@ -110,7 +119,7 @@ class NewsController {
       const { newsId } = req.params;
       const news = await NewsModel.findByPk(newsId);
       if (!news) return sendError(res, 404, NoData);
-      await news.destroy();
+      news.destroy();
       sendSuccess(res, {});
     } catch (error) {
       sendError(res, 500, error.message, error);
