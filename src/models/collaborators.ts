@@ -9,7 +9,6 @@ import UserModel from './users';
 
 class CollaboratorModel extends Model<CollaboratorInterface> implements CollaboratorInterface {
   public id: number;
-  public userId: number;
   public parentId: number;
   public type: string;
   public status: string;
@@ -21,6 +20,21 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
   public lat: string;
   public long: string;
   public title: string;
+  public provinceId: number;
+  public districtId: number;
+  public wardId: number;
+  public address: string;
+  public fullName: string;
+  public phoneNumber: string;
+  public username: string;
+  public password: string;
+  public confirmPassword?: string;
+  public email: string;
+  public dateOfBirth: Date;
+  public defaultRank: number;
+  public forgotPasswordToken: string;
+  public forgotPasswordExpireAt: Date;
+  public avatar: string;
 
   public createdAt?: Date;
   public updatedAt?: Date;
@@ -182,7 +196,6 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
   }
 
   public static associate () {
-    this.belongsTo(UserModel, { as: 'user', foreignKey: 'userId' });
     this.hasMany(CollaboratorWorkingDayModel, { as: 'workingDays', foreignKey: 'collaboratorId', onDelete: 'CASCADE', hooks: true });
     this.hasMany(CollaboratorMediaModel, { as: 'media', foreignKey: 'collaboratorId', onDelete: 'CASCADE', hooks: true });
   }
