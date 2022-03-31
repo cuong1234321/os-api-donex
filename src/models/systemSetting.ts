@@ -6,6 +6,16 @@ class SystemSettingModel extends Model<SystemSettingInterface> implements System
   public id: number;
   public applicationLink?: number;
   public coinConversionLevel?: string;
+  public hotline?: number;
+  public hotlineUser?: number;
+  public hotlineAgency?: number;
+  public facebookLink?: string;
+  public instagramLink?: string;
+  public twitterLink?: string;
+  public shopeeLink?: string;
+  public lazadaLink?: string;
+  public tikiLink?: string;
+  public amazonLink?: string;
   public createdAt?: Date;
   public updatedAt?: Date;
 
