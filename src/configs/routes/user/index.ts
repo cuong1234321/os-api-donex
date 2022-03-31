@@ -10,6 +10,7 @@ import HomepageRouter from './Homepages';
 import CollaboratorRouter from './Collaborators';
 import NewsRouter from './News';
 import FavoriteProductRouter from './FavoriteProducts';
+import SystemSettingRouter from './SystemSetting';
 
 const router = Router();
 
@@ -23,5 +24,6 @@ router.use('/homepages', HomepageRouter);
 router.use('/collaborators', CollaboratorRouter);
 router.use('/news', NewsRouter);
 router.use('/favorite_products', userPassport.authenticate('jwt', { session: false }), FavoriteProductRouter);
+router.use('/system_setting', SystemSettingRouter);
 
 export default router;

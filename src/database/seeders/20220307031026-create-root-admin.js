@@ -7,6 +7,7 @@ module.exports = {
     const admin = [{
       id: 1,
       fullName: 'Admin001',
+      username: 'Admin001',
       phoneNumber: '0123456789',
       email: 'anhlee556@gmail.com',
       password: password,
