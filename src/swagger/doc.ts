@@ -53,6 +53,10 @@ const swaggerDefinition = {
       description: 'Quản lý sản phẩm',
     },
     {
+      name: '[ADMIN] SYSTEM SETTING',
+      description: 'Quản lý cài đặt hệ thống',
+    },
+    {
       name: '[ADMIN] SALE CAMPAIGN',
       description: 'Quản lý chương trình giảm giá',
     },
@@ -91,6 +95,10 @@ const swaggerDefinition = {
     {
       name: '[USER] News',
       description: 'Quản lý tin tức',
+    },
+    {
+      name: '[USER] SYSTEM SETTING',
+      description: 'Cài đặt hệ thống',
     },
   ],
   securityDefinitions: {
