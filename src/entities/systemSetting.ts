@@ -40,6 +40,15 @@ const SystemSettingEntity = {
   amazonLink: {
     type: DataTypes.STRING(255), allowNull: true,
   },
+  agencyAffiliate: {
+    type: DataTypes.INTEGER, allowNull: true, defaultValue: 0,
+  },
+  collaboratorAffiliate: {
+    type: DataTypes.INTEGER, allowNull: true, defaultValue: 0,
+  },
+  distributorAffiliate: {
+    type: DataTypes.INTEGER, allowNull: true, defaultValue: 0,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },

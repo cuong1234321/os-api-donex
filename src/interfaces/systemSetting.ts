@@ -12,6 +12,9 @@ interface SystemSettingInterface {
   lazadaLink?: string;
   tikiLink?: string;
   amazonLink?: string;
+  agencyAffiliate?: number;
+  collaboratorAffiliate?: number;
+  distributorAffiliate?: number;
   createdAt?: Date;
   updatedAt?: Date;
 };
