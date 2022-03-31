@@ -46,6 +46,36 @@ router.get('/', SystemSettingsController.show);
  *            coinConversionLevel:
  *              type: "integer"
  *              description: "mức chuyển đổi"
+ *            hotline:
+ *              type: "integer"
+ *              description: "số hotline 24/7"
+ *            hotlineUser:
+ *              type: "integer"
+ *              description: "hot line khách lẻ"
+ *            hotlineAgency:
+ *              type: "integer"
+ *              description: "hotline nhà phan phối"
+ *            facebookLink:
+ *              type: "string"
+ *              description: "facebookLink"
+ *            instagramLink:
+ *              type: "string"
+ *              description: "instagramLink"
+ *            twitterLink:
+ *              type: "string"
+ *              description: "twitterLink"
+ *            shopeeLink:
+ *              type: "string"
+ *              description: "shopeeLink"
+ *            lazadaLink:
+ *              type: "string"
+ *              description: "lazadaLink"
+ *            tikiLink:
+ *              type: "string"
+ *              description: "tikiLink"
+ *            amazonLink:
+ *              type: "string"
+ *              description: "amazonLink"
  *     responses:
  *       200:
  *         description: Success

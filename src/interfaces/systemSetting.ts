@@ -1,7 +1,17 @@
 interface SystemSettingInterface {
   id: number;
-  defaultCommission?: number;
-  contactInformation?: string;
+  applicationLink?: number;
+  coinConversionLevel?: string;
+  hotline?: number;
+  hotlineUser?: number;
+  hotlineAgency?: number;
+  facebookLink?: string;
+  instagramLink?: string;
+  twitterLink?: string;
+  shopeeLink?: string;
+  lazadaLink?: string;
+  tikiLink?: string;
+  amazonLink?: string;
   createdAt?: Date;
   updatedAt?: Date;
 };
