@@ -32,7 +32,7 @@ const NewsEntity = {
     },
   },
   newsCategoryId: {
-    type: DataTypes.NUMBER, allowNull: false,
+    type: DataTypes.INTEGER, allowNull: false,
   },
   publicAt: {
     type: DataTypes.DATE,

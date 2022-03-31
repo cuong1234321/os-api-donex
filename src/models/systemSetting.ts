@@ -16,6 +16,9 @@ class SystemSettingModel extends Model<SystemSettingInterface> implements System
   public lazadaLink?: string;
   public tikiLink?: string;
   public amazonLink?: string;
+  public agencyAffiliate?: number;
+  public collaboratorAffiliate?: number;
+  public distributorAffiliate?: number;
   public createdAt?: Date;
   public updatedAt?: Date;
 
@@ -24,7 +27,7 @@ class SystemSettingModel extends Model<SystemSettingInterface> implements System
   static readonly validations: ModelValidateOptions = {
     validateSystemValue () {
       for (const [key, value] of Object.entries(this.dataValues)) {
-        if (value < 0 && ['coinConversionLevel'].includes(key)) {
+        if (value < 0 && ['coinConversionLevel', 'agencyAffiliate', 'collaboratorAffiliate', 'distributorAffiliate'].includes(key)) {
           throw new ValidationErrorItem('Giá trị cần lớn hơn 0', 'validateSystemValue', `${key}`, key);
         }
       }

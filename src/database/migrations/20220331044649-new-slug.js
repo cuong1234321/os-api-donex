@@ -8,7 +8,7 @@ module.exports = {
       allowNull: true,
     }, { transaction }),
     queryInterface.changeColumn('news', 'newsCategoryId', {
-      type: Sequelize.NUMBER, allowNull: false,
+      type: Sequelize.INTEGER, allowNull: false,
     }, { transaction }),
     queryInterface.addColumn('news', 'slug', {
       type: Sequelize.STRING(255),
@@ -28,7 +28,7 @@ module.exports = {
       allowNull: true,
     }, { transaction }),
     queryInterface.changeColumn('news', 'newsCategoryId', {
-      type: Sequelize.NUMBER, allowNull: true,
+      type: Sequelize.INTERGER, allowNull: true,
     }, { transaction }),
     queryInterface.addColumn('news_categories', 'status', {
       type: Sequelize.ENUM({ values: ['active', 'inactive'] }),
