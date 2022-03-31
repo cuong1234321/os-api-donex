@@ -4,47 +4,47 @@ import { Router } from 'express';
 
 const router = Router();
 
-/**
- * @openapi
- * /a/collaborators:
- *   get:
- *     tags:
- *      - "[ADMIN] Collaborators"
- *     summary: Lấy danh sách danh CTV/DL/NPP
- *     parameters:
- *      - in: query
- *        name: "page"
- *        description: "page"
- *        type: "string"
- *      - in: query
- *        name: "limit"
- *        description: "số bản ghi trong 1 trang"
- *        type: "string"
- *      - in: query
- *        name: "status"
- *        description: "status"
- *        type: "string"
- *      - in: query
- *        name: "freeWord"
- *        description: "Tìm kiếm theo id, tên, username, sdt"
- *        type: "string"
- *      - in: query
- *        name: "type"
- *        description: "lọc theo loại CTV/DL/NPP"
- *        type: "string"
- *        enum:
- *          - collaborator
- *          - agency
- *          - distributor
- *     responses:
- *       200:
- *         description: "OK"
- *       500:
- *         description: "Internal error"
- *     security:
- *      - Bearer: []
- */
-router.get('/', CollaboratorsController.index);
+// /**
+//  * @openapi
+//  * /a/collaborators:
+//  *   get:
+//  *     tags:
+//  *      - "[ADMIN] Collaborators"
+//  *     summary: Lấy danh sách danh CTV/DL/NPP
+//  *     parameters:
+//  *      - in: query
+//  *        name: "page"
+//  *        description: "page"
+//  *        type: "string"
+//  *      - in: query
+//  *        name: "limit"
+//  *        description: "số bản ghi trong 1 trang"
+//  *        type: "string"
+//  *      - in: query
+//  *        name: "status"
+//  *        description: "status"
+//  *        type: "string"
+//  *      - in: query
+//  *        name: "freeWord"
+//  *        description: "Tìm kiếm theo id, tên, username, sdt"
+//  *        type: "string"
+//  *      - in: query
+//  *        name: "type"
+//  *        description: "lọc theo loại CTV/DL/NPP"
+//  *        type: "string"
+//  *        enum:
+//  *          - collaborator
+//  *          - agency
+//  *          - distributor
+//  *     responses:
+//  *       200:
+//  *         description: "OK"
+//  *       500:
+//  *         description: "Internal error"
+//  *     security:
+//  *      - Bearer: []
+//  */
+// router.get('/', CollaboratorsController.index);
 
 /**
  * @openapi
@@ -173,99 +173,99 @@ router.post('/', CollaboratorsController.create);
 router.post('/:collaboratorId/upload_paper_proof',
   withoutSavingUploader.any(), CollaboratorsController.uploadPaperProof);
 
-/**
- * @openapi
- * /a/collaborators/{collaboratorId}:
- *   patch:
- *     tags:
- *      - "[ADMIN] Collaborators"
- *     summary: Cập nhật TK CTV/ĐL/NPP
- *     parameters:
- *      - in: path
- *        name: "collaboratorId"
- *        description: "collaboratorId"
- *        type: "string"
- *      - in: "body"
- *        name: "body"
- *        description: "thông tin CTV"
- *        schema:
- *          type: "object"
- *          properties:
- *            fullName:
- *              type: "string"
- *            parentId:
- *              type: "number"
- *            dateOfBirth:
- *              type: "string"
- *              description: "YYYY-DD-MM"
- *            phoneNumber:
- *              type: "string"
- *            username:
- *              type: "string"
- *            password:
- *              type: "string"
- *            email:
- *              type: "string"
- *            provinceId:
- *              type: number
- *            districtId:
- *              type: number
- *            wardId:
- *              type: number
- *            address:
- *              type: "string"
- *            defaultRank:
- *              type: number
- *            type:
- *              type: "string"
- *              enum:
- *                 - collaborator
- *                 - agency
- *                 - distributor
- *            collaboratorWorkingDays:
- *              type: "array"
- *              items:
- *                type: "object"
- *                properties:
- *                  id:
- *                    type: number
- *                  workingDay:
- *                    type: "string"
- *                    enum:
- *                      - monday
- *                      - tuesday
- *                      - wednesday
- *                      - thursday
- *                      - friday
- *                      - saturday
- *                      - sunday
- *            openTime:
- *              type: "string"
- *              description: "hhmmss"
- *            closeTime:
- *              type: "string"
- *              description: "hhmmss"
- *            collaboratorMedia:
- *              type: "array"
- *              items:
- *                type: "object"
- *                properties:
- *                  id:
- *                    type: number
- *                  type:
- *                    type: "string"
- *                    enum:
- *                      - inside
- *                      - outside
- *     responses:
- *       200:
- *         description: Return data.
- *       500:
- *         description: Lỗi không xác định
- *     security:
- *      - Bearer: []
- */
-router.patch('/:collaboratorId', CollaboratorsController.update);
+// /**
+//  * @openapi
+//  * /a/collaborators/{collaboratorId}:
+//  *   patch:
+//  *     tags:
+//  *      - "[ADMIN] Collaborators"
+//  *     summary: Cập nhật TK CTV/ĐL/NPP
+//  *     parameters:
+//  *      - in: path
+//  *        name: "collaboratorId"
+//  *        description: "collaboratorId"
+//  *        type: "string"
+//  *      - in: "body"
+//  *        name: "body"
+//  *        description: "thông tin CTV"
+//  *        schema:
+//  *          type: "object"
+//  *          properties:
+//  *            fullName:
+//  *              type: "string"
+//  *            parentId:
+//  *              type: "number"
+//  *            dateOfBirth:
+//  *              type: "string"
+//  *              description: "YYYY-DD-MM"
+//  *            phoneNumber:
+//  *              type: "string"
+//  *            username:
+//  *              type: "string"
+//  *            password:
+//  *              type: "string"
+//  *            email:
+//  *              type: "string"
+//  *            provinceId:
+//  *              type: number
+//  *            districtId:
+//  *              type: number
+//  *            wardId:
+//  *              type: number
+//  *            address:
+//  *              type: "string"
+//  *            defaultRank:
+//  *              type: number
+//  *            type:
+//  *              type: "string"
+//  *              enum:
+//  *                 - collaborator
+//  *                 - agency
+//  *                 - distributor
+//  *            collaboratorWorkingDays:
+//  *              type: "array"
+//  *              items:
+//  *                type: "object"
+//  *                properties:
+//  *                  id:
+//  *                    type: number
+//  *                  workingDay:
+//  *                    type: "string"
+//  *                    enum:
+//  *                      - monday
+//  *                      - tuesday
+//  *                      - wednesday
+//  *                      - thursday
+//  *                      - friday
+//  *                      - saturday
+//  *                      - sunday
+//  *            openTime:
+//  *              type: "string"
+//  *              description: "hhmmss"
+//  *            closeTime:
+//  *              type: "string"
+//  *              description: "hhmmss"
+//  *            collaboratorMedia:
+//  *              type: "array"
+//  *              items:
+//  *                type: "object"
+//  *                properties:
+//  *                  id:
+//  *                    type: number
+//  *                  type:
+//  *                    type: "string"
+//  *                    enum:
+//  *                      - inside
+//  *                      - outside
+//  *     responses:
+//  *       200:
+//  *         description: Return data.
+//  *       500:
+//  *         description: Lỗi không xác định
+//  *     security:
+//  *      - Bearer: []
+//  */
+// router.patch('/:collaboratorId', CollaboratorsController.update);
 
 /**
  * @openapi
