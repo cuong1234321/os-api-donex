@@ -457,4 +457,66 @@ router.patch('/:collaboratorId/reject', CollaboratorsController.reject);
  */
 router.post('/:collaboratorId/upload_medias', withoutSavingUploader.any(), CollaboratorsController.uploadMedia);
 
+/**
+ * @openapi
+ * /a/collaborators/{collaboratorId}/change_password:
+ *   patch:
+ *     tags:
+ *      - "[ADMIN] Collaborators"
+ *     summary: thay doi password
+ *     parameters:
+ *      - in: path
+ *        name: "collaboratorId"
+ *        type: "number"
+ *      - in: "body"
+ *        name: "body"
+ *        description: "thông tin CTV/NPP/DL"
+ *        schema:
+ *          type: "object"
+ *          properties:
+ *            password:
+ *              type: "string"
+ *              default: "Aa@123456"
+ *     responses:
+ *       200:
+ *         description: Return data.
+ *       500:
+ *         description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.patch('/:collaboratorId/change_password', CollaboratorsController.changePassword);
+
+/**
+  * @openapi
+  * /a/collaborators/{collaboratorId}/upload_avatar:
+  *   patch:
+  *     tags:
+  *      - "[ADMIN] Collaborators"
+  *     summary: Tải lên avatar
+  *     consumes:
+  *      - "multipart/form-data"
+  *     produces:
+  *      - "application/json"
+  *     parameters:
+  *      - in: "formData"
+  *        name: "avatar"
+  *        description: "File upload"
+  *        required: false
+  *        allowMultiple: true
+  *        type: "file"
+  *      - in: "path"
+  *        name: "collaboratorId"
+  *        required: true
+  *     responses:
+  *       200:
+  *         description: "Upload success"
+  *       500:
+  *         description: "Upload failed"
+  *     security:
+  *      - Bearer: []
+  */
+router.patch('/:collaboratorId/upload_avatar',
+  withoutSavingUploader.single('avatar'), CollaboratorsController.uploadAvatar);
+
 export default router;

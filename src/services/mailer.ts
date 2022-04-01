@@ -93,30 +93,40 @@ class MailerService {
     await this.sendMail(mailerOptions, templateName, templateArgs);
   }
 
-  public static async changePasswordAdmin (admin: any, password: any) {
+  public static async changePasswordCollaborator (collaborator: any, password: string) {
+    const mailerOptions: Mail.Options = {
+      from: 'Admin',
+      to: collaborator.email,
+      subject: '[DONEX-SPORT] Thay đổi mật khẩu CTV/DL/NPP',
+    };
+    const host = process.env.COLLABORATOR_HOST;
+    await this.sendMailChangePassword(collaborator.fullName, password, mailerOptions, host);
+  }
+
+  public static async changePasswordAdmin (admin: any, password: string) {
     const mailerOptions: Mail.Options = {
       from: 'Admin',
       to: admin.email,
       subject: '[DONEX-SPORT] Thay đổi mật khẩu nhân viên',
     };
-    const templateArgs = {
-      url: process.env.ADMIN_HOST,
-      name: admin.fullName,
-      password,
-    };
-    const templateName = 'successChangePasswordAdmin';
-    await this.sendMail(mailerOptions, templateName, templateArgs);
+    const host = process.env.ADMIN_HOST;
+    await this.sendMailChangePassword(admin.fullName, password, mailerOptions, host);
   }
 
-  public static async changePasswordUser (user: any, password: any) {
+  public static async changePasswordUser (user: any, password: string) {
     const mailerOptions: Mail.Options = {
       from: 'Admin',
       to: user.email,
       subject: '[DONEX-SPORT] Thay đổi mật khẩu khách hàng',
     };
+    const host = process.env.CLIENT_HOST;
+    await this.sendMailChangePassword(user.fullName, password, mailerOptions, host);
+  }
+
+  private static async sendMailChangePassword (name: string, password: string, mailerOptions: Mail.Options, host: string) {
     const templateArgs = {
-      url: process.env.CLIENT_HOST,
-      name: user.fullName,
+      url: host,
+      name,
       password,
     };
     const templateName = 'successChangePasswordAdmin';

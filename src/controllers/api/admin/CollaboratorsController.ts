@@ -224,6 +224,34 @@ class CollaboratorController {
       sendError(res, 500, error.message, error);
     }
   }
+
+  public async uploadAvatar (req: Request, res: Response) {
+    try {
+      const { collaboratorId } = req.params;
+      const collaborator = await CollaboratorModel.findByPk(collaboratorId);
+      if (!collaborator) return sendError(res, 404, NoData);
+      const avatar = await ImageUploaderService.singleUpload(req.file);
+      await collaborator.update({
+        avatar,
+      });
+      sendSuccess(res, { });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async changePassword (req: Request, res: Response) {
+    try {
+      const collaborator = await CollaboratorModel.findByPk(req.params.collaboratorId);
+      if (!collaborator) { return sendError(res, 404, NoData); }
+      const { password } = req.body;
+      await collaborator.update({ password });
+      MailerService.changePasswordUser(collaborator, password);
+      sendSuccess(res, { });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
 }
 
 export default new CollaboratorController();
