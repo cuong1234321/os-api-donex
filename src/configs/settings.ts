@@ -18,7 +18,7 @@ export default {
     ttl: '30d',
   },
   forgotPasswordTokenExpiresIn: 1,
-  phonePattern: /^(84|0)[1-9][0-9]{8}$/,
+  phonePattern: /^(84|0[3|5|7|8|9])+([0-9]{8})\b$/,
   emailPattern: /^(([A-Za-z0-9]{1,}(\.)?)*[A-Za-z0-9]{1,})@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z0-9]+\.)+[a-zA-Z]{2,}))$/,
   minuteOfOtpExpires: 15,
   prefix: {

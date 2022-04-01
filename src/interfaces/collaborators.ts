@@ -29,7 +29,7 @@ interface CollaboratorInterface {
 
   createdAt?: Date,
   updatedAt?: Date,
-  deletedAt: Date,
+  deletedAt?: Date,
 };
 
 export default CollaboratorInterface;

@@ -105,10 +105,6 @@ const swaggerDefinition = {
       description: 'Trang chủ',
     },
     {
-      name: '[USER] Collaborators',
-      description: 'Quan ly ctv/dl',
-    },
-    {
       name: '[USER] News',
       description: 'Quản lý tin tức',
     },
@@ -127,6 +123,14 @@ const swaggerDefinition = {
     {
       name: '[USER] PRODUCT Favorite Product',
       description: 'Quản lý sản phẩm yêu thích',
+    },
+    {
+      name: '[USER] Collaborators',
+      description: 'Danh sách cửa hàng',
+    },
+    {
+      name: '[COLLABORATOR] Collaborators',
+      description: 'Quan ly ctv/dl',
     },
   ],
   securityDefinitions: {
