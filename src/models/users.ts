@@ -253,7 +253,6 @@ class UserModel extends Model<UserInterface> implements UserInterface {
   }
 
   public static associate () {
-    this.hasOne(CollaboratorModel, { as: 'collaborator', foreignKey: 'userId' });
   }
 }
 

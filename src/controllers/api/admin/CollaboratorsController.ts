@@ -3,7 +3,6 @@ import { Request, Response } from 'express';
 import { Transaction } from 'sequelize/types';
 import sequelize from '@initializers/sequelize';
 import CollaboratorModel from '@models/collaborators';
-import UserModel from '@models/users';
 import ImageUploaderService from '@services/imageUploader';
 import settings from '@configs/settings';
 import { FileIsNotSupport, NoData } from '@libs/errors';
@@ -12,40 +11,35 @@ import CollaboratorWorkingDayModel from '@models/collaboratorWorkingDays';
 import CollaboratorMediaModel from '@models/collaboratorMedia';
 
 class CollaboratorController {
-  public async index (req: Request, res: Response) {
-    try {
-      const page = req.query.page as string || '1';
-      const limit = parseInt(req.query.limit as string) || parseInt(settings.defaultPerPage);
-      const offset = (parseInt(page, 10) - 1) * limit;
-      const scope: any = [
-        'withUser',
-        'withWorkingDay',
-        'withMedia',
-      ];
-      const { status, freeWord, type } = req.query;
-      if (status) scope.push({ method: ['byStatus', status] });
-      if (freeWord) scope.push({ method: ['byFreeWord', freeWord] });
-      if (type) scope.push({ method: ['byType', type] });
-      const { rows, count } = await CollaboratorModel.scope(scope).findAndCountAll({ limit, offset, distinct: true, col: 'CollaboratorModel.id' });
-      const totalPending = await CollaboratorModel.scope([{ method: ['byStatus', 'pending'] }]).count();
-      sendSuccess(res, { totalPending, rows, pagination: { total: count, page, perPage: limit } });
-    } catch (error) {
-      sendError(res, 500, error.message, error);
-    }
-  }
+  // public async index (req: Request, res: Response) {
+  //   try {
+  //     const page = req.query.page as string || '1';
+  //     const limit = parseInt(req.query.limit as string) || parseInt(settings.defaultPerPage);
+  //     const offset = (parseInt(page, 10) - 1) * limit;
+  //     const scope: any = [
+  //       'withWorkingDay',
+  //       'withMedia',
+  //     ];
+  //     const { status, freeWord, type } = req.query;
+  //     if (status) scope.push({ method: ['byStatus', status] });
+  //     if (freeWord) scope.push({ method: ['byFreeWord', freeWord] });
+  //     if (type) scope.push({ method: ['byType', type] });
+  //     const { rows, count } = await CollaboratorModel.scope(scope).findAndCountAll({ limit, offset, distinct: true, col: 'CollaboratorModel.id' });
+  //     const totalPending = await CollaboratorModel.scope([{ method: ['byStatus', 'pending'] }]).count();
+  //     sendSuccess(res, { totalPending, rows, pagination: { total: count, page, perPage: limit } });
+  //   } catch (error) {
+  //     sendError(res, 500, error.message, error);
+  //   }
+  // }
 
   public async create (req: Request, res: Response) {
     try {
-      const userParams = req.parameters.permit(CollaboratorModel.INFORMATION_PARAMETERS).value();
-      userParams.status = UserModel.STATUS_ENUM.ACTIVE;
       const collaboratorParams = req.parameters.permit(CollaboratorModel.CREATABLE_PARAMETERS).value();
       collaboratorParams.status = CollaboratorModel.STATUS_ENUM.ACTIVE;
       if (collaboratorParams.type === CollaboratorModel.TYPE_ENUM.DISTRIBUTOR) collaboratorParams.parentId = null;
       const { collaboratorWorkingDays, collaboratorMedia } = req.body;
       let collaborator: any;
       await sequelize.transaction(async (transaction: Transaction) => {
-        const user = await UserModel.create(userParams, { transaction });
-        collaboratorParams.userId = user.id;
         collaborator = await CollaboratorModel.create(collaboratorParams, { transaction });
         for (const element of collaboratorWorkingDays) {
           element.collaboratorId = collaborator.id;
@@ -89,32 +83,32 @@ class CollaboratorController {
     }
   }
 
-  public async update (req: Request, res: Response) {
-    try {
-      const { collaboratorId } = req.params;
-      const collaborator = await CollaboratorModel.findByPk(collaboratorId);
-      if (!collaborator) return sendError(res, 404, NoData);
-      const user = await UserModel.findByPk(collaborator.userId);
-      if (!user) return sendError(res, 404, NoData);
-      const userParams = req.parameters.permit(CollaboratorModel.INFORMATION_PARAMETERS).value();
-      const collaboratorParams = req.parameters.permit(CollaboratorModel.UPDATABLE_PARAMETERS).value();
-      const { collaboratorWorkingDays } = req.body;
-      for (const element of collaboratorWorkingDays) {
-        element.collaboratorId = collaboratorId;
-      }
-      if (collaboratorParams.type === CollaboratorModel.TYPE_ENUM.DISTRIBUTOR) collaboratorParams.parentId = null;
-      await sequelize.transaction(async (transaction: Transaction) => {
-        await user.update(userParams, { transaction });
-        await collaborator.update(collaboratorParams, { transaction });
-        await CollaboratorWorkingDayModel.updateListCollaboratorWorkingDay(collaboratorWorkingDays, transaction);
-        await collaborator.updateMedias(req.body.collaboratorMedia, transaction);
-      });
-      await collaborator.reloadCollaborator();
-      sendSuccess(res, { collaborator });
-    } catch (error) {
-      sendError(res, 500, error.message, error);
-    }
-  }
+  // public async update (req: Request, res: Response) {
+  //   try {
+  //     const { collaboratorId } = req.params;
+  //     const collaborator = await CollaboratorModel.findByPk(collaboratorId);
+  //     if (!collaborator) return sendError(res, 404, NoData);
+  //     const user = await UserModel.findByPk(collaborator.userId);
+  //     if (!user) return sendError(res, 404, NoData);
+  //     const userParams = req.parameters.permit(CollaboratorModel.INFORMATION_PARAMETERS).value();
+  //     const collaboratorParams = req.parameters.permit(CollaboratorModel.UPDATABLE_PARAMETERS).value();
+  //     const { collaboratorWorkingDays } = req.body;
+  //     for (const element of collaboratorWorkingDays) {
+  //       element.collaboratorId = collaboratorId;
+  //     }
+  //     if (collaboratorParams.type === CollaboratorModel.TYPE_ENUM.DISTRIBUTOR) collaboratorParams.parentId = null;
+  //     await sequelize.transaction(async (transaction: Transaction) => {
+  //       await user.update(userParams, { transaction });
+  //       await collaborator.update(collaboratorParams, { transaction });
+  //       await CollaboratorWorkingDayModel.updateListCollaboratorWorkingDay(collaboratorWorkingDays, transaction);
+  //       await collaborator.updateMedias(req.body.collaboratorMedia, transaction);
+  //     });
+  //     await collaborator.reloadCollaborator();
+  //     sendSuccess(res, { collaborator });
+  //   } catch (error) {
+  //     sendError(res, 500, error.message, error);
+  //   }
+  // }
 
   public async active (req: Request, res: Response) {
     try {
@@ -150,7 +144,6 @@ class CollaboratorController {
     try {
       const { collaboratorId } = req.params;
       const collaborator = await CollaboratorModel.scope([
-        'withUser',
         'withWorkingDay',
         'withMedia',
       ]).findByPk(collaboratorId);
@@ -179,26 +172,18 @@ class CollaboratorController {
       const { collaboratorId } = req.params;
       const collaborator = await CollaboratorModel.findByPk(collaboratorId);
       if (!collaborator) return sendError(res, 404, NoData);
-      collaborator.checkStatus(CollaboratorModel.STATUS_ENUM.PENDING);
-      const user = await UserModel.findByPk(collaborator.userId);
-      if (!user) return sendError(res, 404, NoData);
+      await collaborator.checkStatus(CollaboratorModel.STATUS_ENUM.PENDING);
       const { username, password, defaultRank, parentId } = req.body;
-      const userParams = {
-        username,
-        password,
-        defaultRank,
-        status: UserModel.STATUS_ENUM.ACTIVE,
-      };
       const collaboratorParams = {
         parentId,
         status: CollaboratorModel.STATUS_ENUM.ACTIVE,
+        username,
+        password,
+        defaultRank,
       };
-      await sequelize.transaction(async (transaction: Transaction) => {
-        await user.update(userParams, { transaction });
-        await collaborator.update(collaboratorParams, { transaction });
-      });
+      await collaborator.update(collaboratorParams);
       await collaborator.reloadCollaborator();
-      MailerService.sendCollaboratorLoginInfo(collaborator, userParams.password);
+      MailerService.sendCollaboratorLoginInfo(collaborator, collaboratorParams.password);
       sendSuccess(res, {});
     } catch (error) {
       sendError(res, 500, error.message, error);
@@ -210,16 +195,13 @@ class CollaboratorController {
       const { collaboratorId } = req.params;
       const collaborator = await CollaboratorModel.findByPk(collaboratorId);
       if (!collaborator) return sendError(res, 404, NoData);
-      collaborator.checkStatus(CollaboratorModel.STATUS_ENUM.PENDING);
-      const user = await UserModel.findByPk(collaborator.userId);
-      if (!user) return sendError(res, 404, NoData);
+      await collaborator.checkStatus(CollaboratorModel.STATUS_ENUM.PENDING);
       const { rejectionReason } = req.body;
       const collaboratorParams = {
         rejectionReason,
         status: CollaboratorModel.STATUS_ENUM.REJECTED,
       };
       await collaborator.update(collaboratorParams);
-      await collaborator.reloadCollaborator();
       MailerService.sendRejectCollaboratorRequest(collaborator);
       sendSuccess(res, {});
     } catch (error) {

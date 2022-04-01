@@ -1,5 +1,3 @@
-import UserModel from '@models/users';
-
 interface CollaboratorInterface {
   id: number,
   parentId: number,
@@ -12,7 +10,7 @@ interface CollaboratorInterface {
   closeTime: Date;
   lat: string,
   long: string,
-  title: string,
+  addressTitle: string,
   provinceId: number,
   districtId: number,
   wardId: number,
@@ -32,8 +30,6 @@ interface CollaboratorInterface {
   createdAt?: Date,
   updatedAt?: Date,
   deletedAt: Date,
-
-  user?: UserModel,
 };
 
 export default CollaboratorInterface;

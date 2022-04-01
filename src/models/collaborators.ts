@@ -3,9 +3,9 @@ import CollaboratorMediaInterface from '@interfaces/collaboratorMedia';
 import CollaboratorInterface from '@interfaces/collaborators';
 import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, Transaction, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
+import bcrypt from 'bcryptjs';
 import CollaboratorWorkingDayModel from './collaboratorWorkingDays';
 import CollaboratorMediaModel from './collaboratorMedia';
-import UserModel from './users';
 
 class CollaboratorModel extends Model<CollaboratorInterface> implements CollaboratorInterface {
   public id: number;
@@ -19,7 +19,7 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
   public closeTime: Date;
   public lat: string;
   public long: string;
-  public title: string;
+  public addressTitle: string;
   public provinceId: number;
   public districtId: number;
   public wardId: number;
@@ -43,11 +43,17 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
   public static readonly TYPE_ENUM = { COLLABORATOR: 'collaborator', AGENCY: 'agency', DISTRIBUTOR: 'distributor' }
   public static readonly STATUS_ENUM = { PENDING: 'pending', ACTIVE: 'active', INACTIVE: 'inactive', REJECTED: 'rejected' }
 
-  public static readonly INFORMATION_PARAMETERS = ['fullName', 'dateOfBirth', 'phoneNumber', 'username', 'password', 'email', 'provinceId', 'districtId', 'wardId', 'address', 'defaultRank']
-  public static readonly CREATABLE_PARAMETERS = ['type', 'parentId', 'openTime', 'closeTime', 'lat', 'long', 'title']
-  public static readonly UPDATABLE_PARAMETERS = ['type', 'parentId', 'openTime', 'closeTime', 'lat', 'long', 'title']
+  public static readonly CREATABLE_PARAMETERS = ['type', 'parentId', 'openTime', 'closeTime', 'lat', 'long', 'addressTitle', 'fullName', 'dateOfBirth', 'phoneNumber', 'username', 'password', 'email', 'provinceId', 'districtId', 'wardId', 'address', 'defaultRank']
+  public static readonly UPDATABLE_PARAMETERS = ['type', 'parentId', 'openTime', 'closeTime', 'lat', 'long', 'addressTitle']
 
-  static readonly hooks: Partial<ModelHooks<CollaboratorModel>> = { }
+  static readonly hooks: Partial<ModelHooks<CollaboratorModel>> = {
+    beforeSave (record) {
+      if (record.password && record.password !== record.previous('password')) {
+        const salt = bcrypt.genSaltSync();
+        record.password = bcrypt.hashSync(record.password, salt);
+      }
+    },
+  }
 
   static readonly validations: ModelValidateOptions = {
   }
@@ -88,34 +94,34 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
         where: { type },
       };
     },
-    byFreeWord (freeWord) {
-      return {
-        where: {
-          [Op.or]: [
-            { id: { [Op.like]: `%${freeWord || ''}%` } },
-            {
-              userId: {
-                [Op.in]: Sequelize.literal('(SELECT id FROM users WHERE deletedAt IS NULL AND ' +
-                `(fullName LIKE '%${freeWord}%' OR phoneNumber LIKE '%${freeWord}%' OR username LIKE '%${freeWord}%'))`),
-              },
-            },
-          ],
-        },
-      };
-    },
-    withUser () {
-      return {
-        include: {
-          model: UserModel,
-          as: 'user',
-        },
-      };
-    },
-    byUserId (userId) {
-      return {
-        where: { userId },
-      };
-    },
+    // byFreeWord (freeWord) {
+    //   return {
+    //     where: {
+    //       [Op.or]: [
+    //         { id: { [Op.like]: `%${freeWord || ''}%` } },
+    //         {
+    //           userId: {
+    //             [Op.in]: Sequelize.literal('(SELECT id FROM users WHERE deletedAt IS NULL AND ' +
+    //             `(fullName LIKE '%${freeWord}%' OR phoneNumber LIKE '%${freeWord}%' OR username LIKE '%${freeWord}%'))`),
+    //           },
+    //         },
+    //       ],
+    //     },
+    //   };
+    // },
+    // withUser () {
+    //   return {
+    //     include: {
+    //       model: UserModel,
+    //       as: 'user',
+    //     },
+    //   };
+    // },
+    // byUserId (userId) {
+    //   return {
+    //     where: { userId },
+    //   };
+    // },
     withoutChildren () {
       return {
         where: {
@@ -150,10 +156,6 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
   public async reloadCollaborator () {
     await this.reload({
       include: [
-        {
-          model: UserModel,
-          as: 'user',
-        },
         {
           model: CollaboratorWorkingDayModel,
           as: 'workingDays',

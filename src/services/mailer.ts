@@ -28,15 +28,15 @@ class MailerService {
   public static async sendCollaboratorLoginInfo (collaborator: any, password: string) {
     const mailerOptions: Mail.Options = {
       from: 'Admin',
-      to: collaborator.user.email,
+      to: collaborator.email,
       subject: '[DONEX-SPORT] Thông tin đăng nhập',
     };
     const templateArgs = {
-      username: collaborator.user.username,
-      password: password,
+      username: collaborator.username,
+      password,
       accountType: collaborator.type === CollaboratorModel.TYPE_ENUM.COLLABORATOR ? 'cộng tác viên' : 'đại lý',
       url: `${process.env.SELLER_HOST}`,
-      name: collaborator.user.fullName,
+      name: collaborator.fullName,
     };
     const templateName = 'sendCollaboratorLoginInfo';
     await this.sendMail(mailerOptions, templateName, templateArgs);
@@ -45,13 +45,13 @@ class MailerService {
   public static async sendRejectCollaboratorRequest (collaborator: any) {
     const mailerOptions: Mail.Options = {
       from: 'Admin',
-      to: collaborator.user.email,
+      to: collaborator.email,
       subject: '[DONEX-SPORT] Từ chối đăng ký',
     };
     const templateArgs = {
       accountType: collaborator.type === CollaboratorModel.TYPE_ENUM.COLLABORATOR ? 'cộng tác viên' : 'đại lý',
       rejectionReason: collaborator.rejectionReason,
-      name: collaborator.user.fullName,
+      name: collaborator.fullName,
     };
     const templateName = 'sendRejectCollaboratorRequest';
     await this.sendMail(mailerOptions, templateName, templateArgs);
