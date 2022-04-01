@@ -4,7 +4,6 @@ import SaleCampaignInterface from '@interfaces/saleCampaigns';
 import dayjs from 'dayjs';
 import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, Transaction, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
-import ProductCategoryModel from './productCategories';
 import ProductModel from './products';
 import ProductVariantModel from './productVariants';
 import SaleCampaignProductModel from './saleCampaignProducts';
@@ -21,7 +20,6 @@ class SaleCampaignModel extends Model<SaleCampaignInterface> implements SaleCamp
   public isApplyToAgency: boolean;
   public isApplyToCollaborator: boolean;
   public isApplyToUser: boolean;
-  public productCategoryId: number;
   public appliedAt: Date;
   public appliedTo: Date;
   public createdAt?: Date;
@@ -70,14 +68,6 @@ class SaleCampaignModel extends Model<SaleCampaignInterface> implements SaleCamp
   }
 
   static readonly validations: ModelValidateOptions = {
-    async validateProductCategory () {
-      if (this.productCategoryId && this.applicationTarget === SaleCampaignModel.APPLICATION_TARGET_ENUM.PRODUCT_CATEGORY) {
-        const productCategory = await ProductCategoryModel.findByPk(this.productCategoryId);
-        if (!productCategory) {
-          throw new ValidationErrorItem('Danh mục sản phẩm không hợp lệ', 'validateProductCategory', 'productCategoryId', this.productCategoryId);
-        }
-      }
-    },
     validateValue () {
       if (this.value < 0 || (this.value > 100 &&
          [SaleCampaignModel.CALCULATE_PRICE_TYPE.INCREASE_BY_PERCENT, SaleCampaignModel.CALCULATE_PRICE_TYPE.REDUCE_BY_PERCENT]
