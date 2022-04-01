@@ -52,6 +52,7 @@ class ProductController {
         'withCategories',
         'withProductType',
         'withGender',
+        'withPriceRange',
         'isActive',
       ]).findOne();
       if (!product) {

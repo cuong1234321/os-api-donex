@@ -407,6 +407,24 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
         },
       };
     },
+    withPriceRange () {
+      return {
+        attributes: {
+          include: [
+            [
+              Sequelize.literal('(SELECT MIN(sellPrice) from product_variants where product_variants.deletedAt is NULL and ' +
+              ' product_variants.productId = ProductModel.id)'),
+              'minPrice',
+            ],
+            [
+              Sequelize.literal('(SELECT MAX(sellPrice) from product_variants where product_variants.deletedAt is NULL and ' +
+              ' product_variants.productId = ProductModel.id)'),
+              'maxPrice',
+            ],
+          ],
+        },
+      };
+    },
   }
 
   public getVariants: HasManyGetAssociationsMixin<ProductVariantModel>;
