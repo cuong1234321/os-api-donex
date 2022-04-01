@@ -20,7 +20,7 @@ router.use('/sessions', SessionsRouter);
 router.use('/address_books', userPassport.authenticate('jwt', { session: false }), AddressBookRouter);
 router.use('/accounts', AccountsRouter);
 router.use('/authentication_otps', AuthenticationOtpsRouter);
-router.use('/passwords', userPassport.authenticate('jwt', { session: false }), PasswordRouter);
+router.use('/passwords', PasswordRouter);
 router.use('/products', ProductRouter);
 router.use('/homepages', HomepageRouter);
 router.use('/collaborators', CollaboratorRouter);

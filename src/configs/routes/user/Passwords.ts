@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import PasswordController from '@controllers/api/user/PasswordsController';
+import { userPassport } from '@middlewares/passport';
 
 const router = Router();
 
@@ -117,6 +118,6 @@ router.post('/', PasswordController.resetPassword);
   *     security:
   *      - Bearer: []
   */
-router.patch('/change_password', PasswordController.changePassword);
+router.patch('/change_password', userPassport.authenticate('jwt', { session: false }), PasswordController.changePassword);
 
 export default router;
