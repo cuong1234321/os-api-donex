@@ -27,6 +27,15 @@ class ProductController {
     }
   }
 
+  public async listProducts (req: Request, res: Response) {
+    try {
+      const products = await ProductModel.findAll();
+      sendSuccess(res, products);
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
   public async create (req: Request, res: Response) {
     try {
       const params = req.parameters.permit(ProductModel.CREATABLE_PARAMETERS).value();

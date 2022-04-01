@@ -102,6 +102,25 @@ router.get('/', (req: Request, res: Response) => ProductController.index(req, re
 
 /**
  * @openapi
+ * /a/products/list_products:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] PRODUCT"
+ *     summary: Danh sách sản phẩm
+ *     responses:
+ *       200:
+ *         description: "Upload success"
+ *       404:
+ *         description: Không tìm thấy dữ liệu
+ *       500:
+ *        description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/list_products', ProductController.listProducts);
+
+/**
+ * @openapi
  * /a/products/{productId}:
  *   get:
  *     tags:
