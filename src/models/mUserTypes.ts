@@ -8,6 +8,8 @@ class MUserTypeModel extends Model<MUsertypeInterface> implements MUsertypeInter
   public createdAt?: Date;
   public updatedAt?: Date;
 
+  static readonly TYPE_ENUM = { USER: 'user', COLLABORATOR: 'collaborator', AGENCY: 'agency', DISTRIBUTOR: 'distributor' }
+
   static readonly scopes: ModelScopeOptions = {}
 
   public static initialize (sequelize: Sequelize) {
