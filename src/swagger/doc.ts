@@ -73,6 +73,10 @@ const swaggerDefinition = {
       description: 'Quản lý Chương trình khuyến mãi',
     },
     {
+      name: '[ADMIN] POPUPS',
+      description: 'Quản lý popup',
+    },
+    {
       name: '[USER] Sessions',
       description: 'Phiên đăng nhập user',
     },
@@ -119,6 +123,10 @@ const swaggerDefinition = {
     {
       name: '[USER] Users',
       description: 'Thông tin user',
+    },
+    {
+      name: '[USER] PRODUCT Favorite Product',
+      description: 'Quản lý sản phẩm yêu thích',
     },
   ],
   securityDefinitions: {
