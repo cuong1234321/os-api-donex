@@ -10,7 +10,6 @@ interface SaleCampaignInterface {
   isApplyToAgency: boolean;
   isApplyToCollaborator: boolean;
   isApplyToUser: boolean;
-  productCategoryId: number;
   appliedAt: Date;
   appliedTo: Date;
   createdAt?: Date;

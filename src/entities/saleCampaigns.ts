@@ -36,9 +36,6 @@ const SaleCampaignEntity = {
   isApplyToUser: {
     type: DataTypes.BOOLEAN, defaultValue: false,
   },
-  productCategoryId: {
-    type: DataTypes.INTEGER, allowNull: false,
-  },
   appliedAt: {
     type: DataTypes.DATE, allowNull: false,
   },

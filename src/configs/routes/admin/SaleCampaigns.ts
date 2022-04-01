@@ -63,10 +63,6 @@ const router = Router();
  *              type: "boolean"
  *              description: "Trạng thái"
  *              default: false
- *            productCategoryId:
- *              type: "string"
- *              description: "Hướng dẫn sử dụng"
- *              default: ""
  *            appliedAt:
  *              type: "date"
  *              description: "ngày bắt đầu"
@@ -153,10 +149,6 @@ router.post('/', SaleCampaignsController.create);
  *              type: "boolean"
  *              description: "Trạng thái"
  *              default: false
- *            productCategoryId:
- *              type: "string"
- *              description: "Hướng dẫn sử dụng"
- *              default: ""
  *            appliedAt:
  *              type: "date"
  *              description: "ngày bắt đầu"
