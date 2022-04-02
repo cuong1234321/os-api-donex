@@ -13,6 +13,7 @@ import SystemSettingRouter from './SystemSetting';
 import NewsCategoryRouter from './NewsCategories';
 import UserRouter from './Users';
 import CollaboratorRouter from './Collaborators';
+import UserNotificationRouter from './UserNotifications';
 
 const router = Router();
 
@@ -29,5 +30,6 @@ router.use('/system_setting', SystemSettingRouter);
 router.use('/news_categories', NewsCategoryRouter);
 router.use('/users', userPassport.authenticate('jwt', { session: false }), UserRouter);
 router.use('/collaborators', CollaboratorRouter);
+router.use('/user_notifications', userPassport.authenticate('jwt', { session: false }), UserNotificationRouter);
 
 export default router;
