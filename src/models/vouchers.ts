@@ -1,6 +1,7 @@
 import VoucherEntity from '@entities/vouchers';
 import VoucherInterface from '@interfaces/vouchers';
-import { Model, ModelScopeOptions, ModelValidateOptions, Sequelize } from 'sequelize';
+import dayjs from 'dayjs';
+import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import VoucherApplicationModel from './vourcherApplications';
 
@@ -18,7 +19,64 @@ class VoucherModel extends Model<VoucherInterface> implements VoucherInterface {
 
   static readonly validations: ModelValidateOptions = { }
 
-  static readonly scopes: ModelScopeOptions = { }
+  static readonly scopes: ModelScopeOptions = {
+    byUser (userId) {
+      return {
+        where: { userId },
+      };
+    },
+    bySorting (sortBy, sortOrder) {
+      return {
+        order: [[Sequelize.literal(sortBy), sortOrder]],
+      };
+    },
+    withApplication () {
+      return {
+        include: [
+          {
+            model: VoucherApplicationModel,
+            as: 'application',
+          },
+        ],
+      };
+    },
+    byStatus (status) {
+      if (status === 'used') {
+        return {
+          where: {
+            activeAt: { [Op.ne]: null },
+          },
+        };
+      } else if (status === 'outOfDate') {
+        return {
+          include: [
+            {
+              model: VoucherApplicationModel,
+              as: 'application',
+              required: true,
+              where: {
+                expiredAt: { [Op.lt]: dayjs().format() },
+              },
+            },
+          ],
+        };
+      } else if (status === 'active') {
+        return {
+          include: [
+            {
+              model: VoucherApplicationModel,
+              as: 'application',
+              required: true,
+              where: {
+                expiredAt: { [Op.gte]: dayjs() },
+                appliedAt: { [Op.lte]: dayjs() },
+              },
+            },
+          ],
+        };
+      }
+    },
+  }
 
   public static initialize (sequelize: Sequelize) {
     this.init(VoucherEntity, {
