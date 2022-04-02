@@ -425,6 +425,20 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
         },
       };
     },
+    isFavorite (userId) {
+      if (userId) {
+        return {
+          attributes: {
+            include: [
+              [
+                Sequelize.literal(`(SELECT (CASE WHEN id THEN true ELSE false END) FROM favorite_products WHERE deletedAt IS NULL AND favorite_products.productId = ProductModel.id AND favorite_products.userId = '${userId}' limit 0,1 )`),
+                'isFavorite',
+              ],
+            ],
+          },
+        };
+      }
+    },
   }
 
   public getVariants: HasManyGetAssociationsMixin<ProductVariantModel>;

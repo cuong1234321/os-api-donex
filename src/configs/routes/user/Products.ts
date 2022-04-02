@@ -1,5 +1,7 @@
 import ProductsController from '@controllers/api/user/ProductsController';
 import { Router } from 'express';
+import { authGuest } from '@middlewares/auth';
+
 const router = Router();
 
 /**
@@ -71,7 +73,7 @@ const router = Router();
  *      - Bearer: []
  */
 
-router.get('/', ProductsController.index);
+router.get('/', authGuest, ProductsController.index);
 
 /**
  * @openapi

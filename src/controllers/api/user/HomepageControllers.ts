@@ -8,11 +8,12 @@ import { Request, Response } from 'express';
 class HomepageController {
   public async index (req: Request, res: Response) {
     try {
+      const currentUser = req.currentUser;
       const categories = await ProductCategoryModel.scope([
         'notChildren',
         { method: ['byType', ProductCategoryModel.TYPE_ENUM.NONE] },
       ]).findAll();
-      const product = await this.homepageProduct();
+      const product = await this.homepageProduct(currentUser);
       const news = await this.homepageNews();
       sendSuccess(res, { categories, product, news });
     } catch (error) {
@@ -20,25 +21,33 @@ class HomepageController {
     }
   }
 
-  private async homepageProduct () {
-    const flashSaleProducts = await ProductModel.scope([
+  private async homepageProduct (currentUser: any) {
+    const scopeFlashSale: any = [
       'withPrice',
       'withThumbnail',
       'isActive',
       'isFlashSale',
-    ]).findAll({ limit: parseInt(settings.defaultPerPage) });
-    const newProducts = await ProductModel.scope([
+    ];
+    const scopeNew: any = [
       'withPrice',
       'withThumbnail',
       'isActive',
       'newest',
-    ]).findAll({ limit: parseInt(settings.defaultPerPage) });
-    const highLightProducts = await ProductModel.scope([
+    ];
+    const scopeHighlight: any = [
       'withPrice',
       'withThumbnail',
       'isActive',
       'isHighlight',
-    ]).findAll({ limit: parseInt(settings.defaultPerPage) });
+    ];
+    if (currentUser) {
+      scopeFlashSale.push({ method: ['isFavorite', currentUser.id] });
+      scopeNew.push({ method: ['isFavorite', currentUser.id] });
+      scopeHighlight.push({ method: ['isFavorite', currentUser.id] });
+    }
+    const flashSaleProducts = await ProductModel.scope(scopeFlashSale).findAll({ limit: parseInt(settings.defaultPerPage) });
+    const newProducts = await ProductModel.scope(scopeNew).findAll({ limit: parseInt(settings.defaultPerPage) });
+    const highLightProducts = await ProductModel.scope(scopeHighlight).findAll({ limit: parseInt(settings.defaultPerPage) });
     return { flashSaleProducts, newProducts, highLightProducts };
   }
 
