@@ -14,6 +14,7 @@ import NewsCategoryRouter from './NewsCategories';
 import UserRouter from './Users';
 import CollaboratorRouter from './Collaborators';
 import UserNotificationRouter from './UserNotifications';
+import UserVoucherRouter from './UserVouchers';
 
 const router = Router();
 
@@ -31,5 +32,6 @@ router.use('/news_categories', NewsCategoryRouter);
 router.use('/users', userPassport.authenticate('jwt', { session: false }), UserRouter);
 router.use('/collaborators', CollaboratorRouter);
 router.use('/user_notifications', userPassport.authenticate('jwt', { session: false }), UserNotificationRouter);
+router.use('/user_vouchers', userPassport.authenticate('jwt', { session: false }), UserVoucherRouter);
 
 export default router;
