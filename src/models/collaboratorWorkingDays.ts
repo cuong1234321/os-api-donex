@@ -1,4 +1,4 @@
-import { Model, ModelScopeOptions, Op, Sequelize, Transaction } from 'sequelize';
+import { Model, ModelScopeOptions, Sequelize } from 'sequelize';
 import CollaboratorWorkingDayEntity from '@entities/collaboratorWorkingDays';
 import CollaboratorWorkingDayInterface from '@interfaces/collaboratorWorkingDays';
 
@@ -20,16 +20,6 @@ class CollaboratorWorkingDayModel extends Model<CollaboratorWorkingDayInterface>
       scopes: CollaboratorWorkingDayModel.scopes,
       sequelize,
     });
-  }
-
-  public static async updateListCollaboratorWorkingDay (collaboratorWorkingDays: any[], transaction?: Transaction) {
-    const listCollaboratorWorkingDay = await CollaboratorWorkingDayModel.bulkCreate(collaboratorWorkingDays, {
-      updateOnDuplicate: CollaboratorWorkingDayModel.UPDATABLE_ON_DUPLICATE_PARAMETERS as (keyof CollaboratorWorkingDayInterface)[],
-      individualHooks: true,
-      transaction,
-    });
-    const collaboratorWorkingDayIds = listCollaboratorWorkingDay.map((index: any) => index.id);
-    await CollaboratorWorkingDayModel.destroy({ where: { id: { [Op.notIn]: collaboratorWorkingDayIds } }, transaction });
   }
 
   public static associate () {

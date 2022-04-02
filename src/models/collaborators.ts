@@ -5,6 +5,7 @@ import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, Transact
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import bcrypt from 'bcryptjs';
 import settings from '@configs/settings';
+import CollaboratorWorkingDayInterface from '@interfaces/collaboratorWorkingDays';
 import CollaboratorWorkingDayModel from './collaboratorWorkingDays';
 import CollaboratorMediaModel from './collaboratorMedia';
 
@@ -45,13 +46,14 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
   public static readonly STATUS_ENUM = { PENDING: 'pending', ACTIVE: 'active', INACTIVE: 'inactive', REJECTED: 'rejected' }
 
   public static readonly CREATABLE_PARAMETERS = ['type', 'parentId', 'openTime', 'closeTime', 'lat', 'long', 'addressTitle', 'fullName', 'dateOfBirth', 'phoneNumber', 'username', 'password', 'email', 'provinceId', 'districtId', 'wardId', 'address', 'defaultRank']
-  public static readonly UPDATABLE_PARAMETERS = ['type', 'parentId', 'openTime', 'closeTime', 'lat', 'long', 'addressTitle']
+  public static readonly UPDATABLE_PARAMETERS = ['type', 'parentId', 'openTime', 'closeTime', 'lat', 'long', 'addressTitle', 'fullName', 'dateOfBirth', 'phoneNumber', 'email', 'provinceId', 'districtId', 'wardId', 'address', 'defaultRank']
   public static readonly CREATABLE_COLLABORATOR_PARAMETERS = ['phoneNumber', 'fullName', 'email', 'provinceId', 'districtId', 'wardId', 'address', 'dateOfBirth', 'type', 'lat', 'long', 'addressTitle', 'paperProofFront', 'paperProofBack',
     { media: ['source', 'type'] },
   ]
 
   static readonly hooks: Partial<ModelHooks<CollaboratorModel>> = {
     beforeSave (record) {
+      if (record.type === CollaboratorModel.TYPE_ENUM.DISTRIBUTOR) record.parentId = null;
       if (record.password && record.password !== record.previous('password')) {
         const salt = bcrypt.genSaltSync();
         record.password = bcrypt.hashSync(record.password, salt);
@@ -134,39 +136,6 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
         where: { type },
       };
     },
-    // byFreeWord (freeWord) {
-    //   return {
-    //     where: {
-    //       [Op.or]: [
-    //         { id: { [Op.like]: `%${freeWord || ''}%` } },
-    //         {
-    //           userId: {
-    //             [Op.in]: Sequelize.literal('(SELECT id FROM users WHERE deletedAt IS NULL AND ' +
-    //             `(fullName LIKE '%${freeWord}%' OR phoneNumber LIKE '%${freeWord}%' OR username LIKE '%${freeWord}%'))`),
-    //           },
-    //         },
-    //       ],
-    //     },
-    //   };
-    // },
-    // withUser () {
-    //   return {
-    //     include: {
-    //       model: UserModel,
-    //       as: 'user',
-    //     },
-    //   };
-    // },
-    // byUserId (userId) {
-    //   return {
-    //     where: { userId },
-    //   };
-    // },
-    byUserId (userId) {
-      return {
-        where: { userId },
-      };
-    },
     byUsername (username) {
       return {
         where: { username },
@@ -182,6 +151,22 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
         where: {
           parentId: null,
         },
+      };
+    },
+    byFreeWord (freeWord) {
+      return {
+        where: {
+          [Op.or]: [
+            { fullName: { [Op.like]: `%${freeWord || ''}%` } },
+            { username: { [Op.like]: `%${freeWord || ''}%` } },
+            { phoneNumber: { [Op.like]: `%${freeWord || ''}%` } },
+          ],
+        },
+      };
+    },
+    bySortOrder (orderConditions) {
+      return {
+        order: orderConditions,
       };
     },
     byFreeWordStore (freeWord) {
@@ -258,6 +243,19 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
       individualHooks: true,
       transaction,
     });
+  }
+
+  public async updateListCollaboratorWorkingDay (collaboratorWorkingDays: any[], transaction?: Transaction) {
+    for (const element of collaboratorWorkingDays) {
+      element.collaboratorId = this.id;
+    }
+    const listCollaboratorWorkingDay = await CollaboratorWorkingDayModel.bulkCreate(collaboratorWorkingDays, {
+      updateOnDuplicate: CollaboratorWorkingDayModel.UPDATABLE_ON_DUPLICATE_PARAMETERS as (keyof CollaboratorWorkingDayInterface)[],
+      individualHooks: true,
+      transaction,
+    });
+    const collaboratorWorkingDayIds = listCollaboratorWorkingDay.map((index: any) => index.id);
+    await CollaboratorWorkingDayModel.destroy({ where: { id: { [Op.notIn]: collaboratorWorkingDayIds } }, transaction });
   }
 
   public static initialize (sequelize: Sequelize) {
