@@ -77,6 +77,10 @@ const swaggerDefinition = {
       description: 'Quản lý popup',
     },
     {
+      name: '[ADMIN] Rank',
+      description: 'Quản lý rank',
+    },
+    {
       name: '[USER] Sessions',
       description: 'Phiên đăng nhập user',
     },

@@ -20,6 +20,7 @@ interface UserInterface {
   forgotPasswordToken: string;
   forgotPasswordExpireAt: Date;
   avatar: string;
+  rank: string;
   createdAt?: Date,
   updatedAt?: Date,
   deletedAt?: Date,
