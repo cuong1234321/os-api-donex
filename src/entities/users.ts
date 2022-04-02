@@ -74,6 +74,10 @@ const UserEntity = {
       return avatar;
     },
   },
+  rank: {
+    type: DataTypes.ENUM({ values: ['Basic', 'Vip'] }),
+    defaultValue: 'Basic',
+  },
   createdAt: {
     type: DataTypes.DATE,
   },

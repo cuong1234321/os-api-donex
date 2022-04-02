@@ -32,11 +32,13 @@ class UserModel extends Model<UserInterface> implements UserInterface {
   public forgotPasswordToken: string;
   public forgotPasswordExpireAt: Date;
   public avatar: string;
+  public rank: string;
   public createdAt?: Date;
   public updatedAt?: Date;
   public deletedAt?: Date;
 
   public static readonly STATUS_ENUM = { ACTIVE: 'active', INACTIVE: 'inactive' }
+  public static readonly RANK_ENUM = { BASIC: 'Basic', VIP: 'Vip' }
   public static readonly CREATABLE_PARAMETERS = ['phoneNumber', 'fullName', 'password', 'confirmPassword']
   public static readonly USER_CREATABLE_PARAMETERS = ['phoneNumber', 'fullName', 'username', 'gender', 'dateOfBirth', 'email', 'note']
   public static readonly USER_UPDATABLE_PARAMETERS = ['phoneNumber', 'fullName', 'dateOfBirth']
