@@ -4,6 +4,7 @@ import CollaboratorInterface from '@interfaces/collaborators';
 import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, Transaction, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import bcrypt from 'bcryptjs';
+import settings from '@configs/settings';
 import CollaboratorWorkingDayModel from './collaboratorWorkingDays';
 import CollaboratorMediaModel from './collaboratorMedia';
 
@@ -38,13 +39,16 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
 
   public createdAt?: Date;
   public updatedAt?: Date;
-  public deletedAt: Date;
+  public deletedAt?: Date;
 
   public static readonly TYPE_ENUM = { COLLABORATOR: 'collaborator', AGENCY: 'agency', DISTRIBUTOR: 'distributor' }
   public static readonly STATUS_ENUM = { PENDING: 'pending', ACTIVE: 'active', INACTIVE: 'inactive', REJECTED: 'rejected' }
 
   public static readonly CREATABLE_PARAMETERS = ['type', 'parentId', 'openTime', 'closeTime', 'lat', 'long', 'addressTitle', 'fullName', 'dateOfBirth', 'phoneNumber', 'username', 'password', 'email', 'provinceId', 'districtId', 'wardId', 'address', 'defaultRank']
   public static readonly UPDATABLE_PARAMETERS = ['type', 'parentId', 'openTime', 'closeTime', 'lat', 'long', 'addressTitle']
+  public static readonly CREATABLE_COLLABORATOR_PARAMETERS = ['phoneNumber', 'fullName', 'email', 'provinceId', 'districtId', 'wardId', 'address', 'dateOfBirth', 'type', 'lat', 'long', 'addressTitle', 'paperProofFront', 'paperProofBack',
+    { media: ['source', 'type'] },
+  ]
 
   static readonly hooks: Partial<ModelHooks<CollaboratorModel>> = {
     beforeSave (record) {
@@ -56,6 +60,42 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
   }
 
   static readonly validations: ModelValidateOptions = {
+    async uniquePhoneNumber () {
+      if (this.phoneNumber) {
+        const existedRecord = await CollaboratorModel.findOne({
+          attributes: ['id'], where: { phoneNumber: this.phoneNumber },
+        });
+        if (existedRecord && existedRecord.id !== this.id) {
+          throw new ValidationErrorItem('Số điện thoại đã được sử dụng.', 'uniquePhoneNumber', 'phoneNumber', this.phoneNumber);
+        }
+      }
+    },
+    async uniqueUsername () {
+      if (this.username) {
+        const existedRecord = await CollaboratorModel.scope([{ method: ['byUsername', this.username] }]).findOne();
+        if (existedRecord && existedRecord.id !== this.id) {
+          throw new ValidationErrorItem('Tài khoản đã được sử dụng.', 'uniqueUsername', 'username', this.username);
+        }
+      }
+    },
+    async uniqueEmail () {
+      if (this.email) {
+        const existedRecord = await CollaboratorModel.scope([{ method: ['byEmail', this.email] }]).findOne();
+        if (existedRecord && existedRecord.id !== this.id) {
+          throw new ValidationErrorItem('Email đã được sử dụng.', 'uniqueEmail', 'email', this.email);
+        }
+      }
+    },
+    async validatePhoneNumber () {
+      if (this.phoneNumber && !settings.phonePattern.test(this.phoneNumber)) {
+        throw new ValidationErrorItem('Số điện thoại không hợp lệ', 'validatePhoneNumber', 'phoneNumber');
+      }
+    },
+    async validateEmail () {
+      if (this.email && !settings.emailPattern.test(this.email)) {
+        throw new ValidationErrorItem('Email không hợp lệ', 'validateEmail', 'email');
+      }
+    },
   }
 
   static readonly scopes: ModelScopeOptions = {
@@ -64,15 +104,15 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
         attributes: {
           include: [
             [
-              Sequelize.literal('(SELECT title FROM m_provinces INNER JOIN users ON users.provinceId = m_provinces.id WHERE users.id = CollaboratorModel.userId)'),
+              Sequelize.literal('(SELECT title FROM m_provinces WHERE m_provinces.id = CollaboratorModel.provinceId)'),
               'provinceTitle',
             ],
             [
-              Sequelize.literal('(SELECT title FROM m_districts INNER JOIN users ON users.districtId = m_districts.id WHERE users.id = CollaboratorModel.userId)'),
+              Sequelize.literal('(SELECT title FROM m_districts WHERE m_districts.id = CollaboratorModel.districtId)'),
               'districtTitle',
             ],
             [
-              Sequelize.literal('(SELECT title FROM m_wards INNER JOIN users ON users.wardId = m_wards.id WHERE users.id = CollaboratorModel.userId)'),
+              Sequelize.literal('(SELECT title FROM m_wards WHERE m_wards.id = CollaboratorModel.wardId)'),
               'wardTitle',
             ],
           ],
@@ -122,10 +162,44 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
     //     where: { userId },
     //   };
     // },
-    withoutChildren () {
+    byUserId (userId) {
+      return {
+        where: { userId },
+      };
+    },
+    byUsername (username) {
+      return {
+        where: { username },
+      };
+    },
+    byEmail (email) {
+      return {
+        where: { email },
+      };
+    },
+    withoutParent () {
       return {
         where: {
           parentId: null,
+        },
+      };
+    },
+    byFreeWordStore (freeWord) {
+      return {
+        where: {
+          [Op.or]: [
+            { fullName: { [Op.like]: `%${freeWord || ''}%` } },
+            {
+              provinceId: {
+                [Op.in]: Sequelize.literal(`(SELECT id FROM m_provinces WHERE title LIKE '%${freeWord}%')`),
+              },
+            },
+            {
+              districtId: {
+                [Op.in]: Sequelize.literal(`(SELECT id FROM m_districts WHERE title LIKE '%${freeWord}%')`),
+              },
+            },
+          ],
         },
       };
     },

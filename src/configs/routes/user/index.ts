@@ -7,12 +7,12 @@ import AuthenticationOtpsRouter from './AuthenticationOtps';
 import PasswordRouter from './Passwords';
 import ProductRouter from './Products';
 import HomepageRouter from './Homepages';
-import CollaboratorRouter from './Collaborators';
 import NewsRouter from './News';
 import FavoriteProductRouter from './FavoriteProducts';
 import SystemSettingRouter from './SystemSetting';
 import NewsCategoryRouter from './NewsCategories';
 import UserRouter from './Users';
+import CollaboratorRouter from './Collaborators';
 
 const router = Router();
 
@@ -23,11 +23,11 @@ router.use('/authentication_otps', AuthenticationOtpsRouter);
 router.use('/passwords', PasswordRouter);
 router.use('/products', ProductRouter);
 router.use('/homepages', HomepageRouter);
-router.use('/collaborators', CollaboratorRouter);
 router.use('/news', NewsRouter);
 router.use('/favorite_products', userPassport.authenticate('jwt', { session: false }), FavoriteProductRouter);
 router.use('/system_setting', SystemSettingRouter);
 router.use('/news_categories', NewsCategoryRouter);
 router.use('/users', userPassport.authenticate('jwt', { session: false }), UserRouter);
+router.use('/collaborators', CollaboratorRouter);
 
 export default router;
