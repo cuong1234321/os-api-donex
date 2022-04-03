@@ -510,9 +510,11 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
       });
       const optionColor = optionRef.find((option: any) => option.key === ProductOptionModel.TYPE_ENUM.color);
       const optionSize = optionRef.find((option: any) => option.key === ProductOptionModel.TYPE_ENUM.size);
-      const color = colors.find((record: any) => record.id === optionColor.value);
-      const size = sizes.find((record: any) => record.id === optionSize.value);
-      const skuCode = `${this.skuCode}-${color.code}-${size.code}`;
+      const color = optionColor ? colors.find((record: any) => record.id === optionColor.value) : null;
+      const size = optionSize ? sizes.find((record: any) => record.id === optionSize.value) : null;
+      let skuCode = `${this.skuCode}`;
+      if (color) skuCode = skuCode + `-${color.code}`;
+      if (size) skuCode = skuCode + `-${size.code}`;
       await variant.update({ skuCode: skuCode }, { transaction });
     }
     const variationOptions = await ProductVariantOptionModel.bulkCreate(variantOptionAttributes, { transaction });

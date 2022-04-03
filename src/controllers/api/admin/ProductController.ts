@@ -111,7 +111,6 @@ class ProductController {
       const files: any[] = req.files as any[];
       const option = await ProductOptionModel.scope([
         { method: ['byProductId', req.params.productId] },
-        { method: ['byKey', ProductOptionModel.TYPE_ENUM.color] },
       ]).findOne();
       if (!option) return sendError(res, 404, NoData);
       for (const file of files) {

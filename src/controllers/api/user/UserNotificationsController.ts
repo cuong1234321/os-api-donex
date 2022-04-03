@@ -19,7 +19,12 @@ class UserNotificationController {
         'withThumbnail',
         'newest',
       ]).findAndCountAll({ limit, offset });
-      sendSuccess(res, { notifications: rows, pagination: { total: count, page, perPage: limit } });
+      const notifications = await UserNotificationModel.scope([
+        'withoutRead',
+        { method: ['byUser', currentUser.id] },
+        { method: ['byUserType', MUserTypeModel.TYPE_ENUM.USER] },
+      ]).findAll();
+      sendSuccess(res, { notifications: rows, pagination: { total: count, page, perPage: limit }, totalWithoutRead: notifications.length });
     } catch (error) {
       sendError(res, 500, error.message, error);
     }

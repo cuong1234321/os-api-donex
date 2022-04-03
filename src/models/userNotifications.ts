@@ -68,6 +68,13 @@ class UserNotificationsModel extends Model<UserNotificationsInterface> implement
         order: [['createdAt', 'DESC']],
       };
     },
+    withoutRead () {
+      return {
+        where: {
+          readAt: null,
+        },
+      };
+    },
   }
 
   public static initialize (sequelize: Sequelize) {
