@@ -1,5 +1,6 @@
 import { Request, Response, Router } from 'express';
 import HomepageController from '@controllers/api/user/HomepageControllers';
+import { authGuest } from '@middlewares/auth';
 
 const router = Router();
 
@@ -18,6 +19,6 @@ const router = Router();
  *     security:
  *      - Bearer: []
  */
-router.get('/', (req: Request, res: Response) => HomepageController.index(req, res));
+router.get('/', authGuest, (req: Request, res: Response) => HomepageController.index(req, res));
 
 export default router;

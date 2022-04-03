@@ -9,6 +9,7 @@ import { NoData } from '@libs/errors';
 class ProductController {
   public async index (req: Request, res: Response) {
     try {
+      const currentUser = req.currentUser;
       const { categoryIds, genderIds, productTypeIds, collectionIds, priceFrom, priceTo, createdAtOrder, priceOrder, freeWord, colorIds, sizeIds } = req.query;
       const page = req.query.page as string || '1';
       const limit = parseInt(req.query.size as string) || parseInt(Settings.defaultPerPage);
@@ -29,6 +30,7 @@ class ProductController {
       if (freeWord) scopes.push({ method: ['byFreeWord', freeWord] });
       if (colorIds) scopes.push({ method: ['byColor', (colorIds as string).split(',')] });
       if (sizeIds) scopes.push({ method: ['bySize', (sizeIds as string).split(',')] });
+      if (currentUser) scopes.push({ method: ['isFavorite', currentUser.id] });
       if (priceOrder) orderConditions.push([Sequelize.literal('price'), priceOrder]);
       if (createdAtOrder) orderConditions.push([Sequelize.literal('createdAt'), createdAtOrder]);
       scopes.push({ method: ['bySorting', orderConditions] });
