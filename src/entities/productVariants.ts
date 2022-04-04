@@ -22,10 +22,7 @@ const ProductVariantEntity = {
   },
   buyPrice: {
     type: DataTypes.INTEGER,
-    allowNull: false,
-    validate: {
-      notNull: { msg: 'Giá mua không được bỏ trống.' },
-    },
+    allowNull: true,
   },
   sellPrice: {
     type: DataTypes.INTEGER,

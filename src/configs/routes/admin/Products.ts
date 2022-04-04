@@ -184,11 +184,9 @@ router.get('/:productId', ProductController.show);
  *            minStock:
  *              type: "number"
  *              description: "Tồn kho tối thiểu"
- *              default: "1"
  *            maxStock:
  *              type: "number"
  *              description: "Tồn kho tối đa"
- *              default: "100"
  *            weight:
  *              type: "number"
  *              description: "Cân nặng"
@@ -465,11 +463,9 @@ router.delete('/:productId', ProductController.delete);
  *            minStock:
  *              type: "number"
  *              description: "Tồn kho tối thiểu"
- *              default: "1"
  *            maxStock:
  *              type: "number"
  *              description: "Tồn kho tối đa"
- *              default: "100"
  *            weight:
  *              type: "number"
  *              description: "Cân nặng"
