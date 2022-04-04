@@ -8,7 +8,7 @@ module.exports = {
       id: 1,
       fullName: 'Admin001',
       username: 'Admin001',
-      phoneNumber: '0123456789',
+      phoneNumber: '0963866952',
       email: 'anhlee556@gmail.com',
       password: password,
       address: 'fffff',
