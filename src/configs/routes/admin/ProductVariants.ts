@@ -14,11 +14,11 @@ const router = Router();
  *     parameters:
  *      - in: query
  *        name: "category"
- *        description: "Id danh muc san pham"
+ *        description: "Id danh muc san pham ngan cach boi dau phay"
  *        type: "string"
  *      - in: query
  *        name: "productId"
- *        description: "Id san pham"
+ *        description: "Id san pham ngan cach boi dau phay"
  *        type: "string"
  *     responses:
  *       200:
