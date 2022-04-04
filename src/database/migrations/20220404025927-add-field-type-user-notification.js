@@ -4,7 +4,7 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.addColumn('user_notifications', 'type', {
       type: Sequelize.ENUM({ values: ['order', 'promotion', 'system'] }),
-      allowNull: true,
+      defaultValue: 'system',
     });
   },
 

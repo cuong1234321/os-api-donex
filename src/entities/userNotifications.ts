@@ -14,6 +14,7 @@ const UserNotificationEntity = {
   },
   type: {
     type: DataTypes.ENUM({ values: ['order', 'promotion', 'system'] }),
+    defaultValue: 'system',
   },
   title: {
     type: DataTypes.STRING(255),
