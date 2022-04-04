@@ -11,6 +11,8 @@ class VideoUploaderService {
       headers: {
         ...formData.getHeaders(),
       },
+      maxBodyLength: Infinity,
+      maxContentLength: Infinity,
     });
     return result.data.data.url.src;
   }
