@@ -8,7 +8,6 @@ import settings from '@configs/settings';
 import dayjs from 'dayjs';
 import SendSmsService from '@services/smsSender';
 import randomString from 'randomstring';
-import CollaboratorModel from './collaborators';
 
 class UserModel extends Model<UserInterface> implements UserInterface {
   public id: number;
@@ -100,6 +99,11 @@ class UserModel extends Model<UserInterface> implements UserInterface {
         throw new ValidationErrorItem('Email không hợp lệ', 'validateEmail', 'email');
       }
     },
+    async validateStatus () {
+      if (this.deletedAt && this.status !== UserModel.STATUS_ENUM.INACTIVE) {
+        throw new ValidationErrorItem('status is not inactive', 'status', 'validStatus', this.status);
+      }
+    },
   }
 
   static readonly scopes: ModelScopeOptions = {
@@ -158,24 +162,6 @@ class UserModel extends Model<UserInterface> implements UserInterface {
         order: orderConditions,
       };
     },
-    withOutCollaborator () {
-      return {
-        where: {
-          id: {
-            [Op.notIn]: Sequelize.literal('(SELECT userId FROM collaborators WHERE deletedAt IS NULL)'),
-          },
-        },
-      };
-    },
-    byCollaboratorType (type) {
-      return {
-        include: {
-          model: CollaboratorModel,
-          as: 'collaborator',
-          where: { type },
-        },
-      };
-    },
     addressInfo () {
       return {
         attributes: {
@@ -196,12 +182,6 @@ class UserModel extends Model<UserInterface> implements UserInterface {
         },
       };
     },
-  }
-
-  public async checkStatus (status: string) {
-    if (this.status !== status) {
-      throw new ValidationErrorItem(`status is not ${status}.`, 'status', 'validStatus', this.status);
-    }
   }
 
   public async validPassword (password: string) {
