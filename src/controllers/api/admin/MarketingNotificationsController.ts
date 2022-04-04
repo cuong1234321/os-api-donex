@@ -7,6 +7,7 @@ import MarketingNotificationTargetsModel from '@models/marketingNotificationTarg
 import settings from '@configs/settings';
 import { NoData } from '@libs/errors';
 import ImageUploaderService from '@services/imageUploader';
+import { Sequelize } from 'sequelize';
 
 class MarketingNotificationsController {
   public async index (req: Request, res: Response) {
@@ -16,6 +17,7 @@ class MarketingNotificationsController {
       const offset = (parseInt(page, 10) - 1) * limit;
       const { freeWord, status, listTarget } = req.query;
       const scope: any = [
+        { method: ['bySortOrder', [Sequelize.literal('createdAt'), 'DESC']] },
         'withOwner',
         'withNotificationTarget',
       ];

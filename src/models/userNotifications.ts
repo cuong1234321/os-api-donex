@@ -9,11 +9,14 @@ class UserNotificationsModel extends Model<UserNotificationsInterface> implement
   public id: number;
   public userId: number;
   public notificationTargetId: number;
+  public type: string;
   public title: string;
   public content: string;
   public readAt: Date;
   public createdAt?: Date;
   public updatedAt?: Date;
+
+  public static readonly TYPE_ENUM = { SYSTEM: 'system', PROMOTION: 'promotion', ORDER: 'order' }
 
   static readonly hooks: Partial<ModelHooks<UserNotificationsModel>> = { }
 

@@ -88,6 +88,11 @@ class MarketingNotificationsModel extends Model<MarketingNotificationsInterface>
         },
       };
     },
+    bySortOrder (orderConditions) {
+      return {
+        order: orderConditions,
+      };
+    },
     withOwner () {
       return {
         include: {
@@ -123,6 +128,7 @@ class MarketingNotificationsModel extends Model<MarketingNotificationsInterface>
         return {
           userId: user.id as number,
           notificationTargetId: this.notificationTargets.find((element: any) => element.target.name === 'user').id,
+          type: UserNotificationsModel.TYPE_ENUM.SYSTEM,
           title: this.title,
           content: this.content,
         };
@@ -139,6 +145,7 @@ class MarketingNotificationsModel extends Model<MarketingNotificationsInterface>
         return {
           userId: collaborator.user.id as number,
           notificationTargetId: this.notificationTargets.find((element: any) => element.target.name === 'collaborator').id,
+          type: UserNotificationsModel.TYPE_ENUM.SYSTEM,
           title: this.title,
           content: this.content,
         };
@@ -155,6 +162,7 @@ class MarketingNotificationsModel extends Model<MarketingNotificationsInterface>
         return {
           userId: agency.user.id as number,
           notificationTargetId: this.notificationTargets.find((element: any) => element.target.name === 'agency').id,
+          type: UserNotificationsModel.TYPE_ENUM.SYSTEM,
           title: this.title,
           content: this.content,
         };
@@ -171,6 +179,7 @@ class MarketingNotificationsModel extends Model<MarketingNotificationsInterface>
         return {
           userId: distributor.user.id as number,
           notificationTargetId: this.notificationTargets.find((element: any) => element.target.name === 'sendToDistributor').id,
+          type: UserNotificationsModel.TYPE_ENUM.SYSTEM,
           title: this.title,
           content: this.content,
         };
