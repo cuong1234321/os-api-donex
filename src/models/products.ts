@@ -13,6 +13,7 @@ import ProductMediaModel from './productMedias';
 import ProductOptionModel from './productOptions';
 import ProductVariantOptionModel from './productVariantOptions';
 import ProductVariantModel from './productVariants';
+import FavoriteProductModel from './favoriteProducts';
 
 class ProductModel extends Model<ProductInterface> implements ProductInterface {
   public id: number;
@@ -72,6 +73,7 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
     },
     async afterDestroy (record) {
       await record.deleteProductDetail();
+      await record.deleteFavorite();
     },
   }
 
@@ -431,7 +433,7 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
           attributes: {
             include: [
               [
-                Sequelize.literal(`(SELECT (CASE WHEN id THEN true ELSE false END) FROM favorite_products WHERE deletedAt IS NULL AND favorite_products.productId = ProductModel.id AND favorite_products.userId = '${userId}' limit 0,1 )`),
+                Sequelize.literal(`(SELECT (CASE WHEN id THEN true ELSE false END) FROM favorite_products WHERE favorite_products.productId = ProductModel.id AND favorite_products.userId = '${userId}' limit 0,1 )`),
                 'isFavorite',
               ],
             ],
@@ -470,6 +472,10 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
     await ProductOptionModel.destroy({ where: { productId: this.id }, individualHooks: true });
     await ProductVariantModel.destroy({ where: { productId: this.id }, individualHooks: true });
     await ProductMediaModel.destroy({ where: { productId: this.id }, individualHooks: true });
+  }
+
+  public async deleteFavorite () {
+    await FavoriteProductModel.destroy({ where: { productId: this.id }, individualHooks: true });
   }
 
   public setCategories: BelongsToManySetAssociationsMixin<ProductCategoryModel, number>;
@@ -628,6 +634,7 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
     this.belongsToMany(ProductCategoryModel, { through: ProductCategoryRefModel, as: 'collections', foreignKey: 'productId', onDelete: 'CASCADE', hooks: true, scope: { type: ProductCategoryModel.TYPE_ENUM.COLLECTION } });
     this.belongsTo(ProductCategoryModel, { as: 'genders', foreignKey: 'gender' });
     this.belongsTo(ProductCategoryModel, { as: 'productType', foreignKey: 'typeProductId' });
+    this.hasMany(FavoriteProductModel, { as: 'favorites', foreignKey: 'productId' });
   }
 }
 

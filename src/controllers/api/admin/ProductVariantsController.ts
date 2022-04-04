@@ -10,8 +10,8 @@ class ProductVariantController {
       const scopes: any = [
         'withOptions',
       ];
-      if (category) scopes.push({ method: ['byCategory', category] });
-      if (productId) scopes.push({ method: ['byProduct', productId] });
+      if (category) scopes.push({ method: ['byCategory', (category as string).split(',')] });
+      if (productId) scopes.push({ method: ['byProduct', (productId as string).split(',')] });
       scopes.push({ method: ['bySortOrder', orderConditions] });
       const variants = await ProductVariantModel.scope(scopes).findAll();
       sendSuccess(res, variants);
