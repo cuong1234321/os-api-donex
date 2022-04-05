@@ -1,7 +1,9 @@
 import WarehouseReceiptEntity from '@entities/warehouseReceipts';
 import WarehouseReceiptInterface from '@interfaces/warehouseReceipts';
-import { Model, ModelScopeOptions, ModelValidateOptions, Sequelize } from 'sequelize';
+import dayjs from 'dayjs';
+import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
+import WarehouseReceiptVariantModel from './warehouseReceiptVariants';
 
 class WarehouseReceiptModel extends Model<WarehouseReceiptInterface> implements WarehouseReceiptInterface {
   public id: number;
@@ -17,11 +19,66 @@ class WarehouseReceiptModel extends Model<WarehouseReceiptInterface> implements 
   public updatedAt?: Date;
   public deletedAt?: Date;
 
+  static readonly CREATABLE_PARAMETERS = ['importDate', 'type', 'importAbleType', 'importAble', 'orderId', 'deliverer', 'note',
+    { warehouseReceiptVariants: ['warehouseId', 'variantId', 'quantity', 'price', 'totalPrice'] },
+  ]
+
   static readonly hooks: Partial<ModelHooks<WarehouseReceiptModel>> = {}
 
   static readonly validations: ModelValidateOptions = {}
 
-  static readonly scopes: ModelScopeOptions = {}
+  static readonly scopes: ModelScopeOptions = {
+    byDate (from, to) {
+      if (!from && !to) return { where: {} };
+      const createdAtCondition: any = {};
+      if (from) Object.assign(createdAtCondition, { [Op.gt]: dayjs(from as string).startOf('day').format() });
+      if (to) Object.assign(createdAtCondition, { [Op.lte]: dayjs(to as string).endOf('day').format() });
+      return {
+        where: { importDate: createdAtCondition },
+      };
+    },
+    byType (type) {
+      return {
+        where: { type },
+      };
+    },
+    withImportAbleName () {
+      return {
+        attributes: {
+          include: [
+            [
+              Sequelize.literal('(SELECT' +
+                '(CASE warehouseReceipts.importAbleType ' +
+                'WHEN "customer" THEN (SELECT users.fullName from users WHERE users.id = CONVERT(warehouseReceipts.importAble, DECIMAL)) ' +
+                'WHEN "collaborator" THEN (SELECT collaborators.fullName from collaborators WHERE collaborators.id = CONVERT(warehouseReceipts.importAble, DECIMAL)) ' +
+                'WHEN "agency" THEN (SELECT collaborators.fullName from collaborators WHERE collaborators.id = CONVERT(warehouseReceipts.importAble, DECIMAL)) ' +
+                'WHEN "distributor" THEN (SELECT collaborators.fullName from collaborators WHERE collaborators.id = CONVERT(warehouseReceipts.importAble, DECIMAL)) ' +
+                'ELSE warehouseReceipts.importAble ' +
+                'END) FROM warehouseReceipts WHERE warehouseReceipts.id = WarehouseReceiptModel.id)'),
+              'importAbleName',
+            ],
+          ],
+        },
+      };
+    },
+    withAdminName () {
+      return {
+        attributes: {
+          include: [
+            [
+              Sequelize.literal('(SELECT fullName FROM admins WHERE id = WarehouseReceiptModel.adminId)'),
+              'adminName',
+            ],
+          ],
+        },
+      };
+    },
+    newest () {
+      return {
+        order: [['createdAt', 'DESC']],
+      };
+    },
+  }
 
   public static initialize (sequelize: Sequelize) {
     this.init(WarehouseReceiptEntity, {
@@ -35,6 +92,7 @@ class WarehouseReceiptModel extends Model<WarehouseReceiptInterface> implements 
   }
 
   public static associate () {
+    this.hasMany(WarehouseReceiptVariantModel, { as: 'warehouseReceiptVariants', foreignKey: 'warehouseReceiptId' });
   }
 }
 

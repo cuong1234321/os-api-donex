@@ -2,6 +2,7 @@ import WarehouseReceiptVariantEntity from '@entities/warehouseReceiptVariants';
 import WarehouseReceiptVariantInterface from '@interfaces/warehouseReceiptVariants';
 import { Model, ModelScopeOptions, ModelValidateOptions, Sequelize } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
+import WarehouseVariantModel from './warehouseVariants';
 
 class WarehouseReceiptVariantModel extends Model<WarehouseReceiptVariantInterface> implements WarehouseReceiptVariantInterface {
   public id: number;
@@ -15,7 +16,24 @@ class WarehouseReceiptVariantModel extends Model<WarehouseReceiptVariantInterfac
   public updatedAt?: Date;
   public deletedAt?: Date;
 
-  static readonly hooks: Partial<ModelHooks<WarehouseReceiptVariantModel>> = {}
+  static readonly hooks: Partial<ModelHooks<WarehouseReceiptVariantModel>> = {
+    async afterCreate (record) {
+      const warehouseVariant = await WarehouseVariantModel.scope([
+        { method: ['byWarehouseid', record.warehouseId] },
+        { method: ['byVariantId', record.variantId] },
+      ]).findOne();
+      if (warehouseVariant) {
+        await warehouseVariant.update({ quantity: warehouseVariant.quantity + (record.quantity || 0) });
+      } else {
+        await WarehouseVariantModel.create({
+          id: undefined,
+          warehouseId: record.warehouseId,
+          variantId: record.variantId,
+          quantity: record.quantity || 0,
+        });
+      }
+    },
+  }
 
   static readonly validations: ModelValidateOptions = {}
 
