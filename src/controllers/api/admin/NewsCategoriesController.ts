@@ -9,6 +9,7 @@ class NewsCategoryController {
       const { freeWord } = req.query;
       const newsCategories = await NewsCategoryModel.scope([
         { method: ['byFreeWord', freeWord] },
+        'newest',
       ]).findAll();
       sendSuccess(res, newsCategories);
     } catch (error) {

@@ -33,6 +33,11 @@ class NewsCategoryModel extends Model<NewsCategoriesInterface> implements NewsCa
         },
       };
     },
+    newest () {
+      return {
+        order: [['createdAt', 'DESC']],
+      };
+    },
   }
 
   public static initialize (sequelize: Sequelize) {
