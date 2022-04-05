@@ -27,7 +27,7 @@ class NewsModel extends Model<NewsInterface> implements NewsInterface {
   static readonly hooks: Partial<ModelHooks<NewsModel>> = {
     beforeSave (record: any) {
       record.slug = SlugGeneration.execute(record.title);
-      if (record.dataValues.status === NewsModel.STATUS_ENUM.ACTIVE && record._previousDataValues.status !== NewsModel.STATUS_ENUM.DRAFT) {
+      if (record.dataValues.status === NewsModel.STATUS_ENUM.ACTIVE && record._previousDataValues.status !== NewsModel.STATUS_ENUM.ACTIVE) {
         record.publicAt = dayjs();
       }
     },
