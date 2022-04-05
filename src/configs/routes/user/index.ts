@@ -15,6 +15,7 @@ import UserRouter from './Users';
 import CollaboratorRouter from './Collaborators';
 import UserNotificationRouter from './UserNotifications';
 import UserVoucherRouter from './UserVouchers';
+import UploadRouter from './Uploads';
 
 const router = Router();
 
@@ -33,5 +34,6 @@ router.use('/users', userPassport.authenticate('jwt', { session: false }), UserR
 router.use('/collaborators', CollaboratorRouter);
 router.use('/user_notifications', userPassport.authenticate('jwt', { session: false }), UserNotificationRouter);
 router.use('/user_vouchers', userPassport.authenticate('jwt', { session: false }), UserVoucherRouter);
+router.use('/uploads', UploadRouter);
 
 export default router;

@@ -81,6 +81,10 @@ const swaggerDefinition = {
       description: 'Quản lý rank',
     },
     {
+      name: '[ADMIN] UPLOAD',
+      description: 'Upload file',
+    },
+    {
       name: '[USER] Sessions',
       description: 'Phiên đăng nhập user',
     },
@@ -131,6 +135,10 @@ const swaggerDefinition = {
     {
       name: '[USER] Collaborators',
       description: 'Danh sách cửa hàng',
+    },
+    {
+      name: '[USER] UPLOAD',
+      description: 'Upload file',
     },
     {
       name: '[COLLABORATOR] Collaborators',
