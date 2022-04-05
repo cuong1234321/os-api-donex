@@ -4,10 +4,11 @@ import FormData from 'form-data';
 import Settings from '@configs/settings';
 
 class VideoUploaderService {
-  public static async singleUpload (file: any) {
+  public static async singleUpload (file: any, folder?: any) {
     const formData = new FormData();
     formData.append('file', file.buffer, file.originalname);
-    const result = await axios.post(Settings.videoUploaderEndpoint, formData, {
+    const path = folder ? `${Settings.videoUploaderEndpoint}?path=/${folder}` : Settings.videoUploaderEndpoint;
+    const result = await axios.post(path, formData, {
       headers: {
         ...formData.getHeaders(),
       },
