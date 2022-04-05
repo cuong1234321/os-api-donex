@@ -47,10 +47,15 @@ class ProductCategoryModel extends Model<ProductCategoryInterface> implements Pr
         where: { id },
       };
     },
+    newest () {
+      return {
+        order: [['createdAt', 'DESC']],
+      };
+    },
   }
 
   public static async getHierarchy (type: any) {
-    const scopes: any = [];
+    const scopes: any = ['newest'];
     if (type) scopes.push({ method: ['byType', type] });
     const productCategories = await ProductCategoryModel.scope(scopes).findAll();
     const parentNodes = productCategories.filter(productCategory => productCategory.parentId === null);

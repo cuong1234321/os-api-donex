@@ -119,6 +119,6 @@ router.get('/verify', ProductsController.verifyProduct);
  *     security:
  *      - Bearer: []
  */
-router.get('/:productId', ProductsController.show);
+router.get('/:productId', authGuest, ProductsController.show);
 
 export default router;

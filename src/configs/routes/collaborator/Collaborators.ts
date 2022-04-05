@@ -21,7 +21,7 @@ const router = Router();
  *              type: "string"
  *            dateOfBirth:
  *              type: "string"
- *              description: "YYYY-DD-MM"
+ *              description: "YYYY-MM-DD"
  *            phoneNumber:
  *              type: "string"
  *            email:

@@ -10,7 +10,7 @@ class ProductController {
   public async index (req: Request, res: Response) {
     try {
       const currentUser = req.currentUser;
-      const { categoryIds, genderIds, productTypeIds, collectionIds, priceFrom, priceTo, createdAtOrder, priceOrder, freeWord, colorIds, sizeIds } = req.query;
+      const { categoryIds, genderIds, productTypeIds, collectionIds, priceFrom, priceTo, createdAtOrder, price, freeWord, colorIds, sizeIds } = req.query;
       const page = req.query.page as string || '1';
       const limit = parseInt(req.query.size as string) || parseInt(Settings.defaultPerPage);
       const offset = (parseInt(page, 10) - 1) * limit;
@@ -31,7 +31,7 @@ class ProductController {
       if (colorIds) scopes.push({ method: ['byColor', (colorIds as string).split(',')] });
       if (sizeIds) scopes.push({ method: ['bySize', (sizeIds as string).split(',')] });
       if (currentUser) scopes.push({ method: ['isFavorite', currentUser.id] });
-      if (priceOrder) orderConditions.push([Sequelize.literal('price'), priceOrder]);
+      if (price) orderConditions.push([Sequelize.literal('price'), price]);
       if (createdAtOrder) orderConditions.push([Sequelize.literal('createdAt'), createdAtOrder]);
       scopes.push({ method: ['bySorting', orderConditions] });
       const { count, rows } = await ProductModel.scope(scopes).findAndCountAll({
@@ -48,7 +48,8 @@ class ProductController {
 
   public async show (req: Request, res: Response) {
     try {
-      const product = await ProductModel.scope([
+      const currentUser = req.currentUser;
+      const scopes: any = [
         { method: ['byId', req.params.productId] },
         'withCollections',
         'withCategories',
@@ -56,7 +57,9 @@ class ProductController {
         'withGender',
         'withPriceRange',
         'isActive',
-      ]).findOne();
+      ];
+      if (currentUser) scopes.push({ method: ['isFavorite', currentUser.id] });
+      const product = await ProductModel.scope(scopes).findOne();
       if (!product) {
         return sendError(res, 404, NoData);
       }
