@@ -32,6 +32,13 @@ const router = Router();
  *        name: "listTarget"
  *        description: "list id notificationTarget (cách nhau bởi dấu , )"
  *        type: "string"
+ *      - in: query
+ *        name: "sortOrder"
+ *        description: "Sắp xếp theo thứ tự"
+ *        type: "string"
+ *        enum:
+ *          - "DESC"
+ *          - "ASC"
  *     responses:
  *       200:
  *         description: "OK"
