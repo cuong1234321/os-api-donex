@@ -10,6 +10,7 @@ class WarehouseReceiptVariantModel extends Model<WarehouseReceiptVariantInterfac
   public warehouseId: number;
   public quantity: number;
   public price: number;
+  public totalPrice: number;
   public createdAt?: Date;
   public updatedAt?: Date;
   public deletedAt?: Date;

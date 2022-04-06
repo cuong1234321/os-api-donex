@@ -19,6 +19,9 @@ const WarehouseReceiptVariantEntity = {
   price: {
     type: DataTypes.BIGINT, allowNull: true,
   },
+  totalPrice: {
+    type: DataTypes.BIGINT, allowNull: true,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },
