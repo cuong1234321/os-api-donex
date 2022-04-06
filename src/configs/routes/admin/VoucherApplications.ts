@@ -31,14 +31,13 @@ const router = Router();
  *        description: "Từ khóa tìm kiếm"
  *        type: "string"
  *      - in: query
- *        name: "paymentType"
+ *        name: "paymentMethod"
  *        description: "Phương thức thanh toán"
  *        type: "string"
  *        enum:
- *          - all
- *          - vnPAy
- *          - COD
  *          - banking
+ *          - vnPay
+ *          - COD
  *      - in: query
  *        name: "status"
  *        description: "Trạng thái"
@@ -111,11 +110,12 @@ router.get('/:voucherApplicationId', VoucherApplicationController.show);
  *            expiredAt:
  *              type: "string"
  *              description: "Thời gian sử dụng"
- *            paymentType:
- *              type: "string"
+ *            paymentMethod:
+ *              type: "array"
  *              description: "Phương thức thanh toán áp dụng"
- *              enum:
- *                - all
+ *              items:
+ *                type: "string"
+ *                enum:
  *                - banking
  *                - vnPAy
  *                - COD
@@ -201,11 +201,12 @@ router.post('/', VoucherApplicationController.create);
  *            expiredAt:
  *              type: "string"
  *              description: "Thời gian sử dụng"
- *            paymentType:
- *              type: "string"
+ *            paymentMethod:
+ *              type: "array"
  *              description: "Phương thức thanh toán áp dụng"
- *              enum:
- *                - all
+ *              items:
+ *                type: "string"
+ *                enum:
  *                - banking
  *                - vnPAy
  *                - COD

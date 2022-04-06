@@ -14,7 +14,7 @@ import NewsCategoryRouter from './NewsCategories';
 import UserRouter from './Users';
 import CollaboratorRouter from './Collaborators';
 import UserNotificationRouter from './UserNotifications';
-import UserVoucherRouter from './UserVouchers';
+import UserVoucherRouter from './Vouchers';
 import UploadRouter from './Uploads';
 import TermRouter from './Terms';
 

@@ -42,16 +42,29 @@ const VoucherApplicationEntity = {
     allowNull: true,
   },
   beneficiaries: {
-    type: DataTypes.ENUM({ values: ['user', 'collaborator', 'agency', 'distributor'] }),
+    type: DataTypes.ENUM({ values: ['user', 'collaborator', 'agency', 'distributor', 'all'] }),
     defaultValue: 'user',
   },
-  paymentType: {
-    type: DataTypes.ENUM({ values: ['all', 'banking', 'vnPAy', 'COD'] }),
-    defaultValue: 'all',
+  paymentMethod: {
+    type: DataTypes.STRING(255),
+    allowNull: false,
+    set (value: any[]) {
+      if (value.length) {
+        const paymentMethods = JSON.stringify(value);
+        this.setDataValue('paymentMethod', paymentMethods);
+      }
+    },
+    get (): (string)[] {
+      if (!this.getDataValue('paymentMethod')) return;
+      return JSON.parse(this.getDataValue('paymentMethod'));
+    },
   },
   recipientLevel: {
     type: DataTypes.ENUM({ values: ['all', 'tier1', 'tier2', 'base', 'vip'] }),
     defaultValue: 'all',
+  },
+  isAlreadySent: {
+    type: DataTypes.BOOLEAN, defaultValue: false,
   },
   expiredAt: {
     type: DataTypes.DATE, allowNull: false,

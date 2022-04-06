@@ -3,26 +3,30 @@ import VoucherInterface from '@interfaces/vouchers';
 import dayjs from 'dayjs';
 import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
-import VoucherApplicationModel from './vourcherApplications';
+import UserModel from './users';
+import VoucherApplicationModel from './voucherApplications';
 
 class VoucherModel extends Model<VoucherInterface> implements VoucherInterface {
   public id: number;
   public voucherApplicationId: number;
-  public discount: number;
-  public userId: number;
-  public activeAt: Date;
+  public discount?: number;
+  public recipientId: number;
+  public recipientType: string;
+  public activeAt?: Date;
   public createdAt?: Date;
   public updatedAt?: Date;
   public deletedAt?: Date;
+
+  static readonly RECIPIENT_TYPE_ENUM = { USER: 'user', COLLABORATOR: 'collaborator', AGENCY: 'agency', DISTRIBUTOR: 'distributor' }
 
   static readonly hooks: Partial<ModelHooks<VoucherModel>> = { }
 
   static readonly validations: ModelValidateOptions = { }
 
   static readonly scopes: ModelScopeOptions = {
-    byUser (userId) {
+    byRecipient (recipientId) {
       return {
-        where: { userId },
+        where: { recipientId },
       };
     },
     bySorting (sortBy, sortOrder) {
@@ -76,6 +80,13 @@ class VoucherModel extends Model<VoucherInterface> implements VoucherInterface {
         };
       }
     },
+    byRecipientType (recipientType) {
+      return {
+        where: {
+          recipientType,
+        },
+      };
+    },
   }
 
   public static initialize (sequelize: Sequelize) {
@@ -91,6 +102,8 @@ class VoucherModel extends Model<VoucherInterface> implements VoucherInterface {
 
   public static associate () {
     this.belongsTo(VoucherApplicationModel, { as: 'application', foreignKey: 'voucherApplicationId' });
+    this.belongsTo(UserModel, { as: 'user', foreignKey: 'recipientId', scope: { recipientType: VoucherModel.RECIPIENT_TYPE_ENUM.USER } });
+    this.belongsTo(UserModel, { as: 'collaborator', foreignKey: 'recipientId', scope: { recipientType: { [Op.ne]: VoucherModel.RECIPIENT_TYPE_ENUM.USER } } });
   }
 }
 

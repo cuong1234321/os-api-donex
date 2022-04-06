@@ -6,12 +6,12 @@ import { NoData } from '@libs/errors';
 import ImageUploaderService from '@services/imageUploader';
 import Settings from '@configs/settings';
 import VoucherConditionModel from '@models/voucherConditions';
-import VoucherApplicationModel from '@models/vourcherApplications';
+import VoucherApplicationModel from '@models/voucherApplications';
 
 class VoucherApplicationController {
   public async index (req: Request, res: Response) {
     try {
-      const { freeWord, paymentType, status, dateFrom, dateTo } = req.query;
+      const { freeWord, paymentMethod, status, dateFrom, dateTo } = req.query;
       const page = req.query.page as string || '1';
       const limit = parseInt(req.query.size as string) || parseInt(Settings.defaultPerPage);
       const offset = (parseInt(page, 10) - 1) * limit;
@@ -22,7 +22,7 @@ class VoucherApplicationController {
         { method: ['byDate', dateFrom, dateTo] },
       ];
       if (freeWord) { scopes.push({ method: ['byFreeWord', freeWord] }); }
-      if (paymentType) { scopes.push({ method: ['byPaymentType', paymentType] }); }
+      if (paymentMethod) { scopes.push({ method: ['byPaymentMethod', paymentMethod] }); }
       if (status) { scopes.push({ method: ['byStatus', status] }); }
       const { count, rows } = await VoucherApplicationModel.scope(scopes).findAndCountAll({
         limit,
@@ -90,7 +90,7 @@ class VoucherApplicationController {
       const voucher = await VoucherApplicationModel.findByPk(req.params.voucherApplicationId);
       if (!voucher) return sendError(res, 404, NoData);
       const thumbnail = await ImageUploaderService.singleUpload(req.file);
-      await voucher.update({ thumbnail });
+      await voucher.update({ thumbnail }, { validate: false });
       sendSuccess(res, { voucher });
     } catch (error) {
       sendError(res, 500, error.message, error);
@@ -101,7 +101,7 @@ class VoucherApplicationController {
     try {
       const voucher = await VoucherApplicationModel.findByPk(req.params.voucherApplicationId);
       if (!voucher) return sendError(res, 404, NoData);
-      await voucher.update({ status: VoucherApplicationModel.STATUS_ENUM.ACTIVE });
+      await voucher.update({ status: VoucherApplicationModel.STATUS_ENUM.ACTIVE }, { validate: false });
       sendSuccess(res, { voucher });
     } catch (error) {
       sendError(res, 500, error.message, error);
@@ -112,7 +112,7 @@ class VoucherApplicationController {
     try {
       const voucher = await VoucherApplicationModel.findByPk(req.params.voucherApplicationId);
       if (!voucher) return sendError(res, 404, NoData);
-      await voucher.update({ status: VoucherApplicationModel.STATUS_ENUM.INACTIVE });
+      await voucher.update({ status: VoucherApplicationModel.STATUS_ENUM.INACTIVE }, { validate: false });
       sendSuccess(res, { voucher });
     } catch (error) {
       sendError(res, 500, error.message, error);

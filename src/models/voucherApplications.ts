@@ -12,7 +12,7 @@ class VoucherApplicationModel extends Model<VoucherApplicationInterface> impleme
   public thumbnail: string;
   public title: string;
   public code: string;
-  public paymentType: string;
+  public paymentMethod: string;
   public beneficiaries: string;
   public description: string;
   public adminId: number;
@@ -20,22 +20,27 @@ class VoucherApplicationModel extends Model<VoucherApplicationInterface> impleme
   public appliedAt: Date;
   public expiredAt: Date;
   public recipientLevel: string;
+  public isAlreadySent: boolean;
   public createdAt?: Date;
   public updatedAt?: Date;
   public deletedAt?: Date;
 
-  static readonly CREATABLE_PARAMETERS = ['title', 'appliedAt', 'expiredAt', 'description', 'beneficiaries', 'paymentType', 'recipientLevel', 'code',
+  static readonly CREATABLE_PARAMETERS = ['title', 'appliedAt', 'expiredAt', 'description', 'beneficiaries', 'recipientLevel', 'code',
     { conditions: ['discountValue', 'orderValue', 'discountType'] },
+    { paymentMethod: new Array(0) },
   ]
 
-  static readonly UPDATABLE_PARAMETERS = ['title', 'appliedAt', 'expiredAt', 'description', 'beneficiaries', 'paymentType', 'recipientLevel',
+  static readonly UPDATABLE_PARAMETERS = ['title', 'appliedAt', 'expiredAt', 'description', 'beneficiaries', 'recipientLevel',
+    { paymentMethod: new Array(0) },
     { conditions: ['discountValue', 'orderValue', 'discountType'] },
+
   ]
 
   static readonly STATUS_ENUM = { ACTIVE: 'active', INACTIVE: 'inactive' }
 
   static readonly PAYMENT_TYPE_ENUM = { ALL: 'all', VN_PAY: 'vnPAy', COD: 'COD', BANKING: 'banking' }
   static readonly RECIPIENT_LEVEL_ENUM = { ALL: 'all', TIER_1: 'tier1', TIER_2: 'tier2', BASE: 'base', VIP: 'vip' }
+  static readonly BENEFICIARIES_ENUM = { USER: 'user', COLLABORATOR: 'collaborator', AGENCY: 'agency', DISTRIBUTOR: 'distributor', ALL: 'all' }
 
   static readonly hooks: Partial<ModelHooks<VoucherApplicationModel>> = {
     async beforeCreate (record: any) {
@@ -43,24 +48,32 @@ class VoucherApplicationModel extends Model<VoucherApplicationInterface> impleme
         record.code = await record.generateVoucherCode();
       }
     },
+    beforeSave (record: any) {
+      if (this.beneficiaries === VoucherApplicationModel.BENEFICIARIES_ENUM.ALL) {
+        record.recipientLevel = VoucherApplicationModel.RECIPIENT_LEVEL_ENUM.ALL;
+      }
+    },
   }
 
   static readonly validations: ModelValidateOptions = {
     async validatePromoTime () {
       if (this.appliedAt > this.expiredAt) {
-        throw new ValidationErrorItem('Thời gian áp dụng của chương trình không hợp lệ', 'validatePromoTime', 'appliedAt', null);
-      }
-    },
-    async validateInactiveApplication () {
-      if ((this._previousDataValues.status === VoucherApplicationModel.STATUS_ENUM.ACTIVE && this.dataValues.status === VoucherApplicationModel.STATUS_ENUM.INACTIVE) &&
-      dayjs(this.appliedAt).format() < dayjs().format()) {
-        throw new ValidationErrorItem('Không thể tạm dừng chương trình đã hoạt động', 'validatePromoTime', 'appliedAt', null);
+        throw new ValidationErrorItem('Thời gian áp dụng của chương trình không hợp lệ', 'validatePromoTime', 'appliedAt', this.appliedAt);
       }
     },
     async validateApplicationTime () {
-      if ((this._previousDataValues.appliedAt !== this.dataValues.appliedAt) &&
+      if (!this.isNewRecord &&
       dayjs(this.appliedAt).format() < dayjs().format()) {
-        throw new ValidationErrorItem('Không thể thay đổi thời gian khi chương trình đã hoạt động', 'validatePromoTime', 'appliedAt', null);
+        throw new ValidationErrorItem('Không thể thay đổi thông tin khi chương trình đã hoạt động', 'validatePromoTime', 'appliedAt', this.appliedAt);
+      }
+    },
+    async validateRecipient () {
+      if (this.recipientLevel === VoucherApplicationModel.RECIPIENT_LEVEL_ENUM.ALL) return;
+      if ((this.beneficiaries === VoucherApplicationModel.BENEFICIARIES_ENUM.USER &&
+        [VoucherApplicationModel.RECIPIENT_LEVEL_ENUM.TIER_1, VoucherApplicationModel.RECIPIENT_LEVEL_ENUM.TIER_2].includes(this.recipientLevel)) ||
+        (this.beneficiaries === VoucherApplicationModel.BENEFICIARIES_ENUM.AGENCY &&
+          ![VoucherApplicationModel.RECIPIENT_LEVEL_ENUM.TIER_1, VoucherApplicationModel.RECIPIENT_LEVEL_ENUM.TIER_2].includes(this.recipientLevel))) {
+        throw new ValidationErrorItem('Đối tựợng được nhận khuyến mãi không hợp lệ', 'validateRecipient', 'recipientLevel', this.recipientLevel);
       }
     },
   }
@@ -100,10 +113,12 @@ class VoucherApplicationModel extends Model<VoucherApplicationInterface> impleme
         },
       };
     },
-    byPaymentType (paymentType) {
+    byPaymentMethod (paymentMethod) {
       return {
         where: {
-          paymentType,
+          [Op.or]: [
+            Sequelize.literal(`FIND_IN_SET('${paymentMethod}', REPLACE(REPLACE(REPLACE(VoucherModel.paymentMethod, '[', ''), ']', ''), '"', '')) <> 0`),
+          ],
         },
       };
     },
@@ -136,6 +151,25 @@ class VoucherApplicationModel extends Model<VoucherApplicationInterface> impleme
     byCode (code) {
       return {
         where: { code },
+      };
+    },
+    isNotSentNotification () {
+      return {
+        where: {
+          isAlreadySent: false,
+        },
+      };
+    },
+    isReadyToStart () {
+      return {
+        where: {
+          status: VoucherApplicationModel.STATUS_ENUM.ACTIVE,
+          isAlreadySent: false,
+          [Op.and]: [
+            { appliedAt: { [Op.lt]: dayjs().format() } },
+            { expiredAt: { [Op.gt]: dayjs().format() } },
+          ],
+        },
       };
     },
   }

@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import VoucherModel from '@models/vouchers';
 import settings from '@configs/settings';
 
-class UserVoucherController {
+class VoucherController {
   public async index (req: Request, res: Response) {
     try {
       const { currentUser } = req;
@@ -15,7 +15,8 @@ class UserVoucherController {
       const { status } = req.query;
       const scopes: any = [
         { method: ['bySorting', sortBy, sortOrder] },
-        { method: ['byUser', currentUser.id] },
+        { method: ['byRecipient', currentUser.id] },
+        { method: ['byRecipientType', VoucherModel.RECIPIENT_TYPE_ENUM.USER] },
         'withApplication',
       ];
       if (status) scopes.push({ method: ['byStatus', status] });
@@ -27,4 +28,4 @@ class UserVoucherController {
   }
 }
 
-export default new UserVoucherController();
+export default new VoucherController();
