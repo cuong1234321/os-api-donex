@@ -83,6 +83,7 @@ class ProductController {
         { method: ['verifyProduct', sku] },
         'isActive',
         'withThumbnail',
+        'withPrice',
       ]).findOne();
       if (!product) { return sendError(res, 404, NoData); }
       sendSuccess(res, product);

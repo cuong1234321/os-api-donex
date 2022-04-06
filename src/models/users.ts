@@ -40,7 +40,7 @@ class UserModel extends Model<UserInterface> implements UserInterface {
   public static readonly RANK_ENUM = { BASIC: 'Basic', VIP: 'Vip' }
   public static readonly CREATABLE_PARAMETERS = ['phoneNumber', 'fullName', 'password', 'confirmPassword']
   public static readonly USER_CREATABLE_PARAMETERS = ['phoneNumber', 'fullName', 'username', 'gender', 'dateOfBirth', 'email', 'note']
-  public static readonly USER_UPDATABLE_PARAMETERS = ['phoneNumber', 'fullName', 'dateOfBirth']
+  public static readonly USER_UPDATABLE_PARAMETERS = ['fullName', 'dateOfBirth', 'provinceId', 'districtId', 'wardId', 'address', 'email']
   static readonly UPDATABLE_PARAMETERS = ['fullName', 'phoneNumber', 'gender', 'email', 'dateOfBirth', 'note']
 
   public static readonly CREATABLE_COLLABORATOR_PARAMETERS = ['phoneNumber', 'fullName', 'email', 'provinceId', 'districtId', 'wardId', 'address', 'dateOfBirth',

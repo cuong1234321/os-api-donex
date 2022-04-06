@@ -18,12 +18,20 @@ const router = Router();
  *        schema:
  *          type: "object"
  *          properties:
- *            phoneNumber:
- *              type: "string"
  *            fullName:
  *              type: "string"
  *            dateOfBirth:
  *              type: "date"
+ *            email:
+ *              type: "string"
+ *            provinceId:
+ *              type: "number"
+ *            districtId:
+ *              type: "number"
+ *            wardId:
+ *              type: "number"
+ *            address:
+ *              type: "string"
  *     responses:
  *       200:
  *         description: Return data.
