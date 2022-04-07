@@ -8,6 +8,9 @@ class UserController {
     try {
       const { currentUser } = req;
       const params = req.parameters.permit(UserModel.USER_UPDATABLE_PARAMETERS).value();
+      if (currentUser.dateOfBirth) {
+        delete params.dateOfBirth;
+      }
       await currentUser.update(params);
       sendSuccess(res, currentUser);
     } catch (error) {
