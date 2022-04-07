@@ -105,6 +105,11 @@ class ProductVariantModel extends Model<ProductVariantInterface> implements Prod
         },
       };
     },
+    byId (id) {
+      return {
+        where: { id },
+      };
+    },
   }
 
   public async deleteVariantOption () {

@@ -26,6 +26,8 @@ class SaleCampaignModel extends Model<SaleCampaignInterface> implements SaleCamp
   public updatedAt?: Date;
   public deletedAt?: Date;
 
+  public productVariants?: SaleCampaignProductModel[];
+
   public static readonly CREATABLE_PARAMETERS = ['title', 'description', 'applicationTarget', 'calculatePriceType', 'value', 'isActive', 'productCategoryId',
     'isApplyToDistributor', 'isApplyToAgency', 'isApplyToCollaborator', 'isApplyToUser', 'appliedAt', 'appliedTo',
     {
@@ -58,8 +60,8 @@ class SaleCampaignModel extends Model<SaleCampaignInterface> implements SaleCamp
 
   static readonly hooks: Partial<ModelHooks<SaleCampaignModel>> = {
     beforeCreate (record: any) {
-      if (this.applicationTarget !== SaleCampaignModel.APPLICATION_TARGET_ENUM.PRODUCT_CATEGORY) {
-        delete this.productCategoryId;
+      if (record.applicationTarget !== SaleCampaignModel.APPLICATION_TARGET_ENUM.PRODUCT_CATEGORY) {
+        delete record.productCategoryId;
       }
     },
     async afterDestroy (record: any) {
@@ -73,6 +75,39 @@ class SaleCampaignModel extends Model<SaleCampaignInterface> implements SaleCamp
          [SaleCampaignModel.CALCULATE_PRICE_TYPE.INCREASE_BY_PERCENT, SaleCampaignModel.CALCULATE_PRICE_TYPE.REDUCE_BY_PERCENT]
            .includes(this.calculatePriceType))) {
         throw new ValidationErrorItem('Mức tính giá không hợp lệ', 'validateValue', 'value', this.value);
+      }
+    },
+    validateSaleCampaignVariant () {
+      if (this.value < 0 || (this.value > 100 &&
+         [SaleCampaignModel.CALCULATE_PRICE_TYPE.INCREASE_BY_PERCENT, SaleCampaignModel.CALCULATE_PRICE_TYPE.REDUCE_BY_PERCENT]
+           .includes(this.calculatePriceType))) {
+        throw new ValidationErrorItem('Mức tính giá không hợp lệ', 'validateValue', 'value', this.value);
+      }
+    },
+    async validateProductVariant () {
+      if (this.productVariants.length === 0) return;
+      const variantIds = this.productVariants.map((variant: any) => variant.productVariantId);
+      const productVariants = await ProductVariantModel.scope([
+        { method: ['byId', variantIds] },
+      ]).findAll();
+      if (variantIds.length !== productVariants.length) {
+        throw new ValidationErrorItem('Sản phẩm áp dụng bảng giá không tồn tại', 'validateProductVariant', 'productVariants', this.productVariants);
+      }
+    },
+    async validateSaleCampaignProductUniqueActive () {
+      if (this.productVariants.length === 0) return;
+      const variantIds = this.productVariants.map((variant: any) => variant.productVariantId);
+      const scopes: any = [
+        { method: ['byId', variantIds] },
+        'withSaleCampaignActiveSameTime',
+      ];
+      if (this.isApplyToDistributor) { scopes.push('withSaleCampaignDistributor'); }
+      if (this.isApplyToAgency) { scopes.push('withSaleCampaignAgency'); }
+      if (this.isApplyToCollaborator) { scopes.push('withSaleCampaignCollaborator'); }
+      if (this.isApplyToUser) { scopes.push('withSaleCampaignUser'); }
+      const productVariants = await ProductVariantModel.scope(scopes).findAll();
+      if (productVariants.length > 0) {
+        throw new ValidationErrorItem('Bảng giá áp dụng cho sản phẩm không hợp lệ', 'validateSaleCampaignProductUniqueActive', 'productVariants', this.productVariants);
       }
     },
   }
@@ -174,6 +209,50 @@ class SaleCampaignModel extends Model<SaleCampaignInterface> implements SaleCamp
       if (to) Object.assign(createdAtCondition, { [Op.lte]: dayjs(to as string).endOf('day').format() });
       return {
         where: { createdAt: createdAtCondition },
+      };
+    },
+    isApplyToDistributor () {
+      return {
+        where: {
+          isApplyToDistributor: true,
+        },
+      };
+    },
+    isApplyToAgency () {
+      return {
+        where: {
+          isApplyToAgency: true,
+        },
+      };
+    },
+    isApplyToCollaborator () {
+      return {
+        where: {
+          isApplyToCollaborator: true,
+        },
+      };
+    },
+    isApplyToUser () {
+      return {
+        where: {
+          isApplyToUser: true,
+        },
+      };
+    },
+    isAbleToUse () {
+      return {
+        where: {
+          isActive: true,
+          appliedAt: { [Op.lt]: dayjs().format() },
+        },
+      };
+    },
+    withProductVariant () {
+      return {
+        include: [{
+          model: SaleCampaignProductModel,
+          as: 'productVariants',
+        }],
       };
     },
   }
