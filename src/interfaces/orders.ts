@@ -1,0 +1,30 @@
+interface OrderInterface {
+  id: number;
+  code: string;
+  ownerId: number;
+  orderableType: string;
+  orderableId: number;
+  creatableType: string;
+  creatableId: number;
+  paymentMethod: string;
+  saleChannel: string;
+  subTotal: number;
+  shippingFee: number;
+  shippingDiscount: number;
+  coinUsed: number;
+  total: number;
+  appliedVoucherId: number;
+  shippingFullName: string;
+  shippingProvinceId: number;
+  shippingDistrictId: number;
+  shippingWardId: number;
+  shippingAddress: string;
+  transactionId: string;
+  paidAt?: Date;
+  portalConfirmAt?: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
+  deletedAt?: Date;
+};
+
+export default OrderInterface;
