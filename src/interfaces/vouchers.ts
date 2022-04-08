@@ -1,9 +1,10 @@
 interface VoucherInterface {
   id: number;
   voucherApplicationId: number;
-  discount: number;
-  userId: number;
-  activeAt: Date;
+  discount?: number;
+  recipientId: number;
+  recipientType: string;
+  activeAt?: Date;
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;

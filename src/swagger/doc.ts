@@ -145,6 +145,10 @@ const swaggerDefinition = {
       description: 'Upload file',
     },
     {
+      name: '[USER] User vouchers',
+      description: 'Voucher user',
+    },
+    {
       name: '[COLLABORATOR] Collaborators',
       description: 'Quan ly ctv/dl',
     },

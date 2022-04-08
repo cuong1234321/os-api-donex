@@ -12,8 +12,12 @@ const VoucherEntity = {
     type: DataTypes.INTEGER,
     allowNull: true,
   },
-  userId: {
+  recipientId: {
     type: DataTypes.INTEGER, allowNull: true,
+  },
+  recipientType: {
+    type: DataTypes.ENUM({ values: ['user', 'collaborator', 'agency', 'distributor'] }),
+    defaultValue: 'user',
   },
   activeAt: {
     type: DataTypes.DATE,

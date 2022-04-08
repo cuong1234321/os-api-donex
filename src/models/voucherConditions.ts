@@ -2,7 +2,7 @@ import VoucherConditionEntity from '@entities/voucherConditions';
 import VoucherConditionInterface from '@interfaces/voucherConditions';
 import { Model, ModelScopeOptions, ModelValidateOptions, Sequelize } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
-import VoucherApplicationModel from './vourcherApplications';
+import VoucherApplicationModel from './voucherApplications';
 
 class VoucherConditionModel extends Model<VoucherConditionInterface> implements VoucherConditionInterface {
   public id: number;

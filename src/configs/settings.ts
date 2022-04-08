@@ -27,4 +27,5 @@ export default {
   },
   passwordAdminDefault: 'Aa@123456',
   defaultUserPassword: 'Aa@123456',
+  defaultTax: 8,
 };
