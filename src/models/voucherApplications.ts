@@ -172,6 +172,16 @@ class VoucherApplicationModel extends Model<VoucherApplicationInterface> impleme
         },
       };
     },
+    withVoucher () {
+      return {
+        include: [
+          {
+            model: VoucherModel,
+            as: 'vouchers',
+          },
+        ],
+      };
+    },
   }
 
   public async generateVoucherCode () {
