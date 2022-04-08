@@ -2,6 +2,8 @@ import WarehouseReceiptVariantEntity from '@entities/warehouseReceiptVariants';
 import WarehouseReceiptVariantInterface from '@interfaces/warehouseReceiptVariants';
 import { Model, ModelScopeOptions, ModelValidateOptions, Sequelize } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
+import ProductVariantModel from './productVariants';
+import WarehouseModel from './warehouses';
 import WarehouseVariantModel from './warehouseVariants';
 
 class WarehouseReceiptVariantModel extends Model<WarehouseReceiptVariantInterface> implements WarehouseReceiptVariantInterface {
@@ -16,22 +18,30 @@ class WarehouseReceiptVariantModel extends Model<WarehouseReceiptVariantInterfac
   public updatedAt?: Date;
   public deletedAt?: Date;
 
+  static readonly UPDATABLE_ON_DUPLICATE_PARAMETERS = ['id', 'variantId', 'warehouseId', 'quantity', 'price', 'totalPrice']
+
   static readonly hooks: Partial<ModelHooks<WarehouseReceiptVariantModel>> = {
-    async afterCreate (record) {
+    async afterSave (record) {
+      const warehouseVariant = (await WarehouseVariantModel.findOrCreate({
+        where: {
+          warehouseId: record.warehouseId,
+          variantId: record.variantId,
+        },
+        defaults: {
+          id: undefined,
+          warehouseId: record.warehouseId,
+          variantId: record.variantId,
+          quantity: 0,
+        },
+      }))[0];
+      await warehouseVariant.update({ quantity: warehouseVariant.quantity - (record.previous('quantity') || 0) + (record.quantity || 0) });
+    },
+    async afterDestroy (record) {
       const warehouseVariant = await WarehouseVariantModel.scope([
         { method: ['byWarehouseId', record.warehouseId] },
         { method: ['byProductVariant', record.variantId] },
       ]).findOne();
-      if (warehouseVariant) {
-        await warehouseVariant.update({ quantity: warehouseVariant.quantity + (record.quantity || 0) });
-      } else {
-        await WarehouseVariantModel.create({
-          id: undefined,
-          warehouseId: record.warehouseId,
-          variantId: record.variantId,
-          quantity: record.quantity || 0,
-        });
-      }
+      await warehouseVariant.update({ quantity: warehouseVariant.quantity - record.quantity });
     },
   }
 
@@ -51,6 +61,8 @@ class WarehouseReceiptVariantModel extends Model<WarehouseReceiptVariantInterfac
   }
 
   public static associate () {
+    this.belongsTo(ProductVariantModel, { as: 'variant', foreignKey: 'variantId' });
+    this.belongsTo(WarehouseModel, { as: 'warehouse', foreignKey: 'warehouseId' });
   }
 }
 

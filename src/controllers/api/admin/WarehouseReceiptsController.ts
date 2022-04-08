@@ -1,3 +1,4 @@
+import { NoData } from '@libs/errors';
 import { sendSuccess, sendError } from '@libs/response';
 import WarehouseReceiptModel from '@models/warehouseReceipts';
 import { Request, Response } from 'express';
@@ -27,6 +28,24 @@ class WarehouseReceiptController {
     }
   }
 
+  public async show (req: Request, res: Response) {
+    try {
+      const { warehouseReceiptId } = req.params;
+      const scopes: any = [
+        { method: ['byId', warehouseReceiptId] },
+        'withImportAbleName',
+        'withTotalPrice',
+        'withTotalQuantity',
+      ];
+      const warehouseReceipt = await WarehouseReceiptModel.scope(scopes).findOne();
+      if (!warehouseReceipt) { return sendError(res, 404, NoData); }
+      await warehouseReceipt.reloadWithDetail();
+      sendSuccess(res, warehouseReceipt);
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
   public async index (req: Request, res: Response) {
     try {
       const page = parseInt(req.query.page as string || '1', 10);
@@ -37,11 +56,29 @@ class WarehouseReceiptController {
         'newest',
         'withImportAbleName',
         'withAdminName',
+        'withTotalPrice',
         { method: ['byDate', fromDate, toDate] },
       ];
       if (type) scopes.push({ method: ['byType', type] });
       const { rows, count } = await WarehouseReceiptModel.scope(scopes).findAndCountAll({ limit, offset });
       sendSuccess(res, { warehouseReceipt: rows, pagination: { total: count, page, perPage: limit } });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async update (req: Request, res: Response) {
+    try {
+      const { warehouseReceiptId } = req.params;
+      const warehouseReceipt = await WarehouseReceiptModel.findByPk(warehouseReceiptId);
+      if (!warehouseReceipt) { return sendError(res, 404, NoData); }
+      const params = req.parameters.permit(WarehouseReceiptModel.UPDATABLE_PARAMETERS).value();
+      await sequelize.transaction(async (transaction: Transaction) => {
+        await warehouseReceipt.update(params, { transaction });
+        await warehouseReceipt.updateReceiptVariants(params.warehouseReceiptVariants, transaction);
+      });
+      await warehouseReceipt.reloadWithDetail();
+      sendSuccess(res, warehouseReceipt);
     } catch (error) {
       sendError(res, 500, error.message, error);
     }
