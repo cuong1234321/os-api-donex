@@ -85,6 +85,10 @@ const swaggerDefinition = {
       description: 'Upload file',
     },
     {
+      name: '[ADMIN] Warehouses',
+      description: 'Quản lý kho hàng',
+    },
+    {
       name: '[USER] Sessions',
       description: 'Phiên đăng nhập user',
     },
