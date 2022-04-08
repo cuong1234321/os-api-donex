@@ -20,6 +20,7 @@ import UploadRouter from './Uploads';
 import TermRouter from './Terms';
 import Warehouse from './Warehouses';
 import WarehouseReceiptRouter from './warehouseReceipts';
+import WarehouseExportRouter from './warehouseExports';
 
 const router = Router();
 
@@ -44,5 +45,6 @@ router.use('/uploads', UploadRouter);
 router.use('/terms', TermRouter);
 router.use('/warehouses', Warehouse);
 router.use('/warehouse_receipts', WarehouseReceiptRouter);
+router.use('/warehouse_exports', WarehouseExportRouter);
 
 export default router;
