@@ -8,6 +8,8 @@ import settings from '@configs/settings';
 import CollaboratorWorkingDayInterface from '@interfaces/collaboratorWorkingDays';
 import CollaboratorWorkingDayModel from './collaboratorWorkingDays';
 import CollaboratorMediaModel from './collaboratorMedia';
+import VoucherApplicationModel from './voucherApplications';
+import VoucherModel from './vouchers';
 
 class CollaboratorModel extends Model<CollaboratorInterface> implements CollaboratorInterface {
   public id: number;
@@ -272,6 +274,12 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
   public static associate () {
     this.hasMany(CollaboratorWorkingDayModel, { as: 'workingDays', foreignKey: 'collaboratorId', onDelete: 'CASCADE', hooks: true });
     this.hasMany(CollaboratorMediaModel, { as: 'media', foreignKey: 'collaboratorId', onDelete: 'CASCADE', hooks: true });
+    this.belongsToMany(VoucherApplicationModel, {
+      through: VoucherModel,
+      as: 'collaboratorVouchers',
+      foreignKey: 'recipientId',
+      scope: { recipientType: { [Op.ne]: VoucherModel.RECIPIENT_TYPE_ENUM.USER } },
+    });
   }
 }
 

@@ -41,7 +41,8 @@ class VoucherApplicationController {
       const voucher = await VoucherApplicationModel.scope([
         { method: ['byId', req.params.voucherApplicationId] },
         'withConditions',
-        'withVoucher',
+        'withUserVouchers',
+        'withCollaboratorVouchers',
       ]).findOne();
       if (!voucher) return sendError(res, 404, NoData);
       sendSuccess(res, { voucher });
