@@ -2,6 +2,7 @@ import WarehouseEntity from '@entities/warehouses';
 import WarehouseInterface from '@interfaces/warehouses';
 import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
+import WarehouseVariantModel from './warehouseVariants';
 
 class WarehouseModel extends Model<WarehouseInterface> implements WarehouseInterface {
   public id: number;
@@ -89,6 +90,7 @@ class WarehouseModel extends Model<WarehouseInterface> implements WarehouseInter
   }
 
   public static associate () {
+    this.hasMany(WarehouseVariantModel, { as: 'warehouseVariant', foreignKey: 'warehouseId' });
   }
 }
 

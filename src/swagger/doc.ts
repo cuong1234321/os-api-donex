@@ -147,6 +147,9 @@ const swaggerDefinition = {
     {
       name: '[USER] User vouchers',
       description: 'Voucher user',
+    }, {
+      name: '[USER] CARTS',
+      description: 'Giỏ hàng user',
     },
     {
       name: '[COLLABORATOR] Collaborators',
