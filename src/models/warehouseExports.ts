@@ -1,9 +1,12 @@
 import WarehouseExportEntity from '@entities/warehouseExports';
 import WarehouseExportInterface from '@interfaces/warehouseExports';
 import dayjs from 'dayjs';
-import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize } from 'sequelize';
+import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, Transaction } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
+import ProductOptionModel from './productOptions';
+import ProductVariantModel from './productVariants';
 import WarehouseExportVariantModel from './warehouseExportVariants';
+import WarehouseModel from './warehouses';
 
 class WarehouseExportModel extends Model<WarehouseExportInterface> implements WarehouseExportInterface {
   public id: number;
@@ -23,6 +26,10 @@ class WarehouseExportModel extends Model<WarehouseExportInterface> implements Wa
     { warehouseExportVariants: ['warehouseId', 'variantId', 'quantity', 'price', 'totalPrice'] },
   ]
 
+  static readonly UPDATABLE_PARAMETERS = ['exportDate', 'type', 'exportAbleType', 'exportAble', 'orderId', 'deliverer', 'note',
+    { warehouseExportVariants: ['id', 'warehouseId', 'variantId', 'quantity', 'price', 'totalPrice'] },
+  ]
+
   static readonly hooks: Partial<ModelHooks<WarehouseExportModel>> = {}
 
   static readonly validations: ModelValidateOptions = {}
@@ -40,6 +47,11 @@ class WarehouseExportModel extends Model<WarehouseExportInterface> implements Wa
     byType (type) {
       return {
         where: { type },
+      };
+    },
+    byId (id) {
+      return {
+        where: { id },
       };
     },
     withExportAbleName () {
@@ -85,11 +97,75 @@ class WarehouseExportModel extends Model<WarehouseExportInterface> implements Wa
         },
       };
     },
+    withTotalQuantity () {
+      return {
+        attributes: {
+          include: [
+            [
+              Sequelize.cast(Sequelize.literal('(SELECT SUM(quantity) FROM warehouse_export_variants WHERE warehouseExportId = WarehouseExportModel.id AND deletedAt IS NULL )'), 'SIGNED'),
+              'totalQuantity',
+            ],
+          ],
+        },
+      };
+    },
     bySorting (sortBy, sortOrder) {
       return {
         order: [[Sequelize.literal(sortBy), sortOrder]],
       };
     },
+  }
+
+  public async updateExportVariants (exportVariants: any[], transaction?: Transaction) {
+    if (!exportVariants) return;
+    exportVariants.forEach((record: any) => {
+      record.warehouseExportId = this.id;
+    });
+    let warehouseExportVariants: any = [];
+    for (const exportVariant of exportVariants) {
+      if (exportVariant.id) {
+        const record = (await WarehouseExportVariantModel.update(exportVariant, { where: { id: exportVariant.id }, individualHooks: true, transaction }))[1];
+        warehouseExportVariants.push(record);
+      } else {
+        exportVariant.warehouseExportId = this.id;
+        const record = await WarehouseExportVariantModel.create(exportVariant, { individualHooks: true, transaction });
+        warehouseExportVariants.push(record);
+      }
+    }
+    warehouseExportVariants = warehouseExportVariants.flat(Infinity);
+    await WarehouseExportVariantModel.destroy({
+      where: { warehouseExportId: this.id, id: { [Op.notIn]: warehouseExportVariants.map((exportVariant: any) => exportVariant.id) } },
+      individualHooks: true,
+      transaction,
+    });
+    return warehouseExportVariants;
+  }
+
+  public async reloadWithDetail () {
+    await this.reload({
+      include: [
+        {
+          model: WarehouseExportVariantModel,
+          as: 'warehouseExportVariants',
+          include: [
+            {
+              model: ProductVariantModel,
+              as: 'variant',
+              include: [
+                {
+                  model: ProductOptionModel,
+                  as: 'options',
+                },
+              ],
+            },
+            {
+              model: WarehouseModel,
+              as: 'warehouse',
+            },
+          ],
+        },
+      ],
+    });
   }
 
   public static initialize (sequelize: Sequelize) {
@@ -105,6 +181,7 @@ class WarehouseExportModel extends Model<WarehouseExportInterface> implements Wa
 
   public static associate () {
     this.hasMany(WarehouseExportVariantModel, { as: 'warehouseExportVariants', foreignKey: 'warehouseExportId' });
+    this.hasMany(WarehouseExportVariantModel, { as: 'exportVariants', foreignKey: 'warehouseExportId' });
   }
 }
 
