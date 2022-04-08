@@ -4,6 +4,8 @@ import VoucherConditionInterface from '@interfaces/voucherConditions';
 import dayjs from 'dayjs';
 import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, Transaction, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
+import CollaboratorModel from './collaborators';
+import UserModel from './users';
 import VoucherConditionModel from './voucherConditions';
 import VoucherModel from './vouchers';
 
@@ -182,6 +184,28 @@ class VoucherApplicationModel extends Model<VoucherApplicationInterface> impleme
         ],
       };
     },
+    withUserVouchers () {
+      return {
+        include: [
+          {
+            model: UserModel,
+            as: 'userVouchers',
+            attributes: ['fullName', 'phoneNumber', 'username'],
+          },
+        ],
+      };
+    },
+    withCollaboratorVouchers () {
+      return {
+        include: [
+          {
+            model: CollaboratorModel,
+            as: 'collaboratorVouchers',
+            attributes: ['fullName', 'phoneNumber', 'username'],
+          },
+        ],
+      };
+    },
   }
 
   public async generateVoucherCode () {
@@ -207,6 +231,16 @@ class VoucherApplicationModel extends Model<VoucherApplicationInterface> impleme
   public static associate () {
     this.hasMany(VoucherModel, { as: 'vouchers', foreignKey: 'voucherApplicationId' });
     this.hasMany(VoucherConditionModel, { as: 'conditions', foreignKey: 'voucherApplicationId' });
+    this.belongsToMany(UserModel, {
+      through: VoucherModel,
+      as: 'userVouchers',
+      foreignKey: 'voucherApplicationId',
+    });
+    this.belongsToMany(CollaboratorModel, {
+      through: VoucherModel,
+      as: 'collaboratorVouchers',
+      foreignKey: 'voucherApplicationId',
+    });
   }
 }
 

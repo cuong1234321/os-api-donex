@@ -8,6 +8,8 @@ import settings from '@configs/settings';
 import dayjs from 'dayjs';
 import SendSmsService from '@services/smsSender';
 import randomString from 'randomstring';
+import VoucherApplicationModel from './voucherApplications';
+import VoucherModel from './vouchers';
 
 class UserModel extends Model<UserInterface> implements UserInterface {
   public id: number;
@@ -234,7 +236,14 @@ class UserModel extends Model<UserInterface> implements UserInterface {
     });
   }
 
-  public static associate () { }
+  public static associate () {
+    this.belongsToMany(VoucherApplicationModel, {
+      through: VoucherModel,
+      as: 'userVouchers',
+      foreignKey: 'recipientId',
+      scope: { recipientType: VoucherModel.RECIPIENT_TYPE_ENUM.USER },
+    });
+  }
 }
 
 export default UserModel;

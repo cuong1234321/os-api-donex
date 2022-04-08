@@ -3,7 +3,6 @@ import VoucherInterface from '@interfaces/vouchers';
 import dayjs from 'dayjs';
 import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
-import UserModel from './users';
 import VoucherApplicationModel from './voucherApplications';
 
 class VoucherModel extends Model<VoucherInterface> implements VoucherInterface {
@@ -102,8 +101,6 @@ class VoucherModel extends Model<VoucherInterface> implements VoucherInterface {
 
   public static associate () {
     this.belongsTo(VoucherApplicationModel, { as: 'application', foreignKey: 'voucherApplicationId' });
-    this.belongsTo(UserModel, { as: 'user', foreignKey: 'recipientId', scope: { recipientType: VoucherModel.RECIPIENT_TYPE_ENUM.USER } });
-    this.belongsTo(UserModel, { as: 'collaborator', foreignKey: 'recipientId', scope: { recipientType: { [Op.ne]: VoucherModel.RECIPIENT_TYPE_ENUM.USER } } });
   }
 }
 
