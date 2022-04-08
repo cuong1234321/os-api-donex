@@ -1,7 +1,7 @@
 import CollaboratorModel from '@models/collaborators';
 import SaleCampaignModel from '@models/saleCampaigns';
 
-class saleCampaignVariantService {
+class SaleCampaignProductDecorator {
   public static async currentActiveSaleCampaign (userType: string, products: any) {
     const scopes: any = [
       'isAbleToUse',
@@ -48,4 +48,4 @@ class saleCampaignVariantService {
   }
 }
 
-export default saleCampaignVariantService;
+export default SaleCampaignProductDecorator;
