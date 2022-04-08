@@ -97,6 +97,8 @@
     "@controllers": "dist/controllers",
     "@middlewares": "dist/middlewares",
     "@workers": "dist/workers",
+    "@jobs": "dist/jobs",
+    "@decorators": "dist/decorators",
     "~": "dist",
     "@libs": "dist/libs"
   },
