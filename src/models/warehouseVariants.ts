@@ -16,7 +16,18 @@ class WarehouseVariantModel extends Model<WarehouseVariantInterface> implements 
 
   static readonly validations: ModelValidateOptions = {}
 
-  static readonly scopes: ModelScopeOptions = {}
+  static readonly scopes: ModelScopeOptions = {
+    byWarehouseid (warehouseId) {
+      return {
+        where: { warehouseId },
+      };
+    },
+    byVariantId (variantId) {
+      return {
+        where: { variantId },
+      };
+    },
+  }
 
   public static initialize (sequelize: Sequelize) {
     this.init(WarehouseVariantEntity, {
@@ -24,7 +35,6 @@ class WarehouseVariantModel extends Model<WarehouseVariantInterface> implements 
       scopes: WarehouseVariantModel.scopes,
       validate: WarehouseVariantModel.validations,
       tableName: 'warehouse_variants',
-      paranoid: true,
       sequelize,
     });
   }

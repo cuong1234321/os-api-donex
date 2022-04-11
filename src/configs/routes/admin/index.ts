@@ -19,6 +19,7 @@ import RankRouter from './Ranks';
 import UploadRouter from './Uploads';
 import TermRouter from './Terms';
 import Warehouse from './Warehouses';
+import WarehouseReceiptRouter from './warehouseReceipts';
 
 const router = Router();
 
@@ -42,5 +43,6 @@ router.use('/ranks', RankRouter);
 router.use('/uploads', UploadRouter);
 router.use('/terms', TermRouter);
 router.use('/warehouses', Warehouse);
+router.use('/warehouse_receipts', WarehouseReceiptRouter);
 
 export default router;
