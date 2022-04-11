@@ -182,4 +182,28 @@ router.post('/', WarehouseController.create);
  */
 router.patch('/:warehouseId', WarehouseController.update);
 
+/**
+ * @openapi
+ * /a/warehouses/{warehouseId}:
+ *   delete:
+ *     tags:
+ *      - "[ADMIN] Warehouses"
+ *     summary: Xoa kho hang
+ *     parameters:
+ *      - in: path
+ *        name: "warehouseId"
+ *        description: "id kho"
+ *        required: true
+ *     responses:
+ *       200:
+ *         description: Return data.
+ *       404:
+ *         description: Không tìm thấy dữ liệu
+ *       500:
+ *         description: Error can't get data.
+ *     security:
+ *      - Bearer: []
+ */
+router.delete('/:warehouseId', WarehouseController.delete);
+
 export default router;

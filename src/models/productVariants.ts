@@ -133,6 +133,11 @@ class ProductVariantModel extends Model<ProductVariantInterface> implements Prod
         where: { id: { [Op.notIn]: id } },
       };
     },
+    bySkuCode (skuCode) {
+      return {
+        where: { skuCode },
+      };
+    },
   }
 
   public async deleteVariantOption () {

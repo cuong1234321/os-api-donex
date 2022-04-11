@@ -1,5 +1,5 @@
 import Settings from '@configs/settings';
-import { NoData } from '@libs/errors';
+import { existProduct, NoData } from '@libs/errors';
 import { sendError, sendSuccess } from '@libs/response';
 import WarehouseModel from '@models/warehouses';
 import { Request, Response } from 'express';
@@ -51,10 +51,30 @@ class WarehouseController {
   public async show (req: Request, res: Response) {
     try {
       const { warehouseId } = req.params;
-      const warehouse = await WarehouseModel.findByPk(warehouseId);
+      const warehouse = await WarehouseModel.scope([
+        { method: ['byId', warehouseId] },
+        'totalQuantity',
+        'withWarehouseVariantDetail',
+      ]).findOne();
       if (!warehouse) { return sendError(res, 404, NoData); }
-      // Danh sach san pham kho se them sau
       sendSuccess(res, warehouse);
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async delete (req: Request, res: Response) {
+    try {
+      const { warehouseId } = req.params;
+      const warehouse = await WarehouseModel.scope([
+        { method: ['byId', warehouseId] },
+      ]).findOne();
+      if (!warehouse) { return sendError(res, 404, NoData); }
+      if (!(await warehouse.checkDelete())) {
+        return sendError(res, 404, existProduct);
+      }
+      await warehouse.destroy();
+      sendSuccess(res, {});
     } catch (error) {
       sendError(res, 500, error.message, error);
     }
