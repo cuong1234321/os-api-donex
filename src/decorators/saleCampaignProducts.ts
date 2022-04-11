@@ -5,6 +5,7 @@ class SaleCampaignProductDecorator {
   public static async currentActiveSaleCampaign (userType: string, products: any) {
     const scopes: any = [
       'isAbleToUse',
+      'withProductVariant',
     ];
     switch (userType) {
       case CollaboratorModel.TYPE_ENUM.DISTRIBUTOR:
@@ -24,24 +25,28 @@ class SaleCampaignProductDecorator {
     }
     const saleCampaigns = await SaleCampaignModel.scope(scopes).findAll();
     for (const saleCampaign of saleCampaigns) {
-      const productVariantIds = saleCampaign.productVariants.map((record: any) => record.id);
       for (const product of products) {
-        for (const variant of product.variants) {
-          if (productVariantIds.includes(variant.id)) {
+        const sellPrices = [];
+        for (const variant of product.getDataValue('variants')) {
+          variant.setDataValue('saleCampaignPrice', variant.sellPrice);
+          if (saleCampaign.productVariants.find((record: any) => record.productVariantId === variant.id)) {
             if (saleCampaign.calculatePriceType === SaleCampaignModel.CALCULATE_PRICE_TYPE.REDUCE_BY_AMOUNT) {
-              variant.sellPrice = variant.sellPrice - saleCampaign.value;
+              variant.setDataValue('saleCampaignPrice', variant.sellPrice - saleCampaign.value);
             }
             if (saleCampaign.calculatePriceType === SaleCampaignModel.CALCULATE_PRICE_TYPE.INCREASE_BY_AMOUNT) {
-              variant.sellPrice = variant.sellPrice + saleCampaign.value;
+              variant.setDataValue('saleCampaignPrice', variant.sellPrice + saleCampaign.value);
             }
             if (saleCampaign.calculatePriceType === SaleCampaignModel.CALCULATE_PRICE_TYPE.REDUCE_BY_PERCENT) {
-              variant.sellPrice = variant.sellPrice - (variant.sellPrice * saleCampaign.value);
+              variant.setDataValue('saleCampaignPrice', variant.sellPrice - (variant.sellPrice * saleCampaign.value));
             }
             if (saleCampaign.calculatePriceType === SaleCampaignModel.CALCULATE_PRICE_TYPE.INCREASE_BY_PERCENT) {
-              variant.sellPrice = variant.sellPrice + (variant.sellPrice * saleCampaign.value);
+              variant.setDataValue('saleCampaignPrice', variant.sellPrice + (variant.sellPrice * saleCampaign.value));
             }
           }
+          sellPrices.push(variant.getDataValue('saleCampaignPrice'));
         }
+        product.setDataValue('minPrice', Math.min(...sellPrices));
+        product.setDataValue('maxPrice', Math.max(...sellPrices));
       }
     }
     return products;

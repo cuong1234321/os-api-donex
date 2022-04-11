@@ -33,6 +33,8 @@ interface ProductInterface {
   options?: ProductOptionModel[];
   medias?: ProductMediaModel[];
   variants?: ProductVariantModel[];
+  minPrice?: number;
+  maxPrice?: number;
 };
 
 export default ProductInterface;
