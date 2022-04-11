@@ -13,7 +13,7 @@ const CartItemEntity = {
   quantity: {
     type: DataTypes.INTEGER, allowNull: false,
   },
-  warehouseVariantId: {
+  warehouseId: {
     type: DataTypes.INTEGER, allowNull: true,
   },
   createdAt: {

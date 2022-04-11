@@ -19,8 +19,8 @@ class WarehouseReceiptVariantModel extends Model<WarehouseReceiptVariantInterfac
   static readonly hooks: Partial<ModelHooks<WarehouseReceiptVariantModel>> = {
     async afterCreate (record) {
       const warehouseVariant = await WarehouseVariantModel.scope([
-        { method: ['byWarehouseid', record.warehouseId] },
-        { method: ['byVariantId', record.variantId] },
+        { method: ['byWarehouseId', record.warehouseId] },
+        { method: ['byProductVariant', record.variantId] },
       ]).findOne();
       if (warehouseVariant) {
         await warehouseVariant.update({ quantity: warehouseVariant.quantity + (record.quantity || 0) });
