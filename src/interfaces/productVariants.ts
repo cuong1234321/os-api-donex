@@ -16,6 +16,7 @@ interface ProductVariantInterface {
   deletedAt?: Date;
 
   options?: ProductOptionModel[];
+  saleCampaignPrice?: number;
 };
 
 export default ProductVariantInterface;

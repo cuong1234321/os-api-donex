@@ -45,6 +45,8 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
   public deletedAt?: Date;
   public variants?: ProductVariantModel[];
   public options?: ProductOptionModel[];
+  public minPrice?: number;
+  public maxPrice?: number;
 
   static readonly STATUS_ENUM = { DRAFT: 'draft', ACTIVE: 'active', INACTIVE: 'inActive' };
 
@@ -440,6 +442,14 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
           },
         };
       }
+    },
+    withVariants () {
+      return {
+        include: [{
+          model: ProductVariantModel,
+          as: 'variants',
+        }],
+      };
     },
   }
 

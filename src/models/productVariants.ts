@@ -23,6 +23,7 @@ class ProductVariantModel extends Model<ProductVariantInterface> implements Prod
   public createdAt?: Date;
   public updatedAt?: Date;
   public deletedAt?: Date;
+  public saleCampaignPrice?: number;
 
   static readonly UPDATABLE_ON_DUPLICATE_PARAMETERS = ['id', 'sku', 'buyPrice', 'sellPrice', 'stock', { optionMappingIds: new Array(0) }];
 

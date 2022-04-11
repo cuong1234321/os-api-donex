@@ -6,6 +6,7 @@ import { Sequelize } from 'sequelize';
 import ProductCategoryModel from '@models/productCategories';
 import ProductOptionModel from '@models/productOptions';
 import { NoData } from '@libs/errors';
+import SaleCampaignProductDecorator from '@decorators/saleCampaignProducts';
 class ProductController {
   public async index (req: Request, res: Response) {
     try {
@@ -18,6 +19,7 @@ class ProductController {
       const scopes: any = [
         'isActive',
         'withThumbnail',
+        'withVariants',
       ];
       if (categoryIds) {
         const listCategoryId = await ProductCategoryModel.getCategoryIdsByParentId((categoryIds as string).split(','));
@@ -40,7 +42,8 @@ class ProductController {
         distinct: true,
         col: 'ProductModel.id',
       });
-      sendSuccess(res, { products: rows, pagination: { total: count, page, perPage: limit } });
+      const products = await SaleCampaignProductDecorator.currentActiveSaleCampaign('USER', rows);
+      sendSuccess(res, { products, pagination: { total: count, page, perPage: limit } });
     } catch (error) {
       sendError(res, 500, error.message, error);
     }
@@ -59,7 +62,7 @@ class ProductController {
         'isActive',
       ];
       if (currentUser) scopes.push({ method: ['isFavorite', currentUser.id] });
-      const product = await ProductModel.scope(scopes).findOne();
+      let product = await ProductModel.scope(scopes).findOne();
       if (!product) {
         return sendError(res, 404, NoData);
       }
@@ -70,6 +73,7 @@ class ProductController {
       product.setDataValue('options', options);
       product.setDataValue('medias', await product.getMedias());
       product.setDataValue('variants', await product.getVariantDetail());
+      product = await SaleCampaignProductDecorator.currentActiveSaleCampaign('USER', [product]);
       sendSuccess(res, { product });
     } catch (error) {
       sendError(res, 500, error.message, error);
@@ -79,13 +83,15 @@ class ProductController {
   public async verifyProduct (req: Request, res: Response) {
     try {
       const { sku } = req.query;
-      const product = await ProductModel.scope([
+      let product = await ProductModel.scope([
         { method: ['verifyProduct', sku] },
         'isActive',
         'withThumbnail',
         'withPrice',
+        'withVariants',
       ]).findOne();
       if (!product) { return sendError(res, 404, NoData); }
+      product = await SaleCampaignProductDecorator.currentActiveSaleCampaign('USER', [product]);
       sendSuccess(res, product);
     } catch (error) {
       sendError(res, 500, error.message, error);
