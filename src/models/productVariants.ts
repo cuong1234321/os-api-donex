@@ -1,6 +1,6 @@
 import ProductVariantEntity from '@entities/productVariants';
 import ProductVariantInterface from '@interfaces/productVariants';
-import { Model, ModelScopeOptions, ModelValidateOptions, Sequelize } from 'sequelize';
+import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import ProductCategoryModel from './productCategories';
 import ProductOptionModel from './productOptions';
@@ -108,6 +108,11 @@ class ProductVariantModel extends Model<ProductVariantInterface> implements Prod
     byId (id) {
       return {
         where: { id },
+      };
+    },
+    byIgnoreIds (id) {
+      return {
+        where: { id: { [Op.notIn]: id } },
       };
     },
   }

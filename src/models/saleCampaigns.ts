@@ -101,11 +101,23 @@ class SaleCampaignModel extends Model<SaleCampaignInterface> implements SaleCamp
         { method: ['byId', variantIds] },
         'withSaleCampaignActiveSameTime',
       ];
-      if (this.isApplyToDistributor) { scopes.push('withSaleCampaignDistributor'); }
-      if (this.isApplyToAgency) { scopes.push('withSaleCampaignAgency'); }
-      if (this.isApplyToCollaborator) { scopes.push('withSaleCampaignCollaborator'); }
-      if (this.isApplyToUser) { scopes.push('withSaleCampaignUser'); }
-      const productVariants = await SaleCampaignProductModel.scope(scopes).findAll();
+      const conditions: any = [];
+      if (this.isApplyToDistributor) { conditions.push({ isApplyToDistributor: true }); }
+      if (this.isApplyToAgency) { conditions.push({ isApplyToAgency: true }); }
+      if (this.isApplyToCollaborator) { conditions.push({ isApplyToCollaborator: true }); }
+      if (this.isApplyToUser) { conditions.push({ isApplyToUser: true }); }
+      const productVariants = await SaleCampaignProductModel.scope(scopes).findAll({
+        include: [
+          {
+            model: SaleCampaignModel,
+            as: 'saleCampaign',
+            required: true,
+            where: {
+              [Op.or]: conditions,
+            },
+          },
+        ],
+      });
       if (productVariants.length > 0) {
         throw new ValidationErrorItem('Bảng giá áp dụng cho sản phẩm không hợp lệ', 'validateSaleCampaignProductUniqueActive', 'productVariants', this.productVariants);
       }
