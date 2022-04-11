@@ -50,62 +50,6 @@ class SaleCampaignProductModel extends Model<SaleCampaignProductInterface> imple
         }],
       };
     },
-    withSaleCampaignDistributor () {
-      return {
-        include: [
-          {
-            model: SaleCampaignModel,
-            as: 'saleCampaign',
-            required: true,
-            where: {
-              isApplyToDistributor: true,
-            },
-          },
-        ],
-      };
-    },
-    withSaleCampaignAgency () {
-      return {
-        include: [
-          {
-            model: SaleCampaignModel,
-            as: 'saleCampaign',
-            required: true,
-            where: {
-              isApplyToAgency: true,
-            },
-          },
-        ],
-      };
-    },
-    withSaleCampaignCollaborator () {
-      return {
-        include: [
-          {
-            model: SaleCampaignModel,
-            as: 'saleCampaign',
-            required: true,
-            where: {
-              isApplyToCollaborator: true,
-            },
-          },
-        ],
-      };
-    },
-    withSaleCampaignUser () {
-      return {
-        include: [
-          {
-            model: SaleCampaignModel,
-            as: 'saleCampaign',
-            required: true,
-            where: {
-              isApplyToUser: true,
-            },
-          },
-        ],
-      };
-    },
   }
 
   public static initialize (sequelize: Sequelize) {

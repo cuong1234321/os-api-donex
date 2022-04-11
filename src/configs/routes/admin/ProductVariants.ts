@@ -20,6 +20,21 @@ const router = Router();
  *        name: "productId"
  *        description: "Id san pham ngan cach boi dau phay"
  *        type: "string"
+ *      - in: query
+ *        name: "appliedAt"
+ *        description: "ngày bắt đầu chương trình"
+ *        type: "string"
+ *        default: "2022-01-01"
+ *      - in: query
+ *        name: "appliedTo"
+ *        description: "ngày kết thúc chương trình"
+ *        type: "string"
+ *        default: "2023-01-01"
+ *      - in: query
+ *        name: "beneficiaries"
+ *        description: "ĐỐi tượng áp dụng, cách nhau bởi dấu phẩy"
+ *        type: "string"
+ *        default: "user, collaborator, agency, distributor"
  *     responses:
  *       200:
  *         description: "Upload success"
