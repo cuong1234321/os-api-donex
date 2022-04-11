@@ -105,7 +105,7 @@ class SaleCampaignModel extends Model<SaleCampaignInterface> implements SaleCamp
       if (this.isApplyToAgency) { scopes.push('withSaleCampaignAgency'); }
       if (this.isApplyToCollaborator) { scopes.push('withSaleCampaignCollaborator'); }
       if (this.isApplyToUser) { scopes.push('withSaleCampaignUser'); }
-      const productVariants = await ProductVariantModel.scope(scopes).findAll();
+      const productVariants = await SaleCampaignProductModel.scope(scopes).findAll();
       if (productVariants.length > 0) {
         throw new ValidationErrorItem('Bảng giá áp dụng cho sản phẩm không hợp lệ', 'validateSaleCampaignProductUniqueActive', 'productVariants', this.productVariants);
       }
