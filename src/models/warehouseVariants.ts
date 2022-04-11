@@ -1,6 +1,6 @@
 import WarehouseVariantEntity from '@entities/warehouseVariants';
 import WarehouseVariantInterface from '@interfaces/warehouseVariants';
-import { Model, ModelScopeOptions, ModelValidateOptions, Sequelize } from 'sequelize';
+import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import WarehouseModel from './warehouses';
 
@@ -17,14 +17,34 @@ class WarehouseVariantModel extends Model<WarehouseVariantInterface> implements 
   static readonly validations: ModelValidateOptions = {}
 
   static readonly scopes: ModelScopeOptions = {
-    byWarehouseid (warehouseId) {
+    byWarehouseId (warehouseId) {
       return {
         where: { warehouseId },
       };
     },
-    byVariantId (variantId) {
+    byProductVariant (variantId) {
       return {
         where: { variantId },
+      };
+    },
+    withWarehouse () {
+      return {
+        include: [{
+          model: WarehouseModel,
+          as: 'warehouse',
+          required: true,
+        }],
+      };
+    },
+    byEnoughQuantityVariant (quantity, variantId, warehouseId) {
+      return {
+        where: {
+          [Op.and]: [
+            { variantId },
+            { warehouseId },
+            { quantity: { [Op.gte]: quantity } },
+          ],
+        },
       };
     },
   }

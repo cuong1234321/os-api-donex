@@ -3,7 +3,7 @@ interface CartItemInterface {
   cartId: number;
   productVariantId: number;
   quantity: number;
-  warehouseVariantId: number;
+  warehouseId: number;
   createdAt?: Date;
   updatedAt?: Date;
 };

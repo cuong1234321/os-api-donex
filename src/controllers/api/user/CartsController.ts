@@ -28,7 +28,7 @@ class CartController {
       }))[0];
       const cartItem = (await CartItemModel.findOrCreate({
         where: { cartId: cart.id, productVariantId: req.body.productVariantId },
-        defaults: { id: undefined, cartId: cart.id, productVariantId: req.body.productVariantId, quantity: 0, warehouseVariantId: undefined },
+        defaults: { id: undefined, cartId: cart.id, productVariantId: req.body.productVariantId, quantity: 0, warehouseId: undefined },
       }))[0];
       await cartItem.update({ quantity: cartItem.quantity + req.body.quantity });
       sendSuccess(res, { cartItem });
@@ -44,10 +44,10 @@ class CartController {
         defaults: { id: undefined, userId: req.currentUser.id },
       }))[0];
       const cartItem = (await CartItemModel.findOrCreate({
-        where: { cartId: cart.id, productVariantId: req.body.productVariantId },
-        defaults: { id: undefined, cartId: cart.id, productVariantId: req.body.productVariantId, quantity: 0, warehouseVariantId: undefined },
+        where: { cartId: cart.id, productVariantId: req.body.productVariantId, warehouseId: req.body.productVariantId },
+        defaults: { id: undefined, cartId: cart.id, productVariantId: req.body.productVariantId, quantity: 0, warehouseId: undefined },
       }))[0];
-      await cartItem.update({ quantity: req.body.quantity, warehouseVariantId: req.body.warehouseVariantId });
+      await cartItem.update({ quantity: req.body.quantity, warehouseId: req.body.warehouseId });
       sendSuccess(res, { cartItem });
     } catch (error) {
       sendError(res, 500, error.message, error);

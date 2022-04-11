@@ -70,7 +70,7 @@ router.post('/', CartController.create);
  *              description: "Số lượng"
  *            warehouseId:
  *              type: "integer"
- *              description: "Giá bán"
+ *              description: "Kho"
  *     responses:
  *       200:
  *         description: Success.

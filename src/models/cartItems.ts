@@ -12,7 +12,7 @@ class CartItemModel extends Model<CartItemInterface> implements CartItemInterfac
   public cartId: number;
   public productVariantId: number;
   public quantity: number;
-  public warehouseVariantId: number;
+  public warehouseId: number;
   public createdAt?: Date;
   public updatedAt?: Date;
   public productVariant?: ProductVariantModel;
@@ -31,10 +31,11 @@ class CartItemModel extends Model<CartItemInterface> implements CartItemInterfac
       }
     },
     async validWarehouse () {
-      const warehouse = await WarehouseVariantModel.scope([
-        'withWarehouseVariant',
+      const warehouseVariant = await WarehouseVariantModel.scope([
+        'withWarehouse',
+        { method: ['byEnoughQuantityVariant', this.quantity, this.productVariantId, this.warehouseId] },
       ]).findOne();
-      if (!warehouse) {
+      if (!warehouseVariant) {
         throw new ValidationErrorItem('Kho hàng không hợp lệ.', 'validWarehouse', 'warehouseId', this.warehouseId);
       }
     },
@@ -104,7 +105,7 @@ class CartItemModel extends Model<CartItemInterface> implements CartItemInterfac
 
   public static associate () {
     this.belongsTo(ProductVariantModel, { as: 'productVariant', foreignKey: 'productVariantId' });
-    this.belongsTo(WarehouseVariantModel, { as: 'warehouseVariant', foreignKey: 'warehouseVariantId' });
+    this.belongsTo(WarehouseModel, { as: 'warehouse', foreignKey: 'warehouseId' });
     this.belongsTo(CartModel, { as: 'cart', foreignKey: 'cartId' });
   }
 }
