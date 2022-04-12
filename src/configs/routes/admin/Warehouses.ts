@@ -103,6 +103,14 @@ router.get('/:warehouseId', WarehouseController.show);
  *            description:
  *              type: "string"
  *              description: "mo ta"
+ *            provinceId:
+ *              type: number
+ *            districtId:
+ *              type: number
+ *            wardId:
+ *              type: number
+ *            address:
+ *              type: "string"
  *     responses:
  *       200:
  *         description: Return data.
@@ -154,6 +162,14 @@ router.post('/', WarehouseController.create);
  *              enum:
  *                - active
  *                - inactive
+ *            provinceId:
+ *              type: number
+ *            districtId:
+ *              type: number
+ *            wardId:
+ *              type: number
+ *            address:
+ *              type: "string"
  *     responses:
  *       200:
  *         description: Return data.
