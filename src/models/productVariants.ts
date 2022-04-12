@@ -2,6 +2,7 @@ import ProductVariantEntity from '@entities/productVariants';
 import ProductVariantInterface from '@interfaces/productVariants';
 import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
+import CartItemModel from './cartItems';
 import ProductCategoryModel from './productCategories';
 import ProductOptionModel from './productOptions';
 import ProductModel from './products';
@@ -138,6 +139,7 @@ class ProductVariantModel extends Model<ProductVariantInterface> implements Prod
     this.hasMany(ProductVariantOptionModel, { as: 'variantOptions', foreignKey: 'variantId' });
     this.hasMany(SaleCampaignProductModel, { as: 'saleCampaigns', foreignKey: 'productVariantId' });
     this.belongsTo(ProductModel, { as: 'product', foreignKey: 'productId' });
+    this.hasMany(CartItemModel, { as: 'cartItem', foreignKey: 'productVariantId' });
   }
 }
 

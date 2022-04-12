@@ -21,6 +21,7 @@ interface UserInterface {
   forgotPasswordExpireAt: Date;
   avatar: string;
   rank: string;
+  coinReward: number;
   createdAt?: Date,
   updatedAt?: Date,
   deletedAt?: Date,

@@ -62,7 +62,7 @@ class ProductController {
         'isActive',
       ];
       if (currentUser) scopes.push({ method: ['isFavorite', currentUser.id] });
-      let product = await ProductModel.scope(scopes).findOne();
+      let product: any = await ProductModel.scope(scopes).findOne();
       if (!product) {
         return sendError(res, 404, NoData);
       }
@@ -74,7 +74,7 @@ class ProductController {
       product.setDataValue('medias', await product.getMedias());
       product.setDataValue('variants', await product.getVariantDetail());
       product = await SaleCampaignProductDecorator.currentActiveSaleCampaign('USER', [product]);
-      sendSuccess(res, { product });
+      sendSuccess(res, { product: product[0] });
     } catch (error) {
       sendError(res, 500, error.message, error);
     }
@@ -83,7 +83,7 @@ class ProductController {
   public async verifyProduct (req: Request, res: Response) {
     try {
       const { sku } = req.query;
-      let product = await ProductModel.scope([
+      let product: any = await ProductModel.scope([
         { method: ['verifyProduct', sku] },
         'isActive',
         'withThumbnail',
@@ -91,7 +91,7 @@ class ProductController {
         'withVariants',
       ]).findOne();
       if (!product) { return sendError(res, 404, NoData); }
-      product = await SaleCampaignProductDecorator.currentActiveSaleCampaign('USER', [product]);
+      product = (await SaleCampaignProductDecorator.currentActiveSaleCampaign('USER', [product]))[0];
       sendSuccess(res, product);
     } catch (error) {
       sendError(res, 500, error.message, error);

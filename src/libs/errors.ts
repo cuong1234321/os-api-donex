@@ -71,3 +71,8 @@ export const alreadyFavoriteProduct = {
   code: 435,
   message: 'you already favorite this product',
 };
+
+export const RequestDiscountInvalid = {
+  code: 440,
+  message: 'Your request discount order is invalid',
+};

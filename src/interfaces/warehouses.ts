@@ -9,6 +9,8 @@ interface WarehouseInterface {
   createdAt?: Date,
   updatedAt?: Date,
   deletedAt?: Date,
+
+  cartItems?: any[];
 };
 
 export default WarehouseInterface;

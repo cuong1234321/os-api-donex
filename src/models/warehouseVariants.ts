@@ -2,6 +2,7 @@ import WarehouseVariantEntity from '@entities/warehouseVariants';
 import WarehouseVariantInterface from '@interfaces/warehouseVariants';
 import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
+import ProductVariantModel from './productVariants';
 import WarehouseModel from './warehouses';
 
 class WarehouseVariantModel extends Model<WarehouseVariantInterface> implements WarehouseVariantInterface {
@@ -47,6 +48,17 @@ class WarehouseVariantModel extends Model<WarehouseVariantInterface> implements 
         },
       };
     },
+    byProduct (productId) {
+      return {
+        include: [
+          {
+            model: ProductVariantModel,
+            as: 'variants',
+            where: { productId },
+          },
+        ],
+      };
+    },
   }
 
   public static initialize (sequelize: Sequelize) {
@@ -61,6 +73,7 @@ class WarehouseVariantModel extends Model<WarehouseVariantInterface> implements 
 
   public static associate () {
     this.belongsTo(WarehouseModel, { as: 'warehouse', foreignKey: 'warehouseId' });
+    this.belongsTo(ProductVariantModel, { as: 'variants', foreignKey: 'variantId' });
   }
 }
 

@@ -34,6 +34,7 @@ class UserModel extends Model<UserInterface> implements UserInterface {
   public forgotPasswordExpireAt: Date;
   public avatar: string;
   public rank: string;
+  public coinReward: number;
   public createdAt?: Date;
   public updatedAt?: Date;
   public deletedAt?: Date;
