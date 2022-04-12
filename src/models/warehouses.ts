@@ -15,6 +15,8 @@ class WarehouseModel extends Model<WarehouseInterface> implements WarehouseInter
   public updatedAt?: Date;
   public deletedAt?: Date;
 
+  public cartItems?: any[];
+
   static readonly CREATABLE_PARAMETERS = ['name', 'type', 'description', 'code']
   static readonly UPDATABLE_PARAMETERS = ['name', 'type', 'description', 'code', 'status']
 
@@ -74,6 +76,11 @@ class WarehouseModel extends Model<WarehouseInterface> implements WarehouseInter
     newest () {
       return {
         order: [['createdAt', 'DESC']],
+      };
+    },
+    byId (id) {
+      return {
+        where: { id },
       };
     },
   }

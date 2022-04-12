@@ -1,7 +1,7 @@
 interface SystemSettingInterface {
   id: number;
   applicationLink?: number;
-  coinConversionLevel?: string;
+  coinConversionLevel?: number;
   hotline?: number;
   hotlineUser?: number;
   hotlineAgency?: number;

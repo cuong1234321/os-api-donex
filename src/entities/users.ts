@@ -78,6 +78,9 @@ const UserEntity = {
     type: DataTypes.ENUM({ values: ['Basic', 'Vip'] }),
     defaultValue: 'Basic',
   },
+  coinReward: {
+    type: DataTypes.INTEGER, defaultValue: 0,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },

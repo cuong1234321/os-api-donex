@@ -1,8 +1,10 @@
 import CartItemEntity from '@entities/cartItems';
 import CartItemInterface from '@interfaces/cartItems';
-import { Model, ModelScopeOptions, ModelValidateOptions, Sequelize, ValidationErrorItem } from 'sequelize';
+import { BelongsToManyGetAssociationsMixin, Model, ModelScopeOptions, ModelValidateOptions, Sequelize, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import CartModel from './carts';
+import ProductOptionModel from './productOptions';
+import ProductModel from './products';
 import ProductVariantModel from './productVariants';
 import WarehouseModel from './warehouses';
 import WarehouseVariantModel from './warehouseVariants';
@@ -15,7 +17,9 @@ class CartItemModel extends Model<CartItemInterface> implements CartItemInterfac
   public warehouseId: number;
   public createdAt?: Date;
   public updatedAt?: Date;
+
   public productVariant?: ProductVariantModel;
+  public variantOptions?: any[];
 
   static readonly hooks: Partial<ModelHooks<CartItemModel>> = {
     async afterUpdate (record) {
@@ -41,6 +45,8 @@ class CartItemModel extends Model<CartItemInterface> implements CartItemInterfac
     },
   }
 
+  public getProduct: BelongsToManyGetAssociationsMixin<ProductModel>
+
   static readonly scopes: ModelScopeOptions = {
     byId (id) {
       return { where: { id } };
@@ -64,6 +70,21 @@ class CartItemModel extends Model<CartItemInterface> implements CartItemInterfac
                 [
                   Sequelize.literal('(SELECT weight FROM products WHERE products.id = `productVariant`.productId)'),
                   'productWeight',
+                ],
+                [
+                  Sequelize.literal('(SELECT thumbnail FROM product_options WHERE product_options.thumbnail is not Null and product_options.id IN ' +
+                   ' (SELECT optionId from product_variant_options WHERE product_variant_options.variantId = CartItemModel.productVariantId) limit 0,1 )'),
+                  'thumbnail',
+                ],
+                [
+                  Sequelize.literal('(SELECT id FROM product_options WHERE `key` = ' + ` "${ProductOptionModel.KEY_ENUM.COLOR}" AND id IN ` +
+                   ' (SELECT optionId FROM product_variant_options WHERE product_variant_options.variantId = 99))'),
+                  'optionColorId',
+                ],
+                [
+                  Sequelize.literal('(SELECT id FROM product_options WHERE `key` = ' + ` "${ProductOptionModel.KEY_ENUM.SIZE}" AND id IN ` +
+                   ' (SELECT optionId FROM product_variant_options WHERE product_variant_options.variantId = 99))'),
+                  'optionSizeId',
                 ],
               ],
             },

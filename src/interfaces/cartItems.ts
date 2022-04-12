@@ -6,6 +6,8 @@ interface CartItemInterface {
   warehouseId: number;
   createdAt?: Date;
   updatedAt?: Date;
+
+  variantOptions?: any[];
 };
 
 export default CartItemInterface;

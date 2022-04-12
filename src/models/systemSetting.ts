@@ -5,7 +5,7 @@ import { Model, ModelScopeOptions, ModelValidateOptions, Sequelize, ValidationEr
 class SystemSettingModel extends Model<SystemSettingInterface> implements SystemSettingInterface {
   public id: number;
   public applicationLink?: number;
-  public coinConversionLevel?: string;
+  public coinConversionLevel?: number;
   public hotline?: number;
   public hotlineUser?: number;
   public hotlineAgency?: number;

@@ -1,37 +1,68 @@
 import { sendError, sendSuccess } from '@libs/response';
 import CartItemModel from '@models/cartItems';
 import CartModel from '@models/carts';
+import ProductVariantOptionModel from '@models/productVariantOptions';
+import WarehouseModel from '@models/warehouses';
+import WarehouseVariantModel from '@models/warehouseVariants';
 import { Request, Response } from 'express';
-
+import SystemSettingModel from '@models/systemSetting';
+import { RequestDiscountInvalid } from '@libs/errors';
 class CartController {
   public async show (req: Request, res: Response) {
     try {
+      const totalBill = 0;
+      let totalDiscount = 0;
+      const totalFee = 0;
+      const totalTax = 0;
+      const finalAmount = 0;
+      const { coins } = req.query;
       const cart = (await CartModel.findOrCreate({
         where: { userId: req.currentUser.id },
         defaults: { id: undefined, userId: req.currentUser.id },
       }))[0];
-      const cartItems = await CartItemModel.scope([
+      const scopes: any = [
         { method: ['byCart', cart.id] },
         'withProductVariant',
-      ]).findAll({ order: [['createdAt', 'DESC']] });
-      sendSuccess(res, { cartItems });
+      ];
+      if (coins) {
+        if (req.currentUser.coinReward < parseInt(coins as string)) {
+          return sendError(res, 403, RequestDiscountInvalid);
+        }
+        const systemSetting = (await SystemSettingModel.findOrCreate({
+          where: { },
+          defaults: { id: undefined },
+        }))[0];
+        const reduceTotalBillByCoin = parseInt(coins as string) * (systemSetting.coinConversionLevel || 1);
+        totalDiscount = totalDiscount + reduceTotalBillByCoin;
+      }
+      const cartItems = await CartItemModel.scope(scopes).findAll({ order: [['createdAt', 'DESC']] });
+      await this.variantOptions(cartItems);
+      const warehouses = await this.groupByWarehouse(cartItems);
+      cart.setDataValue('warehouses', warehouses);
+      cart.setDataValue('totalBill', totalBill);
+      cart.setDataValue('totalDiscount', totalDiscount);
+      cart.setDataValue('totalFee', totalFee);
+      cart.setDataValue('totalTax', totalTax);
+      cart.setDataValue('finalAmount', finalAmount);
+      sendSuccess(res, { cart });
     } catch (error) {
       sendError(res, 500, error.message, error);
     }
   }
 
-  public async create (req: Request, res: Response) {
+  public async info (req: Request, res: Response) {
     try {
       const cart = (await CartModel.findOrCreate({
         where: { userId: req.currentUser.id },
         defaults: { id: undefined, userId: req.currentUser.id },
       }))[0];
-      const cartItem = (await CartItemModel.findOrCreate({
-        where: { cartId: cart.id, productVariantId: req.body.productVariantId },
-        defaults: { id: undefined, cartId: cart.id, productVariantId: req.body.productVariantId, quantity: 0, warehouseId: undefined },
-      }))[0];
-      await cartItem.update({ quantity: cartItem.quantity + req.body.quantity });
-      sendSuccess(res, { cartItem });
+      const scopes: any = [
+        { method: ['byCart', cart.id] },
+        'withProductVariant',
+      ];
+      const cartItems = await CartItemModel.scope(scopes).findAll({ order: [['createdAt', 'DESC']] });
+      cart.setDataValue('totalItems', cartItems.length);
+      sendSuccess(res, { cart });
     } catch (error) {
       sendError(res, 500, error.message, error);
     }
@@ -44,8 +75,14 @@ class CartController {
         defaults: { id: undefined, userId: req.currentUser.id },
       }))[0];
       const cartItem = (await CartItemModel.findOrCreate({
-        where: { cartId: cart.id, productVariantId: req.body.productVariantId, warehouseId: req.body.productVariantId },
-        defaults: { id: undefined, cartId: cart.id, productVariantId: req.body.productVariantId, quantity: 0, warehouseId: undefined },
+        where: { cartId: cart.id, productVariantId: req.body.productVariantId, warehouseId: req.body.warehouseId },
+        defaults: {
+          id: undefined,
+          cartId: cart.id,
+          productVariantId: req.body.productVariantId,
+          quantity: req.body.quantity,
+          warehouseId: req.body.warehouseId,
+        },
       }))[0];
       await cartItem.update({ quantity: req.body.quantity, warehouseId: req.body.warehouseId });
       sendSuccess(res, { cartItem });
@@ -60,11 +97,60 @@ class CartController {
         where: { userId: req.currentUser.id },
         defaults: { id: undefined, userId: req.currentUser.id },
       }))[0];
-      await CartItemModel.destroy({ where: { cartId: cart.id, productVariantId: req.params.productVariantId } });
+      await CartItemModel.destroy({
+        where: {
+          cartId: cart.id,
+          productVariantId: req.params.productVariantId,
+          warehouseId: req.params.warehouseId,
+        },
+      });
       sendSuccess(res, { });
     } catch (error) {
       sendError(res, 500, error.message, error);
     }
+  }
+
+  public async empty (req: Request, res: Response) {
+    try {
+      const cart = (await CartModel.findOrCreate({
+        where: { userId: req.currentUser.id },
+        defaults: { id: undefined, userId: req.currentUser.id },
+      }))[0];
+      await CartItemModel.destroy({ where: { cartId: cart.id } });
+      sendSuccess(res, { });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  private async variantOptions (cartItems: any) {
+    for (const item of cartItems) {
+      item.variantOptions = [];
+      const variantOptionColors = await ProductVariantOptionModel.scope([
+        { method: ['byOptionId', item.getDataValue('productVariant').getDataValue('optionColorId')] },
+      ]).findAll();
+      const warehouseVariants = await WarehouseVariantModel.scope([
+        { method: ['byProduct', item.getDataValue('productVariant').getDataValue('productId')] },
+        { method: ['byWarehouseId', item.getDataValue('warehouseId')] },
+      ]).findAll({ attributes: ['variantId'] });
+      const variantOptionColorIds = variantOptionColors.map((record: any) => record.variantId);
+      const warehouseVariantIds = [...new Set(warehouseVariants.map((record: any) => record.variantId))];
+      const variantOptions = await ProductVariantOptionModel.scope([
+        { method: ['byVariantId', warehouseVariantIds.filter((obj) => variantOptionColorIds.indexOf(obj) !== -1)] },
+        'withProductOption',
+      ]).findAll({ attributes: ['variantId', 'optionId'] });
+      item.setDataValue('variantOptions', variantOptions);
+    }
+  }
+
+  private async groupByWarehouse (cartItems: any) {
+    const warehouses = await WarehouseModel.scope([
+      { method: ['byId', [...new Set(cartItems.map((record: any) => record.warehouseId))]] },
+    ]).findAll();
+    for (const warehouse of warehouses) {
+      warehouse.setDataValue('cartItems', cartItems.filter((record: any) => record.warehouseId === warehouse.id));
+    }
+    return warehouses;
   }
 }
 

@@ -456,6 +456,7 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
   public getVariants: HasManyGetAssociationsMixin<ProductVariantModel>;
   public getMedias: HasManyGetAssociationsMixin<ProductMediaModel>;
   public getCategories: BelongsToManyGetAssociationsMixin<ProductCategoryModel>;
+  public getSizes: HasManyGetAssociationsMixin<ProductOptionModel>;
 
   public async getVariantDetail () {
     const variants = await this.getVariants({
@@ -467,10 +468,10 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
     const colors = await MColorModel.findAll();
     for (const variant of variants) {
       variant.getDataValue('options').forEach((option: any) => {
-        if (option.key === ProductOptionModel.TYPE_ENUM.color) {
+        if (option.key === ProductOptionModel.KEY_ENUM.COLOR) {
           option.setDataValue('valueName', colors.find((record: any) => record.id === option.value).colorCode);
         }
-        if (option.key === ProductOptionModel.TYPE_ENUM.size) {
+        if (option.key === ProductOptionModel.KEY_ENUM.SIZE) {
           option.setDataValue('valueName', sizes.find((record: any) => record.id === option.value).code);
         }
       });
@@ -524,8 +525,8 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
           optionId: option.id,
         });
       });
-      const optionColor = optionRef.find((option: any) => option.key === ProductOptionModel.TYPE_ENUM.color);
-      const optionSize = optionRef.find((option: any) => option.key === ProductOptionModel.TYPE_ENUM.size);
+      const optionColor = optionRef.find((option: any) => option.key === ProductOptionModel.KEY_ENUM.COLOR);
+      const optionSize = optionRef.find((option: any) => option.key === ProductOptionModel.KEY_ENUM.SIZE);
       const color = optionColor ? colors.find((record: any) => record.id === optionColor.value) : null;
       const size = optionSize ? sizes.find((record: any) => record.id === optionSize.value) : null;
       let skuCode = `${this.skuCode}`;
@@ -637,8 +638,8 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
     this.hasMany(ProductCategoryRefModel, { as: 'categoryRefs', foreignKey: 'productId', onDelete: 'CASCADE', hooks: true });
     this.belongsToMany(ProductCategoryModel, { through: ProductCategoryRefModel, as: 'categories', foreignKey: 'productId', onDelete: 'CASCADE', hooks: true });
     this.hasMany(ProductOptionModel, { as: 'options', foreignKey: 'productId', onDelete: 'CASCADE', hooks: true });
-    this.hasMany(ProductOptionModel, { as: 'colors', foreignKey: 'productId', scope: { key: ProductOptionModel.TYPE_ENUM.color } });
-    this.hasMany(ProductOptionModel, { as: 'sizes', foreignKey: 'productId', scope: { key: ProductOptionModel.TYPE_ENUM.size } });
+    this.hasMany(ProductOptionModel, { as: 'colors', foreignKey: 'productId', scope: { key: ProductOptionModel.KEY_ENUM.COLOR } });
+    this.hasMany(ProductOptionModel, { as: 'sizes', foreignKey: 'productId', scope: { key: ProductOptionModel.KEY_ENUM.SIZE } });
     this.hasMany(ProductVariantModel, { as: 'variants', foreignKey: 'productId', onDelete: 'CASCADE', hooks: true });
     this.hasMany(ProductMediaModel, { as: 'medias', foreignKey: 'productId', onDelete: 'CASCADE', hooks: true });
     this.belongsToMany(ProductCategoryModel, { through: ProductCategoryRefModel, as: 'collections', foreignKey: 'productId', onDelete: 'CASCADE', hooks: true, scope: { type: ProductCategoryModel.TYPE_ENUM.COLLECTION } });

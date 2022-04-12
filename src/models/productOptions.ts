@@ -16,7 +16,7 @@ class ProductOptionModel extends Model<ProductOptionInterface> implements Produc
   public updatedAt?: Date;
   public deletedAt?: Date;
 
-  static readonly TYPE_ENUM = { color: 'color', size: 'size', form: 'form' }
+  static readonly KEY_ENUM = { COLOR: 'color', SIZE: 'size', FORM: 'form' }
 
   static readonly UPDATABLE_ON_DUPLICATE_PARAMETERS = ['id', 'name', 'optionMappingId'];
 
