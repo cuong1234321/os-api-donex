@@ -11,14 +11,18 @@ class WarehouseModel extends Model<WarehouseInterface> implements WarehouseInter
   public status: string;
   public code: string;
   public description: string;
+  public address: string;
+  public provinceId: number;
+  public districtId: number;
+  public wardId: number;
   public createdAt?: Date;
   public updatedAt?: Date;
   public deletedAt?: Date;
 
   public cartItems?: any[];
 
-  static readonly CREATABLE_PARAMETERS = ['name', 'type', 'description', 'code']
-  static readonly UPDATABLE_PARAMETERS = ['name', 'type', 'description', 'code', 'status']
+  static readonly CREATABLE_PARAMETERS = ['name', 'type', 'description', 'code', 'wardId', 'districtId', 'provinceId', 'address']
+  static readonly UPDATABLE_PARAMETERS = ['name', 'type', 'description', 'code', 'status', 'wardId', 'districtId', 'provinceId', 'address']
 
   static readonly hooks: Partial<ModelHooks<WarehouseModel>> = {}
 
