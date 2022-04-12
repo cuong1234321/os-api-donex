@@ -1,7 +1,9 @@
 import WarehouseTransferVariantEntity from '@entities/warehouseTransferVariants';
 import WarehouseTransferVariantInterface from '@interfaces/warehouseTransferVariants';
-import { Model, ModelScopeOptions, ModelValidateOptions, Sequelize } from 'sequelize';
+import { Model, ModelScopeOptions, ModelValidateOptions, Sequelize, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
+import WarehouseTransferModel from './warehouseTransfers';
+import WarehouseVariantModel from './warehouseVariants';
 
 class WarehouseTransferVariantModel extends Model<WarehouseTransferVariantInterface> implements WarehouseTransferVariantInterface {
   public id: number;
@@ -14,9 +16,31 @@ class WarehouseTransferVariantModel extends Model<WarehouseTransferVariantInterf
   public updatedAt?: Date;
   public deletedAt?: Date;
 
-  static readonly hooks: Partial<ModelHooks<WarehouseTransferVariantModel>> = {}
+  static readonly hooks: Partial<ModelHooks<WarehouseTransferVariantModel>> = {
+    async afterSave (record, options) {
+      const warehouseTransfer = await WarehouseTransferModel.findByPk(record.warehouseTransferId, { transaction: options.transaction });
+      const warehouseVariant = await WarehouseVariantModel.scope([
+        { method: ['byWarehouseId', warehouseTransfer.fromWarehouseId] },
+        { method: ['byProductVariant', record.variantId] },
+      ]).findOne();
+      if (warehouseTransfer) {
+        await warehouseVariant.update({ quantity: warehouseVariant.quantity + (record.previous('quantity') || 0) - (record.quantity || 0) }, { transaction: options.transaction });
+      }
+    },
+  }
 
-  static readonly validations: ModelValidateOptions = {}
+  static readonly validations: ModelValidateOptions = {
+    async validateQuantity () {
+      if (this.quantity && this.quantity < 0) {
+        throw new ValidationErrorItem('Số lượng sản phẩm không là số âm ', 'validateQuantity', 'quantity', this.quantity);
+      }
+    },
+    async validatePrice () {
+      if (this.price && this.price < 0) {
+        throw new ValidationErrorItem('Giá sản phẩm không là số âm ', 'validatePrice', 'price', this.price);
+      }
+    },
+  }
 
   static readonly scopes: ModelScopeOptions = {}
 
