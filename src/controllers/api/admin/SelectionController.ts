@@ -7,6 +7,9 @@ import MColorModel from '@models/mColors';
 import MSizeModel from '@models/mSizes';
 import ProductCategoryModel from '@models/productCategories';
 import NewsCategoryModel from '@models/newsCategories';
+import UserModel from '@models/users';
+import CollaboratorModel from '@models/collaborators';
+import WarehouseModel from '@models/warehouses';
 
 class SelectionController {
   public async productCategories (req: Request, res: Response) {
@@ -76,6 +79,41 @@ class SelectionController {
         { method: ['byFreeWord', freeWord] },
       ]).findAll();
       sendSuccess(res, newsCategories);
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async userSelections (req: Request, res: Response) {
+    try {
+      const users = await UserModel.findAll({ attributes: ['id', 'fullName'] });
+      sendSuccess(res, users);
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async collaboratorSelections (req: Request, res: Response) {
+    try {
+      const { type } = req.query;
+      const scopes: any = [];
+      if (type) {
+        scopes.push({ method: ['byType', type] });
+      }
+      const collaborators = await CollaboratorModel.scope(scopes).findAll({ attributes: ['id', 'fullName', 'type'] });
+      sendSuccess(res, collaborators);
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async warehouseSelections (req: Request, res: Response) {
+    try {
+      const { status } = req.query;
+      const warehouses = await WarehouseModel.scope([
+        { method: ['byStatus', status] },
+      ]).findAll({ attributes: ['id', 'name'] });
+      sendSuccess(res, warehouses);
     } catch (error) {
       sendError(res, 500, error.message, error);
     }

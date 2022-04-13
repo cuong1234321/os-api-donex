@@ -14,6 +14,8 @@ import ProductOptionModel from './productOptions';
 import ProductVariantOptionModel from './productVariantOptions';
 import ProductVariantModel from './productVariants';
 import FavoriteProductModel from './favoriteProducts';
+import WarehouseModel from './warehouses';
+import WarehouseVariantModel from './warehouseVariants';
 
 class ProductModel extends Model<ProductInterface> implements ProductInterface {
   public id: number;
@@ -462,6 +464,20 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
     const variants = await this.getVariants({
       include: [
         { model: ProductOptionModel, as: 'options' },
+        {
+          model: WarehouseVariantModel,
+          as: 'warehouseVariants',
+          required: true,
+          where: {
+            quantity: { [Op.gt]: 0 },
+          },
+          include: [
+            {
+              model: WarehouseModel,
+              as: 'warehouse',
+            },
+          ],
+        },
       ],
     });
     const sizes = await MSizeModel.findAll();

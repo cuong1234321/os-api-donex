@@ -8,6 +8,8 @@ import ProductOptionModel from './productOptions';
 import ProductModel from './products';
 import ProductVariantOptionModel from './productVariantOptions';
 import SaleCampaignProductModel from './saleCampaignProducts';
+import WarehouseModel from './warehouses';
+import WarehouseVariantModel from './warehouseVariants';
 
 class ProductVariantModel extends Model<ProductVariantInterface> implements ProductVariantInterface {
   public id: number;
@@ -87,6 +89,20 @@ class ProductVariantModel extends Model<ProductVariantInterface> implements Prod
         order: orderConditions,
       };
     },
+    byWarehouse (warehouseId) {
+      return {
+        include: [
+          {
+            model: WarehouseVariantModel,
+            as: 'warehouseVariants',
+            required: true,
+            where: {
+              warehouseId,
+            },
+          },
+        ],
+      };
+    },
     withOptions () {
       return {
         attributes: {
@@ -140,6 +156,8 @@ class ProductVariantModel extends Model<ProductVariantInterface> implements Prod
     this.hasMany(SaleCampaignProductModel, { as: 'saleCampaigns', foreignKey: 'productVariantId' });
     this.belongsTo(ProductModel, { as: 'product', foreignKey: 'productId' });
     this.hasMany(CartItemModel, { as: 'cartItem', foreignKey: 'productVariantId' });
+    this.hasMany(WarehouseVariantModel, { as: 'warehouseVariants', foreignKey: 'variantId' });
+    this.belongsToMany(WarehouseModel, { through: WarehouseVariantModel, as: 'warehouses', foreignKey: 'variantId' });
   }
 }
 

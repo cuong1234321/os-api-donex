@@ -21,6 +21,10 @@ const router = Router();
  *        description: "Id san pham ngan cach boi dau phay"
  *        type: "string"
  *      - in: query
+ *        name: "warehouseId"
+ *        description: "Id kho hang"
+ *        type: "string"
+ *      - in: query
  *        name: "appliedAt"
  *        description: "ngày bắt đầu chương trình"
  *        type: "string"
