@@ -29,4 +29,5 @@ export default {
   defaultUserPassword: 'Aa@123456',
   defaultTax: 8,
   defaultValueConvertCoin: 0.5,
+  warehouseTransferCode: 'WT',
 };

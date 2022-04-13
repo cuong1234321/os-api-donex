@@ -23,7 +23,7 @@ const WarehouseTransferEntity = {
     type: DataTypes.TEXT, allowNull: true,
   },
   status: {
-    type: DataTypes.ENUM({ values: ['pending', 'confirm'] }), defaultValue: 'pending',
+    type: DataTypes.ENUM({ values: ['pending', 'confirm', 'reject'] }), defaultValue: 'pending',
   },
   createdAt: {
     type: DataTypes.DATE,

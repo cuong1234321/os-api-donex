@@ -5,6 +5,7 @@ import { Transaction } from 'sequelize/types';
 import settings from '@configs/settings';
 import WarehouseTransferModel from '@models/warehouseTransfers';
 import WarehouseTransferVariantModel from '@models/warehouseTransferVariants';
+import { NoData } from '@libs/errors';
 
 class WarehouseTransferController {
   public async create (req: Request, res: Response) {
@@ -27,6 +28,44 @@ class WarehouseTransferController {
     }
   }
 
+  public async show (req: Request, res: Response) {
+    try {
+      const { warehouseTransferId } = req.params;
+      const scopes: any = [
+        { method: ['byId', warehouseTransferId] },
+        'withTotalPrice',
+        'withTotalQuantity',
+        'withWarehouseName',
+      ];
+      const warehouseTransfer = await WarehouseTransferModel.scope(scopes).findOne();
+      if (!warehouseTransfer) { return sendError(res, 404, NoData); }
+      await warehouseTransfer.reloadWithDetail();
+      sendSuccess(res, warehouseTransfer);
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async update (req: Request, res: Response) {
+    try {
+      const { warehouseTransferId } = req.params;
+      const warehouseTransfer = await WarehouseTransferModel.scope([
+        { method: ['byId', warehouseTransferId] },
+        { method: ['byStatus', WarehouseTransferModel.STATUS_ENUM.PENDING] },
+      ]).findOne();
+      if (!warehouseTransfer) { return sendError(res, 404, NoData); }
+      const params = req.parameters.permit(WarehouseTransferModel.UPDATABLE_PARAMETERS).value();
+      await sequelize.transaction(async (transaction: Transaction) => {
+        await warehouseTransfer.update(params, { transaction });
+        await warehouseTransfer.updateTransferVariants(params.warehouseTransferVariants, transaction);
+      });
+      await warehouseTransfer.reloadWithDetail();
+      sendSuccess(res, warehouseTransfer);
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
   public async index (req: Request, res: Response) {
     try {
       const page = parseInt(req.query.page as string || '1', 10);
@@ -43,6 +82,22 @@ class WarehouseTransferController {
       ];
       const { rows, count } = await WarehouseTransferModel.scope(scopes).findAndCountAll({ limit, offset });
       sendSuccess(res, { warehouseTransfers: rows, pagination: { total: count, page, perPage: limit } });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async changeStatus (req: Request, res: Response) {
+    try {
+      const { warehouseTransferId } = req.params;
+      const warehouseTransfer = await WarehouseTransferModel.scope([
+        { method: ['byId', warehouseTransferId] },
+        { method: ['byStatus', WarehouseTransferModel.STATUS_ENUM.PENDING] },
+      ]).findOne();
+      if (!warehouseTransfer) { return sendError(res, 404, NoData); }
+      const params = req.body;
+      await warehouseTransfer.update(params);
+      sendSuccess(res, {});
     } catch (error) {
       sendError(res, 500, error.message, error);
     }
