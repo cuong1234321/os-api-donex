@@ -7,9 +7,6 @@ const SubOrderEntity = {
   code: {
     type: DataTypes.STRING(255), allowNull: false,
   },
-  partnerCode: {
-    type: DataTypes.STRING(255), allowNull: true,
-  },
   orderId: {
     type: DataTypes.INTEGER, allowNull: false,
   },

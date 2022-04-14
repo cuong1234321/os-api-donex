@@ -26,7 +26,7 @@ const OrderEntity = {
     type: DataTypes.ENUM({ values: ['banking', 'vnPay', 'COD', 'wallet'] }), allowNull: false,
   },
   saleChannel: {
-    type: DataTypes.ENUM({ values: ['facebook', 'lazada', 'shopee', 'tiki', 'wholesale', 'other'] }), allowNull: false,
+    type: DataTypes.ENUM({ values: ['facebook', 'lazada', 'shopee', 'tiki', 'wholesale', 'other', 'retail'] }), allowNull: true, defaultValue: 'retail',
   },
   subTotal: {
     type: DataTypes.BIGINT, allowNull: false,
