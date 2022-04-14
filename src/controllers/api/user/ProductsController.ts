@@ -42,7 +42,7 @@ class ProductController {
         distinct: true,
         col: 'ProductModel.id',
       });
-      const products = await SaleCampaignProductDecorator.currentActiveSaleCampaign('USER', rows);
+      const products = await SaleCampaignProductDecorator.calculatorVariantPrice('USER', rows);
       sendSuccess(res, { products, pagination: { total: count, page, perPage: limit } });
     } catch (error) {
       sendError(res, 500, error.message, error);
@@ -73,7 +73,7 @@ class ProductController {
       product.setDataValue('options', options);
       product.setDataValue('medias', await product.getMedias());
       product.setDataValue('variants', await product.getVariantDetail());
-      product = await SaleCampaignProductDecorator.currentActiveSaleCampaign('USER', [product]);
+      product = await SaleCampaignProductDecorator.calculatorVariantPrice('USER', [product]);
       sendSuccess(res, { product: product[0] });
     } catch (error) {
       sendError(res, 500, error.message, error);
@@ -91,7 +91,7 @@ class ProductController {
         'withVariants',
       ]).findOne();
       if (!product) { return sendError(res, 404, NoData); }
-      product = (await SaleCampaignProductDecorator.currentActiveSaleCampaign('USER', [product]))[0];
+      product = (await SaleCampaignProductDecorator.calculatorVariantPrice('USER', [product]))[0];
       sendSuccess(res, product);
     } catch (error) {
       sendError(res, 500, error.message, error);

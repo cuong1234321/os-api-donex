@@ -2,7 +2,7 @@ import CollaboratorModel from '@models/collaborators';
 import SaleCampaignModel from '@models/saleCampaigns';
 
 class SaleCampaignProductDecorator {
-  public static async currentActiveSaleCampaign (userType: string, products: any) {
+  public static async calculatorVariantPrice (userType: string, products: any) {
     const scopes: any = [
       'isAbleToUse',
       'withProductVariant',
@@ -27,7 +27,8 @@ class SaleCampaignProductDecorator {
     for (const saleCampaign of saleCampaigns) {
       for (const product of products) {
         const sellPrices = [];
-        for (const variant of product.getDataValue('variants')) {
+        const variants = Array.isArray(product.getDataValue('variants')) ? product.getDataValue('variants') : [product.getDataValue('variants')];
+        for (const variant of variants) {
           variant.setDataValue('saleCampaignPrice', variant.sellPrice);
           if (saleCampaign.productVariants.find((record: any) => record.productVariantId === variant.id)) {
             if (saleCampaign.calculatePriceType === SaleCampaignModel.CALCULATE_PRICE_TYPE.REDUCE_BY_AMOUNT) {
@@ -43,10 +44,13 @@ class SaleCampaignProductDecorator {
               variant.setDataValue('saleCampaignPrice', variant.sellPrice + (variant.sellPrice * saleCampaign.value));
             }
           }
+          if (variant.getDataValue('saleCampaignPrice') < 0) variant.setDataValue('saleCampaignPrice', 0);
           sellPrices.push(variant.getDataValue('saleCampaignPrice'));
         }
-        product.setDataValue('minPrice', Math.min(...sellPrices));
-        product.setDataValue('maxPrice', Math.max(...sellPrices));
+        if (Array.isArray(product.getDataValue('variants'))) {
+          product.setDataValue('minPrice', Math.min(...sellPrices));
+          product.setDataValue('maxPrice', Math.max(...sellPrices));
+        }
       }
     }
     return products;
