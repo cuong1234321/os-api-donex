@@ -86,6 +86,11 @@ class VoucherModel extends Model<VoucherInterface> implements VoucherInterface {
         },
       };
     },
+    byUserVoucher (voucherApplicationId, recipientId, recipientType) {
+      return {
+        where: { voucherApplicationId, recipientId, recipientType },
+      };
+    },
   }
 
   public static initialize (sequelize: Sequelize) {

@@ -36,7 +36,7 @@ const router = Router();
  *              default: "string"
  *              require: true
  *            shippingPhoneNumber:
- *              type: "integer"
+ *              type: "string"
  *              description: "sdt"
  *              default: "null"
  *              require: true
@@ -65,8 +65,8 @@ const router = Router();
  *              items:
  *                type: "object"
  *                properties:
- *                  title:
- *                    type: "warehouseId"
+ *                  warehouseId:
+ *                    type: "integer"
  *                    description: "id kho"
  *                    default: "null"
  *                    require: true

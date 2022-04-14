@@ -13,7 +13,14 @@ class OrderController {
       const params = req.parameters.permit(OrderModel.USER_CREATABLE_PARAMETERS).value();
       params.ownerId = currentUser.id;
       const result = await sequelize.transaction(async (transaction: Transaction) => {
-        const order = await OrderModel.create(params, {
+        const order = await OrderModel.create({
+          ...params,
+          creatableType: OrderModel.CREATABLE_TYPE.USER,
+          creatableId: currentUser.id,
+          orderableType: OrderModel.ORDERABLE_TYPE.USER,
+          orderableId: currentUser.id,
+          ownerId: currentUser.id,
+        }, {
           include: [
             {
               model: SubOrderModel,

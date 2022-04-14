@@ -1,9 +1,10 @@
 import SubOrderEntity from '@entities/subOrders';
 import SubOrderInterface from '@interfaces/subOrders';
-import { Model, ModelScopeOptions, ModelValidateOptions, Sequelize } from 'sequelize';
+import { Model, ModelScopeOptions, ModelValidateOptions, Sequelize, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import OrderItemModel from './orderItems';
 import OrderModel from './orders';
+import WarehouseModel from './warehouses';
 
 class SubOrderModel extends Model<SubOrderInterface> implements SubOrderInterface {
 public id: number;
@@ -21,12 +22,37 @@ public createdAt?: Date;
 public updatedAt?: Date;
 public deletedAt?: Date;
 
-  static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
+static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
+  async beforeCreate (record: SubOrderModel) {
+    record.code = await this.generateOderCode();
+  },
+}
+
+  static readonly validations: ModelValidateOptions = {
+    async validateWarehouse () {
+      const warehouse = await WarehouseModel.findByPk(this.warehouseId);
+      if (!warehouse) {
+        throw new ValidationErrorItem('Kho hàng không tồn tại', 'validateWarehouse', 'warehouseId', this.warehouseId);
+      }
+    },
   }
 
-  static readonly validations: ModelValidateOptions = { }
+  public static async generateOderCode () {
+    let code = '';
+    const characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    for (let i = 12; i > 0; --i) code += characters[Math.floor(Math.random() * characters.length)];
+    const existCode = await SubOrderModel.scope([{ method: ['byCode', code] }]).findOne();
+    if (existCode) code = await this.generateOderCode();
+    return code;
+  }
 
-  static readonly scopes: ModelScopeOptions = { }
+  static readonly scopes: ModelScopeOptions = {
+    byCode (code) {
+      return {
+        where: { code },
+      };
+    },
+  }
 
   public static initialize (sequelize: Sequelize) {
     this.init(SubOrderEntity, {

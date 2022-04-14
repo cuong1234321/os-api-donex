@@ -21,6 +21,7 @@ interface OrderInterface {
   shippingWardId: number;
   shippingAddress: string;
   transactionId: string;
+  promotionType: string;
   paidAt?: Date;
   portalConfirmAt?: Date;
   createdAt?: Date;
