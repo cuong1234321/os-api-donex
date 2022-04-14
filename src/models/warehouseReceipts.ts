@@ -1,9 +1,12 @@
 import WarehouseReceiptEntity from '@entities/warehouseReceipts';
 import WarehouseReceiptInterface from '@interfaces/warehouseReceipts';
 import dayjs from 'dayjs';
-import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize } from 'sequelize';
+import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, Transaction } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
+import ProductOptionModel from './productOptions';
+import ProductVariantModel from './productVariants';
 import WarehouseReceiptVariantModel from './warehouseReceiptVariants';
+import WarehouseModel from './warehouses';
 
 class WarehouseReceiptModel extends Model<WarehouseReceiptInterface> implements WarehouseReceiptInterface {
   public id: number;
@@ -23,6 +26,10 @@ class WarehouseReceiptModel extends Model<WarehouseReceiptInterface> implements 
     { warehouseReceiptVariants: ['warehouseId', 'variantId', 'quantity', 'price', 'totalPrice'] },
   ]
 
+  static readonly UPDATABLE_PARAMETERS = ['importDate', 'type', 'importAbleType', 'importAble', 'orderId', 'deliverer', 'note',
+    { warehouseReceiptVariants: ['id', 'warehouseId', 'variantId', 'quantity', 'price', 'totalPrice'] },
+  ]
+
   static readonly hooks: Partial<ModelHooks<WarehouseReceiptModel>> = {}
 
   static readonly validations: ModelValidateOptions = {}
@@ -40,6 +47,11 @@ class WarehouseReceiptModel extends Model<WarehouseReceiptInterface> implements 
     byType (type) {
       return {
         where: { type },
+      };
+    },
+    byId (id) {
+      return {
+        where: { id },
       };
     },
     withImportAbleName () {
@@ -73,11 +85,91 @@ class WarehouseReceiptModel extends Model<WarehouseReceiptInterface> implements 
         },
       };
     },
+    withTotalPrice () {
+      return {
+        attributes: {
+          include: [
+            [
+              Sequelize.cast(Sequelize.literal('(SELECT SUM(totalPrice) FROM warehouseReceiptVariants WHERE warehouseReceiptId = WarehouseReceiptModel.id AND deletedAt IS NULL )'), 'SIGNED'),
+              'totalPrice',
+            ],
+          ],
+        },
+      };
+    },
+    withTotalQuantity () {
+      return {
+        attributes: {
+          include: [
+            [
+              Sequelize.cast(Sequelize.literal('(SELECT SUM(quantity) FROM warehouseReceiptVariants WHERE warehouseReceiptId = WarehouseReceiptModel.id AND deletedAt IS NULL )'), 'SIGNED'),
+              'totalQuantity',
+            ],
+          ],
+        },
+      };
+    },
     newest () {
       return {
         order: [['createdAt', 'DESC']],
       };
     },
+  }
+
+  public async updateReceiptVariants (receiptVariants: any[], transaction?: Transaction) {
+    if (!receiptVariants) return;
+    receiptVariants.forEach((record: any) => {
+      record.warehouseReceiptId = this.id;
+    });
+    let warehouseReceiptVariants: any = [];
+    for (const receiptVariant of receiptVariants) {
+      if (receiptVariant.id) {
+        const record = (await WarehouseReceiptVariantModel.update(receiptVariant, { where: { id: receiptVariant.id }, individualHooks: true, transaction }))[1];
+        warehouseReceiptVariants.push(record);
+      } else {
+        receiptVariant.warehouseReceiptId = this.id;
+        const record = await WarehouseReceiptVariantModel.create(receiptVariant, { individualHooks: true, transaction });
+        warehouseReceiptVariants.push(record);
+      }
+    }
+    warehouseReceiptVariants = warehouseReceiptVariants.flat(Infinity);
+    await WarehouseReceiptVariantModel.destroy({
+      where: { warehouseReceiptId: this.id, id: { [Op.notIn]: warehouseReceiptVariants.map((receiptVariant: any) => receiptVariant.id) } },
+      individualHooks: true,
+      transaction,
+    });
+    return warehouseReceiptVariants;
+  }
+
+  public async reloadWithDetail () {
+    await this.reload({
+      include: [
+        {
+          model: WarehouseReceiptVariantModel,
+          as: 'receiptVariants',
+          include: [
+            {
+              model: ProductVariantModel,
+              as: 'variant',
+              include: [
+                {
+                  model: ProductOptionModel,
+                  as: 'options',
+                  required: false,
+                  where: {
+                    thumbnail: { [Op.ne]: null },
+                  },
+                },
+              ],
+            },
+            {
+              model: WarehouseModel,
+              as: 'warehouse',
+            },
+          ],
+        },
+      ],
+    });
   }
 
   public static initialize (sequelize: Sequelize) {
@@ -93,6 +185,7 @@ class WarehouseReceiptModel extends Model<WarehouseReceiptInterface> implements 
 
   public static associate () {
     this.hasMany(WarehouseReceiptVariantModel, { as: 'warehouseReceiptVariants', foreignKey: 'warehouseReceiptId' });
+    this.hasMany(WarehouseReceiptVariantModel, { as: 'receiptVariants', foreignKey: 'warehouseReceiptId' });
   }
 }
 
