@@ -8,7 +8,7 @@ import SaleCampaignModel from '@models/saleCampaigns';
 class ProductVariantController {
   public async index (req: Request, res: Response) {
     try {
-      const { category, productId, appliedAt, appliedTo, beneficiaries } = req.query;
+      const { category, productId, appliedAt, appliedTo, beneficiaries, warehouseId } = req.query;
       let backlistVariants: any = [];
       const scopes: any = [
         'withOptions',
@@ -16,6 +16,7 @@ class ProductVariantController {
       if (category) scopes.push({ method: ['byCategory', (category as string).split(',')] });
       if (productId) scopes.push({ method: ['byProduct', (productId as string).split(',')] });
       if (productId) scopes.push({ method: ['byProduct', (productId as string).split(',')] });
+      if (warehouseId) scopes.push({ method: ['byWarehouse', warehouseId] });
       if (appliedAt && appliedTo && beneficiaries) {
         const saleCampaignScopes: any = [
           'withSaleCampaignActiveSameTime',

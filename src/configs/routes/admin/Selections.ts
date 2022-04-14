@@ -158,4 +158,71 @@ router.get('/product_categories', SelectionController.productCategories);
  */
 router.get('/news_categories', SelectionController.newsCategorySelections);
 
+/**
+ * @openapi
+ * /a/selections/users:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] SELECTION"
+ *     summary: danh sach khach hang
+ *     responses:
+ *       200:
+ *         description: "Upload success"
+ *       500:
+ *         description: "Upload failed"
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/users', SelectionController.userSelections);
+
+/**
+ * @openapi
+ * /a/selections/collaborators:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] SELECTION"
+ *     summary: danh sach CTV/DL/NPP
+ *     parameters:
+ *      - in: "query"
+ *        name: type
+ *        description: ""
+ *        enum:
+ *         - collaborator
+ *         - agency
+ *         - distributor
+ *     responses:
+ *       200:
+ *         description: "Upload success"
+ *       500:
+ *         description: "Upload failed"
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/collaborators', SelectionController.collaboratorSelections);
+
+/**
+ * @openapi
+ * /a/selections/warehouses:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] SELECTION"
+ *     summary: danh sach kho
+ *     parameters:
+ *      - in: query
+ *        name: "status"
+ *        description: "status"
+ *        type: "string"
+ *        enum:
+ *          - active
+ *          - inactive
+ *     responses:
+ *       200:
+ *         description: "Upload success"
+ *       500:
+ *         description: "Upload failed"
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/warehouses', SelectionController.warehouseSelections);
+
 export default router;
