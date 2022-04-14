@@ -129,6 +129,10 @@ const swaggerDefinition = {
       description: 'Quản lý tin tức',
     },
     {
+      name: '[USER] Order',
+      description: 'Quản lý đơn hàng',
+    },
+    {
       name: '[USER] SYSTEM SETTING',
       description: 'Cài đặt hệ thống',
     },

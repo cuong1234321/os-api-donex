@@ -3,7 +3,6 @@ import OrderItemInterface from './orderItems';
 interface SubOrderInterface {
   id: number;
   code: string;
-  partnerCode: string;
   orderId: number;
   warehouseId: number;
   subTotal: number;
