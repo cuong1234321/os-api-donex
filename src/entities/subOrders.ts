@@ -5,7 +5,7 @@ const SubOrderEntity = {
     type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false,
   },
   code: {
-    type: DataTypes.STRING(255), allowNull: false,
+    type: DataTypes.STRING(255), allowNull: true,
   },
   orderId: {
     type: DataTypes.INTEGER, allowNull: false,
@@ -14,16 +14,16 @@ const SubOrderEntity = {
     type: DataTypes.INTEGER, allowNull: false,
   },
   subTotal: {
-    type: DataTypes.BIGINT, allowNull: false,
+    type: DataTypes.BIGINT, allowNull: true,
   },
   shippingFee: {
-    type: DataTypes.BIGINT, allowNull: false,
+    type: DataTypes.BIGINT, allowNull: true,
   },
   shippingDiscount: {
     type: DataTypes.BIGINT, allowNull: true,
   },
   total: {
-    type: DataTypes.BIGINT, allowNull: false,
+    type: DataTypes.BIGINT, allowNull: true,
   },
   shippingCode: {
     type: DataTypes.STRING(255), allowNull: true,

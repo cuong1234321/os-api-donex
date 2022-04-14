@@ -5,7 +5,7 @@ const OrderEntity = {
     type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false,
   },
   code: {
-    type: DataTypes.STRING(255), allowNull: false,
+    type: DataTypes.STRING(255), allowNull: true,
   },
   ownerId: {
     type: DataTypes.INTEGER, allowNull: false,
@@ -29,10 +29,10 @@ const OrderEntity = {
     type: DataTypes.ENUM({ values: ['facebook', 'lazada', 'shopee', 'tiki', 'wholesale', 'other', 'retail'] }), allowNull: true, defaultValue: 'retail',
   },
   subTotal: {
-    type: DataTypes.BIGINT, allowNull: false,
+    type: DataTypes.BIGINT, allowNull: true,
   },
   shippingFee: {
-    type: DataTypes.BIGINT, allowNull: false,
+    type: DataTypes.BIGINT, allowNull: true,
   },
   shippingDiscount: {
     type: DataTypes.BIGINT, allowNull: true,
@@ -41,7 +41,7 @@ const OrderEntity = {
     type: DataTypes.INTEGER, allowNull: true,
   },
   total: {
-    type: DataTypes.BIGINT, allowNull: false,
+    type: DataTypes.BIGINT, allowNull: true,
   },
   appliedVoucherId: {
     type: DataTypes.INTEGER, allowNull: true,
@@ -66,6 +66,9 @@ const OrderEntity = {
   },
   transactionId: {
     type: DataTypes.STRING(255), allowNull: true,
+  },
+  promotionType: {
+    type: DataTypes.STRING(255), allowNull: true, defaultValue: 'userVoucher',
   },
   paidAt: {
     type: DataTypes.DATE, allowNull: true,
