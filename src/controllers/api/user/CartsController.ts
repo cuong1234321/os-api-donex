@@ -7,6 +7,7 @@ import WarehouseVariantModel from '@models/warehouseVariants';
 import { Request, Response } from 'express';
 import SystemSettingModel from '@models/systemSetting';
 import { RequestDiscountInvalid } from '@libs/errors';
+import SaleCampaignProductDecorator from '@decorators/saleCampaignProducts';
 class CartController {
   public async show (req: Request, res: Response) {
     try {
@@ -35,8 +36,9 @@ class CartController {
         const reduceTotalBillByCoin = parseInt(coins as string) * (systemSetting.coinConversionLevel || 1);
         totalDiscount = totalDiscount + reduceTotalBillByCoin;
       }
-      const cartItems = await CartItemModel.scope(scopes).findAll({ order: [['createdAt', 'DESC']] });
+      let cartItems = await CartItemModel.scope(scopes).findAll({ order: [['createdAt', 'DESC']] });
       await this.variantOptions(cartItems);
+      cartItems = await SaleCampaignProductDecorator.calculatorVariantPrice('USER', cartItems);
       const warehouses = await this.groupByWarehouse(cartItems);
       cart.setDataValue('warehouses', warehouses);
       cart.setDataValue('totalBill', totalBill);
@@ -127,10 +129,10 @@ class CartController {
     for (const item of cartItems) {
       item.variantOptions = [];
       const variantOptionColors = await ProductVariantOptionModel.scope([
-        { method: ['byOptionId', item.getDataValue('productVariant').getDataValue('optionColorId')] },
+        { method: ['byOptionId', item.getDataValue('variants').getDataValue('optionColorId')] },
       ]).findAll();
       const warehouseVariants = await WarehouseVariantModel.scope([
-        { method: ['byProduct', item.getDataValue('productVariant').getDataValue('productId')] },
+        { method: ['byProduct', item.getDataValue('variants').getDataValue('productId')] },
         { method: ['byWarehouseId', item.getDataValue('warehouseId')] },
       ]).findAll({ attributes: ['variantId'] });
       const variantOptionColorIds = variantOptionColors.map((record: any) => record.variantId);
@@ -148,7 +150,16 @@ class CartController {
       { method: ['byId', [...new Set(cartItems.map((record: any) => record.warehouseId))]] },
     ]).findAll();
     for (const warehouse of warehouses) {
-      warehouse.setDataValue('cartItems', cartItems.filter((record: any) => record.warehouseId === warehouse.id));
+      const warehouseCartItems = cartItems.filter((record: any) => record.warehouseId === warehouse.id);
+      warehouse.setDataValue('cartItems', warehouseCartItems);
+      let totalBill = 0;
+      for (const warehouseCartItem of warehouseCartItems) {
+        totalBill = totalBill + warehouseCartItem.variants.getDataValue('saleCampaignPrice');
+      }
+      warehouse.setDataValue('totalBill', totalBill);
+      warehouse.setDataValue('totalFee', 0);
+      warehouse.setDataValue('totalDiscount', 0);
+      warehouse.setDataValue('finalAmount', 0);
     }
     return warehouses;
   }

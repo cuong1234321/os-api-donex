@@ -18,7 +18,7 @@ class CartItemModel extends Model<CartItemInterface> implements CartItemInterfac
   public createdAt?: Date;
   public updatedAt?: Date;
 
-  public productVariant?: ProductVariantModel;
+  public variants?: ProductVariantModel;
   public variantOptions?: any[];
 
   static readonly hooks: Partial<ModelHooks<CartItemModel>> = {
@@ -59,16 +59,16 @@ class CartItemModel extends Model<CartItemInterface> implements CartItemInterfac
         include: [
           {
             model: ProductVariantModel,
-            as: 'productVariant',
+            as: 'variants',
             attributes: {
               exclude: ['createdAt', 'updatedAt'],
               include: [
                 [
-                  Sequelize.literal('(SELECT name FROM products WHERE products.id = `productVariant`.productId)'),
+                  Sequelize.literal('(SELECT name FROM products WHERE products.id = `variants`.productId)'),
                   'productName',
                 ],
                 [
-                  Sequelize.literal('(SELECT weight FROM products WHERE products.id = `productVariant`.productId)'),
+                  Sequelize.literal('(SELECT weight FROM products WHERE products.id = `variants`.productId)'),
                   'productWeight',
                 ],
                 [
@@ -125,7 +125,7 @@ class CartItemModel extends Model<CartItemInterface> implements CartItemInterfac
   }
 
   public static associate () {
-    this.belongsTo(ProductVariantModel, { as: 'productVariant', foreignKey: 'productVariantId' });
+    this.belongsTo(ProductVariantModel, { as: 'variants', foreignKey: 'productVariantId' });
     this.belongsTo(WarehouseModel, { as: 'warehouse', foreignKey: 'warehouseId' });
     this.belongsTo(CartModel, { as: 'cart', foreignKey: 'cartId' });
   }

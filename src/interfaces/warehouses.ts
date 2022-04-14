@@ -1,3 +1,4 @@
+import CartItemInterface from './cartItems';
 
 interface WarehouseInterface {
   id: number,
@@ -14,7 +15,11 @@ interface WarehouseInterface {
   updatedAt?: Date,
   deletedAt?: Date,
 
-  cartItems?: any[];
+  cartItems?: CartItemInterface[];
+  totalBill?: number;
+  totalFee?: number;
+  totalDiscount?: number;
+  finalAmount?: number;
 };
 
 export default WarehouseInterface;

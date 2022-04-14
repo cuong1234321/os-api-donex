@@ -12,9 +12,29 @@ const router = Router();
  *     summary: Chi tiết giỏ hàng
  *     parameters:
  *      - in: "query"
- *        type: "integer"
+ *        type: "number"
  *        name: "coins"
  *        description: "điểm thưởng"
+ *      - in: "query"
+ *        type: "number"
+ *        name: "voucherId"
+ *        description: "id voucher"
+ *      - in: "query"
+ *        type: "number"
+ *        name: "wardId"
+ *        description: "id ward"
+ *      - in: "query"
+ *        type: "number"
+ *        name: "districtId"
+ *        description: "id district"
+ *      - in: "query"
+ *        type: "number"
+ *        name: "provinceId"
+ *        description: "id province"
+ *      - in: "query"
+ *        type: "number"
+ *        name: "address"
+ *        description: "id province"
  *     responses:
  *       200:
  *         description: Success.

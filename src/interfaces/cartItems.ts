@@ -1,3 +1,5 @@
+import ProductVariantInterface from './productVariants';
+
 interface CartItemInterface {
   id: number;
   cartId: number;
@@ -8,6 +10,7 @@ interface CartItemInterface {
   updatedAt?: Date;
 
   variantOptions?: any[];
+  variants?: ProductVariantInterface;
 };
 
 export default CartItemInterface;
