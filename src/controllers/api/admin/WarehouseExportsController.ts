@@ -5,6 +5,7 @@ import { Request, Response } from 'express';
 import { Transaction } from 'sequelize/types';
 import sequelize from '@initializers/sequelize';
 import settings from '@configs/settings';
+import { NoData } from '@libs/errors';
 
 class WarehouseExportController {
   public async create (req: Request, res: Response) {
@@ -22,6 +23,24 @@ class WarehouseExportController {
         return warehouseExport;
       });
       sendSuccess(res, { warehouseExport: result });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async show (req: Request, res: Response) {
+    try {
+      const { warehouseExportId } = req.params;
+      const scopes: any = [
+        { method: ['byId', warehouseExportId] },
+        'withExportAbleName',
+        'withTotalPrice',
+        'withTotalQuantity',
+      ];
+      const warehouseExport = await WarehouseExportModel.scope(scopes).findOne();
+      await warehouseExport.reloadWithDetail();
+      if (!warehouseExport) { return sendError(res, 404, NoData); }
+      sendSuccess(res, warehouseExport);
     } catch (error) {
       sendError(res, 500, error.message, error);
     }
@@ -45,6 +64,23 @@ class WarehouseExportController {
       if (type) scopes.push({ method: ['byType', type] });
       const { rows, count } = await WarehouseExportModel.scope(scopes).findAndCountAll({ limit, offset });
       sendSuccess(res, { warehouseReceipts: rows, pagination: { total: count, page, perPage: limit } });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async update (req: Request, res: Response) {
+    try {
+      const { warehouseExportId } = req.params;
+      const warehouseExport = await WarehouseExportModel.findByPk(warehouseExportId);
+      if (!warehouseExport) { return sendError(res, 404, NoData); }
+      const params = req.parameters.permit(WarehouseExportModel.UPDATABLE_PARAMETERS).value();
+      await sequelize.transaction(async (transaction: Transaction) => {
+        await warehouseExport.update(params, { transaction });
+        await warehouseExport.updateExportVariants(params.warehouseExportVariants, transaction);
+      });
+      await warehouseExport.reloadWithDetail();
+      sendSuccess(res, warehouseExport);
     } catch (error) {
       sendError(res, 500, error.message, error);
     }

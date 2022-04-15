@@ -19,8 +19,8 @@ import RankRouter from './Ranks';
 import UploadRouter from './Uploads';
 import TermRouter from './Terms';
 import Warehouse from './Warehouses';
-import WarehouseReceiptRouter from './warehouseReceipts';
-import WarehouseExportRouter from './warehouseExports';
+import WarehouseReceiptRouter from './WarehouseReceipts';
+import WarehouseExportRouter from './WarehouseExports';
 import WarehouseTransferRouter from './warehouseTransfers';
 
 const router = Router();
