@@ -88,6 +88,16 @@ class WarehouseModel extends Model<WarehouseInterface> implements WarehouseInter
         where: { id },
       };
     },
+    withWarehouseVariant () {
+      return {
+        include: [
+          {
+            model: WarehouseVariantModel,
+            as: 'warehouseVariant',
+          },
+        ],
+      };
+    },
   }
 
   public static initialize (sequelize: Sequelize) {

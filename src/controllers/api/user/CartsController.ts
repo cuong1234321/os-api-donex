@@ -148,6 +148,7 @@ class CartController {
   private async groupByWarehouse (cartItems: any) {
     const warehouses = await WarehouseModel.scope([
       { method: ['byId', [...new Set(cartItems.map((record: any) => record.warehouseId))]] },
+      'withWarehouseVariant',
     ]).findAll();
     for (const warehouse of warehouses) {
       const warehouseCartItems = cartItems.filter((record: any) => record.warehouseId === warehouse.id);
