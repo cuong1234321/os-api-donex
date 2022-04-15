@@ -42,7 +42,16 @@ class RankModel extends Model<RankInterface> implements RankInterface {
 
   public getConditions: HasManyGetAssociationsMixin<RankConditionModel>
 
-  static readonly scopes: ModelScopeOptions = { }
+  static readonly scopes: ModelScopeOptions = {
+    withRankCondition () {
+      return {
+        include: [{
+          model: RankConditionModel,
+          as: 'conditions',
+        }],
+      };
+    },
+  }
 
   public static initialize (sequelize: Sequelize) {
     this.init(RankEntity, {

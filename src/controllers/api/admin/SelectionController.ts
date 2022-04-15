@@ -86,7 +86,7 @@ class SelectionController {
 
   public async userSelections (req: Request, res: Response) {
     try {
-      const users = await UserModel.findAll({ attributes: ['id', 'fullName'] });
+      const users = await UserModel.findAll({ attributes: ['id', 'fullName', 'username'] });
       sendSuccess(res, users);
     } catch (error) {
       sendError(res, 500, error.message, error);
@@ -100,7 +100,7 @@ class SelectionController {
       if (type) {
         scopes.push({ method: ['byType', type] });
       }
-      const collaborators = await CollaboratorModel.scope(scopes).findAll({ attributes: ['id', 'fullName', 'type'] });
+      const collaborators = await CollaboratorModel.scope(scopes).findAll({ attributes: ['id', 'fullName', 'type', 'username'] });
       sendSuccess(res, collaborators);
     } catch (error) {
       sendError(res, 500, error.message, error);
