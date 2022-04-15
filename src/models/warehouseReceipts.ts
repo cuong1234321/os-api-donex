@@ -146,7 +146,7 @@ class WarehouseReceiptModel extends Model<WarehouseReceiptInterface> implements 
       include: [
         {
           model: WarehouseReceiptVariantModel,
-          as: 'receiptVariants',
+          as: 'warehouseReceiptVariants',
           include: [
             {
               model: ProductVariantModel,
