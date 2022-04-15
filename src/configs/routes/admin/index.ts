@@ -22,6 +22,7 @@ import Warehouse from './Warehouses';
 import WarehouseReceiptRouter from './WarehouseReceipts';
 import WarehouseExportRouter from './WarehouseExports';
 import WarehouseTransferRouter from './warehouseTransfers';
+import WarehouseReportRouter from './WarehouseReports';
 
 const router = Router();
 
@@ -48,5 +49,6 @@ router.use('/warehouses', Warehouse);
 router.use('/warehouse_receipts', WarehouseReceiptRouter);
 router.use('/warehouse_exports', WarehouseExportRouter);
 router.use('/warehouse_transfers', WarehouseTransferRouter);
+router.use('/warehouse_reports', WarehouseReportRouter);
 
 export default router;
