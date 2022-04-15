@@ -467,7 +467,7 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
         {
           model: WarehouseVariantModel,
           as: 'warehouseVariants',
-          required: true,
+          required: false,
           where: {
             quantity: { [Op.gt]: 0 },
           },

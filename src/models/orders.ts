@@ -53,7 +53,7 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
   public static readonly ORDERABLE_TYPE = { USER: 'user', COLLABORATOR: 'collaborator', AGENCY: 'agency', DISTRIBUTOR: 'distributor' }
   public static readonly CREATABLE_TYPE = { USER: 'user', ADMIN: 'admin', COLLABORATOR: 'collaborator', AGENCY: 'agency', DISTRIBUTOR: 'distributor' }
   public static readonly PAYMENT_METHOD = { BANKING: 'banking', COD: 'COD', VN_PAY: 'vnPay', WALLET: 'wallet' }
-  public static readonly PROMOTION_TYPE = { USER_BIRTHDAY: 'user_birthday', DONEX_BIRTHDAY: 'donex_birthday', SYSTEM_RANK: 'system_rank', USER_VOUCHER: 'user_voucher' }
+  public static readonly PROMOTION_TYPE = { USER_BIRTHDAY: 'userBirthday', DONEX_BIRTHDAY: 'donexBirthday', SYSTEM_RANK_PROMOTION: 'systemRankPromotion', USER_VOUCHER: 'userVoucher' }
   public static readonly SALE_CHANNEL = {
     FACEBOOK: 'facebook',
     LAZADA: 'lazada',
