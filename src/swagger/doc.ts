@@ -97,6 +97,10 @@ const swaggerDefinition = {
       description: 'Quản lý kho xuất',
     },
     {
+      name: '[ADMIN] Warehouse Transfers',
+      description: 'Quản lý chuyển kho',
+    },
+    {
       name: '[USER] Sessions',
       description: 'Phiên đăng nhập user',
     },
