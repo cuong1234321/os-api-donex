@@ -4,6 +4,7 @@ import dayjs from 'dayjs';
 import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, Transaction } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import ProductOptionModel from './productOptions';
+import ProductModel from './products';
 import ProductVariantModel from './productVariants';
 import WarehouseExportVariantModel from './warehouseExportVariants';
 import WarehouseModel from './warehouses';
@@ -155,6 +156,11 @@ class WarehouseExportModel extends Model<WarehouseExportInterface> implements Wa
                 {
                   model: ProductOptionModel,
                   as: 'options',
+                },
+                {
+                  model: ProductModel,
+                  as: 'product',
+                  attributes: ['unit'],
                 },
               ],
             },

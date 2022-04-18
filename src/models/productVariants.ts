@@ -123,6 +123,18 @@ class ProductVariantModel extends Model<ProductVariantInterface> implements Prod
         },
       };
     },
+    withUnit () {
+      return {
+        attributes: {
+          include: [
+            [
+              Sequelize.literal('(SELECT unit FROM products WHERE id = ProductVariantModel.productId)'),
+              'unit',
+            ],
+          ],
+        },
+      };
+    },
     byId (id) {
       return {
         where: { id },

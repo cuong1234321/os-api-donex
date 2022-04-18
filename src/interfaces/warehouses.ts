@@ -12,6 +12,8 @@ interface WarehouseInterface {
   provinceId: number;
   districtId: number;
   wardId: number;
+  phoneNumber: string;
+  warehouseManager: string;
   createdAt?: Date,
   updatedAt?: Date,
   deletedAt?: Date,

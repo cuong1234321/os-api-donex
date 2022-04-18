@@ -4,6 +4,7 @@ import dayjs from 'dayjs';
 import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, Transaction } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import ProductOptionModel from './productOptions';
+import ProductModel from './products';
 import ProductVariantModel from './productVariants';
 import WarehouseReceiptVariantModel from './warehouseReceiptVariants';
 import WarehouseModel from './warehouses';
@@ -159,6 +160,11 @@ class WarehouseReceiptModel extends Model<WarehouseReceiptInterface> implements 
                   where: {
                     thumbnail: { [Op.ne]: null },
                   },
+                },
+                {
+                  model: ProductModel,
+                  as: 'product',
+                  attributes: ['unit'],
                 },
               ],
             },
