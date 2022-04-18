@@ -76,3 +76,8 @@ export const RequestDiscountInvalid = {
   code: 440,
   message: 'Your request discount order is invalid',
 };
+
+export const existProduct = {
+  code: 445,
+  message: 'Product existed in warehouse',
+};

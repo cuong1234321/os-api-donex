@@ -1,6 +1,6 @@
 import WarehouseEntity from '@entities/warehouses';
 import WarehouseInterface from '@interfaces/warehouses';
-import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, ValidationErrorItem } from 'sequelize';
+import { HasManyGetAssociationsMixin, Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import ProductVariantModel from './productVariants';
 import WarehouseVariantModel from './warehouseVariants';
@@ -51,6 +51,11 @@ class WarehouseModel extends Model<WarehouseInterface> implements WarehouseInter
   }
 
   static readonly scopes: ModelScopeOptions = {
+    byId (id) {
+      return {
+        where: { id },
+      };
+    },
     byCode (code) {
       return {
         where: { code },
@@ -83,9 +88,16 @@ class WarehouseModel extends Model<WarehouseInterface> implements WarehouseInter
         order: [['createdAt', 'DESC']],
       };
     },
-    byId (id) {
+    totalQuantity () {
       return {
-        where: { id },
+        attributes: {
+          include: [
+            [
+              Sequelize.cast(Sequelize.literal('(SELECT SUM(quantity) FROM warehouse_variants WHERE warehouseId = WarehouseModel.id)'), 'SIGNED'),
+              'totalQuantity',
+            ],
+          ],
+        },
       };
     },
     withWarehouseVariant () {
@@ -98,6 +110,33 @@ class WarehouseModel extends Model<WarehouseInterface> implements WarehouseInter
         ],
       };
     },
+    withWarehouseVariantDetail () {
+      return {
+        include: [
+          {
+            model: WarehouseVariantModel,
+            as: 'warehouseVariants',
+            include: [
+              {
+                model: ProductVariantModel,
+                as: 'variants',
+              },
+            ],
+          },
+        ],
+      };
+    },
+  }
+
+  public getWarehouseVariants: HasManyGetAssociationsMixin<WarehouseVariantModel>
+
+  public async checkDelete () {
+    const warehouseVariants = await this.getWarehouseVariants();
+    if (warehouseVariants.length !== 0) {
+      return false;
+    } else {
+      return true;
+    }
   }
 
   public static initialize (sequelize: Sequelize) {
@@ -114,6 +153,7 @@ class WarehouseModel extends Model<WarehouseInterface> implements WarehouseInter
   public static associate () {
     this.hasMany(WarehouseVariantModel, { as: 'warehouseVariant', foreignKey: 'warehouseId' });
     this.belongsToMany(ProductVariantModel, { through: WarehouseVariantModel, as: 'variants', foreignKey: 'warehouseId' });
+    this.hasMany(WarehouseVariantModel, { as: 'warehouseVariants', foreignKey: 'warehouseId' });
   }
 }
 

@@ -1,4 +1,5 @@
 import CartItemInterface from './cartItems';
+import WarehouseVariantInterface from './warehouseVariants';
 
 interface WarehouseInterface {
   id: number,
@@ -20,6 +21,7 @@ interface WarehouseInterface {
   totalFee?: number;
   totalDiscount?: number;
   finalAmount?: number;
+  warehouseVariants?: WarehouseVariantInterface[];
 };
 
 export default WarehouseInterface;

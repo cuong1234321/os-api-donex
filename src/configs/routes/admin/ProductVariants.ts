@@ -25,6 +25,10 @@ const router = Router();
  *        description: "Id kho hang"
  *        type: "string"
  *      - in: query
+ *        name: "sku"
+ *        description: "ma sku san pham"
+ *        type: "string"
+ *      - in: query
  *        name: "appliedAt"
  *        description: "ngày bắt đầu chương trình"
  *        type: "string"
