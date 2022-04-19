@@ -3,7 +3,6 @@ import { sendError, sendSuccess } from '@libs/response';
 import OrderItemModel from '@models/orderItems';
 import OrderModel from '@models/orders';
 import SubOrderModel from '@models/subOrders';
-import dayjs from 'dayjs';
 import { Request, Response } from 'express';
 import { Transaction } from 'sequelize/types';
 
@@ -13,8 +12,6 @@ class OrderController {
       const { currentUser } = req;
       const params = req.parameters.permit(OrderModel.USER_CREATABLE_PARAMETERS).value();
       params.ownerId = currentUser.id;
-      console.log(dayjs('2000').startOf('year').format());
-
       const result = await sequelize.transaction(async (transaction: Transaction) => {
         const order = await OrderModel.create({
           ...params,
