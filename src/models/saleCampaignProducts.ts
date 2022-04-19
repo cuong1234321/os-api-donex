@@ -50,6 +50,11 @@ class SaleCampaignProductModel extends Model<SaleCampaignProductInterface> imple
         }],
       };
     },
+    byId (id) {
+      return {
+        where: { id },
+      };
+    },
   }
 
   public static initialize (sequelize: Sequelize) {

@@ -55,6 +55,11 @@ class VoucherApplicationModel extends Model<VoucherApplicationInterface> impleme
         record.recipientLevel = VoucherApplicationModel.RECIPIENT_LEVEL_ENUM.ALL;
       }
     },
+    async afterDestroy (record: any) {
+      await VoucherConditionModel.destroy({
+        where: { voucherApplicationId: record.id },
+      });
+    },
   }
 
   static readonly validations: ModelValidateOptions = {
@@ -204,6 +209,15 @@ class VoucherApplicationModel extends Model<VoucherApplicationInterface> impleme
             attributes: ['fullName', 'phoneNumber', 'username'],
           },
         ],
+      };
+    },
+    isRunning () {
+      return {
+        where: {
+          [Op.and]: [
+            { appliedAt: { [Op.lt]: dayjs().format() } },
+          ],
+        },
       };
     },
   }

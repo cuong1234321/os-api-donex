@@ -1,5 +1,5 @@
 
-interface MisaAuthInterface {
+interface AuthInterface {
   Domain: string,
   AppID: string,
   AccessToken: string,
@@ -7,4 +7,4 @@ interface MisaAuthInterface {
   Environment: string,
 };
 
-export default MisaAuthInterface;
+export default AuthInterface;

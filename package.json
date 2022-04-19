@@ -105,7 +105,10 @@
     "@decorators": "dist/decorators",
     "~": "dist",
     "@libs": "dist/libs",
-    "@jobs": "dist/jobs"
+    "@jobs": "dist/jobs",
+    "@repositories": "dist/repositories",
+    "@repositories/models": "dist/repositories/models",
+    "@repositories/interfaces": "dist/repositories/interfaces"
   },
   "xo": {
     "extends": ".eslintrc.json"

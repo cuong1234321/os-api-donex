@@ -53,7 +53,7 @@ class SaleCampaignController {
       if (!saleCampaign) {
         return sendError(res, 404, NoData);
       }
-      saleCampaign.update({ isActive: true });
+      await saleCampaign.update({ isActive: true });
       sendSuccess(res, saleCampaign);
     } catch (error) {
       sendError(res, 500, error.message, error);
@@ -84,7 +84,7 @@ class SaleCampaignController {
       if (!saleCampaign) {
         return sendError(res, 404, NoData);
       }
-      saleCampaign.update({ isActive: false });
+      await saleCampaign.update({ isActive: false });
       sendSuccess(res, saleCampaign);
     } catch (error) {
       sendError(res, 500, error.message, error);

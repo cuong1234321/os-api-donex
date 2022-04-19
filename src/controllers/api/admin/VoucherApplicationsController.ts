@@ -120,6 +120,20 @@ class VoucherApplicationController {
       sendError(res, 500, error.message, error);
     }
   }
+
+  public async delete (req: Request, res: Response) {
+    try {
+      const voucher = await VoucherApplicationModel.scope([
+        { method: ['byId', req.params.voucherApplicationId] },
+        'isRunning',
+      ]).findOne();
+      if (!voucher) return sendError(res, 404, NoData);
+      voucher.destroy();
+      sendSuccess(res, { });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
 }
 
 export default new VoucherApplicationController();
