@@ -211,15 +211,6 @@ class VoucherApplicationModel extends Model<VoucherApplicationInterface> impleme
         ],
       };
     },
-    isRunning () {
-      return {
-        where: {
-          [Op.and]: [
-            { appliedAt: { [Op.lt]: dayjs().format() } },
-          ],
-        },
-      };
-    },
   }
 
   public async generateVoucherCode () {
