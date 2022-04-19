@@ -4,6 +4,7 @@ import { Model, ModelScopeOptions, ModelValidateOptions, Sequelize, ValidationEr
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import WarehouseTransferModel from './warehouseTransfers';
 import WarehouseVariantModel from './warehouseVariants';
+import ProductVariantModel from './productVariants';
 
 class WarehouseTransferVariantModel extends Model<WarehouseTransferVariantInterface> implements WarehouseTransferVariantInterface {
   public id: number;
@@ -42,7 +43,13 @@ class WarehouseTransferVariantModel extends Model<WarehouseTransferVariantInterf
     },
   }
 
-  static readonly scopes: ModelScopeOptions = {}
+  static readonly scopes: ModelScopeOptions = {
+    byWarehouseTransfer (warehouseTransferId) {
+      return {
+        where: { warehouseTransferId },
+      };
+    },
+  }
 
   public static initialize (sequelize: Sequelize) {
     this.init(WarehouseTransferVariantEntity, {
@@ -56,6 +63,7 @@ class WarehouseTransferVariantModel extends Model<WarehouseTransferVariantInterf
   }
 
   public static associate () {
+    this.belongsTo(ProductVariantModel, { as: 'variant', foreignKey: 'variantId' });
   }
 }
 

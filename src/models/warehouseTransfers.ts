@@ -1,8 +1,11 @@
 import WarehouseTransferEntity from '@entities/warehouseTransfers';
 import WarehouseTransferInterface from '@interfaces/warehouseTransfers';
 import dayjs from 'dayjs';
-import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, ValidationErrorItem } from 'sequelize';
+import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, Transaction, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
+import settings from '@configs/settings';
+import ProductVariantModel from './productVariants';
+import ProductOptionModel from './productOptions';
 import WarehouseModel from './warehouses';
 import WarehouseTransferVariantModel from './warehouseTransferVariants';
 import WarehouseVariantModel from './warehouseVariants';
@@ -24,10 +27,24 @@ class WarehouseTransferModel extends Model<WarehouseTransferInterface> implement
     { warehouseTransferVariants: ['variantId', 'quantity', 'price', 'totalPrice'] },
   ]
 
+  static readonly UPDATABLE_PARAMETERS = ['toWarehouseId', 'transferDate', 'note', 'status',
+    { warehouseTransferVariants: ['id', 'variantId', 'quantity', 'price', 'totalPrice'] },
+  ]
+
+  static readonly STATUS_ENUM = { PENDING: 'pending', CONFIRM: 'confirm', REJECT: 'reject' }
+
   static readonly hooks: Partial<ModelHooks<WarehouseTransferModel>> = {
     async afterCreate (record, options) {
-      const code = 'CK' + String(record.id).padStart(6, '0');
+      const code = settings.warehouseTransferCode + String(record.id).padStart(6, '0');
       await record.update({ code }, { transaction: options.transaction });
+    },
+    async afterUpdate (record) {
+      if (record.previous('status') === WarehouseTransferModel.STATUS_ENUM.PENDING && record.status === WarehouseTransferModel.STATUS_ENUM.CONFIRM) {
+        await record.updateWarehouseVariantConfirm();
+      }
+      if (record.previous('status') === WarehouseTransferModel.STATUS_ENUM.PENDING && record.status === WarehouseTransferModel.STATUS_ENUM.REJECT) {
+        await record.updateWarehouseVariantReject();
+      }
     },
   }
 
@@ -52,7 +69,7 @@ class WarehouseTransferModel extends Model<WarehouseTransferInterface> implement
         { method: ['byWarehouseId', this.fromWarehouseId] },
       ]).findAll();
       const warehouseTransferVariants = this.warehouseTransferVariants || null;
-      if (warehouseTransferVariants.length > 0) {
+      if (warehouseTransferVariants && warehouseTransferVariants.length > 0) {
         warehouseTransferVariants.forEach((record: any) => {
           const warehouseVariant = warehouseVariants.find((warehouseVariant: any) => warehouseVariant.variantId === record.variantId);
           if (!warehouseVariant) {
@@ -92,6 +109,16 @@ class WarehouseTransferModel extends Model<WarehouseTransferInterface> implement
         },
       };
     },
+    byId (id) {
+      return {
+        where: { id },
+      };
+    },
+    byStatus (status) {
+      return {
+        where: { status },
+      };
+    },
     withWarehouseName () {
       return {
         attributes: {
@@ -108,6 +135,119 @@ class WarehouseTransferModel extends Model<WarehouseTransferInterface> implement
         },
       };
     },
+    withTotalPrice () {
+      return {
+        attributes: {
+          include: [
+            [
+              Sequelize.cast(Sequelize.literal('(SELECT SUM(totalPrice) FROM warehouse_transfer_variants WHERE warehouseTransferId = WarehouseTransferModel.id AND deletedAt IS NULL )'), 'SIGNED'),
+              'totalPrice',
+            ],
+          ],
+        },
+      };
+    },
+    withTotalQuantity () {
+      return {
+        attributes: {
+          include: [
+            [
+              Sequelize.cast(Sequelize.literal('(SELECT SUM(quantity) FROM warehouse_transfer_variants WHERE warehouseTransferId = WarehouseTransferModel.id AND deletedAt IS NULL )'), 'SIGNED'),
+              'totalQuantity',
+            ],
+          ],
+        },
+      };
+    },
+  }
+
+  public async updateTransferVariants (transferVariants: any[], transaction?: Transaction) {
+    if (!transferVariants) return;
+    transferVariants.forEach((record: any) => {
+      record.warehouseTransferId = this.id;
+    });
+    let results: any = [];
+    for (const transferVariant of transferVariants) {
+      if (transferVariant.id) {
+        const result = await WarehouseTransferVariantModel.update(transferVariant, { where: { id: transferVariant.id }, individualHooks: true, transaction });
+        results.push(result[1]);
+      } else {
+        transferVariant.warehouseReceiptId = this.id;
+        const result = await WarehouseTransferVariantModel.create(transferVariant, { individualHooks: true, transaction });
+        results.push(result);
+      }
+    }
+    results = results.flat(Infinity);
+    await WarehouseTransferVariantModel.destroy({
+      where: { warehouseTransferId: this.id, id: { [Op.notIn]: results.map((receiptVariant: any) => receiptVariant.id) } },
+      individualHooks: true,
+      transaction,
+    });
+    return results;
+  }
+
+  public async reloadWithDetail () {
+    await this.reload({
+      include: [
+        {
+          model: WarehouseTransferVariantModel,
+          as: 'warehouseTransferVariants',
+          include: [
+            {
+              model: ProductVariantModel,
+              as: 'variant',
+              include: [
+                {
+                  model: ProductOptionModel,
+                  as: 'options',
+                  required: false,
+                  where: {
+                    thumbnail: { [Op.ne]: null },
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+  }
+
+  private async updateWarehouseVariantConfirm () {
+    const transferVariants = await WarehouseTransferVariantModel.scope([
+      { method: ['byWarehouseTransfer', this.id] },
+    ]).findAll();
+    const warehouseVariantReceipts = await WarehouseVariantModel.scope([
+      { method: ['byWarehouseId', this.toWarehouseId] },
+    ]).findAll();
+    for (const transferVariant of transferVariants) {
+      const warehouseVariantReceipt = warehouseVariantReceipts.find((warehouseVariant: any) => warehouseVariant.variantId === transferVariant.variantId);
+      if (warehouseVariantReceipt) {
+        await warehouseVariantReceipt.update({ quantity: warehouseVariantReceipt.quantity + (transferVariant.quantity || 0) });
+      } else {
+        await WarehouseVariantModel.create({
+          id: undefined,
+          warehouseId: this.toWarehouseId,
+          variantId: transferVariant.variantId,
+          quantity: transferVariant.quantity || 0,
+        });
+      }
+    }
+  }
+
+  private async updateWarehouseVariantReject () {
+    const transferVariants = await WarehouseTransferVariantModel.scope([
+      { method: ['byWarehouseTransfer', this.id] },
+    ]).findAll();
+    const warehouseVariantExports = await WarehouseVariantModel.scope([
+      { method: ['byWarehouseId', this.fromWarehouseId] },
+    ]).findAll();
+    for (const transferVariant of transferVariants) {
+      const warehouseVariantExport = warehouseVariantExports.find((warehouseVariant: any) => warehouseVariant.variantId === transferVariant.variantId);
+      if (warehouseVariantExport) {
+        await warehouseVariantExport.update({ quantity: warehouseVariantExport.quantity + (transferVariant.quantity || 0) });
+      }
+    }
   }
 
   public static initialize (sequelize: Sequelize) {

@@ -50,5 +50,6 @@ router.use('/warehouse_receipts', WarehouseReceiptRouter);
 router.use('/warehouse_exports', WarehouseExportRouter);
 router.use('/warehouse_transfers', WarehouseTransferRouter);
 router.use('/warehouse_reports', WarehouseReportRouter);
+router.use('/warehouse_transfers', WarehouseTransferRouter);
 
 export default router;
