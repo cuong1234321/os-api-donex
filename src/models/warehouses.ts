@@ -1,3 +1,4 @@
+import settings from '@configs/settings';
 import WarehouseEntity from '@entities/warehouses';
 import WarehouseInterface from '@interfaces/warehouses';
 import WarehouseVariantInterface from '@interfaces/warehouseVariants';
@@ -17,6 +18,8 @@ class WarehouseModel extends Model<WarehouseInterface> implements WarehouseInter
   public provinceId: number;
   public districtId: number;
   public wardId: number;
+  public phoneNumber: string;
+  public warehouseManager: string;
   public createdAt?: Date;
   public updatedAt?: Date;
   public deletedAt?: Date;
@@ -24,8 +27,8 @@ class WarehouseModel extends Model<WarehouseInterface> implements WarehouseInter
   public cartItems?: any[];
   public warehouseVariant?: WarehouseVariantInterface[];
 
-  static readonly CREATABLE_PARAMETERS = ['name', 'type', 'description', 'code', 'wardId', 'districtId', 'provinceId', 'address']
-  static readonly UPDATABLE_PARAMETERS = ['name', 'type', 'description', 'code', 'status', 'wardId', 'districtId', 'provinceId', 'address']
+  static readonly CREATABLE_PARAMETERS = ['name', 'type', 'description', 'code', 'wardId', 'districtId', 'provinceId', 'address', 'phoneNumber', 'warehouseManager']
+  static readonly UPDATABLE_PARAMETERS = ['name', 'type', 'description', 'code', 'status', 'wardId', 'districtId', 'provinceId', 'address', 'phoneNumber', 'warehouseManager']
 
   static readonly hooks: Partial<ModelHooks<WarehouseModel>> = {}
 
@@ -48,6 +51,11 @@ class WarehouseModel extends Model<WarehouseInterface> implements WarehouseInter
         if (existedRecord && existedRecord.id !== this.id) {
           throw new ValidationErrorItem('Mã kho đã được sử dụng.', 'uniqueCode', 'code', this.code);
         }
+      }
+    },
+    async validatePhoneNumber () {
+      if (!settings.phonePattern.test(this.phoneNumber)) {
+        throw new ValidationErrorItem('Số điện thoại không hợp lệ', 'validatePhoneNumber', 'phoneNumber');
       }
     },
   }

@@ -111,6 +111,11 @@ router.get('/:warehouseId', WarehouseController.show);
  *              type: number
  *            address:
  *              type: "string"
+ *            phoneNumber:
+ *              type: "string"
+ *            warehouseManager:
+ *              type: "string"
+ *              description: "truong kho"
  *     responses:
  *       200:
  *         description: Return data.
@@ -170,6 +175,11 @@ router.post('/', WarehouseController.create);
  *              type: number
  *            address:
  *              type: "string"
+ *            phoneNumber:
+ *              type: "string"
+ *            warehouseManager:
+ *              type: "string"
+ *              description: "truong kho"
  *     responses:
  *       200:
  *         description: Return data.

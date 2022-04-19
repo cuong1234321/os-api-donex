@@ -12,6 +12,7 @@ class ProductVariantController {
       let backlistVariants: any = [];
       const scopes: any = [
         'withOptions',
+        'withUnit',
       ];
       if (category) scopes.push({ method: ['byCategory', (category as string).split(',')] });
       if (productId) scopes.push({ method: ['byProduct', (productId as string).split(',')] });

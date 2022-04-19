@@ -33,6 +33,12 @@ const WarehouseEntity = {
   address: {
     type: DataTypes.STRING(255), allowNull: false,
   },
+  phoneNumber: {
+    type: DataTypes.STRING(255), allowNull: true,
+  },
+  warehouseManager: {
+    type: DataTypes.STRING(255), allowNull: true,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },
