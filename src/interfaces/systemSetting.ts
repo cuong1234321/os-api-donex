@@ -15,6 +15,9 @@ interface SystemSettingInterface {
   agencyAffiliate?: number;
   collaboratorAffiliate?: number;
   distributorAffiliate?: number;
+  bonusCoinUserBirthday?: number;
+  bonusCoinDonexBirthday?: number;
+  donexBirthDay?: Date;
   createdAt?: Date;
   updatedAt?: Date;
 };

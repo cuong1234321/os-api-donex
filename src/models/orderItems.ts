@@ -12,6 +12,7 @@ class OrderItemModel extends Model<OrderItemInterface> implements OrderItemInter
   public quantity: number;
   public sellingPrice: number;
   public commission?: number;
+  public saleCampaignId: number;
   public createdAt?: Date;
   public updatedAt?: Date;
   public deletedAt?: Date;

@@ -30,9 +30,18 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
 
   static readonly validations: ModelValidateOptions = {
     async validateWarehouse () {
-      const warehouse = await WarehouseModel.findByPk(this.warehouseId);
+      const warehouse = await WarehouseModel.scope([
+        'withWarehouseVariant',
+        { method: ['byId', this.warehouseId] },
+      ]).findOne();
       if (!warehouse) {
         throw new ValidationErrorItem('Kho hàng không tồn tại', 'validateWarehouse', 'warehouseId', this.warehouseId);
+      }
+      for (const warehouseVariant of warehouse.warehouseVariant) {
+        const item = this.items.find((record: any) => record.productVariantId === warehouseVariant.variantId);
+        if (item && item.quantity > warehouseVariant.quantity) {
+          throw new ValidationErrorItem('Sản phẩm kho hàng không hợp lệ', 'validateWarehouse', 'warehouseId', this.warehouseId);
+        }
       }
     },
   }

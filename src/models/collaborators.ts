@@ -100,6 +100,12 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
         throw new ValidationErrorItem('Email không hợp lệ', 'validateEmail', 'email');
       }
     },
+    async validateChangeBirthDay () {
+      if (!this._previousDataValues.dateOfBirth) return;
+      if (this._previousDataValues.dateOfBirth !== this.dataValues.dateOfBirth) {
+        throw new ValidationErrorItem('Ngày sinh không được thay đổi', 'validateChangeBirthDay', 'dateOfBirth', this.dateOfBirth);
+      }
+    },
   }
 
   static readonly scopes: ModelScopeOptions = {

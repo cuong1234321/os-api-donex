@@ -19,6 +19,9 @@ const OrderItemEntity = {
   commission: {
     type: DataTypes.BIGINT, allowNull: true,
   },
+  saleCampaignId: {
+    type: DataTypes.INTEGER, allowNull: true,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },

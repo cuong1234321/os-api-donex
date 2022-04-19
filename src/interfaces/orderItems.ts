@@ -5,6 +5,7 @@ interface OrderItemInterface {
   quantity: number;
   sellingPrice: number;
   commission?: number;
+  saleCampaignId: number;
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;
