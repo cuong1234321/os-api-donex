@@ -72,12 +72,12 @@ class WarehouseVariantModel extends Model<WarehouseVariantInterface> implements 
             attributes: {
               include: [
                 [
-                  Sequelize.literal('(SELECT unit FROM products WHERE id = variants.productId)'),
+                  Sequelize.literal('(SELECT unit FROM products WHERE id = `variants`.productId)'),
                   'unit',
                 ],
                 [
-                  Sequelize.literal('(SELECT product_categories.name FROM product_categories INNER JOIN product_category_refs ON product_categories.id = product_category_refs.productCategoryId ' +
-                  `INNER JOIN products ON products.id = product_category_refs.productId AND products.id = variants.productId WHERE product_categories.type = "${ProductCategoryModel.TYPE_ENUM.NONE}" LIMIT 1)`),
+                  Sequelize.literal(`(select name from product_categories where type = '${ProductCategoryModel.TYPE_ENUM.NONE}' and ` +
+                  'id = (select productCategoryId from product_category_refs where productId = `variants`.productId limit 1 ))'),
                   'productCategoryName',
                 ],
               ],
