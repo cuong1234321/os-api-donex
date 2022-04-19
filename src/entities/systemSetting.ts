@@ -49,6 +49,15 @@ const SystemSettingEntity = {
   distributorAffiliate: {
     type: DataTypes.INTEGER, allowNull: true, defaultValue: 0,
   },
+  bonusCoinUserBirthday: {
+    type: DataTypes.INTEGER, allowNull: true, defaultValue: 0,
+  },
+  bonusCoinDonexBirthday: {
+    type: DataTypes.INTEGER, allowNull: true, defaultValue: 0,
+  },
+  donexBirthDay: {
+    type: DataTypes.DATE, allowNull: true,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },

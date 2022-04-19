@@ -94,17 +94,23 @@ class UserModel extends Model<UserInterface> implements UserInterface {
     },
     async validatePhoneNumber () {
       if (this.phoneNumber && !settings.phonePattern.test(this.phoneNumber)) {
-        throw new ValidationErrorItem('Số điện thoại không hợp lệ', 'validatePhoneNumber', 'phoneNumber');
+        throw new ValidationErrorItem('Số điện thoại không hợp lệ', 'validatePhoneNumber', 'phoneNumber', this.phoneNumber);
       }
     },
     async validateEmail () {
       if (this.email && !settings.emailPattern.test(this.email)) {
-        throw new ValidationErrorItem('Email không hợp lệ', 'validateEmail', 'email');
+        throw new ValidationErrorItem('Email không hợp lệ', 'validateEmail', 'email', this.email);
       }
     },
     async validateStatus () {
       if (this.deletedAt && this.status !== UserModel.STATUS_ENUM.INACTIVE) {
-        throw new ValidationErrorItem('status is not inactive', 'status', 'validStatus', this.status);
+        throw new ValidationErrorItem('status is not inactive', 'validStatus', 'status', this.status);
+      }
+    },
+    async validateChangeBirthDay () {
+      if (!this._previousDataValues.dateOfBirth) return;
+      if (this._previousDataValues.dateOfBirth !== this.dataValues.dateOfBirth) {
+        throw new ValidationErrorItem('Ngày sinh không được thay đổi', 'validateChangeBirthDay', 'dateOfBirth', this.dateOfBirth);
       }
     },
   }

@@ -1,5 +1,6 @@
 import WarehouseEntity from '@entities/warehouses';
 import WarehouseInterface from '@interfaces/warehouses';
+import WarehouseVariantInterface from '@interfaces/warehouseVariants';
 import { HasManyGetAssociationsMixin, Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import ProductVariantModel from './productVariants';
@@ -21,6 +22,7 @@ class WarehouseModel extends Model<WarehouseInterface> implements WarehouseInter
   public deletedAt?: Date;
 
   public cartItems?: any[];
+  public warehouseVariant?: WarehouseVariantInterface[];
 
   static readonly CREATABLE_PARAMETERS = ['name', 'type', 'description', 'code', 'wardId', 'districtId', 'provinceId', 'address']
   static readonly UPDATABLE_PARAMETERS = ['name', 'type', 'description', 'code', 'status', 'wardId', 'districtId', 'provinceId', 'address']
