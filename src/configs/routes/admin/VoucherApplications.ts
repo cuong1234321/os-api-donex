@@ -274,7 +274,7 @@ router.patch('/:voucherApplicationId', VoucherApplicationController.update);
  *     security:
  *      - Bearer: []
  */
-router.patch('/:voucherApplicationId', VoucherApplicationController.delete);
+router.delete('/:voucherApplicationId', VoucherApplicationController.delete);
 
 /**
  * @openapi
