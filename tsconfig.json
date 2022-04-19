@@ -62,6 +62,15 @@
       "@decorators/*": [
         "./decorators/*"
       ],
+      "@repositories/*": [
+        "./repositories/*"
+      ],
+      "@repositories/interfaces/*": [
+        "./repositories/interfaces/*"
+      ],
+      "@repositories/models/*": [
+        "./repositories/models/*"
+      ],
       "~": [
           "./*"
       ],

@@ -257,6 +257,27 @@ router.patch('/:voucherApplicationId', VoucherApplicationController.update);
 
 /**
  * @openapi
+ * /a/voucher_applications/{voucherApplicationId}:
+ *   delete:
+ *     tags:
+ *      - "[ADMIN] VOUCHER APPLICATION"
+ *     summary: xoa voucher
+ *     parameters:
+ *      - in: "path"
+ *        name: "voucherApplicationId"
+ *        required: true
+ *     responses:
+ *       200:
+ *         description: "Upload success"
+ *       500:
+ *         description: "Upload failed"
+ *     security:
+ *      - Bearer: []
+ */
+router.patch('/:voucherApplicationId', VoucherApplicationController.delete);
+
+/**
+ * @openapi
  * /a/voucher_applications/{voucherApplicationId}/upload_icon:
  *   patch:
  *     tags:

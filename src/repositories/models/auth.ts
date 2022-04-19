@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import { HmacSHA256 } from 'crypto-js';
 
-class MisaAuth {
+class Auth {
   public static async login () {
     const loginParams: any = {
       AppID: process.env.MISA_APP_ID,
@@ -26,4 +26,4 @@ class MisaAuth {
   }
 }
 
-export default MisaAuth;
+export default Auth;
