@@ -13,7 +13,7 @@ module.exports = {
       type: Sequelize.INTEGER, allowNull: true, defaultValue: 0,
     }, { transaction }),
     queryInterface.addColumn('system_settings', 'donexBirthDay', {
-      type: Sequelize.DATE, allowNull: true, defaultValue: 0,
+      type: Sequelize.DATE, allowNull: true,
     }, { transaction }),
   ])),
   down: (queryInterface, Sequelize) => queryInterface.sequelize.transaction((transaction) => Promise.all([
