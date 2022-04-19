@@ -78,13 +78,13 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
       }
     },
     async validateShippingDistrict () {
-      const ward = await MDistrictModel.findByPk(this.shippingWardId);
+      const ward = await MDistrictModel.findByPk(this.shippingDistrictId);
       if (!ward) {
         throw new ValidationErrorItem('Địa chỉ không hợp lệ', 'validateShippingDistrict', 'shippingDistrictId', this.shippingDistrictId);
       }
     },
     async validateShippingProvince () {
-      const ward = await MProvinceModel.findByPk(this.shippingWardId);
+      const ward = await MProvinceModel.findByPk(this.shippingProvinceId);
       if (!ward) {
         throw new ValidationErrorItem('Địa chỉ không hợp lệ', 'validateShippingProvince', 'shippingProvinceId', this.shippingProvinceId);
       }
