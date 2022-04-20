@@ -110,6 +110,11 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
         }],
       };
     },
+    byStatus (status) {
+      return {
+        where: { status },
+      };
+    },
   }
 
   public static initialize (sequelize: Sequelize) {
