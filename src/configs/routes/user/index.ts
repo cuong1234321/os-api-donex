@@ -20,6 +20,7 @@ import UserNotificationRouter from './UserNotifications';
 import UserVoucherRouter from './Vouchers';
 import UploadRouter from './Uploads';
 import TermRouter from './Terms';
+import BannerRouter from './Banners';
 
 const router = Router();
 
@@ -43,5 +44,6 @@ router.use('/user_notifications', userPassport.authenticate('jwt', { session: fa
 router.use('/user_vouchers', userPassport.authenticate('jwt', { session: false }), UserVoucherRouter);
 router.use('/uploads', UploadRouter);
 router.use('/terms', TermRouter);
+router.use('/banners', BannerRouter);
 
 export default router;

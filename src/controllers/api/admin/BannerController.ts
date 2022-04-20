@@ -7,7 +7,8 @@ import { NoData } from '@libs/errors';
 class BannerController {
   public async index (req: Request, res: Response) {
     try {
-      const { title, isHighlight, position, type } = req.query;
+      const { title, isHighlight, position } = req.query;
+      const type = req.params.type;
       const page = parseInt(req.query.page as string || '1');
       const limit = parseInt(settings.defaultPerPage);
       const offset = (page - 1) * limit;
