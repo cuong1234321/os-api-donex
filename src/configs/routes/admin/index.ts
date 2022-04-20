@@ -23,6 +23,7 @@ import WarehouseReceiptRouter from './WarehouseReceipts';
 import WarehouseExportRouter from './WarehouseExports';
 import WarehouseTransferRouter from './warehouseTransfers';
 import WarehouseReportRouter from './WarehouseReports';
+import BannerRouter from './Banners';
 
 const router = Router();
 
@@ -51,5 +52,6 @@ router.use('/warehouse_exports', WarehouseExportRouter);
 router.use('/warehouse_transfers', WarehouseTransferRouter);
 router.use('/warehouse_reports', WarehouseReportRouter);
 router.use('/warehouse_transfers', WarehouseTransferRouter);
+router.use('/banners', BannerRouter);
 
 export default router;
