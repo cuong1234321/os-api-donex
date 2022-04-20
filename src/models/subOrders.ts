@@ -18,9 +18,13 @@ public total: number;
 public shippingCode?: string;
 public status?: string;
 public orderFinishAt?: Date;
+public pickUpAt?: Date;
 public createdAt?: Date;
 public updatedAt?: Date;
 public deletedAt?: Date;
+
+public warehouse?: WarehouseModel;
+public items?: OrderItemModel[];
 
 static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
   async beforeCreate (record: SubOrderModel) {
@@ -61,6 +65,51 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
         where: { code },
       };
     },
+    withItem () {
+      return {
+        include: [{
+          model: OrderItemModel,
+          as: 'items',
+        }],
+      };
+    },
+    byId (id) {
+      return {
+        where: { id },
+      };
+    },
+    bySortOrder (sortBy, sortOrder) {
+      return {
+        order: [[Sequelize.literal(sortBy), sortOrder]],
+      };
+    },
+    withOrder () {
+      return {
+        include: [{
+          model: OrderModel,
+          as: 'order',
+          attributes: {
+            exclude: [
+              'createdAt', 'updatedAt', 'transactionId', 'paidAt', 'portalConfirmAt', 'deletedAt',
+            ],
+            include: [
+              [Sequelize.literal('(SELECT title FROM m_districts WHERE id = order.shippingDistrictId)'), 'districtName'],
+              [Sequelize.literal('(SELECT title FROM m_wards WHERE id = order.shippingWardId)'), 'wardName'],
+              [Sequelize.literal('(SELECT title FROM m_provinces WHERE id = order.shippingProvinceId)'), 'provinceName'],
+            ],
+          },
+        }],
+      };
+    },
+    byUser (ownerId) {
+      return {
+        include: [{
+          model: OrderModel,
+          as: 'order',
+          where: { ownerId },
+        }],
+      };
+    },
   }
 
   public static initialize (sequelize: Sequelize) {
@@ -76,6 +125,7 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
   public static associate () {
     this.hasMany(OrderItemModel, { as: 'items', foreignKey: 'subOrderId' });
     this.belongsTo(OrderModel, { as: 'order', foreignKey: 'orderId' });
+    this.belongsTo(WarehouseModel, { as: 'warehouse', foreignKey: 'warehouseId' });
   }
 }
 

@@ -27,6 +27,9 @@ class ProductVariantModel extends Model<ProductVariantInterface> implements Prod
   public updatedAt?: Date;
   public deletedAt?: Date;
   public saleCampaignPrice?: number;
+  public colorTitle?: string;
+  public sizeTitle?: string;
+  public product?: ProductModel;
 
   static readonly UPDATABLE_ON_DUPLICATE_PARAMETERS = ['id', 'sku', 'buyPrice', 'sellPrice', 'stock', { optionMappingIds: new Array(0) }];
 
@@ -148,6 +151,14 @@ class ProductVariantModel extends Model<ProductVariantInterface> implements Prod
     bySkuCode (skuCode) {
       return {
         where: { skuCode },
+      };
+    },
+    withProduct () {
+      return {
+        include: [{
+          model: ProductModel,
+          as: 'product',
+        }],
       };
     },
   }

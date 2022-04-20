@@ -26,6 +26,9 @@ class WarehouseModel extends Model<WarehouseInterface> implements WarehouseInter
 
   public cartItems?: any[];
   public warehouseVariant?: WarehouseVariantInterface[];
+  public districtName?: string;
+  public wardName?: string;
+  public provinceName?: string;
 
   static readonly CREATABLE_PARAMETERS = ['name', 'type', 'description', 'code', 'wardId', 'districtId', 'provinceId', 'address', 'phoneNumber', 'warehouseManager']
   static readonly UPDATABLE_PARAMETERS = ['name', 'type', 'description', 'code', 'status', 'wardId', 'districtId', 'provinceId', 'address', 'phoneNumber', 'warehouseManager']
@@ -134,6 +137,17 @@ class WarehouseModel extends Model<WarehouseInterface> implements WarehouseInter
             ],
           },
         ],
+      };
+    },
+    withAddress () {
+      return {
+        attributes: {
+          include: [
+            [Sequelize.literal('(SELECT title FROM m_districts WHERE id = WarehouseModel.districtId)'), 'districtName'],
+            [Sequelize.literal('(SELECT title FROM m_wards WHERE id = WarehouseModel.wardId)'), 'wardName'],
+            [Sequelize.literal('(SELECT title FROM m_provinces WHERE id = WarehouseModel.provinceId)'), 'provinceName'],
+          ],
+        },
       };
     },
   }

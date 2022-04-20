@@ -2,7 +2,6 @@ import OrderItemEntity from '@entities/orderItems';
 import OrderItemInterface from '@interfaces/orderItems';
 import { Model, ModelScopeOptions, ModelValidateOptions, Sequelize } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
-import OrderModel from './orders';
 import SubOrderModel from './subOrders';
 
 class OrderItemModel extends Model<OrderItemInterface> implements OrderItemInterface {
@@ -35,7 +34,6 @@ class OrderItemModel extends Model<OrderItemInterface> implements OrderItemInter
   }
 
   public static associate () {
-    this.belongsToMany(OrderModel, { through: SubOrderModel, as: 'orderItems', foreignKey: 'orderId' });
     this.belongsTo(SubOrderModel, { as: 'subOrder', foreignKey: 'subOrderId' });
   }
 }

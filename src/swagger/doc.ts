@@ -137,8 +137,12 @@ const swaggerDefinition = {
       description: 'Quản lý tin tức',
     },
     {
-      name: '[USER] Order',
+      name: '[USER] ORDER',
       description: 'Quản lý đơn hàng',
+    },
+    {
+      name: '[USER] SUB ORDER',
+      description: 'Quản lý đơn hàng nhỏ',
     },
     {
       name: '[USER] SYSTEM SETTING',
