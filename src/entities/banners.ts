@@ -24,6 +24,16 @@ const BannerEntity = {
         : null;
       return image;
     },
+    set (value: string) {
+      if (!value) return;
+      if (value.includes(settings.imageStorageHost)) {
+        const image = value.slice(settings.imageStorageHost.length + 1);
+        console.log(image);
+        this.setDataValue('image', image);
+      } else {
+        this.setDataValue('image', value);
+      }
+    },
   },
   orderId: {
     type: DataTypes.INTEGER, allowNull: true,

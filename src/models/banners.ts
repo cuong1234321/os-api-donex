@@ -1,7 +1,8 @@
-import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize } from 'sequelize';
+import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, ValidationErrorItem } from 'sequelize';
 import BannerEntity from '@entities/banners';
 import BannerInterface from '@interfaces/banners';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
+import _ from 'lodash';
 
 class BannerModel extends Model<BannerInterface> implements BannerInterface {
   public id: number;
@@ -17,12 +18,46 @@ class BannerModel extends Model<BannerInterface> implements BannerInterface {
   public deletedAt?: Date;
 
   static readonly CREATABLE_PARAMETERS = ['title', 'linkDirect', 'position', 'image', 'type']
+  static readonly UPDATABLE_PARAMETERS = ['title', 'linkDirect', 'position', 'image', 'isHighLight']
   static readonly TYPE_ENUM = { HOMEPAGE: 'homepage', PRODUCT: 'product', PROFILE: 'profile', NEWS: 'news' }
   static readonly POSITION_ENUM = { TOP: 'top', RIGHT: 'right', NEW_PRODUCT_SLIDE: 'newProductSlide', NEW_PRODUCT_BANNER: 'newProductBanner', FLASH_SALE: 'flashSale', HIGHLIGHT: 'highlight', PRODUCT_LIST: 'productList', PRODUCT_DETAIL: 'productDetail' }
+  static readonly MAX_BANNERS_SHOW_ALLOWED = { top: 4, right: 2, newProductSlide: 4, newProductBanner: 1, flashSale: 1, highlight: 1, productList: 1, productDetail: 1 }
 
-  static readonly validations: ModelValidateOptions = {};
+  static readonly validations: ModelValidateOptions = {
+    async limitBanner () {
+      if (!this.previous('isHighLight') && this.isHighLight) {
+        const banners = await BannerModel.scope([
+          { method: ['byPosition', this.position] },
+          { method: ['byType', this.type] },
+          'active',
+        ]).findAll();
+        if (banners.length === BannerModel.MAX_BANNERS_SHOW_ALLOWED[this.position as 'top' | 'right' | 'newProductSlide' | 'newProductBanner' |'flashSale' | 'highlight' | 'productList' | 'productDetail']) {
+          throw new ValidationErrorItem('Số lượng banner hiển thị đã đạt đến giới hạn tối đa.');
+        }
+      }
+    },
 
-  static readonly hooks: Partial<ModelHooks<BannerModel>> = {}
+    async validatePosition () {
+      if (!(await this.checkValidatePosition())) {
+        throw new ValidationErrorItem('Vị trí của banner không thích hợp.', 'validatePosition', 'position');
+      }
+    },
+  };
+
+  static readonly hooks: Partial<ModelHooks<BannerModel>> = {
+    async beforeUpdate (record, _options) {
+      _options.validate = false;
+      if (!record.previous('isHighLight') && record.isHighLight) record.orderId = await record.assignOrderId();
+      if (record.previous('isHighLight') && !record.isHighLight) {
+        record.orderId = null;
+        await record.reorderBanners();
+      }
+    },
+
+    async afterDestroy (record) {
+      await record.reorderBanners();
+    },
+  }
 
   static readonly scopes: ModelScopeOptions = {
     byId (id) {
@@ -67,6 +102,44 @@ class BannerModel extends Model<BannerInterface> implements BannerInterface {
         },
       };
     },
+  }
+
+  public checkValidatePosition () {
+    if (this.type === BannerModel.TYPE_ENUM.HOMEPAGE && !['top', 'right', 'newProductSlide', 'newProductBanner', 'flashSale', 'highlight'].includes(this.position)) {
+      return false;
+    }
+    if (this.type === BannerModel.TYPE_ENUM.NEWS && !['top', 'right'].includes(this.position)) {
+      return false;
+    }
+    if (this.type === BannerModel.TYPE_ENUM.PRODUCT && !['productList', 'productDetail'].includes(this.position)) {
+      return false;
+    }
+    if (this.type === BannerModel.TYPE_ENUM.PROFILE && !['top'].includes(this.position)) {
+      return false;
+    }
+    return true;
+  }
+
+  private async assignOrderId () {
+    const activeBanners = await BannerModel.scope([
+      { method: ['byPosition', this.position] },
+      { method: ['byType', this.type] },
+      'active']).findAll();
+    const orderIds = activeBanners.map(banner => banner.orderId);
+    const maxOrderId = _.max(orderIds) || 0;
+    return maxOrderId + 1;
+  }
+
+  private async reorderBanners () {
+    const record: any = this;
+    const activeBanners = await BannerModel.scope([
+      { method: ['byType', this.type] },
+      { method: ['byPosition', this.position] },
+      { method: ['byOrderIdAfter', record._previousDataValues.orderId] },
+    ]).findAll();
+    for (const [index, banner] of activeBanners.entries()) {
+      await banner.update({ orderId: index + record._previousDataValues.orderId });
+    }
   }
 
   public static initialize (sequelize: Sequelize) {
