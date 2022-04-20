@@ -1,15 +1,17 @@
 import settings from '@configs/settings';
 import OrderEntity from '@entities/orders';
 import OrderInterface from '@interfaces/orders';
-import { Model, ModelScopeOptions, ModelValidateOptions, Sequelize, ValidationErrorItem } from 'sequelize';
+import { BelongsToGetAssociationMixin, Model, ModelScopeOptions, ModelValidateOptions, Sequelize, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import MDistrictModel from './mDistricts';
 import MProvinceModel from './mProvinces';
 import MWardModel from './mWards';
 import OrderItemModel from './orderItems';
+import ProductVariantModel from './productVariants';
 import SubOrderModel from './subOrders';
 import UserModel from './users';
 import VoucherModel from './vouchers';
+import WarehouseModel from './warehouses';
 
 class OrderModel extends Model<OrderInterface> implements OrderInterface {
   public id: number;
@@ -40,6 +42,8 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
   public createdAt?: Date;
   public updatedAt?: Date;
   public deletedAt?: Date;
+
+  public subOrders?: SubOrderModel[];
 
   static readonly USER_CREATABLE_PARAMETERS = ['paymentMethod', 'coinUsed', 'shippingFullName', 'shippingProvinceId',
     'shippingDistrictId', 'shippingPhoneNumber', 'shippingWardId', 'shippingAddress',
@@ -122,12 +126,112 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
     return code;
   }
 
+  public getWard: BelongsToGetAssociationMixin<MWardModel>
+  public getDistrict: BelongsToGetAssociationMixin<MDistrictModel>
+  public getProvince: BelongsToGetAssociationMixin<MProvinceModel>
+
   static readonly scopes: ModelScopeOptions = {
     byCode (code) {
       return {
         where: { code },
       };
     },
+    byOwnerId (ownerId) {
+      return { where: { ownerId } };
+    },
+    byId (id) {
+      return {
+        where: { id },
+      };
+    },
+    withShippingAddress () {
+      return {
+        attributes: {
+          include: [
+            [Sequelize.literal('(SELECT title FROM m_districts WHERE id = OrderModel.shippingDistrictId)'), 'districtName'],
+            [Sequelize.literal('(SELECT title FROM m_wards WHERE id = OrderModel.shippingWardId)'), 'wardName'],
+            [Sequelize.literal('(SELECT title FROM m_provinces WHERE id = OrderModel.shippingProvinceId)'), 'provinceName'],
+          ],
+        },
+      };
+    },
+    withSubOrder () {
+      return {
+        include: [{
+          model: SubOrderModel,
+          as: 'subOrders',
+          include: [
+            {
+              model: OrderItemModel,
+              as: 'orderItems',
+            },
+          ],
+        }],
+      };
+    },
+  }
+
+  public async reloadWithDetail () {
+    await this.reload({
+      include: [
+        {
+          model: SubOrderModel,
+          as: 'subOrders',
+          include: [
+            {
+              model: OrderItemModel,
+              as: 'items',
+            },
+          ],
+        },
+      ],
+    });
+  }
+
+  public static async formatOrder (subOrders: any) {
+    const warehouseIds = new Array(0);
+    let productVariantIds = new Array(0);
+    for (const subOrder of subOrders) {
+      warehouseIds.push(subOrder.warehouseId);
+      productVariantIds.push(subOrder.items.map((item: any) => item.productVariantId));
+    }
+    productVariantIds = [...new Set(productVariantIds.flat(Infinity))];
+    const warehouses = await WarehouseModel.scope([
+      { method: ['byId', warehouseIds.flat(Infinity)] },
+      'withAddress',
+    ]).findAll();
+    const productVariants = await ProductVariantModel.scope([
+      { method: ['byId', productVariantIds] },
+      'withOptions',
+      'withProduct',
+    ]).findAll();
+    for (const subOrder of subOrders) {
+      const warehouse = warehouses.find((warehouse: any) => warehouse.id === subOrder.warehouseId);
+      subOrder.setDataValue('warehouse', warehouse);
+      for (const item of subOrder.items) {
+        const productVariant = productVariants.find((productVariant: any) => productVariant.id === item.productVariantId);
+        const productVariantInfo = {
+          id: productVariant.id,
+          productId: productVariant.productId,
+          name: productVariant.name,
+          slug: productVariant.slug,
+          skuCode: productVariant.skuCode,
+          barCode: productVariant.barCode,
+          colorTitle: productVariant.colorTitle,
+          sizeTitle: productVariant.sizeTitle,
+          product: {
+            avatar: productVariant.product.avatar,
+            name: productVariant.product.name,
+            slug: productVariant.product.slug,
+            shortDescription: productVariant.product.shortDescription,
+            skuCode: productVariant.product.skuCode,
+            barCode: productVariant.product.barCode,
+          },
+        };
+        item.setDataValue('productVariantInfo', productVariantInfo);
+      }
+    }
+    return subOrders;
   }
 
   public static initialize (sequelize: Sequelize) {
@@ -142,7 +246,12 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
 
   public static associate () {
     this.hasMany(SubOrderModel, { as: 'subOrders', foreignKey: 'orderId' });
-    this.belongsToMany(OrderItemModel, { through: SubOrderModel, as: 'orderItems', foreignKey: 'orderId' });
+    this.belongsTo(MWardModel, { as: 'ward', foreignKey: 'shippingWardId' });
+    this.belongsTo(MProvinceModel, { as: 'province', foreignKey: 'shippingProvinceId' });
+    this.belongsTo(MDistrictModel, { as: 'district', foreignKey: 'shippingDistrictId' });
+    this.belongsTo(UserModel, { as: 'ownerUser', foreignKey: 'ownerId' });
+    this.belongsTo(UserModel, { as: 'orderableUser', foreignKey: 'orderableId' });
+    this.belongsTo(UserModel, { as: 'creatableUser', foreignKey: 'creatableId' });
   }
 }
 

@@ -34,6 +34,9 @@ const SubOrderEntity = {
   orderFinishAt: {
     type: DataTypes.DATE, allowNull: true,
   },
+  pickUpAt: {
+    type: DataTypes.DATE, allowNull: true,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },

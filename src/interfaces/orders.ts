@@ -1,3 +1,8 @@
+import MDistrictInterface from './mDistricts';
+import MProvinceInterface from './mProvinces';
+import MWardInterface from './mWards';
+import SubOrderInterface from './subOrders';
+
 interface OrderInterface {
   id: number;
   code: string;
@@ -27,6 +32,11 @@ interface OrderInterface {
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;
+
+  ward?: MWardInterface;
+  province?: MProvinceInterface;
+  district?: MDistrictInterface;
+  subOrders?: SubOrderInterface[];
 };
 
 export default OrderInterface;

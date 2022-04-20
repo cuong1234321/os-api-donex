@@ -8,7 +8,7 @@ const router = Router();
  * /u/orders:
  *   post:
  *     tags:
- *      - "[USER] Order"
+ *      - "[USER] ORDER"
  *     summary: Tạo order
  *     parameters:
  *      - in: "body"

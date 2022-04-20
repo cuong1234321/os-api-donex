@@ -1,4 +1,5 @@
 import OrderItemInterface from './orderItems';
+import WarehouseInterface from './warehouses';
 
 interface SubOrderInterface {
   id: number;
@@ -12,10 +13,13 @@ interface SubOrderInterface {
   shippingCode?: string;
   status?: string;
   orderFinishAt?: Date;
+  pickUpAt?: Date;
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;
+
   items?: OrderItemInterface[];
+  warehouse?: WarehouseInterface;
 };
 
 export default SubOrderInterface;
