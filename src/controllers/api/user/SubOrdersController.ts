@@ -9,18 +9,21 @@ class SubOrderController {
   public async index (req: Request, res:Response) {
     try {
       const { currentUser } = req;
-      console.log(currentUser.id);
       const page = req.query.page as string || '1';
       const limit = parseInt(req.query.size as string) || parseInt(settings.defaultPerPage);
       const offset = (parseInt(page, 10) - 1) * limit;
       const sortBy = req.query.sortBy || 'createdAt';
       const sortOrder = req.query.sortOrder || 'DESC';
+      const { status } = req.query;
       const scopes: any = [
         'withOrder',
         { method: ['byUser', currentUser.id] },
         { method: ['bySortOrder', sortBy, sortOrder] },
         'withItem',
       ];
+      if (status) {
+        scopes.push({ method: ['byStatus', status] });
+      }
       const { count, rows } = await SubOrderModel.scope(scopes).findAndCountAll({ limit, offset });
       const subOrders = await OrderModel.formatOrder(rows);
       sendSuccess(res, { rows: subOrders, pagination: { total: count, page, perPage: limit } });

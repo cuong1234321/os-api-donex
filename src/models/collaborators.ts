@@ -6,6 +6,7 @@ import { ModelHooks } from 'sequelize/types/lib/hooks';
 import bcrypt from 'bcryptjs';
 import settings from '@configs/settings';
 import CollaboratorWorkingDayInterface from '@interfaces/collaboratorWorkingDays';
+import dayjs from 'dayjs';
 import CollaboratorWorkingDayModel from './collaboratorWorkingDays';
 import CollaboratorMediaModel from './collaboratorMedia';
 import VoucherApplicationModel from './voucherApplications';
@@ -101,8 +102,8 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
       }
     },
     async validateChangeBirthDay () {
-      if (!this._previousDataValues.dateOfBirth) return;
-      if (this._previousDataValues.dateOfBirth !== this.dataValues.dateOfBirth) {
+      if (!dayjs(this._previousDataValues.dateOfBirth).format()) return;
+      if (dayjs(this._previousDataValues.dateOfBirth).format() !== dayjs(this.dataValues.dateOfBirth).format()) {
         throw new ValidationErrorItem('Ngày sinh không được thay đổi', 'validateChangeBirthDay', 'dateOfBirth', this.dateOfBirth);
       }
     },
