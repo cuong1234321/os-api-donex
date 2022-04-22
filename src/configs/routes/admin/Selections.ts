@@ -225,4 +225,21 @@ router.get('/collaborators', SelectionController.collaboratorSelections);
  */
 router.get('/warehouses', SelectionController.warehouseSelections);
 
+/**
+ * @openapi
+ * /a/selections/bill_templates:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] SELECTION"
+ *     summary: danh sach bill templates
+ *     responses:
+ *       200:
+ *         description: "success"
+ *       500:
+ *         description: "failed"
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/bill_templates', SelectionController.listBillTemplateKeys);
+
 export default router;
