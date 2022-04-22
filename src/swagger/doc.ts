@@ -109,6 +109,10 @@ const swaggerDefinition = {
       description: 'Báo cáo tồn kho',
     },
     {
+      name: '[ADMIN] Bill Templates',
+      description: 'Quản lý mẫu hóa đơn',
+    },
+    {
       name: '[USER] Sessions',
       description: 'Phiên đăng nhập user',
     },
