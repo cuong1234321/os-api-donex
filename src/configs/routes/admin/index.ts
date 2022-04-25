@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { adminPassport } from '@middlewares/passport';
 import SessionsRouter from './Sessions';
 import PasswordRouter from './Passwords';
 import ProductRouter from './Products';
@@ -25,6 +26,7 @@ import WarehouseTransferRouter from './warehouseTransfers';
 import WarehouseReportRouter from './WarehouseReports';
 import BannerRouter from './Banners';
 import BillTemplateRouter from './BillTemplates';
+import AccountsRouter from './Accounts';
 
 const router = Router();
 
@@ -55,5 +57,6 @@ router.use('/warehouse_reports', WarehouseReportRouter);
 router.use('/warehouse_transfers', WarehouseTransferRouter);
 router.use('/banners', BannerRouter);
 router.use('/bill_templates', BillTemplateRouter);
+router.use('/accounts', adminPassport.authenticate('jwt', { session: false }), AccountsRouter);
 
 export default router;

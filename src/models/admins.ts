@@ -31,6 +31,7 @@ class AdminModel extends Model<AdminInterface> implements AdminInterface {
 
   static readonly CREATABLE_PARAMETERS = ['fullName', 'username', 'phoneNumber', 'gender', 'email', 'dateOfBirth', 'note']
   static readonly UPDATABLE_PARAMETERS = ['fullName', 'phoneNumber', 'gender', 'email', 'dateOfBirth', 'note']
+  static readonly ADMIN_UPDATABLE_PARAMETERS = ['fullName', 'username', 'avatar', 'phoneNumber', 'gender', 'email', 'dateOfBirth']
 
   public static readonly STATUS_ENUM = { ACTIVE: 'active', INACTIVE: 'inactive' }
 
@@ -75,12 +76,12 @@ class AdminModel extends Model<AdminInterface> implements AdminInterface {
       }
     },
     async validatePhoneNumber () {
-      if (!settings.phonePattern.test(this.phoneNumber)) {
+      if (this.phoneNumber && !settings.phonePattern.test(this.phoneNumber)) {
         throw new ValidationErrorItem('Số điện thoại không hợp lệ', 'validatePhoneNumber', 'phoneNumber');
       }
     },
     async validateEmail () {
-      if (!settings.emailPattern.test(this.email)) {
+      if (this.email && !settings.emailPattern.test(this.email)) {
         throw new ValidationErrorItem('Email không hợp lệ', 'validateEmail', 'email');
       }
     },
