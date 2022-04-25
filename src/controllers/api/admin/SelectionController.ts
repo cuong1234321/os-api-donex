@@ -10,6 +10,7 @@ import NewsCategoryModel from '@models/newsCategories';
 import UserModel from '@models/users';
 import CollaboratorModel from '@models/collaborators';
 import WarehouseModel from '@models/warehouses';
+import MBillTemplateKeyModel from '@models/mBillTemplateKeys';
 
 class SelectionController {
   public async productCategories (req: Request, res: Response) {
@@ -116,6 +117,15 @@ class SelectionController {
       sendSuccess(res, warehouses);
     } catch (error) {
       sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async listBillTemplateKeys (req: Request, res: Response) {
+    try {
+      const billTemplateKeys = await MBillTemplateKeyModel.findAll();
+      sendSuccess(res, billTemplateKeys);
+    } catch (error) {
+      sendError(res, 500, error.message);
     }
   }
 }

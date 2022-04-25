@@ -1,0 +1,12 @@
+id,title,key
+1,"@Người_mua_Tên","{{buyerName}}"
+2,"@Người_mua_Họ_và_tên","{{buyerFullname}}"
+3,"@Người_mua_Địa_chỉ","{{buyerAddress}}"
+4,"@Người_mua_Số_điện_thoại","{{buyerPhone}}"
+5,"@Đơn_hàng_Số_đơn","{{orderCode}}"
+6,"@Đơn_hàng_Ngày_giờ_mua","{{orderDate}}"
+7,"@Đơn_hàng_Ngày_mua","{{orderDay}}"
+8,"@Đơn_hàng_Dự_kiến_giao_hàng","{{orderEstimatedDelivery}}"
+9,"@Đơn_hàng_Kênh_bán_hàng","{{orderChannel}}"
+10,"@Nhân_viên_bán_Họ_và_tên","{{salerName}}"
+11,"@Nhân_viên_thu_ngân_Họ_và_tên","{{cashierName}}"
