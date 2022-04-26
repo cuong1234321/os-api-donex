@@ -19,9 +19,9 @@ class BannerModel extends Model<BannerInterface> implements BannerInterface {
 
   static readonly CREATABLE_PARAMETERS = ['title', 'linkDirect', 'position', 'image', 'type']
   static readonly UPDATABLE_PARAMETERS = ['title', 'linkDirect', 'position', 'image', 'isHighLight']
-  static readonly TYPE_ENUM = { HOMEPAGE: 'homepage', PRODUCT: 'product', PROFILE: 'profile', NEWS: 'news' }
-  static readonly POSITION_ENUM = { TOP: 'top', RIGHT: 'right', NEW_PRODUCT_SLIDE: 'newProductSlide', NEW_PRODUCT_BANNER: 'newProductBanner', FLASH_SALE: 'flashSale', HIGHLIGHT: 'highlight', PRODUCT_LIST: 'productList', PRODUCT_DETAIL: 'productDetail' }
-  static readonly MAX_BANNERS_SHOW_ALLOWED = { top: 4, right: 2, newProductSlide: 4, newProductBanner: 1, flashSale: 1, highlight: 1, productList: 1, productDetail: 1 }
+  static readonly TYPE_ENUM = { HOMEPAGE: 'homepage', PRODUCT: 'product', PROFILE: 'profile', NEWS: 'news', CARTS: 'carts' }
+  static readonly POSITION_ENUM = { TOP: 'top', RIGHT: 'right', NEW_PRODUCT_SLIDE: 'newProductSlide', NEW_PRODUCT_BANNER: 'newProductBanner', FLASH_SALE: 'flashSale', HIGHLIGHT: 'highlight', PRODUCT_LIST: 'productList', PRODUCT_DETAIL: 'productDetail', SHOW: 'show' }
+  static readonly MAX_BANNERS_SHOW_ALLOWED = { top: 4, right: 2, newProductSlide: 4, newProductBanner: 1, flashSale: 1, highlight: 1, productList: 1, productDetail: 1, show: 1 }
 
   static readonly validations: ModelValidateOptions = {
     async limitBanner () {
@@ -114,7 +114,10 @@ class BannerModel extends Model<BannerInterface> implements BannerInterface {
     if (this.type === BannerModel.TYPE_ENUM.PRODUCT && !['productList', 'productDetail'].includes(this.position)) {
       return false;
     }
-    if (this.type === BannerModel.TYPE_ENUM.PROFILE && !['top'].includes(this.position)) {
+    if (this.type === BannerModel.TYPE_ENUM.PROFILE && !['top', 'show'].includes(this.position)) {
+      return false;
+    }
+    if (this.type === BannerModel.TYPE_ENUM.CARTS && !['top', 'show'].includes(this.position)) {
       return false;
     }
     return true;
