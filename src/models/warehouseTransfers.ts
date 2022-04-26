@@ -9,6 +9,7 @@ import ProductOptionModel from './productOptions';
 import WarehouseModel from './warehouses';
 import WarehouseTransferVariantModel from './warehouseTransferVariants';
 import WarehouseVariantModel from './warehouseVariants';
+import ProductModel from './products';
 
 class WarehouseTransferModel extends Model<WarehouseTransferInterface> implements WarehouseTransferInterface {
   public id: number;
@@ -204,6 +205,11 @@ class WarehouseTransferModel extends Model<WarehouseTransferInterface> implement
                   where: {
                     thumbnail: { [Op.ne]: null },
                   },
+                },
+                {
+                  model: ProductModel,
+                  as: 'product',
+                  attributes: ['unit'],
                 },
               ],
             },

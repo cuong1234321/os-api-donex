@@ -4,6 +4,7 @@ import WarehouseInterface from '@interfaces/warehouses';
 import WarehouseVariantInterface from '@interfaces/warehouseVariants';
 import { HasManyGetAssociationsMixin, Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
+import ProductModel from './products';
 import ProductVariantModel from './productVariants';
 import WarehouseVariantModel from './warehouseVariants';
 
@@ -57,7 +58,7 @@ class WarehouseModel extends Model<WarehouseInterface> implements WarehouseInter
       }
     },
     async validatePhoneNumber () {
-      if (!settings.phonePattern.test(this.phoneNumber)) {
+      if (this.phoneNumber && !settings.phonePattern.test(this.phoneNumber)) {
         throw new ValidationErrorItem('Số điện thoại không hợp lệ', 'validatePhoneNumber', 'phoneNumber');
       }
     },
@@ -133,6 +134,13 @@ class WarehouseModel extends Model<WarehouseInterface> implements WarehouseInter
               {
                 model: ProductVariantModel,
                 as: 'variants',
+                include: [
+                  {
+                    model: ProductModel,
+                    as: 'product',
+                    attributes: ['unit'],
+                  },
+                ],
               },
             ],
           },
