@@ -12,7 +12,7 @@ const BannerEntity = {
     type: DataTypes.STRING(255), allowNull: true,
   },
   position: {
-    type: DataTypes.ENUM({ values: ['top', 'right', 'newProductSlide', 'newProductBanner', 'flashSale', 'highlight', 'productList', 'productDetail'] }),
+    type: DataTypes.ENUM({ values: ['top', 'right', 'newProductSlide', 'newProductBanner', 'flashSale', 'highlight', 'productList', 'productDetail', 'show'] }),
     defaultValue: 'top',
   },
   image: {
@@ -43,7 +43,7 @@ const BannerEntity = {
     defaultValue: false,
   },
   type: {
-    type: DataTypes.ENUM({ values: ['homepage', 'product', 'profile', 'news'] }),
+    type: DataTypes.ENUM({ values: ['homepage', 'product', 'profile', 'news', 'carts'] }),
     defaultValue: 'homepage',
   },
   createdAt: {

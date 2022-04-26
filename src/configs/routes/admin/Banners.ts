@@ -20,6 +20,7 @@ const router = Router();
  *         - product
  *         - profile
  *         - news
+ *         - carts
  *      - in: query
  *        name: "page"
  *        description: "page"
@@ -41,6 +42,7 @@ const router = Router();
  *         - highlight
  *         - productList
  *         - productDetail
+ *         - show
  *      - in: query
  *        name: "isHighlight"
  *        description: "Trạng thái hiển thị"
@@ -109,6 +111,7 @@ router.get('/:bannerId/show/', BannerController.show);
  *               - highlight
  *               - productList
  *               - productDetail
+ *               - show
  *            image:
  *              type: "string"
  *              description: "duong dan anh"
@@ -120,6 +123,7 @@ router.get('/:bannerId/show/', BannerController.show);
  *               - product
  *               - profile
  *               - news
+ *               - carts
  *     responses:
  *       200:
  *         description: Return data.
@@ -166,6 +170,7 @@ router.post('/', BannerController.create);
  *               - highlight
  *               - productList
  *               - productDetail
+ *               - show
  *            image:
  *              type: "string"
  *              description: "duong dan anh"
@@ -204,6 +209,7 @@ router.patch('/:bannerId', BannerController.update);
  *         - highlight
  *         - productList
  *         - productDetail
+ *         - show
  *      - in: "path"
  *        name: "type"
  *        description: "banner position"
@@ -213,6 +219,7 @@ router.patch('/:bannerId', BannerController.update);
  *         - product
  *         - profile
  *         - news
+ *         - carts
  *      - in: "body"
  *        name: "body"
  *        description: "banner id"
