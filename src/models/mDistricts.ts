@@ -15,6 +15,11 @@ class MDistrictModel extends Model<MDistrictInterface> implements MDistrictInter
     byProvince (provinceId) {
       return { where: { provinceId } };
     },
+    byMisaCode (misaCode) {
+      return {
+        where: { misaCode },
+      };
+    },
   }
 
   public static initialize (sequelize: Sequelize) {

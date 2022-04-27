@@ -3,6 +3,7 @@ import { sendError, sendSuccess } from '@libs/response';
 import OrderItemModel from '@models/orderItems';
 import OrderModel from '@models/orders';
 import SubOrderModel from '@models/subOrders';
+import Fee from '@repositories/models/fee';
 import { Request, Response } from 'express';
 import { Transaction } from 'sequelize/types';
 
@@ -33,6 +34,15 @@ class OrderController {
         return order;
       });
       sendSuccess(res, { order: result });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async calculateFee (req: Request, res: Response) {
+    try {
+      const params = req.parameters.permit(Fee.FEE_CALCULATE_PARAMS).value();
+      console.log(params);
     } catch (error) {
       sendError(res, 500, error.message, error);
     }

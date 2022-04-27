@@ -18,12 +18,20 @@ class ShippingPartner {
         },
       };
       const result = await axios(requestConfigs);
-      const auth = result.data;
+      const auth = result.data.Data;
       return auth;
     } catch (error) {
       console.log(error);
       return null;
     }
+  }
+
+  public static shippingPartnerDTO (data: any) {
+    const result = [];
+    for (const record of data) {
+      result.push({ Partner: record.Partner, PartnerName: record.PartnerName });
+    }
+    return result;
   }
 }
 

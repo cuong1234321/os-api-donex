@@ -4,6 +4,9 @@ import WarehouseInterface from '@interfaces/warehouses';
 import WarehouseVariantInterface from '@interfaces/warehouseVariants';
 import { HasManyGetAssociationsMixin, Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
+import MDistrictModel from './mDistricts';
+import MProvinceModel from './mProvinces';
+import MWardModel from './mWards';
 import ProductModel from './products';
 import ProductVariantModel from './productVariants';
 import WarehouseVariantModel from './warehouseVariants';
@@ -30,6 +33,9 @@ class WarehouseModel extends Model<WarehouseInterface> implements WarehouseInter
   public districtName?: string;
   public wardName?: string;
   public provinceName?: string;
+  public province?: MProvinceModel;
+  public ward?: MWardModel;
+  public district?: MDistrictModel;
 
   static readonly CREATABLE_PARAMETERS = ['name', 'type', 'description', 'code', 'wardId', 'districtId', 'provinceId', 'address', 'phoneNumber', 'warehouseManager']
   static readonly UPDATABLE_PARAMETERS = ['name', 'type', 'description', 'code', 'status', 'wardId', 'districtId', 'provinceId', 'address', 'phoneNumber', 'warehouseManager']
@@ -158,6 +164,24 @@ class WarehouseModel extends Model<WarehouseInterface> implements WarehouseInter
         },
       };
     },
+    withAddressInfo () {
+      return {
+        include: [
+          {
+            model: MProvinceModel,
+            as: 'province',
+          },
+          {
+            model: MDistrictModel,
+            as: 'district',
+          },
+          {
+            model: MWardModel,
+            as: 'ward',
+          },
+        ],
+      };
+    },
   }
 
   public getWarehouseVariants: HasManyGetAssociationsMixin<WarehouseVariantModel>
@@ -186,6 +210,9 @@ class WarehouseModel extends Model<WarehouseInterface> implements WarehouseInter
     this.hasMany(WarehouseVariantModel, { as: 'warehouseVariant', foreignKey: 'warehouseId' });
     this.belongsToMany(ProductVariantModel, { through: WarehouseVariantModel, as: 'variants', foreignKey: 'warehouseId' });
     this.hasMany(WarehouseVariantModel, { as: 'warehouseVariants', foreignKey: 'warehouseId' });
+    this.belongsTo(MProvinceModel, { as: 'province', foreignKey: 'provinceId' });
+    this.belongsTo(MDistrictModel, { as: 'district', foreignKey: 'districtId' });
+    this.belongsTo(MWardModel, { as: 'ward', foreignKey: 'wardId' });
   }
 }
 
