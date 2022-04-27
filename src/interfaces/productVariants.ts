@@ -7,8 +7,8 @@ interface ProductVariantInterface {
   slug: string;
   skuCode: string;
   barCode: string;
-  buyPrice: string;
-  sellPrice: string;
+  buyPrice: number;
+  sellPrice: number;
   stock: number;
   optionMappingIds?: number[]
   createdAt?: Date;

@@ -29,6 +29,7 @@ import BillTemplateRouter from './BillTemplates';
 import AccountsRouter from './Accounts';
 import ShippingPartnerRouter from './ShippingPartners';
 import FeeRouter from './Fees';
+import OrderRouter from './Orders';
 
 const router = Router();
 
@@ -62,5 +63,6 @@ router.use('/bill_templates', BillTemplateRouter);
 router.use('/accounts', adminPassport.authenticate('jwt', { session: false }), AccountsRouter);
 router.use('/shipping_partners', ShippingPartnerRouter);
 router.use('/fees', FeeRouter);
+router.use('/orders', adminPassport.authenticate('jwt', { session: false }), OrderRouter);
 
 export default router;
