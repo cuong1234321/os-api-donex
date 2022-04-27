@@ -7,6 +7,7 @@ class MWardModel extends Model<MWardInterface> implements MWardInterface {
   public districtId: number;
   public code: string;
   public title: string;
+  public misaCode: string;
   public createdAt?: Date;
   public updatedAt?: Date;
 

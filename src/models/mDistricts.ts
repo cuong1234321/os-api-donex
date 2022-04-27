@@ -7,6 +7,7 @@ class MDistrictModel extends Model<MDistrictInterface> implements MDistrictInter
   public provinceId: number;
   public code: string;
   public title: string;
+  public misaCode: string;
   public createdAt?: Date;
   public updatedAt?: Date;
 

@@ -18,7 +18,7 @@ const importAdministrativeMaps = async () => {
   try {
     const rows: any = [];
     const result: any = await new Promise((resolve, reject) => {
-      fs.createReadStream(csvFilePath('administrative_maps'))
+      fs.createReadStream(csvFilePath('vs20'))
         .pipe(csv())
         .on('data', (row) => rows.push(row))
         .on('error', reject)
@@ -39,6 +39,7 @@ const importAdministrativeMaps = async () => {
                 id: provinceIndex,
                 code: row.province_code,
                 title: row.province,
+                misaCode: row.province_misa_code,
               });
             }
             if (districtAttributes[districtAttributes.length - 1]?.code !== row.district_code) {
@@ -48,6 +49,7 @@ const importAdministrativeMaps = async () => {
                 provinceId: provinceIndex,
                 code: row.district_code,
                 title: row.district,
+                misaCode: row.district_misa_code,
               });
             }
             if (wardAttributes[wardAttributes.length - 1]?.code !== row.ward_code) {
@@ -57,6 +59,7 @@ const importAdministrativeMaps = async () => {
                 districtId: districtIndex,
                 code: row.ward_code,
                 title: row.ward,
+                misaCode: row.ward_misa_code,
               });
             }
           });
