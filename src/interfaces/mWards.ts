@@ -3,6 +3,7 @@ interface MWardInterface {
   districtId: number;
   code: string;
   title: string;
+  misaCode: string;
   createdAt?: Date;
   updatedAt?: Date;
 };

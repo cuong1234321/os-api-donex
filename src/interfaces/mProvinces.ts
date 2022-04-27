@@ -2,6 +2,7 @@ interface MProvinceInterface {
   id: number;
   title: string;
   code: string;
+  misaCode: string;
   createdAt?: Date;
   updatedAt?: Date;
 };

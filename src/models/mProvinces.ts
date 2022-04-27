@@ -6,6 +6,7 @@ class MProvinceModel extends Model<MProvinceInterface> implements MProvinceInter
   public id: number;
   public title: string;
   public code: string;
+  public misaCode: string;
   public createdAt?: Date;
   public updatedAt?: Date;
 

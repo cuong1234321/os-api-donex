@@ -30,4 +30,5 @@ export default {
   defaultTax: 8,
   defaultValueConvertCoin: 0.5,
   warehouseTransferCode: 'WT',
+  branchName: 'f651fce0-e8f8-499d-b5f6-86fbafa15cea',
 };

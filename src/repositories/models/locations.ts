@@ -2,17 +2,17 @@ import AuthInterface from '@repositories/interfaces/auth';
 import axios, { AxiosRequestConfig } from 'axios';
 
 class Location {
-  public static async location (params: AuthInterface) {
+  public static async location (user: AuthInterface, params: any) {
     try {
       const requestConfigs: AxiosRequestConfig = {
         method: 'GET',
-        url: `${process.env.MISA_ENDPOINT}/${params.Environment}/api/v1/locations/bykindandparentid`,
+        url: `${process.env.MISA_ENDPOINT}/${user.Environment}/api/v1/locations/bykindandparentid`,
         headers: {
-          CompanyCode: params.CompanyCode,
-          Authorization: 'Bearer ' + params.AccessToken,
+          CompanyCode: user.CompanyCode,
+          Authorization: 'Bearer ' + user.AccessToken,
         },
         params: {
-          kind: 2,
+          params,
         },
       };
       const result = await axios(requestConfigs);

@@ -10,6 +10,9 @@ const MProvinceEntity = {
   title: {
     type: DataTypes.STRING(100), allowNull: false,
   },
+  misaCode: {
+    type: DataTypes.STRING(30), allowNull: false,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },
