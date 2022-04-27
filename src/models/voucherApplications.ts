@@ -211,6 +211,17 @@ class VoucherApplicationModel extends Model<VoucherApplicationInterface> impleme
         ],
       };
     },
+    totalUsedVoucher () {
+      return {
+        attributes: {
+          include: [
+            [Sequelize.literal('(SELECT COUNT(*) FROM vouchers WHERE voucherApplicationId = VoucherApplicationModel.id)'), 'totalVouchers'],
+            [Sequelize.literal('(SELECT COUNT(*) FROM vouchers WHERE voucherApplicationId = VoucherApplicationModel.id' +
+            ' AND activeAt IS NOT NULL AND discount IS NOT NULL)'), 'totalUsed'],
+          ],
+        },
+      };
+    },
   }
 
   public async generateVoucherCode () {

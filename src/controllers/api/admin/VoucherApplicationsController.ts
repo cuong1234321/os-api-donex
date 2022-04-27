@@ -43,6 +43,7 @@ class VoucherApplicationController {
         'withConditions',
         'withUserVouchers',
         'withCollaboratorVouchers',
+        'totalUsedVoucher',
       ]).findOne();
       if (!voucher) return sendError(res, 404, NoData);
       sendSuccess(res, { voucher });
