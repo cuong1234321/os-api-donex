@@ -26,6 +26,8 @@ interface CollaboratorInterface {
   forgotPasswordToken: string;
   forgotPasswordExpireAt: Date;
   avatar: string;
+  rejectorId: number;
+  rejectDate: Date;
 
   createdAt?: Date,
   updatedAt?: Date,

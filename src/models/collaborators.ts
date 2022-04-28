@@ -40,6 +40,8 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
   public forgotPasswordToken: string;
   public forgotPasswordExpireAt: Date;
   public avatar: string;
+  public rejectorId: number;
+  public rejectDate: Date;
 
   public createdAt?: Date;
   public updatedAt?: Date;
@@ -103,7 +105,7 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
     },
     async validateChangeBirthDay () {
       if (!dayjs(this._previousDataValues.dateOfBirth).format()) return;
-      if (dayjs(this._previousDataValues.dateOfBirth).format() !== dayjs(this.dataValues.dateOfBirth).format()) {
+      if (this._previousDataValues.dateOfBirth && dayjs(this._previousDataValues.dateOfBirth).format() !== dayjs(this.dataValues.dateOfBirth).format()) {
         throw new ValidationErrorItem('Ngày sinh không được thay đổi', 'validateChangeBirthDay', 'dateOfBirth', this.dateOfBirth);
       }
     },
@@ -210,6 +212,18 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
         include: {
           model: CollaboratorMediaModel,
           as: 'media',
+        },
+      };
+    },
+    withRejectorName () {
+      return {
+        attributes: {
+          include: [
+            [
+              Sequelize.literal('(SELECT fullName FROM admins WHERE id = CollaboratorModel.rejectorId)'),
+              'rejectorName',
+            ],
+          ],
         },
       };
     },

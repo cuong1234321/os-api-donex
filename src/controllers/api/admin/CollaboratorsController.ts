@@ -10,6 +10,7 @@ import MailerService from '@services/mailer';
 import CollaboratorWorkingDayModel from '@models/collaboratorWorkingDays';
 import CollaboratorMediaModel from '@models/collaboratorMedia';
 import { Sequelize } from 'sequelize';
+import dayjs from 'dayjs';
 
 class CollaboratorController {
   public async index (req: Request, res: Response) {
@@ -141,6 +142,7 @@ class CollaboratorController {
       const collaborator = await CollaboratorModel.scope([
         'withWorkingDay',
         'withMedia',
+        'withRejectorName',
       ]).findByPk(collaboratorId);
       if (!collaborator) return sendError(res, 404, NoData);
       sendSuccess(res, { collaborator });
@@ -187,6 +189,7 @@ class CollaboratorController {
 
   public async reject (req: Request, res: Response) {
     try {
+      const currentAdmin = req.currentAdmin;
       const { collaboratorId } = req.params;
       const collaborator = await CollaboratorModel.findByPk(collaboratorId);
       if (!collaborator) return sendError(res, 404, NoData);
@@ -194,6 +197,8 @@ class CollaboratorController {
       const { rejectionReason } = req.body;
       const collaboratorParams = {
         rejectionReason,
+        rejectorId: currentAdmin.id,
+        rejectDate: dayjs(),
         status: CollaboratorModel.STATUS_ENUM.REJECTED,
       };
       await collaborator.update(collaboratorParams);

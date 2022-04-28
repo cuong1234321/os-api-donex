@@ -104,12 +104,12 @@ class UserModel extends Model<UserInterface> implements UserInterface {
     },
     async validateStatus () {
       if (this.deletedAt && this.status !== UserModel.STATUS_ENUM.INACTIVE) {
-        throw new ValidationErrorItem('status is not inactive', 'validStatus', 'status', this.status);
+        throw new ValidationErrorItem('Người dùng không ở trạng thái tạm khóa', 'validStatus', 'status', this.status);
       }
     },
     async validateChangeBirthDay () {
       if (!dayjs(this._previousDataValues.dateOfBirth).format()) return;
-      if (dayjs(this._previousDataValues.dateOfBirth).format() !== dayjs(this.dataValues.dateOfBirth).format()) {
+      if (this._previousDataValues.dateOfBirth && dayjs(this._previousDataValues.dateOfBirth).format() !== dayjs(this.dataValues.dateOfBirth).format()) {
         throw new ValidationErrorItem('Ngày sinh không được thay đổi', 'validateChangeBirthDay', 'dateOfBirth', this.dateOfBirth);
       }
     },

@@ -112,6 +112,12 @@ const collaboratorEntity = {
       return avatar;
     },
   },
+  rejectorId: {
+    type: DataTypes.INTEGER, allowNull: true,
+  },
+  rejectDate: {
+    type: DataTypes.DATE,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },
