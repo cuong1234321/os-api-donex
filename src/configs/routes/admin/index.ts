@@ -33,7 +33,7 @@ const router = Router();
 router.use('/sessions', SessionsRouter);
 router.use('/passwords', PasswordRouter);
 router.use('/products', ProductRouter);
-router.use('/collaborators', CollaboratorsRouter);
+router.use('/collaborators', adminPassport.authenticate('jwt', { session: false }), CollaboratorsRouter);
 router.use('/users', UserRouter);
 router.use('/product_categories', ProductCategoryRouter);
 router.use('/news', NewsRouter);
