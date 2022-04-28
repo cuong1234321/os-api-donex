@@ -156,7 +156,6 @@ class CollaboratorController {
       const { collaboratorId } = req.params;
       const collaborator = await CollaboratorModel.findByPk(collaboratorId);
       if (!collaborator) return sendError(res, 404, NoData);
-      await collaborator.checkStatus(CollaboratorModel.STATUS_ENUM.INACTIVE);
       await collaborator.destroy();
       sendSuccess(res, { });
     } catch (error) {

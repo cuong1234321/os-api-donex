@@ -104,7 +104,7 @@ class UserModel extends Model<UserInterface> implements UserInterface {
     },
     async validateStatus () {
       if (this.deletedAt && this.status !== UserModel.STATUS_ENUM.INACTIVE) {
-        throw new ValidationErrorItem('Người dùng không ở trạng thái tạm khóa', 'validStatus', 'status', this.status);
+        throw new ValidationErrorItem('Không đựợc xóa người dùng trong trạng thái hoạt động', 'validStatus', 'status', this.status);
       }
     },
     async validateChangeBirthDay () {

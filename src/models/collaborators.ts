@@ -109,6 +109,11 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
         throw new ValidationErrorItem('Ngày sinh không được thay đổi', 'validateChangeBirthDay', 'dateOfBirth', this.dateOfBirth);
       }
     },
+    async validateStatus () {
+      if (this.deletedAt && this.status !== CollaboratorModel.STATUS_ENUM.INACTIVE) {
+        throw new ValidationErrorItem('Chỉ xóa được CTV/DL/NPP trong trạng thái tạm khóa', 'validStatus', 'status', this.status);
+      }
+    },
   }
 
   static readonly scopes: ModelScopeOptions = {
