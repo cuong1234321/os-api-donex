@@ -15,6 +15,11 @@ class MWardModel extends Model<MWardInterface> implements MWardInterface {
     byDistrict (districtId) {
       return { where: { districtId } };
     },
+    byMisaCode (misaCode) {
+      return {
+        where: { misaCode },
+      };
+    },
   }
 
   public static initialize (sequelize: Sequelize) {

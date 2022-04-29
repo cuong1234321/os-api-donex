@@ -113,6 +113,10 @@ const swaggerDefinition = {
       description: 'Quản lý mẫu hóa đơn',
     },
     {
+      name: '[ADMIN] Shipping Partners',
+      description: 'Don vi Van Chuyen',
+    },
+    {
       name: '[USER] Sessions',
       description: 'Phiên đăng nhập user',
     },
@@ -187,6 +191,18 @@ const swaggerDefinition = {
     {
       name: '[USER] Banners',
       description: 'Danh sách banners',
+    },
+    {
+      name: '[USER] FEE',
+      description: 'Tính giá',
+    },
+    {
+      name: '[USER] Shipping Partners',
+      description: 'Don vi Van Chuyen',
+    },
+    {
+      name: '[COLLABORATOR] Shipping Partners',
+      description: 'Don vi Van Chuyen',
     },
     {
       name: '[COLLABORATOR] Collaborators',

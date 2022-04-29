@@ -21,6 +21,8 @@ import UserVoucherRouter from './Vouchers';
 import UploadRouter from './Uploads';
 import TermRouter from './Terms';
 import BannerRouter from './Banners';
+import FeeRouter from './Fees';
+import ShippingPartnerRouter from './ShippingPartners';
 
 const router = Router();
 
@@ -45,5 +47,7 @@ router.use('/user_vouchers', userPassport.authenticate('jwt', { session: false }
 router.use('/uploads', UploadRouter);
 router.use('/terms', TermRouter);
 router.use('/banners', BannerRouter);
+router.use('/fees', FeeRouter);
+router.use('/shipping_partners', ShippingPartnerRouter);
 
 export default router;

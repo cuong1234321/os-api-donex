@@ -10,7 +10,13 @@ class MProvinceModel extends Model<MProvinceInterface> implements MProvinceInter
   public createdAt?: Date;
   public updatedAt?: Date;
 
-  static readonly scopes: ModelScopeOptions = {}
+  static readonly scopes: ModelScopeOptions = {
+    byMisaCode (misaCode) {
+      return {
+        where: { misaCode },
+      };
+    },
+  }
 
   public static initialize (sequelize: Sequelize) {
     this.init(MProvinceEntity, {
