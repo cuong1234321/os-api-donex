@@ -54,6 +54,15 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
       ],
     }]
 
+  static readonly ADMIN_CREATABLE_PARAMETERS = ['orderableType', 'appliedVoucherId', 'orderableId', 'saleChannel', 'shippingFullName', 'shippingProvinceId',
+    'shippingDistrictId', 'shippingPhoneNumber', 'shippingWardId', 'shippingAddress',
+    {
+      subOrders: [
+        'warehouseId', 'weight', 'length', 'width', 'height', 'pickUpAt', 'shippingFeeMisa', 'shippingFee', 'deposit', 'deliveryType', 'deliveryInfo', 'note', 'shippingType', 'shippingAttributeType',
+        { items: ['productVariantId', 'quantity'] },
+      ],
+    }]
+
   public static readonly ORDERABLE_TYPE = { USER: 'user', COLLABORATOR: 'collaborator', AGENCY: 'agency', DISTRIBUTOR: 'distributor' }
   public static readonly CREATABLE_TYPE = { USER: 'user', ADMIN: 'admin', COLLABORATOR: 'collaborator', AGENCY: 'agency', DISTRIBUTOR: 'distributor' }
   public static readonly PAYMENT_METHOD = { BANKING: 'banking', COD: 'COD', VN_PAY: 'vnPay', WALLET: 'wallet' }
@@ -111,7 +120,7 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
     async validateCoinUsed () {
       if (this.orderableType !== OrderModel.ORDERABLE_TYPE.USER) return;
       const user = await UserModel.findByPk(this.orderableId);
-      if (user.coinReward < parseInt(this.coinUsed as string)) {
+      if (this.coinUsed && user.coinReward < parseInt(this.coinUsed as string)) {
         throw new ValidationErrorItem('Số lượng điểm thưởng không hợp lệ', 'validateCoinUsed', 'coinUsed', this.coinUsed);
       }
     },

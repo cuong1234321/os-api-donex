@@ -37,6 +37,39 @@ const SubOrderEntity = {
   pickUpAt: {
     type: DataTypes.DATE, allowNull: true,
   },
+  weight: {
+    type: DataTypes.INTEGER, allowNull: true,
+  },
+  length: {
+    type: DataTypes.INTEGER, allowNull: true,
+  },
+  width: {
+    type: DataTypes.INTEGER, allowNull: true,
+  },
+  height: {
+    type: DataTypes.INTEGER, allowNull: true,
+  },
+  shippingFeeMisa: {
+    type: DataTypes.BIGINT, allowNull: true,
+  },
+  deposit: {
+    type: DataTypes.BIGINT, allowNull: true,
+  },
+  deliveryType: {
+    type: DataTypes.STRING(255), allowNull: true,
+  },
+  deliveryInfo: {
+    type: DataTypes.TEXT, allowNull: true,
+  },
+  note: {
+    type: DataTypes.TEXT, allowNull: true,
+  },
+  shippingType: {
+    type: DataTypes.STRING(255), allowNull: true,
+  },
+  shippingAttributeType: {
+    type: DataTypes.STRING(255), allowNull: true,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },

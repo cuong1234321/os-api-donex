@@ -18,8 +18,8 @@ class ProductVariantModel extends Model<ProductVariantInterface> implements Prod
   public slug: string;
   public skuCode: string;
   public barCode: string;
-  public buyPrice: string;
-  public sellPrice: string;
+  public buyPrice: number;
+  public sellPrice: number;
   public stock: number;
   public optionMappingIds?: number[]
 

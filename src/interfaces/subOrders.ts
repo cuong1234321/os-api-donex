@@ -11,6 +11,17 @@ interface SubOrderInterface {
   shippingDiscount?: number;
   total: number;
   shippingCode?: string;
+  weight: number;
+  length: number;
+  width: number;
+  height: number;
+  shippingFeeMisa: number;
+  deposit: number;
+  deliveryType: string;
+  deliveryInfo: string;
+  note: string;
+  shippingType: string;
+  shippingAttributeType: string;
   status?: string;
   orderFinishAt?: Date;
   pickUpAt?: Date;

@@ -121,6 +121,10 @@ const swaggerDefinition = {
       description: 'tinh gia van chuyen',
     },
     {
+      name: '[ADMIN] Orders',
+      description: 'Quản lý đơn hàng',
+    },
+    {
       name: '[USER] Sessions',
       description: 'Phiên đăng nhập user',
     },

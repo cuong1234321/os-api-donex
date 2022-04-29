@@ -15,6 +15,17 @@ public subTotal: number;
 public shippingFee: number;
 public shippingDiscount?: number;
 public total: number;
+public weight: number;
+public length: number;
+public width: number;
+public height: number;
+public shippingFeeMisa: number;
+public deposit: number;
+public deliveryType: string;
+public deliveryInfo: string;
+public note: string;
+public shippingType: string;
+public shippingAttributeType: string;
 public shippingCode?: string;
 public status?: string;
 public orderFinishAt?: Date;
@@ -46,6 +57,16 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
         if (item && item.quantity > warehouseVariant.quantity) {
           throw new ValidationErrorItem('Sản phẩm kho hàng không hợp lệ', 'validateWarehouse', 'warehouseId', this.warehouseId);
         }
+      }
+    },
+    async validateDeposit () {
+      if (this.deposit < 0) {
+        throw new ValidationErrorItem('Tiền đặt cọc không được nhỏ hơn 0', 'validateDeposit', 'deposit', this.deposit);
+      }
+    },
+    async validateShippingFee () {
+      if (this.shippingFee < 0) {
+        throw new ValidationErrorItem('Phí giao hàng không được nhỏ hơn 0', 'validateShippingFee', 'shippingFee', this.shippingFee);
       }
     },
   }
