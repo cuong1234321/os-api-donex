@@ -18,8 +18,6 @@ class OrderController {
       const result = await sequelize.transaction(async (transaction: Transaction) => {
         const order = await OrderModel.create({
           ...params,
-          creatableType: OrderModel.CREATABLE_TYPE.USER,
-          creatableId: currentUser.id,
           orderableType: OrderModel.ORDERABLE_TYPE.USER,
           orderableId: currentUser.id,
           ownerId: currentUser.id,

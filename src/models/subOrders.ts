@@ -1,7 +1,9 @@
 import SubOrderEntity from '@entities/subOrders';
 import SubOrderInterface from '@interfaces/subOrders';
-import { Model, ModelScopeOptions, ModelValidateOptions, Sequelize, ValidationErrorItem } from 'sequelize';
+import dayjs from 'dayjs';
+import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
+import AdminModel from './admins';
 import OrderItemModel from './orderItems';
 import OrderModel from './orders';
 import WarehouseModel from './warehouses';
@@ -30,6 +32,8 @@ public shippingCode?: string;
 public status?: string;
 public orderFinishAt?: Date;
 public pickUpAt?: Date;
+public paymentStatus: string;
+public orderPartnerCode: string;
 public createdAt?: Date;
 public updatedAt?: Date;
 public deletedAt?: Date;
@@ -155,6 +159,226 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
             },
           },
         ],
+      };
+    },
+    byPaymentStatus (paymentStatus) {
+      return {
+        where: { paymentStatus },
+      };
+    },
+    bySaleChannel (saleChannel) {
+      return {
+        include: [{
+          model: OrderModel,
+          as: 'order',
+          required: true,
+          where: {
+            saleChannel,
+          },
+        }],
+      };
+    },
+    byCreateAdminName (name) {
+      return {
+        include: [{
+          model: OrderModel,
+          as: 'order',
+          required: true,
+          include: [
+            {
+              model: AdminModel,
+              as: 'creatableAdmin',
+              where: {
+                fullName: { [Op.like]: `%${name || ''}%` },
+              },
+              attributes: ['fullName'],
+            },
+          ],
+        }],
+      };
+    },
+    byShippingName (name) {
+      return {
+        include: [
+          {
+            model: OrderModel,
+            as: 'order',
+            where: {
+              shippingFullName: { [Op.like]: `%${name || ''}%` },
+            },
+          },
+        ],
+      };
+    },
+    byPickUpAt (date) {
+      return {
+        where: {
+          [Op.and]: [
+            { pickUpAt: { [Op.gte]: dayjs(date as string).startOf('day').format() } },
+            { pickUpAt: { [Op.lte]: dayjs(date as string).endOf('day').format() } },
+          ],
+        },
+      };
+    },
+    byPhoneNumber (phoneNumber) {
+      return {
+        include: [
+          {
+            model: OrderModel,
+            as: 'order',
+            where: {
+              shippingPhoneNumber: { [Op.like]: `%${phoneNumber || ''}%` },
+            },
+          },
+        ],
+      };
+    },
+    byCreatedAt (date) {
+      return {
+        where: {
+          [Op.and]: [
+            { createdAt: { [Op.gte]: dayjs(date as string).startOf('day').format() } },
+            { createdAt: { [Op.lte]: dayjs(date as string).endOf('day').format() } },
+          ],
+        },
+      };
+    },
+    byShippingType (type) {
+      return {
+        where: {
+          shippingType: { [Op.like]: `%${type || ''}%` },
+        },
+      };
+    },
+    byShippingCode (code) {
+      return {
+        where: {
+          shippingCode: { [Op.like]: `%${code || ''}%` },
+        },
+      };
+    },
+    byOrderPartnerCode (code) {
+      return {
+        where: {
+          orderPartnerCode: { [Op.like]: `%${code || ''}%` },
+        },
+      };
+    },
+    byPaymentMethod (paymentMethod) {
+      return {
+        include: [
+          {
+            model: OrderModel,
+            as: 'order',
+            where: { paymentMethod },
+          },
+        ],
+      };
+    },
+    bySubTotalEq (value) {
+      return {
+        where: { subTotal: value },
+      };
+    },
+    bySubTotalLte (value) {
+      return {
+        where: {
+          subTotal: { [Op.lte]: value },
+        },
+      };
+    },
+    bySubTotalGte (value) {
+      return {
+        where: {
+          subTotal: { [Op.gte]: value },
+        },
+      };
+    },
+    byShippingFeeEq (value) {
+      return {
+        where: { shippingFee: value },
+      };
+    },
+    byShippingFeeLte (value) {
+      return {
+        where: {
+          shippingFee: { [Op.lte]: value },
+        },
+      };
+    },
+    byShippingFeeGte (value) {
+      return {
+        where: {
+          shippingFee: { [Op.gte]: value },
+        },
+      };
+    },
+    byShippingFeeMisaEq (value) {
+      return {
+        where: { shippingFeeMisa: value },
+      };
+    },
+    byShippingFeeMisaLte (value) {
+      return {
+        where: {
+          shippingFeeMisa: { [Op.lte]: value },
+        },
+      };
+    },
+    byShippingFeeMisaGte (value) {
+      return {
+        where: {
+          shippingFeeMisa: { [Op.gte]: value },
+        },
+      };
+    },
+    byFinalAmountEq (value) {
+      return {
+        where: {
+          [Op.and]: [
+            Sequelize.where(Sequelize.literal('(SELECT (subTotal + shippingFee - deposit) FROM sub_orders WHERE id = SubOrderModel.id)'), {
+              [Op.between]: [value, value],
+            }),
+          ],
+        },
+      };
+    },
+    byFinalAmountLte (value) {
+      return {
+        where: {
+          [Op.and]: [
+            Sequelize.where(Sequelize.literal('(SELECT (subTotal + shippingFee - deposit) FROM sub_orders WHERE id = SubOrderModel.id)'), {
+              [Op.lte]: value,
+            }),
+          ],
+        },
+      };
+    },
+    byFinalAmountGte (value) {
+      return {
+        where: {
+          [Op.and]: [
+            Sequelize.where(Sequelize.literal('(SELECT (subTotal + shippingFee - deposit) FROM sub_orders WHERE id = SubOrderModel.id)'), {
+              [Op.gte]: value,
+            }),
+          ],
+        },
+      };
+    },
+    withOrders () {
+      return {
+        include: [{
+          model: OrderModel,
+          as: 'order',
+          attributes: {
+            include: [
+              [
+                Sequelize.literal('(SELECT fullName FROM admins WHERE admins.id = order.creatableId)'),
+                'createAbleName',
+              ],
+            ],
+          },
+        }],
       };
     },
   }
