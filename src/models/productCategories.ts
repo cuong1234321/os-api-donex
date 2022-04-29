@@ -1,6 +1,6 @@
 import ProductCategoryEntity from '@entities/productCategories';
 import ProductCategoryInterface from '@interfaces/productCategories';
-import { BelongsToManyGetAssociationsMixin, HasManyGetAssociationsMixin, Model, ModelScopeOptions, Op, Sequelize } from 'sequelize';
+import { BelongsToManyGetAssociationsMixin, HasManyGetAssociationsMixin, Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import ProductCategoryRefModel from './productCategoryRefs';
 import ProductModel from './products';
@@ -24,6 +24,14 @@ class ProductCategoryModel extends Model<ProductCategoryInterface> implements Pr
   static readonly hooks: Partial<ModelHooks<ProductCategoryModel>> = {
     async afterDestroy (record) {
       await record.destroyCateChild();
+    },
+  }
+
+  static readonly validations: ModelValidateOptions = {
+    async validateParentId () {
+      if (this.parentId && this.id === this.parentId) {
+        throw new ValidationErrorItem('Giá trị id cha không được trùng với id con.', 'validateParentId', 'parentId');
+      }
     },
   }
 
@@ -108,6 +116,7 @@ class ProductCategoryModel extends Model<ProductCategoryInterface> implements Pr
     this.init(ProductCategoryEntity, {
       hooks: ProductCategoryModel.hooks,
       scopes: ProductCategoryModel.scopes,
+      validate: ProductCategoryModel.validations,
       tableName: 'product_categories',
       sequelize,
       paranoid: true,
