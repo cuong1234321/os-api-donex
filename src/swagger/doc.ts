@@ -117,6 +117,10 @@ const swaggerDefinition = {
       description: 'Don vi Van Chuyen',
     },
     {
+      name: '[ADMIN] FEE',
+      description: 'tinh gia van chuyen',
+    },
+    {
       name: '[USER] Sessions',
       description: 'Phiên đăng nhập user',
     },
@@ -194,7 +198,7 @@ const swaggerDefinition = {
     },
     {
       name: '[USER] FEE',
-      description: 'Tính giá',
+      description: 'Tính giá van chuyen',
     },
     {
       name: '[USER] Shipping Partners',
@@ -207,6 +211,10 @@ const swaggerDefinition = {
     {
       name: '[COLLABORATOR] Collaborators',
       description: 'Quan ly ctv/dl',
+    },
+    {
+      name: '[COLLABORATOR] FEE',
+      description: 'tinh gia van chuyen',
     },
   ],
   securityDefinitions: {
