@@ -11,7 +11,7 @@ import { ValidationError, ValidationErrorItem } from 'sequelize';
 
 class Fee {
   static readonly FEE_CALCULATE_PARAMS = [
-    'weight', 'length', 'width', 'height', 'isCOD', 'shippingPaymentType', 'partner',
+    'weight', 'length', 'width', 'height', 'isCOD', 'shippingPaymentType',
     'warehouseId', 'shippingProvinceId', 'shippingDistrictId', 'shippingWardId', 'shippingAddress', 'partnerType',
   ];
 
@@ -19,7 +19,6 @@ class Fee {
     try {
       await this.validWarehouse(data);
       await this.validProductValue(data);
-      await this.validRequireParams(data);
       await this.validShippingAddress(data);
       const warehouse = await WarehouseModel.scope([
         { method: ['byId', data.warehouseId] },

@@ -1,14 +1,14 @@
-import FeesController from '@controllers/api/user/FeesController';
+import FeesController from '@controllers/api/collaborator/FeesController';
 import { Router } from 'express';
 
 const router = Router();
 
 /**
  * @openapi
- * /u/fees:
+ * /c/fees:
  *   post:
  *     tags:
- *      - "[USER] FEE"
+ *      - "[COLLABORATOR] FEE"
  *     summary: tính gía vận chuyển
  *     parameters:
  *      - in: "body"
