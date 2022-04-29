@@ -139,11 +139,10 @@ class MarketingNotificationsModel extends Model<MarketingNotificationsInterface>
     element.type === MarketingNotificationTargetsModel.TYPE_ENUM.USER_TYPE)) {
       const collaborators: any = await CollaboratorModel.scope([
         { method: ['byType', CollaboratorModel.TYPE_ENUM.COLLABORATOR] },
-        'withUser',
       ]).findAll();
       const userNotifications = collaborators.map((collaborator: any) => {
         return {
-          userId: collaborator.user.id as number,
+          userId: collaborator.id as number,
           notificationTargetId: this.notificationTargets.find((element: any) => element.target.name === 'collaborator').id,
           type: UserNotificationsModel.TYPE_ENUM.SYSTEM,
           title: this.title,
@@ -156,11 +155,10 @@ class MarketingNotificationsModel extends Model<MarketingNotificationsInterface>
     element.type === MarketingNotificationTargetsModel.TYPE_ENUM.USER_TYPE)) {
       const agency: any = await CollaboratorModel.scope([
         { method: ['byType', CollaboratorModel.TYPE_ENUM.AGENCY] },
-        'withUser',
       ]).findAll();
       const userNotifications = agency.map((agency: any) => {
         return {
-          userId: agency.user.id as number,
+          userId: agency.id as number,
           notificationTargetId: this.notificationTargets.find((element: any) => element.target.name === 'agency').id,
           type: UserNotificationsModel.TYPE_ENUM.SYSTEM,
           title: this.title,
@@ -169,16 +167,15 @@ class MarketingNotificationsModel extends Model<MarketingNotificationsInterface>
       });
       notifications = notifications.concat([...userNotifications]);
     }
-    if (this.notificationTargets.find((element: any) => element.target.name === 'sendToDistributor' &&
+    if (this.notificationTargets.find((element: any) => element.target.name === 'distributor' &&
     element.type === MarketingNotificationTargetsModel.TYPE_ENUM.USER_TYPE)) {
       const distributors: any = await CollaboratorModel.scope([
         { method: ['byType', CollaboratorModel.TYPE_ENUM.DISTRIBUTOR] },
-        'withUser',
       ]).findAll();
       const userNotifications = distributors.map((distributor: any) => {
         return {
-          userId: distributor.user.id as number,
-          notificationTargetId: this.notificationTargets.find((element: any) => element.target.name === 'sendToDistributor').id,
+          userId: distributor.id as number,
+          notificationTargetId: this.notificationTargets.find((element: any) => element.target.name === 'distributor').id,
           type: UserNotificationsModel.TYPE_ENUM.SYSTEM,
           title: this.title,
           content: this.content,
@@ -235,13 +232,15 @@ class MarketingNotificationsModel extends Model<MarketingNotificationsInterface>
           model: MarketingNotificationTargetsModel,
           as: 'notificationTargets',
           include: [
-            { model: MUserTypeModel, as: 'target' },
+            { model: MUserTypeModel, as: 'target', required: false },
           ],
+          required: false,
         },
         {
           model: AdminModel,
           as: 'owner',
           attributes: ['fullName'],
+          required: false,
         },
       ],
     });
