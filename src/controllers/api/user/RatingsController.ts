@@ -6,6 +6,8 @@ import { NoData } from '@libs/errors';
 import RatingModel from '@models/ratings';
 import ImageUploaderService from '@services/imageUploader';
 import RatingImageModel from '@models/ratingImages';
+import ProductVariantModel from '@models/productVariants';
+import settings from '@configs/settings';
 
 class RatingController {
   public async create (req: Request, res: Response) {
@@ -45,6 +47,33 @@ class RatingController {
       }
       await RatingImageModel.bulkCreate(ratingImageAttributes);
       sendSuccess(res, { });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async index (req: Request, res: Response) {
+    try {
+      const page = req.query.page as string || '1';
+      const limit = parseInt(req.query.size as string) || parseInt(settings.defaultNewsPerPage);
+      const offset = (parseInt(page, 10) - 1) * limit;
+      const sortBy = req.query.sortBy || 'createdAt';
+      const sortOrder = req.query.sortOrder || 'DESC';
+      const { productId } = req.query;
+      const productVariants = await ProductVariantModel.scope([
+        { method: ['byProduct', productId] },
+      ]).findAll({ attributes: ['id'] });
+      if (!productVariants.length) {
+        return sendSuccess(res, { rows: [], pagination: { total: 0, page, perPage: limit } });
+      }
+      const productVariantIds = productVariants.map((record: any) => record.id);
+      const scopes: any = [
+        'withImage',
+        { method: ['byProductVariantId', productVariantIds] },
+        { method: ['bySortOrder', sortBy, sortOrder] },
+      ];
+      const { rows, count } = await RatingModel.scope(scopes).findAndCountAll({ limit, offset });
+      return sendSuccess(res, { rows, pagination: { total: count, page, perPage: limit } });
     } catch (error) {
       sendError(res, 500, error.message, error);
     }

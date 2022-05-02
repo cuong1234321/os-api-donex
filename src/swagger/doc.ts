@@ -182,6 +182,10 @@ const swaggerDefinition = {
       description: 'Quản lý sản phẩm',
     },
     {
+      name: '[USER] RATING',
+      description: 'Đánh giá sản phẩm',
+    },
+    {
       name: '[USER] SUB ORDER',
       description: 'Quản lý đơn hàng nhỏ',
     },

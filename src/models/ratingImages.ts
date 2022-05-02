@@ -2,6 +2,7 @@ import RatingImagesEntity from '@entities/ratingImages';
 import RatingImageInterface from '@interfaces/ratingImages';
 import { Model, ModelScopeOptions, ModelValidateOptions, Sequelize } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
+import RatingModel from './ratings';
 
 class RatingImageModel extends Model<RatingImageInterface> implements RatingImageInterface {
   id: number;
@@ -27,7 +28,9 @@ class RatingImageModel extends Model<RatingImageInterface> implements RatingImag
     });
   }
 
-  public static associate () { }
+  public static associate () {
+    this.belongsTo(RatingModel, { as: 'rating', foreignKey: 'ratingAbleId' });
+  }
 }
 
 export default RatingImageModel;

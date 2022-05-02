@@ -1,4 +1,5 @@
 import RatingsController from '@controllers/api/user/RatingsController';
+import { userPassport } from '@middlewares/passport';
 import { withoutSavingUploader } from '@middlewares/uploaders';
 import { Router } from 'express';
 
@@ -9,7 +10,7 @@ const router = Router();
  * /u/ratings/{subOrderId}/sub_orders/{productVariantId}:
  *   post:
  *     tags:
- *      - "[USER] Ratings"
+ *      - "[USER] RATING"
  *     summary: tạo mới đánh giá
  *     parameters:
  *      - in: path
@@ -40,14 +41,14 @@ const router = Router();
  *     security:
  *      - Bearer: []
  */
-router.post('/:subOrderId/sub_orders/:productVariantId', RatingsController.create);
+router.post('/:subOrderId/sub_orders/:productVariantId', userPassport.authenticate('jwt', { session: false }), RatingsController.create);
 
 /**
  * @openapi
  * /u/ratings/{ratingId}:
  *   patch:
  *     tags:
- *      - "[USER] Comments"
+ *      - "[USER] RATING"
  *     summary: Tạo mới image
  *     parameters:
  *      - in: "path"
@@ -69,7 +70,33 @@ router.post('/:subOrderId/sub_orders/:productVariantId', RatingsController.creat
  *     security:
  *      - Bearer: []
  */
-router.patch('/:ratingId',
+router.patch('/:ratingId', userPassport.authenticate('jwt', { session: false }),
   withoutSavingUploader.array('files'), RatingsController.uploadImage);
+
+/**
+ * @openapi
+ * /u/ratings/:
+ *   get:
+ *     tags:
+ *      - "[USER] RATING"
+ *     summary: Lấy danh sách rating
+ *     parameters:
+ *      - in: query
+ *        name: "page"
+ *        description: "page"
+ *        type: "string"
+ *      - in: query
+ *        name: "productId"
+ *        description: "product id"
+ *        type: "number"
+ *     responses:
+ *       200:
+ *         description: "OK"
+ *       500:
+ *         description: "Internal error"
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/', RatingsController.index);
 
 export default router;

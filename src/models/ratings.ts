@@ -2,6 +2,7 @@ import RatingEntity from '@entities/ratings';
 import RatingInterface from '@interfaces/ratings';
 import { Model, ModelScopeOptions, ModelValidateOptions, Sequelize, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
+import RatingImageModel from './ratingImages';
 
 class RatingModel extends Model<RatingInterface> implements RatingInterface {
   public id: number;
@@ -66,6 +67,21 @@ class RatingModel extends Model<RatingInterface> implements RatingInterface {
         where: { id },
       };
     },
+    withImage () {
+      return {
+        include: [
+          {
+            model: RatingImageModel,
+            as: 'images',
+          },
+        ],
+      };
+    },
+    bySortOrder (sortBy, sortOrder) {
+      return {
+        order: [[Sequelize.literal(sortBy), sortOrder]],
+      };
+    },
   }
 
   public static initialize (sequelize: Sequelize) {
@@ -79,7 +95,9 @@ class RatingModel extends Model<RatingInterface> implements RatingInterface {
     });
   }
 
-  public static associate () { }
+  public static associate () {
+    this.hasMany(RatingImageModel, { as: 'images', foreignKey: 'ratingAbleId' });
+  }
 }
 
 export default RatingModel;
