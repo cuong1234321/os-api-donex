@@ -1,5 +1,5 @@
 import ProductsController from '@controllers/api/user/ProductsController';
-import { Router } from 'express';
+import { Request, Response, Router } from 'express';
 import { authGuest } from '@middlewares/auth';
 
 const router = Router();
@@ -73,7 +73,7 @@ const router = Router();
  *      - Bearer: []
  */
 
-router.get('/', authGuest, ProductsController.index);
+router.get('/', authGuest, (req: Request, res: Response) => ProductsController.index(req, res));
 
 /**
  * @openapi
@@ -96,7 +96,7 @@ router.get('/', authGuest, ProductsController.index);
  *     security:
  *      - Bearer: []
  */
-router.get('/verify', ProductsController.verifyProduct);
+router.get('/verify', (req: Request, res: Response) => ProductsController.verifyProduct(req, res));
 
 /**
  * @openapi
@@ -119,6 +119,6 @@ router.get('/verify', ProductsController.verifyProduct);
  *     security:
  *      - Bearer: []
  */
-router.get('/:productId', authGuest, ProductsController.show);
+router.get('/:productId', authGuest, (req: Request, res: Response) => ProductsController.show(req, res));
 
 export default router;

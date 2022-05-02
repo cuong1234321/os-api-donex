@@ -37,6 +37,8 @@ public deletedAt?: Date;
 public warehouse?: WarehouseModel;
 public items?: OrderItemModel[];
 
+static readonly STATUS_ENUM = { DRAFT: 'draft' }
+
 static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
   async beforeCreate (record: SubOrderModel) {
     record.code = await this.generateOderCode();
@@ -114,9 +116,9 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
               'createdAt', 'updatedAt', 'transactionId', 'paidAt', 'portalConfirmAt', 'deletedAt',
             ],
             include: [
-              [Sequelize.literal('(SELECT title FROM m_districts WHERE id = order.shippingDistrictId)'), 'districtName'],
-              [Sequelize.literal('(SELECT title FROM m_wards WHERE id = order.shippingWardId)'), 'wardName'],
-              [Sequelize.literal('(SELECT title FROM m_provinces WHERE id = order.shippingProvinceId)'), 'provinceName'],
+              [Sequelize.literal('(SELECT title FROM m_districts WHERE misaCode = order.shippingDistrictId)'), 'districtName'],
+              [Sequelize.literal('(SELECT title FROM m_wards WHERE misaCode = order.shippingWardId)'), 'wardName'],
+              [Sequelize.literal('(SELECT title FROM m_provinces WHERE misaCode = order.shippingProvinceId)'), 'provinceName'],
             ],
           },
         }],

@@ -8,6 +8,8 @@ import { Request, Response } from 'express';
 import SystemSettingModel from '@models/systemSetting';
 import { RequestDiscountInvalid } from '@libs/errors';
 import SaleCampaignProductDecorator from '@decorators/saleCampaignProducts';
+import SaleCampaignModel from '@models/saleCampaigns';
+import CollaboratorModel from '@models/collaborators';
 class CartController {
   public async show (req: Request, res: Response) {
     try {
@@ -38,7 +40,8 @@ class CartController {
       }
       let cartItems = await CartItemModel.scope(scopes).findAll({ order: [['createdAt', 'DESC']] });
       await this.variantOptions(cartItems);
-      cartItems = await SaleCampaignProductDecorator.calculatorVariantPrice('USER', cartItems);
+      const saleCampaigns = await this.getSaleCampaigns('USER');
+      cartItems = await SaleCampaignProductDecorator.calculatorVariantPrice(cartItems, saleCampaigns);
       const warehouses = await this.groupByWarehouse(cartItems);
       cart.setDataValue('warehouses', warehouses);
       cart.setDataValue('totalBill', totalBill);
@@ -163,6 +166,31 @@ class CartController {
       warehouse.setDataValue('finalAmount', 0);
     }
     return warehouses;
+  }
+
+  private async getSaleCampaigns (userType: string) {
+    const scopes: any = [
+      'isAbleToUse',
+      'withProductVariant',
+    ];
+    switch (userType) {
+      case CollaboratorModel.TYPE_ENUM.DISTRIBUTOR:
+        scopes.push('isApplyToDistributor');
+        break;
+      case CollaboratorModel.TYPE_ENUM.AGENCY:
+        scopes.push('isApplyToAgency');
+        break;
+      case CollaboratorModel.TYPE_ENUM.COLLABORATOR:
+        scopes.push('isApplyToCollaborator');
+        break;
+      case 'USER':
+        scopes.push('isApplyToUser');
+        break;
+      default:
+        break;
+    }
+    const saleCampaigns = await SaleCampaignModel.scope(scopes).findAll();
+    return saleCampaigns;
   }
 }
 

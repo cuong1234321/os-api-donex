@@ -13,25 +13,26 @@ const swaggerDefinition = {
   basePath: '/api',
   tags: [
     {
+      name: '[ADMIN] ADMINS',
+      description: 'Quản lý admin',
+    },
+    {
       name: '[ADMIN] Banners',
       description: 'Quản lý banners',
     },
     {
-      name: '[ADMIN] PRODUCT CATEGORY',
-      description: 'Quản lý danh muc',
-    },
-    {
-      name: '[ADMIN] Sessions',
-      description: 'Phiên đăng nhập admin',
-    },
-    {
-      name: '[ADMIN] Passwords',
-      description: '',
+      name: '[ADMIN] Bill Templates',
+      description: 'Quản lý mẫu hóa đơn',
     },
     {
       name: '[ADMIN] Collaborators',
       description: 'Quản lý CTV/DL/NPP',
     },
+    {
+      name: '[ADMIN] FEE',
+      description: 'tinh gia van chuyen',
+    },
+
     {
       name: '[ADMIN] News',
       description: 'Quản lý tin tức',
@@ -41,40 +42,28 @@ const swaggerDefinition = {
       description: 'Quản lý Thông báo',
     },
     {
-      name: '[ADMIN] SELECTION',
-      description: 'Quản lý selection',
+      name: '[ADMIN] News Categories',
+      description: 'Quản lý Danh mục tin tức',
     },
     {
-      name: '[ADMIN] Users',
-      description: 'Quản lý user',
+      name: '[ADMIN] Orders',
+      description: 'Quản lý đơn hàng',
     },
     {
-      name: '[ADMIN] ADMINS',
-      description: 'Quản lý admin',
+      name: '[ADMIN] PRODUCT CATEGORY',
+      description: 'Quản lý danh muc',
+    },
+    {
+      name: '[ADMIN] Passwords',
+      description: 'Thông tin mật khẩu',
     },
     {
       name: '[ADMIN] PRODUCT',
       description: 'Quản lý sản phẩm',
     },
     {
-      name: '[ADMIN] SYSTEM SETTING',
-      description: 'Quản lý cài đặt hệ thống',
-    },
-    {
-      name: '[ADMIN] SALE CAMPAIGN',
-      description: 'Quản lý chương trình giảm giá',
-    },
-    {
-      name: '[ADMIN] News Categories',
-      description: 'Quản lý Danh mục tin tức',
-    },
-    {
       name: '[ADMIN] PRODUCT VARIANTS',
       description: 'Quản lý sản phẩm con',
-    },
-    {
-      name: '[ADMIN] VOUCHER APPLICATION',
-      description: 'Quản lý Chương trình khuyến mãi',
     },
     {
       name: '[ADMIN] POPUPS',
@@ -85,8 +74,36 @@ const swaggerDefinition = {
       description: 'Quản lý rank',
     },
     {
+      name: '[ADMIN] Sessions',
+      description: 'Phiên đăng nhập admin',
+    },
+    {
+      name: '[ADMIN] SELECTION',
+      description: 'Quản lý selection',
+    },
+    {
+      name: '[ADMIN] SYSTEM SETTING',
+      description: 'Quản lý cài đặt hệ thống',
+    },
+    {
+      name: '[ADMIN] SALE CAMPAIGN',
+      description: 'Quản lý chương trình giảm giá',
+    },
+    {
+      name: '[ADMIN] Shipping Partners',
+      description: 'Don vi Van Chuyen',
+    },
+    {
+      name: '[ADMIN] Users',
+      description: 'Quản lý user',
+    },
+    {
       name: '[ADMIN] UPLOAD',
       description: 'Upload file',
+    },
+    {
+      name: '[ADMIN] VOUCHER APPLICATION',
+      description: 'Quản lý Chương trình khuyến mãi',
     },
     {
       name: '[ADMIN] Warehouses',
@@ -109,26 +126,6 @@ const swaggerDefinition = {
       description: 'Báo cáo tồn kho',
     },
     {
-      name: '[ADMIN] Bill Templates',
-      description: 'Quản lý mẫu hóa đơn',
-    },
-    {
-      name: '[ADMIN] Shipping Partners',
-      description: 'Don vi Van Chuyen',
-    },
-    {
-      name: '[ADMIN] FEE',
-      description: 'tinh gia van chuyen',
-    },
-    {
-      name: '[ADMIN] Orders',
-      description: 'Quản lý đơn hàng',
-    },
-    {
-      name: '[USER] Sessions',
-      description: 'Phiên đăng nhập user',
-    },
-    {
       name: '[USER] Accounts',
       description: 'Quản lý tài khoản user',
     },
@@ -141,12 +138,20 @@ const swaggerDefinition = {
       description: 'Quản lý mã xác thực tài khoản',
     },
     {
-      name: '[USER] Passwords',
-      description: 'Quản lý mật khẩu',
+      name: '[USER] Banners',
+      description: 'Danh sách banners',
     },
     {
-      name: '[USER] PRODUCTS',
-      description: 'Quản lý sản phẩm',
+      name: '[USER] Collaborators',
+      description: 'Danh sách cửa hàng',
+    },
+    {
+      name: '[USER] CARTS',
+      description: 'Giỏ hàng user',
+    },
+    {
+      name: '[USER] FEE',
+      description: 'Tính giá van chuyen',
     },
     {
       name: '[USER] Homepage',
@@ -157,8 +162,24 @@ const swaggerDefinition = {
       description: 'Quản lý tin tức',
     },
     {
+      name: '[USER] News Categories',
+      description: 'Danh mục tin tức',
+    },
+    {
       name: '[USER] ORDER',
       description: 'Quản lý đơn hàng',
+    },
+    {
+      name: '[USER] Passwords',
+      description: 'Quản lý mật khẩu',
+    },
+    {
+      name: '[USER] PRODUCT Favorite Product',
+      description: 'Quản lý sản phẩm yêu thích',
+    },
+    {
+      name: '[USER] PRODUCTS',
+      description: 'Quản lý sản phẩm',
     },
     {
       name: '[USER] SUB ORDER',
@@ -169,20 +190,16 @@ const swaggerDefinition = {
       description: 'Cài đặt hệ thống',
     },
     {
-      name: '[USER] News Categories',
-      description: 'Danh mục tin tức',
+      name: '[USER] Sessions',
+      description: 'Phiên đăng nhập user',
+    },
+    {
+      name: '[USER] Shipping Partners',
+      description: 'Don vi Van Chuyen',
     },
     {
       name: '[USER] Users',
       description: 'Thông tin user',
-    },
-    {
-      name: '[USER] PRODUCT Favorite Product',
-      description: 'Quản lý sản phẩm yêu thích',
-    },
-    {
-      name: '[USER] Collaborators',
-      description: 'Danh sách cửa hàng',
     },
     {
       name: '[USER] UPLOAD',
@@ -193,32 +210,16 @@ const swaggerDefinition = {
       description: 'Voucher user',
     },
     {
-      name: '[USER] CARTS',
-      description: 'Giỏ hàng user',
-    },
-    {
-      name: '[USER] Banners',
-      description: 'Danh sách banners',
-    },
-    {
-      name: '[USER] FEE',
-      description: 'Tính giá van chuyen',
-    },
-    {
-      name: '[USER] Shipping Partners',
-      description: 'Don vi Van Chuyen',
-    },
-    {
-      name: '[COLLABORATOR] Shipping Partners',
-      description: 'Don vi Van Chuyen',
-    },
-    {
       name: '[COLLABORATOR] Collaborators',
       description: 'Quan ly ctv/dl',
     },
     {
       name: '[COLLABORATOR] FEE',
       description: 'tinh gia van chuyen',
+    },
+    {
+      name: '[COLLABORATOR] Shipping Partners',
+      description: 'Don vi Van Chuyen',
     },
   ],
   securityDefinitions: {
