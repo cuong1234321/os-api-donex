@@ -52,7 +52,8 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
         'warehouseId',
         { items: ['productVariantId', 'quantity'] },
       ],
-    }]
+    },
+  ]
 
   static readonly ADMIN_CREATABLE_PARAMETERS = ['orderableType', 'appliedVoucherId', 'orderableId', 'saleChannel', 'shippingFullName', 'shippingProvinceId',
     'shippingDistrictId', 'shippingPhoneNumber', 'shippingWardId', 'shippingAddress',
@@ -157,9 +158,9 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
       return {
         attributes: {
           include: [
-            [Sequelize.literal('(SELECT title FROM m_districts WHERE id = OrderModel.shippingDistrictId)'), 'districtName'],
-            [Sequelize.literal('(SELECT title FROM m_wards WHERE id = OrderModel.shippingWardId)'), 'wardName'],
-            [Sequelize.literal('(SELECT title FROM m_provinces WHERE id = OrderModel.shippingProvinceId)'), 'provinceName'],
+            [Sequelize.literal('(SELECT title FROM m_districts WHERE misaCode = OrderModel.shippingDistrictId)'), 'districtName'],
+            [Sequelize.literal('(SELECT title FROM m_wards WHERE misaCode = OrderModel.shippingWardId)'), 'wardName'],
+            [Sequelize.literal('(SELECT title FROM m_provinces WHERE misaCode = OrderModel.shippingProvinceId)'), 'provinceName'],
           ],
         },
       };
@@ -198,22 +199,7 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
   }
 
   public static async formatOrder (subOrders: any) {
-    const warehouseIds = new Array(0);
-    let productVariantIds = new Array(0);
-    for (const subOrder of subOrders) {
-      warehouseIds.push(subOrder.warehouseId);
-      productVariantIds.push(subOrder.items.map((item: any) => item.productVariantId));
-    }
-    productVariantIds = [...new Set(productVariantIds.flat(Infinity))];
-    const warehouses = await WarehouseModel.scope([
-      { method: ['byId', warehouseIds.flat(Infinity)] },
-      'withAddress',
-    ]).findAll();
-    const productVariants = await ProductVariantModel.scope([
-      { method: ['byId', productVariantIds] },
-      'withOptions',
-      'withProduct',
-    ]).findAll();
+    const { warehouses, productVariants } = await this.getOrderAttributes(subOrders);
     for (const subOrder of subOrders) {
       const warehouse = warehouses.find((warehouse: any) => warehouse.id === subOrder.warehouseId);
       subOrder.setDataValue('warehouse', warehouse);
@@ -241,6 +227,75 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
       }
     }
     return subOrders;
+  }
+
+  public static async formatViewOrder (subOrders: any) {
+    const { warehouses, productVariants } = await this.getOrderAttributes(subOrders);
+    for (const subOrder of subOrders) {
+      const warehouse = warehouses.find((warehouse: any) => warehouse.id === subOrder.warehouseId);
+      subOrder.code = '';
+      subOrder.subTotal = 0;
+      subOrder.shippingFee = 0;
+      subOrder.shippingDiscount = 0;
+      subOrder.total = 0;
+      subOrder.shippingCode = 0;
+      subOrder.status = SubOrderModel.STATUS_ENUM.DRAFT;
+      subOrder.weight = 0;
+      subOrder.length = 0;
+      subOrder.width = 0;
+      subOrder.height = 0;
+      subOrder.shippingFeeMisa = 0;
+      subOrder.deposit = 0;
+      subOrder.note = '';
+      subOrder.deliveryType = '';
+      subOrder.deliveryInfo = '';
+      subOrder.shippingType = '';
+      subOrder.shippingAttributeType = '';
+      subOrder.warehouse = warehouse;
+      for (const item of subOrder.items) {
+        const productVariant = productVariants.find((productVariant: any) => productVariant.id === item.productVariantId);
+        const productVariantInfo = {
+          id: productVariant.id,
+          productId: productVariant.productId,
+          name: productVariant.name,
+          slug: productVariant.slug,
+          skuCode: productVariant.skuCode,
+          barCode: productVariant.barCode,
+          colorTitle: productVariant.colorTitle,
+          sizeTitle: productVariant.sizeTitle,
+          product: {
+            avatar: productVariant.product.avatar,
+            name: productVariant.product.name,
+            slug: productVariant.product.slug,
+            shortDescription: productVariant.product.shortDescription,
+            skuCode: productVariant.product.skuCode,
+            barCode: productVariant.product.barCode,
+          },
+        };
+        item.productVariantInfo = productVariantInfo;
+      }
+    }
+    return subOrders;
+  }
+
+  private static async getOrderAttributes (subOrders: any) {
+    const warehouseIds = new Array(0);
+    let productVariantIds = new Array(0);
+    for (const subOrder of subOrders) {
+      warehouseIds.push(subOrder.warehouseId);
+      productVariantIds.push(subOrder.items.map((item: any) => item.productVariantId));
+    }
+    productVariantIds = [...new Set(productVariantIds.flat(Infinity))];
+    const warehouses = await WarehouseModel.scope([
+      { method: ['byId', warehouseIds.flat(Infinity)] },
+      'withAddress',
+    ]).findAll();
+    const productVariants = await ProductVariantModel.scope([
+      { method: ['byId', productVariantIds] },
+      'withOptions',
+      'withProduct',
+    ]).findAll();
+    return { warehouses, productVariants };
   }
 
   public static initialize (sequelize: Sequelize) {

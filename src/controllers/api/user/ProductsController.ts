@@ -7,6 +7,8 @@ import ProductCategoryModel from '@models/productCategories';
 import ProductOptionModel from '@models/productOptions';
 import { NoData } from '@libs/errors';
 import SaleCampaignProductDecorator from '@decorators/saleCampaignProducts';
+import SaleCampaignModel from '@models/saleCampaigns';
+import CollaboratorModel from '@models/collaborators';
 class ProductController {
   public async index (req: Request, res: Response) {
     try {
@@ -42,7 +44,8 @@ class ProductController {
         distinct: true,
         col: 'ProductModel.id',
       });
-      const products = await SaleCampaignProductDecorator.calculatorVariantPrice('USER', rows);
+      const saleCampaigns = await this.getSaleCampaigns('USER');
+      const products = await SaleCampaignProductDecorator.calculatorVariantPrice(rows, saleCampaigns);
       sendSuccess(res, { products, pagination: { total: count, page, perPage: limit } });
     } catch (error) {
       sendError(res, 500, error.message, error);
@@ -73,7 +76,8 @@ class ProductController {
       product.setDataValue('options', options);
       product.setDataValue('medias', await product.getMedias());
       product.setDataValue('variants', await product.getVariantDetail());
-      product = await SaleCampaignProductDecorator.calculatorVariantPrice('USER', [product]);
+      const saleCampaigns = await this.getSaleCampaigns('USER');
+      product = await SaleCampaignProductDecorator.calculatorVariantPrice([product], saleCampaigns);
       sendSuccess(res, { product: product[0] });
     } catch (error) {
       sendError(res, 500, error.message, error);
@@ -91,11 +95,37 @@ class ProductController {
         'withVariants',
       ]).findOne();
       if (!product) { return sendError(res, 404, NoData); }
-      product = (await SaleCampaignProductDecorator.calculatorVariantPrice('USER', [product]))[0];
+      const saleCampaigns = await this.getSaleCampaigns('USER');
+      product = (await SaleCampaignProductDecorator.calculatorVariantPrice([product], saleCampaigns))[0];
       sendSuccess(res, product);
     } catch (error) {
       sendError(res, 500, error.message, error);
     }
+  }
+
+  private async getSaleCampaigns (userType: string) {
+    const scopes: any = [
+      'isAbleToUse',
+      'withProductVariant',
+    ];
+    switch (userType) {
+      case CollaboratorModel.TYPE_ENUM.DISTRIBUTOR:
+        scopes.push('isApplyToDistributor');
+        break;
+      case CollaboratorModel.TYPE_ENUM.AGENCY:
+        scopes.push('isApplyToAgency');
+        break;
+      case CollaboratorModel.TYPE_ENUM.COLLABORATOR:
+        scopes.push('isApplyToCollaborator');
+        break;
+      case 'USER':
+        scopes.push('isApplyToUser');
+        break;
+      default:
+        break;
+    }
+    const saleCampaigns = await SaleCampaignModel.scope(scopes).findAll();
+    return saleCampaigns;
   }
 }
 

@@ -1,29 +1,7 @@
-import CollaboratorModel from '@models/collaborators';
 import SaleCampaignModel from '@models/saleCampaigns';
 
 class SaleCampaignProductDecorator {
-  public static async calculatorVariantPrice (userType: string, products: any) {
-    const scopes: any = [
-      'isAbleToUse',
-      'withProductVariant',
-    ];
-    switch (userType) {
-      case CollaboratorModel.TYPE_ENUM.DISTRIBUTOR:
-        scopes.push('isApplyToDistributor');
-        break;
-      case CollaboratorModel.TYPE_ENUM.AGENCY:
-        scopes.push('isApplyToAgency');
-        break;
-      case CollaboratorModel.TYPE_ENUM.COLLABORATOR:
-        scopes.push('isApplyToCollaborator');
-        break;
-      case 'USER':
-        scopes.push('isApplyToUser');
-        break;
-      default:
-        break;
-    }
-    const saleCampaigns = await SaleCampaignModel.scope(scopes).findAll();
+  public static async calculatorVariantPrice (products: any, saleCampaigns: any) {
     for (const saleCampaign of saleCampaigns) {
       for (const product of products) {
         const sellPrices = [];
