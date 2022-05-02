@@ -106,6 +106,34 @@ class ProductVariantModel extends Model<ProductVariantInterface> implements Prod
         ],
       };
     },
+    byName (name) {
+      return {
+        where: {
+          name: { [Op.like]: `%${name || ''}%` },
+        },
+      };
+    },
+    withWarehouseVariant () {
+      return {
+        include: [
+          {
+            model: WarehouseVariantModel,
+            as: 'warehouseVariants',
+          },
+        ],
+      };
+    },
+    withListOptions () {
+      return {
+        include: [
+          {
+            model: ProductOptionModel,
+            as: 'options',
+            attributes: ['id', 'thumbnail'],
+          },
+        ],
+      };
+    },
     withOptions () {
       return {
         attributes: {

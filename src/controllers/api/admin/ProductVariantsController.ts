@@ -8,17 +8,20 @@ import SaleCampaignModel from '@models/saleCampaigns';
 class ProductVariantController {
   public async index (req: Request, res: Response) {
     try {
-      const { category, productId, appliedAt, appliedTo, beneficiaries, warehouseId, sku } = req.query;
+      const { category, productId, appliedAt, appliedTo, beneficiaries, warehouseId, sku, name } = req.query;
       let backlistVariants: any = [];
       const scopes: any = [
+        'withListOptions',
         'withOptions',
         'withUnit',
+        'withWarehouseVariant',
       ];
       if (category) scopes.push({ method: ['byCategory', (category as string).split(',')] });
       if (productId) scopes.push({ method: ['byProduct', (productId as string).split(',')] });
       if (productId) scopes.push({ method: ['byProduct', (productId as string).split(',')] });
       if (warehouseId) scopes.push({ method: ['byWarehouse', warehouseId] });
       if (sku) scopes.push({ method: ['bySkuCode', sku] });
+      if (name) scopes.push({ method: ['byName', name] });
       if (appliedAt && appliedTo && beneficiaries) {
         const saleCampaignScopes: any = [
           'withSaleCampaignActiveSameTime',
