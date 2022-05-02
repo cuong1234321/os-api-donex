@@ -2,8 +2,9 @@ interface HistoryEarnedPointInterface {
   id: number;
   userId: number;
   userType: string;
-  applicationAbleId: number;
-  applicationAbleType: string;
+  type: string;
+  mutableId: number;
+  mutableType: string;
   point: number;
   isAlreadyAlert: boolean;
   createdAt?: Date;

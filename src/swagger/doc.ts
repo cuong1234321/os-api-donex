@@ -158,6 +158,10 @@ const swaggerDefinition = {
       description: 'Trang chủ',
     },
     {
+      name: '[USER] HISTORY EARNED POINT',
+      description: 'lịch sử điểm thưởng',
+    },
+    {
       name: '[USER] News',
       description: 'Quản lý tin tức',
     },
