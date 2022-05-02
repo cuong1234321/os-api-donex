@@ -407,6 +407,7 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
         include: [{
           model: ProductVariantModel,
           as: 'variants',
+          required: true,
           include: [
             {
               model: WarehouseVariantModel,

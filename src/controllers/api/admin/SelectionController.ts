@@ -12,6 +12,10 @@ import CollaboratorModel from '@models/collaborators';
 import WarehouseModel from '@models/warehouses';
 import MBillTemplateKeyModel from '@models/mBillTemplateKeys';
 import ProductModel from '@models/products';
+import SaleCampaignModel from '@models/saleCampaigns';
+import { NoData } from '@libs/errors';
+import SaleCampaignProductDecorator from '@decorators/saleCampaignProducts';
+import AddressBookModel from '@models/addressBooks';
 
 class SelectionController {
   public async productCategories (req: Request, res: Response) {
@@ -132,7 +136,7 @@ class SelectionController {
 
   public async listProducts (req: Request, res: Response) {
     try {
-      const { warehouseId, productId, name, sku } = req.query;
+      const { warehouseId, productId, name, sku, saleCampaignId } = req.query;
       const scopes: any = [
         'withThumbnail',
         'withVariantDetails',
@@ -141,10 +145,36 @@ class SelectionController {
       if (warehouseId) scopes.push({ method: ['byWarehouseId', warehouseId] });
       if (name) scopes.push({ method: ['byName', name] });
       if (sku) scopes.push({ method: ['bySkuCode', sku] });
-      const products = await ProductModel.scope(scopes).findAll({
+      let products = await ProductModel.scope(scopes).findAll({
         order: [['createdAt', 'DESC']],
       });
+      if (saleCampaignId) {
+        const saleCampaign = await SaleCampaignModel.scope([
+          'isAbleToUse',
+          'withProductVariant',
+          { method: ['byId', saleCampaignId] },
+        ]).findOne();
+        if (!saleCampaign) { return sendError(res, 404, NoData); }
+        products = await SaleCampaignProductDecorator.calculatorVariantPrice(products, [saleCampaign]);
+      }
       sendSuccess(res, products);
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async listAddressBooks (req: Request, res: Response) {
+    try {
+      const { userId } = req.query;
+      const sortBy = req.query.sortBy || 'createdAt';
+      const sortOrder = req.query.sortOrder || 'DESC';
+      const scopes: any = [
+        'withAddressInfo',
+        { method: ['bySorting', sortBy, sortOrder] },
+      ];
+      if (userId) scopes.push({ method: ['byUser', userId] });
+      const addressBooks = await AddressBookModel.scope(scopes).findAll();
+      sendSuccess(res, addressBooks);
     } catch (error) {
       sendError(res, 500, error.message, error);
     }
