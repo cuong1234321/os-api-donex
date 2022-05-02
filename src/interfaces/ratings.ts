@@ -1,9 +1,11 @@
 interface RatingInterface {
   id: number;
-  userId: number;
-  userType: string;
-  orderId: number;
+  creatableId: number;
+  creatableType: string;
+  subOrderId: number;
+  productVariantId: number;
   content: string;
+  point: number;
   status: string;
   adminId: number;
   createdAt?: Date;
