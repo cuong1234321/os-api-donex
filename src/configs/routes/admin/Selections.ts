@@ -242,4 +242,38 @@ router.get('/warehouses', SelectionController.warehouseSelections);
  */
 router.get('/bill_templates', SelectionController.listBillTemplateKeys);
 
+/**
+ * @openapi
+ * /a/selections/products:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] SELECTION"
+ *     summary: danh sach san pham to
+ *     parameters:
+ *      - in: query
+ *        name: "productId"
+ *        description: "Ma san pham"
+ *        type: "number"
+ *      - in: query
+ *        name: "name"
+ *        description: "ten san pham"
+ *        type: "string"
+ *      - in: query
+ *        name: "warehouseId"
+ *        description: "Ma kho"
+ *        type: "number"
+ *      - in: query
+ *        name: "sku"
+ *        description: "Ma sku"
+ *        type: "number"
+ *     responses:
+ *       200:
+ *         description: "success"
+ *       500:
+ *         description: "failed"
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/products', SelectionController.listProducts);
+
 export default router;

@@ -402,6 +402,21 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
         order: orderConditions,
       };
     },
+    byWarehouseId (warehouseId) {
+      return {
+        include: [{
+          model: ProductVariantModel,
+          as: 'variants',
+          include: [
+            {
+              model: WarehouseVariantModel,
+              as: 'warehouseVariants',
+              where: { warehouseId },
+            },
+          ],
+        }],
+      };
+    },
     verifyProduct (code) {
       return {
         where: {
@@ -450,6 +465,36 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
         include: [{
           model: ProductVariantModel,
           as: 'variants',
+        }],
+      };
+    },
+    withVariantDetails () {
+      return {
+        include: [{
+          model: ProductVariantModel,
+          as: 'variants',
+          attributes: {
+            include: [
+              [
+                Sequelize.literal('(SELECT title FROM m_colors INNER JOIN product_options ON product_options.value = m_colors.id AND product_options.key = "color" AND product_options.deletedAt IS NULL ' +
+                'INNER JOIN product_variant_options ON product_variant_options.optionId = product_options.id AND product_variant_options.deletedAt IS NULL ' +
+                'WHERE product_variant_options.variantId = variants.id)'),
+                'colorTitle',
+              ],
+              [
+                Sequelize.literal('(SELECT code FROM m_sizes INNER JOIN product_options ON product_options.value = m_sizes.id AND product_options.key = "size" AND product_options.deletedAt IS NULL ' +
+                'INNER JOIN product_variant_options ON product_variant_options.optionId = product_options.id AND product_variant_options.deletedAt IS NULL ' +
+                'WHERE product_variant_options.variantId = variants.id)'),
+                'sizeTitle',
+              ],
+            ],
+          },
+          include: [
+            {
+              model: WarehouseVariantModel,
+              as: 'warehouseVariants',
+            },
+          ],
         }],
       };
     },
