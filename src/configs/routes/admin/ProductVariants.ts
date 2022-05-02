@@ -29,6 +29,10 @@ const router = Router();
  *        description: "ma sku san pham"
  *        type: "string"
  *      - in: query
+ *        name: "name"
+ *        description: "ten san pham"
+ *        type: "string"
+ *      - in: query
  *        name: "appliedAt"
  *        description: "ngày bắt đầu chương trình"
  *        type: "string"
