@@ -3,6 +3,9 @@ import AddressBookEntity from '@entities/addressBooks';
 import AddressBookInterface from '@interfaces/addressBooks';
 import { Model, ModelScopeOptions, ModelValidateOptions, Sequelize, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
+import MDistrictModel from './mDistricts';
+import MProvinceModel from './mProvinces';
+import MWardModel from './mWards';
 
 class AddressBookModel extends Model<AddressBookInterface> implements AddressBookInterface {
   public id: number;
@@ -56,6 +59,11 @@ class AddressBookModel extends Model<AddressBookInterface> implements AddressBoo
         where: { isDefault: true },
       };
     },
+    bySorting (sortBy, sortOrder) {
+      return {
+        order: [[Sequelize.literal(sortBy), sortOrder]],
+      };
+    },
     addressInfo () {
       return {
         attributes: {
@@ -76,6 +84,24 @@ class AddressBookModel extends Model<AddressBookInterface> implements AddressBoo
         },
       };
     },
+    withAddressInfo () {
+      return {
+        include: [
+          {
+            model: MProvinceModel,
+            as: 'province',
+          },
+          {
+            model: MDistrictModel,
+            as: 'district',
+          },
+          {
+            model: MWardModel,
+            as: 'ward',
+          },
+        ],
+      };
+    },
   }
 
   public static initialize (sequelize: Sequelize) {
@@ -88,7 +114,11 @@ class AddressBookModel extends Model<AddressBookInterface> implements AddressBoo
     });
   }
 
-  public static associate () {}
+  public static associate () {
+    this.belongsTo(MProvinceModel, { as: 'province', foreignKey: 'provinceId' });
+    this.belongsTo(MDistrictModel, { as: 'district', foreignKey: 'districtId' });
+    this.belongsTo(MWardModel, { as: 'ward', foreignKey: 'wardId' });
+  }
 }
 
 export default AddressBookModel;

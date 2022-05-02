@@ -266,6 +266,10 @@ router.get('/bill_templates', SelectionController.listBillTemplateKeys);
  *        name: "sku"
  *        description: "Ma sku"
  *        type: "number"
+ *      - in: query
+ *        name: "saleCampaignId"
+ *        description: "Ma bang gia"
+ *        type: "number"
  *     responses:
  *       200:
  *         description: "success"
@@ -275,5 +279,27 @@ router.get('/bill_templates', SelectionController.listBillTemplateKeys);
  *      - Bearer: []
  */
 router.get('/products', SelectionController.listProducts);
+
+/**
+ * @openapi
+ * /a/selections/address_books:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] SELECTION"
+ *     summary: danh sach so dia chi
+ *     parameters:
+ *      - in: query
+ *        name: "userId"
+ *        description: "id khach hang"
+ *        type: "number"
+ *     responses:
+ *       200:
+ *         description: "success"
+ *       500:
+ *         description: "failed"
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/address_books', SelectionController.listAddressBooks);
 
 export default router;

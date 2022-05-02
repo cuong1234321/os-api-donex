@@ -28,7 +28,6 @@ const BannerEntity = {
       if (!value) return;
       if (value.includes(settings.imageStorageHost)) {
         const image = value.slice(settings.imageStorageHost.length + 1);
-        console.log(image);
         this.setDataValue('image', image);
       } else {
         this.setDataValue('image', value);
