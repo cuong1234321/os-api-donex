@@ -4,25 +4,36 @@ const RatingEntity = {
   id: {
     type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false,
   },
-  userId: {
+  creatableId: {
     type: DataTypes.INTEGER, allowNull: false,
   },
-  userType: {
+  creatableType: {
     type: DataTypes.ENUM({ values: ['collaborator', 'agency', 'distributor', 'user'] }),
     defaultValue: 'user',
   },
-  orderId: {
+  subOrderId: {
+    type: DataTypes.INTEGER, allowNull: false,
+  },
+  productVariantId: {
     type: DataTypes.INTEGER, allowNull: false,
   },
   content: {
     type: DataTypes.TEXT, allowNull: false,
+  },
+  point: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    validator: {
+      min: 0,
+      max: 5,
+    },
   },
   status: {
     type: DataTypes.ENUM({ values: ['pending', 'active', 'inactive'] }),
     defaultValue: 'pending',
   },
   adminId: {
-    type: DataTypes.INTEGER, allowNull: false,
+    type: DataTypes.INTEGER, allowNull: true,
   },
   createdAt: {
     type: DataTypes.DATE,
