@@ -11,6 +11,7 @@ import UserModel from '@models/users';
 import CollaboratorModel from '@models/collaborators';
 import WarehouseModel from '@models/warehouses';
 import MBillTemplateKeyModel from '@models/mBillTemplateKeys';
+import ProductModel from '@models/products';
 
 class SelectionController {
   public async productCategories (req: Request, res: Response) {
@@ -126,6 +127,26 @@ class SelectionController {
       sendSuccess(res, billTemplateKeys);
     } catch (error) {
       sendError(res, 500, error.message);
+    }
+  }
+
+  public async listProducts (req: Request, res: Response) {
+    try {
+      const { warehouseId, productId, name, sku } = req.query;
+      const scopes: any = [
+        'withThumbnail',
+        'withVariantDetails',
+      ];
+      if (productId) scopes.push({ method: ['byId', productId] });
+      if (warehouseId) scopes.push({ method: ['byWarehouseId', warehouseId] });
+      if (name) scopes.push({ method: ['byName', name] });
+      if (sku) scopes.push({ method: ['bySkuCode', sku] });
+      const products = await ProductModel.scope(scopes).findAll({
+        order: [['createdAt', 'DESC']],
+      });
+      sendSuccess(res, products);
+    } catch (error) {
+      sendError(res, 500, error.message, error);
     }
   }
 }
