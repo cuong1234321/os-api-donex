@@ -76,6 +76,9 @@ const OrderEntity = {
   portalConfirmAt: {
     type: DataTypes.DATE, allowNull: true,
   },
+  saleCampaignId: {
+    type: DataTypes.INTEGER, allowNull: true,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },

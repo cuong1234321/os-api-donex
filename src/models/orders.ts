@@ -39,6 +39,7 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
   public promotionType: string;
   public paidAt?: Date;
   public portalConfirmAt?: Date;
+  public saleCampaignId: number;
   public createdAt?: Date;
   public updatedAt?: Date;
   public deletedAt?: Date;
@@ -56,7 +57,7 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
   ]
 
   static readonly ADMIN_CREATABLE_PARAMETERS = ['orderableType', 'appliedVoucherId', 'orderableId', 'saleChannel', 'shippingFullName', 'shippingProvinceId',
-    'shippingDistrictId', 'shippingPhoneNumber', 'shippingWardId', 'shippingAddress',
+    'shippingDistrictId', 'shippingPhoneNumber', 'shippingWardId', 'shippingAddress', 'saleCampaignId',
     {
       subOrders: [
         'warehouseId', 'weight', 'length', 'width', 'height', 'pickUpAt', 'shippingFeeMisa', 'shippingFee', 'deposit', 'deliveryType', 'deliveryInfo', 'note', 'shippingType', 'shippingAttributeType',

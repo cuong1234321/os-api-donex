@@ -1,38 +1,29 @@
-import CollaboratorModel from '@models/collaborators';
 import ProductVariantModel from '@models/productVariants';
 import SaleCampaignModel from '@models/saleCampaigns';
 
 class ApplySaleCampaignVariantDecorator {
-  public static async calculatorVariantPrice (items: any, userType: any) {
-    const scopes: any = [
-      'isAbleToUse',
-      'withProductVariant',
-    ];
-    switch (userType) {
-      case CollaboratorModel.TYPE_ENUM.DISTRIBUTOR:
-        scopes.push('isApplyToDistributor');
-        break;
-      case CollaboratorModel.TYPE_ENUM.AGENCY:
-        scopes.push('isApplyToAgency');
-        break;
-      case CollaboratorModel.TYPE_ENUM.COLLABORATOR:
-        scopes.push('isApplyToCollaborator');
-        break;
-      case 'USER':
-        scopes.push('isApplyToUser');
-        break;
-      default:
-        break;
-    }
+  public static async calculatorVariantPrice (items: any, saleCampaignId?: any) {
     let totalPrice = 0;
     let totalQuantity = 0;
-    const saleCampaigns = await SaleCampaignModel.scope(scopes).findAll();
     const variants = await ProductVariantModel.findAll();
-    saleCampaigns.forEach((saleCampaign: any) => {
+    if (!saleCampaignId) {
+      items.forEach((item: any) => {
+        const variant = variants.find((record: any) => record.id === item.productVariantId);
+        item.sellingPrice = variant.sellPrice;
+        totalPrice += item.sellingPrice * item.quantity;
+        totalQuantity += item.quantity;
+      });
+    } else {
+      const scopes: any = [
+        'isAbleToUse',
+        'withProductVariant',
+        { method: ['byId', saleCampaignId] },
+      ];
+      const saleCampaign = await SaleCampaignModel.scope(scopes).findOne();
       items.forEach((item: any) => {
         const variant = variants.find((record: any) => record.id === item.productVariantId);
         if (saleCampaign.productVariants.find((record: any) => record.productVariantId === item.productVariantId)) {
-          item.saleCampaignId = saleCampaign.id;
+          item.saleCampaignId = saleCampaignId;
           if (saleCampaign.calculatePriceType === SaleCampaignModel.CALCULATE_PRICE_TYPE.REDUCE_BY_AMOUNT) {
             item.sellingPrice = variant.sellPrice - saleCampaign.value;
           }
@@ -51,7 +42,7 @@ class ApplySaleCampaignVariantDecorator {
         totalPrice += item.sellingPrice * item.quantity;
         totalQuantity += item.quantity;
       });
-    });
+    }
     return { items, totalPrice, totalQuantity };
   }
 }

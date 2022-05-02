@@ -29,6 +29,7 @@ interface OrderInterface {
   promotionType: string;
   paidAt?: Date;
   portalConfirmAt?: Date;
+  saleCampaignId: number;
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;
