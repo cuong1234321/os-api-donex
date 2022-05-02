@@ -1,6 +1,7 @@
 import HistoryEarnedPointEntity from '@entities/historyEarnedPoints';
 import HistoryEarnedPointInterface from '@interfaces/historyEarnedPoints';
-import { Model, ModelScopeOptions, ModelValidateOptions, Sequelize } from 'sequelize';
+import dayjs from 'dayjs';
+import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import CollaboratorModel from './collaborators';
 import OrderModel from './orders';
@@ -30,17 +31,7 @@ class HistoryEarnedPointModel extends Model<HistoryEarnedPointInterface> impleme
     },
   }
 
-  static readonly validations: ModelValidateOptions = {
-    withMutableObject () {
-      return {
-        include: [
-          { model: OrderModel, as: 'order' },
-          { model: RatingModel, as: 'rating' },
-          { model: UserModel, as: 'user' },
-        ],
-      };
-    },
-  }
+  static readonly validations: ModelValidateOptions = { }
 
   private async updateAccumulatedMoney () {
     let user: any;
@@ -72,7 +63,36 @@ class HistoryEarnedPointModel extends Model<HistoryEarnedPointInterface> impleme
     await user.update({ coinReward: user.coinReward + this.point });
   }
 
-  static readonly scopes: ModelScopeOptions = {}
+  static readonly scopes: ModelScopeOptions = {
+    withMutableObject () {
+      return {
+        include: [
+          { model: OrderModel, as: 'order' },
+          { model: RatingModel, as: 'rating' },
+          { model: UserModel, as: 'user' },
+        ],
+      };
+    },
+    bySorting (sortBy, sortOrder) {
+      return {
+        order: [[Sequelize.literal(sortBy), sortOrder]],
+      };
+    },
+    byUser (userId, userType) {
+      return {
+        where: { userId, userType },
+      };
+    },
+    byCreatedAt (from, to) {
+      if (!from && !to) return { where: {} };
+      const createdAtCondition: any = {};
+      if (from) Object.assign(createdAtCondition, { [Op.gt]: dayjs(from as string).startOf('day').format() });
+      if (to) Object.assign(createdAtCondition, { [Op.lte]: dayjs(to as string).endOf('day').format() });
+      return {
+        where: { createdAt: createdAtCondition },
+      };
+    },
+  }
 
   public static initialize (sequelize: Sequelize) {
     this.init(HistoryEarnedPointEntity, {

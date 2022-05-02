@@ -18,7 +18,7 @@ class HistoryEarnedPointController {
       const createdAtTo = req.query.createdAtFrom ? dayjs(req.query.createdAtTo as string).endOf('day').format() : dayjs().endOf('month').format();
       const scopes: any = [
         { method: ['bySorting', sortBy, sortOrder] },
-        { method: ['byUser', currentUser.id] },
+        { method: ['byUser', currentUser.id, HistoryEarnedPointModel.USER_TYPE.USER] },
         { method: ['byCreatedAt', createdAtFrom, createdAtTo] },
         'withMutableObject',
       ];
