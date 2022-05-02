@@ -42,6 +42,9 @@ const router = Router();
  *               - wholesale
  *               - retail
  *               - other
+ *            saleCampaignId:
+ *              type: "number"
+ *              description: "id bang gia"
  *            shippingFullName:
  *              type: "string"
  *              description: "Tên người mua hàng"

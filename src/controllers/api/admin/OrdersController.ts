@@ -17,7 +17,7 @@ class OrderController {
       let subTotal = 0;
       let shippingFee = 0;
       for (const subOrder of params.subOrders) {
-        const { items, totalPrice, totalQuantity } = await ApplySaleCampaignVariantDecorator.calculatorVariantPrice(subOrder.items, params.orderableType);
+        const { items, totalPrice, totalQuantity } = await ApplySaleCampaignVariantDecorator.calculatorVariantPrice(subOrder.items, params.saleCampaignId);
         subOrder.items = items;
         subOrder.subTotal = totalPrice;
         subOrder.total = totalQuantity;

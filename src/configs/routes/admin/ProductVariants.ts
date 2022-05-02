@@ -33,6 +33,10 @@ const router = Router();
  *        description: "ten san pham"
  *        type: "string"
  *      - in: query
+ *        name: "saleCampaignId"
+ *        description: "Id bang gia"
+ *        type: "number"
+ *      - in: query
  *        name: "appliedAt"
  *        description: "ngày bắt đầu chương trình"
  *        type: "string"
