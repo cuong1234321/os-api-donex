@@ -1,6 +1,7 @@
 import settings from '@configs/settings';
 import ApplySaleCampaignVariantDecorator from '@decorators/applySaleCampaignVariants';
 import sequelize from '@initializers/sequelize';
+import { NoData } from '@libs/errors';
 import { sendError, sendSuccess } from '@libs/response';
 import OrderItemModel from '@models/orderItems';
 import OrderModel from '@models/orders';
@@ -20,6 +21,7 @@ class OrderController {
       for (const subOrder of params.subOrders) {
         const { items, totalPrice, totalQuantity } = await ApplySaleCampaignVariantDecorator.calculatorVariantPrice(subOrder.items, params.saleCampaignId);
         subOrder.items = items;
+        subOrder.status = SubOrderModel.STATUS_ENUM.DRAFT;
         subOrder.subTotal = totalPrice;
         subOrder.total = totalQuantity;
         subTotal += totalPrice;
@@ -73,6 +75,46 @@ class OrderController {
         col: 'SubOrderModel.id',
       });
       sendSuccess(res, { subOrders: rows, pagination: { total: count, page, perpage: limit } });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async update (req: Request, res: Response) {
+    try {
+      const { orderId } = req.params;
+      const order = await OrderModel.findByPk(orderId);
+      if (!order) { return sendError(res, 404, NoData); }
+      const subOrderNotDraft = await SubOrderModel.scope([
+        { method: ['byOrderId', orderId] },
+        'isNotDraft',
+      ]).findOne();
+      if (subOrderNotDraft) { return sendError(res, 404, NoData); }
+      const params = req.parameters.permit(OrderModel.ADMIN_UPDATABLE_PARAMETERS).value();
+      let total = 0;
+      let subTotal = 0;
+      let shippingFee = 0;
+      for (const subOrder of params.subOrders) {
+        const { items, totalPrice, totalQuantity } = await ApplySaleCampaignVariantDecorator.calculatorVariantPrice(subOrder.items, params.saleCampaignId);
+        subOrder.items = items;
+        subOrder.status = SubOrderModel.STATUS_ENUM.DRAFT;
+        subOrder.subTotal = totalPrice;
+        subOrder.total = totalQuantity;
+        subTotal += totalPrice;
+        total += totalQuantity;
+        shippingFee += subOrder.shippingFee;
+      }
+      await sequelize.transaction(async (transaction: Transaction) => {
+        await order.update({
+          ...params,
+          total,
+          subTotal,
+          shippingFee,
+        }, { transaction });
+        await order.updateSubOrders(params.subOrders, transaction);
+      });
+      await order.reloadWithDetail();
+      sendSuccess(res, order);
     } catch (error) {
       sendError(res, 500, error.message, error);
     }
