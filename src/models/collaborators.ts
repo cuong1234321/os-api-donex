@@ -11,6 +11,9 @@ import CollaboratorWorkingDayModel from './collaboratorWorkingDays';
 import CollaboratorMediaModel from './collaboratorMedia';
 import VoucherApplicationModel from './voucherApplications';
 import VoucherModel from './vouchers';
+import MDistrictModel from './mDistricts';
+import MProvinceModel from './mProvinces';
+import MWardModel from './mWards';
 
 class CollaboratorModel extends Model<CollaboratorInterface> implements CollaboratorInterface {
   public id: number;
@@ -232,6 +235,24 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
         },
       };
     },
+    withAddressInfo () {
+      return {
+        include: [
+          {
+            model: MProvinceModel,
+            as: 'province',
+          },
+          {
+            model: MDistrictModel,
+            as: 'district',
+          },
+          {
+            model: MWardModel,
+            as: 'ward',
+          },
+        ],
+      };
+    },
   }
 
   public async checkStatus (status: string) {
@@ -306,6 +327,9 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
       foreignKey: 'recipientId',
       scope: { recipientType: { [Op.ne]: VoucherModel.RECIPIENT_TYPE_ENUM.USER } },
     });
+    this.belongsTo(MProvinceModel, { as: 'province', foreignKey: 'provinceId' });
+    this.belongsTo(MDistrictModel, { as: 'district', foreignKey: 'districtId' });
+    this.belongsTo(MWardModel, { as: 'ward', foreignKey: 'wardId' });
   }
 }
 

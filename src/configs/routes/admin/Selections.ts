@@ -190,6 +190,10 @@ router.get('/users', SelectionController.userSelections);
  *         - collaborator
  *         - agency
  *         - distributor
+ *      - in: "query"
+ *        name: collaboratorId
+ *        description: ""
+ *        type: number
  *     responses:
  *       200:
  *         description: "Upload success"
