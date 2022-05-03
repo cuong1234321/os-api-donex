@@ -101,12 +101,13 @@ class SelectionController {
 
   public async collaboratorSelections (req: Request, res: Response) {
     try {
-      const { type } = req.query;
-      const scopes: any = [];
+      const { type, collaboratorId } = req.query;
+      const scopes: any = ['withAddressInfo'];
       if (type) {
         scopes.push({ method: ['byType', type] });
       }
-      const collaborators = await CollaboratorModel.scope(scopes).findAll({ attributes: ['id', 'fullName', 'type', 'username'] });
+      if (collaboratorId) scopes.push({ method: ['byId', collaboratorId] });
+      const collaborators = await CollaboratorModel.scope(scopes).findAll({ attributes: ['id', 'fullName', 'type', 'username', 'provinceId', 'districtId', 'wardId'] });
       sendSuccess(res, collaborators);
     } catch (error) {
       sendError(res, 500, error.message, error);
