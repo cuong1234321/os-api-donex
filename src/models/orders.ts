@@ -3,6 +3,7 @@ import OrderEntity from '@entities/orders';
 import OrderInterface from '@interfaces/orders';
 import { BelongsToGetAssociationMixin, Model, ModelScopeOptions, ModelValidateOptions, Sequelize, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
+import AdminModel from './admins';
 import MDistrictModel from './mDistricts';
 import MProvinceModel from './mProvinces';
 import MWardModel from './mWards';
@@ -317,6 +318,7 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
     this.belongsTo(UserModel, { as: 'ownerUser', foreignKey: 'ownerId' });
     this.belongsTo(UserModel, { as: 'orderableUser', foreignKey: 'orderableId' });
     this.belongsTo(UserModel, { as: 'creatableUser', foreignKey: 'creatableId' });
+    this.belongsTo(AdminModel, { as: 'creatableAdmin', foreignKey: 'creatableId', scope: { key: OrderModel.CREATABLE_TYPE.ADMIN } });
   }
 }
 

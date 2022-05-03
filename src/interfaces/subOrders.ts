@@ -24,6 +24,8 @@ interface SubOrderInterface {
   shippingAttributeType: string;
   status?: string;
   orderFinishAt?: Date;
+  paymentStatus: string;
+  orderPartnerCode: string;
   pickUpAt?: Date;
   createdAt?: Date;
   updatedAt?: Date;

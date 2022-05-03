@@ -70,6 +70,13 @@ const SubOrderEntity = {
   shippingAttributeType: {
     type: DataTypes.STRING(255), allowNull: true,
   },
+  paymentStatus: {
+    type: DataTypes.STRING(255),
+    defaultValue: 'pending',
+  },
+  orderPartnerCode: {
+    type: DataTypes.STRING(255), allowNull: true,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },
