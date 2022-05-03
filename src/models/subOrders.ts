@@ -7,6 +7,7 @@ import { ModelHooks } from 'sequelize/types/lib/hooks';
 import AdminModel from './admins';
 import OrderItemModel from './orderItems';
 import OrderModel from './orders';
+import ProductVariantModel from './productVariants';
 import WarehouseModel from './warehouses';
 
 class SubOrderModel extends Model<SubOrderInterface> implements SubOrderInterface {
@@ -393,6 +394,30 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
             ],
           },
         }],
+      };
+    },
+    withItems () {
+      return {
+        include: [
+          {
+            model: OrderItemModel,
+            as: 'items',
+            include: [
+              {
+                model: ProductVariantModel,
+                as: 'variant',
+                attributes: {
+                  include: [
+                    [
+                      Sequelize.literal('(SELECT products.unit FROM products WHERE products.id = `items->variant`.id)'),
+                      'unit',
+                    ],
+                  ],
+                },
+              },
+            ],
+          },
+        ],
       };
     },
   }

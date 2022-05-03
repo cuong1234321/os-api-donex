@@ -10,6 +10,24 @@ import { Request, Response } from 'express';
 import { Transaction } from 'sequelize/types';
 
 class OrderController {
+  public async show (req: Request, res: Response) {
+    try {
+      const { orderId } = req.params;
+      const order = await OrderModel.scope([
+        { method: ['byId', orderId] },
+        'withShippingAddress',
+        'withVoucher',
+        'withOrderAbleName',
+        'withsaleCampaign',
+      ]).findOne();
+      if (!order) { return sendError(res, 404, NoData); }
+      order.setDataValue('subOrders', await order.getSubOrderDetail());
+      sendSuccess(res, order);
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
   public async create (req: Request, res: Response) {
     try {
       const currentAdmin = req.currentAdmin || { id: 1 };

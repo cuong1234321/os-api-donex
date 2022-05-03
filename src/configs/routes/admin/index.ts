@@ -30,6 +30,7 @@ import WarehouseReceiptRouter from './WarehouseReceipts';
 import WarehouseExportRouter from './WarehouseExports';
 import WarehouseTransferRouter from './warehouseTransfers';
 import WarehouseReportRouter from './WarehouseReports';
+import SubOrderRouter from './SubOrders';
 
 const router = Router();
 
@@ -43,6 +44,7 @@ router.use('/notifications', MarketingNotificationsRouter);
 router.use('/news_categories', NewsCategoryRouter);
 router.use('/news', NewsRouter);
 router.use('/orders', adminPassport.authenticate('jwt', { session: false }), OrderRouter);
+router.use('/sub_orders', adminPassport.authenticate('jwt', { session: false }), SubOrderRouter);
 router.use('/popups', PopupRouter);
 router.use('/variants', ProductVariantRouter);
 router.use('/product_categories', ProductCategoryRouter);
