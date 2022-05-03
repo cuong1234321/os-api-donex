@@ -107,7 +107,7 @@ class SelectionController {
         scopes.push({ method: ['byType', type] });
       }
       if (collaboratorId) scopes.push({ method: ['byId', collaboratorId] });
-      const collaborators = await CollaboratorModel.scope(scopes).findAll({ attributes: ['id', 'fullName', 'type', 'username', 'provinceId', 'districtId', 'wardId'] });
+      const collaborators = await CollaboratorModel.scope(scopes).findAll({ attributes: ['id', 'fullName', 'address', 'phoneNumber', 'type', 'username', 'provinceId', 'districtId', 'wardId'] });
       sendSuccess(res, collaborators);
     } catch (error) {
       sendError(res, 500, error.message, error);
