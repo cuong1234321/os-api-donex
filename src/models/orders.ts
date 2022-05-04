@@ -31,9 +31,9 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
   public total: number;
   public appliedVoucherId: number;
   public shippingFullName: string;
-  public shippingPhoneNumber: number;
-  public shippingProvinceId: number;
-  public shippingDistrictId: number;
+  public shippingPhoneNumber: string;
+  public shippingProvinceId: string;
+  public shippingDistrictId: string;
   public shippingWardId: number;
   public shippingAddress: string;
   public transactionId: string;

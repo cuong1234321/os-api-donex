@@ -42,17 +42,17 @@ const router = Router();
  *              default: "null"
  *              require: true
  *            shippingProvinceId:
- *              type: "integer"
+ *              type: "string"
  *              description: "địa chỉ mua hàng"
  *              default: "null"
  *              require: true
  *            shippingDistrictId:
- *              type: "integer"
+ *              type: "string"
  *              description: "địa chỉ mua hàng"
  *              default: "null"
  *              require: true
  *            shippingWardId:
- *              type: "integer"
+ *              type: "string"
  *              description: "địa chỉ mua hàng"
  *              default: "null"
  *              require: true

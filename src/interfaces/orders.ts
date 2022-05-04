@@ -20,9 +20,9 @@ interface OrderInterface {
   total: number;
   appliedVoucherId: number;
   shippingFullName: string;
-  shippingPhoneNumber: number;
-  shippingProvinceId: number;
-  shippingDistrictId: number;
+  shippingPhoneNumber: string;
+  shippingProvinceId: string;
+  shippingDistrictId: string;
   shippingWardId: number;
   shippingAddress: string;
   transactionId: string;
