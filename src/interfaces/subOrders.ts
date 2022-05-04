@@ -1,4 +1,5 @@
 import OrderItemInterface from './orderItems';
+import OrderInterface from './orders';
 import WarehouseInterface from './warehouses';
 
 interface SubOrderInterface {
@@ -27,11 +28,13 @@ interface SubOrderInterface {
   paymentStatus: string;
   orderPartnerCode: string;
   pickUpAt?: Date;
+  billId: number;
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;
 
   items?: OrderItemInterface[];
+  order?: OrderInterface;
   warehouse?: WarehouseInterface;
 };
 

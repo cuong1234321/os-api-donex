@@ -3,6 +3,7 @@ import ApplySaleCampaignVariantDecorator from '@decorators/applySaleCampaignVari
 import sequelize from '@initializers/sequelize';
 import { NoData } from '@libs/errors';
 import { sendError, sendSuccess } from '@libs/response';
+import BillTemplateModel from '@models/billTemplates';
 import OrderItemModel from '@models/orderItems';
 import OrderModel from '@models/orders';
 import SubOrderModel from '@models/subOrders';
@@ -36,12 +37,24 @@ class OrderController {
       let total = 0;
       let subTotal = 0;
       let shippingFee = 0;
+      const billTemplate = (await BillTemplateModel.findOrCreate({
+        where: {
+          status: BillTemplateModel.STATUS_ENUM.ACTIVE,
+        },
+        defaults: {
+          id: undefined,
+          title: 'Hóa đơn thanh toán',
+          content: '',
+          status: BillTemplateModel.STATUS_ENUM.ACTIVE,
+        },
+      }))[0];
       for (const subOrder of params.subOrders) {
         const { items, totalPrice, totalQuantity } = await ApplySaleCampaignVariantDecorator.calculatorVariantPrice(subOrder.items, params.saleCampaignId);
         subOrder.items = items;
         subOrder.status = SubOrderModel.STATUS_ENUM.DRAFT;
         subOrder.subTotal = totalPrice;
         subOrder.total = totalQuantity;
+        subOrder.billId = billTemplate.id;
         subTotal += totalPrice;
         total += totalQuantity;
         shippingFee += subOrder.shippingFee;
