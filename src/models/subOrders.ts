@@ -51,6 +51,9 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
   async beforeCreate (record: SubOrderModel) {
     record.code = await this.generateOderCode();
   },
+  async afterDestroy (record) {
+    record.deleteSubOrderDetails();
+  },
 }
 
   static readonly validations: ModelValidateOptions = {
@@ -411,12 +414,17 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
     });
   }
 
+  public async deleteSubOrderDetails () {
+    await OrderItemModel.destroy({ where: { subOrderId: this.id }, individualHooks: true });
+  }
+
   public static initialize (sequelize: Sequelize) {
     this.init(SubOrderEntity, {
       hooks: SubOrderModel.hooks,
       scopes: SubOrderModel.scopes,
       validate: SubOrderModel.validations,
       tableName: 'sub_orders',
+      paranoid: true,
       sequelize,
     });
   }

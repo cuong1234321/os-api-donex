@@ -120,6 +120,23 @@ class OrderController {
     }
   }
 
+  public async delete (req: Request, res: Response) {
+    try {
+      const { orderId } = req.params;
+      const order = await OrderModel.findByPk(orderId);
+      if (!order) { return sendError(res, 404, NoData); }
+      const subOrderNotDraft = await SubOrderModel.scope([
+        { method: ['byOrderId', orderId] },
+        'isNotDraft',
+      ]).findOne();
+      if (subOrderNotDraft) { return sendError(res, 404, NoData); }
+      await order.destroy();
+      sendSuccess(res, {});
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
   private listProductQueryBuilder (req: any) {
     const sortBy = req.query.sortBy || 'createdAt';
     const sortOrder = req.query.sortOrder || 'DESC';
