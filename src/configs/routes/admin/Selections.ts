@@ -219,6 +219,10 @@ router.get('/collaborators', SelectionController.collaboratorSelections);
  *        enum:
  *          - active
  *          - inactive
+ *      - in: query
+ *        name: "warehouseId"
+ *        description: "warehouseId"
+ *        type: "number"
  *     responses:
  *       200:
  *         description: "Upload success"
