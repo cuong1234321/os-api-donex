@@ -53,13 +53,13 @@ const OrderEntity = {
     type: DataTypes.STRING(30), allowNull: false,
   },
   shippingProvinceId: {
-    type: DataTypes.INTEGER, allowNull: true,
+    type: DataTypes.STRING(255), allowNull: true,
   },
   shippingDistrictId: {
-    type: DataTypes.INTEGER, allowNull: true,
+    type: DataTypes.STRING(255), allowNull: true,
   },
   shippingWardId: {
-    type: DataTypes.INTEGER, allowNull: true,
+    type: DataTypes.STRING(255), allowNull: true,
   },
   shippingAddress: {
     type: DataTypes.STRING(255), allowNull: true,
