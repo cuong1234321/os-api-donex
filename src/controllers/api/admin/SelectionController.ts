@@ -116,10 +116,13 @@ class SelectionController {
 
   public async warehouseSelections (req: Request, res: Response) {
     try {
-      const { status } = req.query;
-      const warehouses = await WarehouseModel.scope([
-        { method: ['byStatus', status] },
-      ]).findAll({ attributes: ['id', 'name'] });
+      const { status, warehouseId } = req.query;
+      const scopes: any = [
+        'withAddressInfo',
+      ];
+      if (status) scopes.push({ method: ['byStatus', status] });
+      if (warehouseId) scopes.push({ method: ['byId', warehouseId] });
+      const warehouses = await WarehouseModel.scope(scopes).findAll({ attributes: ['id', 'name', 'address', 'provinceId', 'districtId', 'wardId'] });
       sendSuccess(res, warehouses);
     } catch (error) {
       sendError(res, 500, error.message, error);
