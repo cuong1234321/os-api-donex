@@ -8,7 +8,7 @@ const router = Router();
  * /a/warehouses/:
  *   get:
  *     tags:
- *      - "[ADMIN] Warehouses"
+ *      - "[ADMIN] WAREHOUSES"
  *     summary: Danh sách kho hàng
  *     description: Danh sách kho hàng
  *     parameters:
@@ -55,7 +55,7 @@ router.get('/', WarehouseController.index);
  * /a/warehouses/{warehouseId}:
  *   get:
  *     tags:
- *      - "[ADMIN] Warehouses"
+ *      - "[ADMIN] WAREHOUSES"
  *     summary: Chi tiet kho hang
  *     parameters:
  *      - in: path
@@ -79,7 +79,7 @@ router.get('/:warehouseId', WarehouseController.show);
  * /a/warehouses:
  *   post:
  *     tags:
- *      - "[ADMIN] Warehouses"
+ *      - "[ADMIN] WAREHOUSES"
  *     summary: Tao moi kho hang
  *     parameters:
  *      - in: "body"
@@ -133,7 +133,7 @@ router.post('/', WarehouseController.create);
  * /a/warehouses/{warehouseId}:
  *   patch:
  *     tags:
- *      - "[ADMIN] Warehouses"
+ *      - "[ADMIN] WAREHOUSES"
  *     summary: Cap nhat kho hang
  *     parameters:
  *      - in: path
@@ -197,7 +197,7 @@ router.patch('/:warehouseId', WarehouseController.update);
  * /a/warehouses/{warehouseId}:
  *   delete:
  *     tags:
- *      - "[ADMIN] Warehouses"
+ *      - "[ADMIN] WAREHOUSES"
  *     summary: Xoa kho hang
  *     parameters:
  *      - in: path

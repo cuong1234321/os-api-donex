@@ -8,7 +8,7 @@ const router = Router();
  * /u/news_categories:
  *   get:
  *     tags:
- *      - "[USER] News Categories"
+ *      - "[USER] NEWS CATEGORIES"
  *     summary: Lấy danh sách danh mục tin tức
  *     parameters:
  *       - in: "query"

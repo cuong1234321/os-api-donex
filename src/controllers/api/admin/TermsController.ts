@@ -2,7 +2,7 @@ import { sendError, sendSuccess } from '@libs/response';
 import TermsModel from '@models/terms';
 import { Request, Response } from 'express';
 
-class TermsController {
+class TermController {
   public async show (req: Request, res: Response) {
     try {
       const { type } = req.params;
@@ -42,4 +42,4 @@ class TermsController {
   }
 }
 
-export default new TermsController();
+export default new TermController();

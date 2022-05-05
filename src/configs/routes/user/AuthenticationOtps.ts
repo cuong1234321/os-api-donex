@@ -8,7 +8,7 @@ const router = Router();
  * /u/authentication_otps/send:
  *   post:
  *     tags:
- *      - "[USER] Authentication Otps"
+ *      - "[USER] AUTHENTICATION OTPS"
  *     summary: Gui otp
  *     parameters:
  *      - in: "body"
@@ -33,7 +33,7 @@ router.post('/send', AuthenticationOtpController.sendOtp);
   * /u/authentication_otps/verify:
   *   post:
   *     tags:
-  *      - "[USER] Authentication Otps"
+  *      - "[USER] AUTHENTICATION OTPS"
   *     summary: Kiểm tra OTP
   *     parameters:
   *      - in: "body"

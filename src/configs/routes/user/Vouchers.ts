@@ -8,7 +8,7 @@ const router = Router();
  * /u/user_vouchers:
  *   get:
  *     tags:
- *      - "[USER] User vouchers"
+ *      - "[USER] USER VOUCHERS"
  *     summary: Danh sách vouchers
  *     parameters:
  *       - in: "query"

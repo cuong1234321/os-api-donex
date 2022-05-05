@@ -9,7 +9,7 @@ const router = Router();
  * /a/collaborators:
  *   get:
  *     tags:
- *      - "[ADMIN] Collaborators"
+ *      - "[ADMIN] COLLABORATORS"
  *     summary: Lấy danh sách danh CTV/DL/NPP
  *     parameters:
  *      - in: query
@@ -58,7 +58,7 @@ router.get('/', CollaboratorsController.index);
  * /a/collaborators:
  *   post:
  *     tags:
- *      - "[ADMIN] Collaborators"
+ *      - "[ADMIN] COLLABORATORS"
  *     summary: Tạo TK CTV/ĐL/NPP
  *     parameters:
  *      - in: "body"
@@ -146,7 +146,7 @@ router.post('/', CollaboratorsController.create);
  * /a/collaborators/{collaboratorId}/upload_paper_proof:
  *   post:
  *     tags:
- *      - "[ADMIN] Collaborators"
+ *      - "[ADMIN] COLLABORATORS"
  *     summary: Tải lên ảnh CCCD
  *     consumes:
  *      - "multipart/form-data"
@@ -185,7 +185,7 @@ router.post('/:collaboratorId/upload_paper_proof',
  * /a/collaborators/{collaboratorId}:
  *   patch:
  *     tags:
- *      - "[ADMIN] Collaborators"
+ *      - "[ADMIN] COLLABORATORS"
  *     summary: Cập nhật TK CTV/ĐL/NPP
  *     parameters:
  *      - in: path
@@ -277,7 +277,7 @@ router.patch('/:collaboratorId', CollaboratorsController.update);
  * /a/collaborators/{collaboratorId}/active:
  *   patch:
  *     tags:
- *      - "[ADMIN] Collaborators"
+ *      - "[ADMIN] COLLABORATORS"
  *     summary: Mở khóa TK CTV/DL/NPP
  *     parameters:
  *      - in: path
@@ -299,7 +299,7 @@ router.patch('/:collaboratorId/active', CollaboratorsController.active);
  * /a/collaborators/{collaboratorId}/inactive:
  *   patch:
  *     tags:
- *      - "[ADMIN] Collaborators"
+ *      - "[ADMIN] COLLABORATORS"
  *     summary: Khóa TK CTV/DL/NPP
  *     parameters:
  *      - in: path
@@ -321,7 +321,7 @@ router.patch('/:collaboratorId/inactive', CollaboratorsController.inactive);
  * /a/collaborators/{collaboratorId}:
  *   get:
  *     tags:
- *      - "[ADMIN] Collaborators"
+ *      - "[ADMIN] COLLABORATORS"
  *     summary: Lấy thông tin CTV/DL/NPP
  *     parameters:
  *      - in: path
@@ -343,7 +343,7 @@ router.get('/:collaboratorId', CollaboratorsController.show);
  * /a/collaborators/{collaboratorId}:
  *   delete:
  *     tags:
- *      - "[ADMIN] Collaborators"
+ *      - "[ADMIN] COLLABORATORS"
  *     summary: Xóa TK CTV/DL/NPP
  *     parameters:
  *      - in: path
@@ -365,7 +365,7 @@ router.delete('/:collaboratorId', CollaboratorsController.delete);
  * /a/collaborators/{collaboratorId}/verify:
  *   patch:
  *     tags:
- *      - "[ADMIN] Collaborators"
+ *      - "[ADMIN] COLLABORATORS"
  *     summary: Duyệt đơn ĐK TK CTV/ĐL/NPP
  *     parameters:
  *      - in: path
@@ -399,7 +399,7 @@ router.patch('/:collaboratorId/verify', CollaboratorsController.verify);
   * /a/collaborators/{collaboratorId}/reject:
   *   patch:
   *     tags:
-  *      - "[ADMIN] Collaborators"
+  *      - "[ADMIN] COLLABORATORS"
   *     summary: Từ chối đơn ĐK TK CTV/ĐL/NPP
   *     parameters:
   *      - in: path
@@ -429,7 +429,7 @@ router.patch('/:collaboratorId/reject', CollaboratorsController.reject);
  * /a/collaborators/{collaboratorId}/upload_medias:
  *   post:
  *     tags:
- *      - "[ADMIN] Collaborators"
+ *      - "[ADMIN] COLLABORATORS"
  *     summary: Upload media
  *     consumes:
  *      - "multipart/form-data"
@@ -462,7 +462,7 @@ router.post('/:collaboratorId/upload_medias', withoutSavingUploader.any(), Colla
  * /a/collaborators/{collaboratorId}/change_password:
  *   patch:
  *     tags:
- *      - "[ADMIN] Collaborators"
+ *      - "[ADMIN] COLLABORATORS"
  *     summary: thay doi password
  *     parameters:
  *      - in: path
@@ -492,7 +492,7 @@ router.patch('/:collaboratorId/change_password', CollaboratorsController.changeP
   * /a/collaborators/{collaboratorId}/upload_avatar:
   *   patch:
   *     tags:
-  *      - "[ADMIN] Collaborators"
+  *      - "[ADMIN] COLLABORATORS"
   *     summary: Tải lên avatar
   *     consumes:
   *      - "multipart/form-data"

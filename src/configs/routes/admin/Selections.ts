@@ -1,4 +1,4 @@
-import SelectionController from '@controllers/api/admin/SelectionController';
+import SelectionController from '@controllers/api/admin/SelectionsController';
 import { Router } from 'express';
 
 const router = Router();

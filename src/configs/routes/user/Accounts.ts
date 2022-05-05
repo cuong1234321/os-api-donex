@@ -8,7 +8,7 @@ const router = Router();
  * /u/accounts:
  *   post:
  *     tags:
- *      - "[USER] Accounts"
+ *      - "[USER] ACCOUNTS"
  *     summary: Đăng ký user
  *     parameters:
  *      - in: "body"

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import BannerController from '@controllers/api/admin/BannerController';
+import BannerController from '@controllers/api/admin/BannersController';
 
 const router = Router();
 
@@ -8,7 +8,7 @@ const router = Router();
  * /a/banners/{type}:
  *   get:
  *     tags:
- *      - "[ADMIN] Banners"
+ *      - "[ADMIN] BANNERS"
  *     summary: Lấy danh sách danh banner
  *     parameters:
  *      - in: path
@@ -62,7 +62,7 @@ router.get('/:type', BannerController.index);
   * /a/banners/{bannerId}/show:
   *   get:
   *     tags:
-  *      - "[ADMIN] Banners"
+  *      - "[ADMIN] BANNERS"
   *     summary: lấy một banner
   *     parameters:
   *      - in: "path"
@@ -85,7 +85,7 @@ router.get('/:bannerId/show/', BannerController.show);
  * /a/banners:
  *   post:
  *     tags:
- *      - "[ADMIN] Banners"
+ *      - "[ADMIN] BANNERS"
  *     summary: Tạo mới banner
  *     parameters:
  *      - in: "body"
@@ -141,7 +141,7 @@ router.post('/', BannerController.create);
  * /a/banners/{bannerId}:
  *   patch:
  *     tags:
- *      - "[ADMIN] Banners"
+ *      - "[ADMIN] BANNERS"
  *     summary: update banner
  *     parameters:
  *      - in: "path"
@@ -193,7 +193,7 @@ router.patch('/:bannerId', BannerController.update);
  * /a/banners/{type}/{position}/reorder:
  *   patch:
  *     tags:
- *      - "[ADMIN] Banners"
+ *      - "[ADMIN] BANNERS"
  *     summary: đổi thứ tự bannerId
  *     parameters:
  *      - in: "path"
@@ -254,7 +254,7 @@ router.patch('/:type/:position/reorder/', BannerController.reorder);
  * /a/banners/{bannerId}:
  *   delete:
  *     tags:
- *      - "[ADMIN] Banners"
+ *      - "[ADMIN] BANNERS"
  *     summary: Xóa banner
  *     parameters:
  *      - in: "path"

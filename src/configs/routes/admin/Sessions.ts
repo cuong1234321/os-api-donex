@@ -9,7 +9,7 @@ const router = Router();
  * /a/sessions/login:
  *   post:
  *     tags:
- *      - "[ADMIN] Sessions"
+ *      - "[ADMIN] SESSIONS"
  *     summary: ADMIN Đăng nhập
  *     parameters:
  *      - in: "body"
@@ -38,7 +38,7 @@ router.post('/login', SessionController.create);
  * /a/sessions/current_admin:
  *   get:
  *     tags:
- *      - "[ADMIN] Sessions"
+ *      - "[ADMIN] SESSIONS"
  *     summary: lấy admin đang đăng nhập
  *     responses:
  *       200:

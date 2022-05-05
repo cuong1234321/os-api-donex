@@ -9,7 +9,7 @@ const router = Router();
  * /u/sessions/login:
  *   post:
  *     tags:
- *      - "[USER] Sessions"
+ *      - "[USER] SESSIONS"
  *     summary: USER Đăng nhập
  *     parameters:
  *      - in: "body"
@@ -38,7 +38,7 @@ router.post('/login', SessionController.create);
  * /u/sessions/current_user:
  *   get:
  *     tags:
- *      - "[USER] Sessions"
+ *      - "[USER] SESSIONS"
  *     summary: lấy user đang đăng nhập
  *     responses:
  *       200:

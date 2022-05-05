@@ -8,7 +8,7 @@ const router = Router();
  * /a/passwords/forgot_password:
  *   post:
  *     tags:
- *      - "[ADMIN] Passwords"
+ *      - "[ADMIN] PASSWORDS"
  *     summary: quên mật khẩu
  *     parameters:
  *      - in: "body"
@@ -34,7 +34,7 @@ router.post('/forgot_password', PasswordController.forgotPassword);
   * /a/passwords/verify_otp:
   *   post:
   *     tags:
-  *      - "[ADMIN] Passwords"
+  *      - "[ADMIN] PASSWORDS"
   *     summary: verify otp
   *     parameters:
   *      - in: "body"
@@ -62,7 +62,7 @@ router.post('/verify_otp', PasswordController.verifyOtp);
   * /a/passwords:
   *   post:
   *     tags:
-  *      - "[ADMIN] Passwords"
+  *      - "[ADMIN] PASSWORDS"
   *     summary: tạo mới mật khẩu
   *     parameters:
   *      - in: query

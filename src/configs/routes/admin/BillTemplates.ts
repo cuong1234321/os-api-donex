@@ -8,7 +8,7 @@ const router = Router();
  * /a/bill_templates:
  *   get:
  *     tags:
- *      - "[ADMIN] Bill Templates"
+ *      - "[ADMIN] BILL TEMPLATES"
  *     summary: chi tiet mau hoa don
  *     responses:
  *       200:
@@ -25,7 +25,7 @@ router.get('/', BillTemplateController.show);
  * /a/bill_templates:
  *   post:
  *     tags:
- *      - "[ADMIN] Bill Templates"
+ *      - "[ADMIN] BILL TEMPLATES"
  *     summary: cap nhat mau hoa don
  *     parameters:
  *      - in: "body"

@@ -3,7 +3,7 @@ import Auth from '@repositories/models/auth';
 import ShippingPartner from '@repositories/models/shippingPartners';
 import { Request, Response } from 'express';
 
-class FeeController {
+class ShippingPartnerController {
   public async index (req: Request, res: Response) {
     try {
       const auth = await Auth.login();
@@ -16,4 +16,4 @@ class FeeController {
   }
 }
 
-export default new FeeController();
+export default new ShippingPartnerController();

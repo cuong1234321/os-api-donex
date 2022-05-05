@@ -8,7 +8,7 @@ const router = Router();
  * /a/shipping_partners/:
  *   get:
  *     tags:
- *      - "[ADMIN] Shipping Partners"
+ *      - "[ADMIN] SHIPPING PARTNERS"
  *     summary: danh sach don vi van chuyen
  *     responses:
  *       200:

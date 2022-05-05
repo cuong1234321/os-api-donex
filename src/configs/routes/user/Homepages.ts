@@ -9,7 +9,7 @@ const router = Router();
  * /u/homepages:
  *   get:
  *     tags:
- *      - "[USER] Homepage"
+ *      - "[USER] HOMEPAGE"
  *     summary: Trang chủ
  *     responses:
  *       200:

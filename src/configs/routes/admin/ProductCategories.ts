@@ -1,4 +1,4 @@
-import ProductCategoryController from '@controllers/api/admin/ProductCategoryController';
+import ProductCategoryController from '@controllers/api/admin/ProductCategoriesController';
 import { withoutSavingUploader } from '@middlewares/uploaders';
 import { Router } from 'express';
 

@@ -8,7 +8,7 @@ const router = Router();
  * /u/banners/{type}:
  *   get:
  *     tags:
- *      - "[USER] Banners"
+ *      - "[USER] BANNERS"
  *     summary: Danh sách banners
  *     parameters:
  *      - in: path
