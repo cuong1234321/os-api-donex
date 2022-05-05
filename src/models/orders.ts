@@ -94,6 +94,9 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
     async beforeCreate (record: OrderModel) {
       record.code = await this.generateOderCode();
     },
+    async afterDestroy (record) {
+      record.deleteOrderDetails();
+    },
   }
 
   static readonly validations: ModelValidateOptions = {
@@ -208,6 +211,10 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
         },
       ],
     });
+  }
+
+  public async deleteOrderDetails () {
+    await SubOrderModel.destroy({ where: { orderId: this.id }, individualHooks: true });
   }
 
   public static async formatOrder (subOrders: any) {
@@ -336,6 +343,7 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
       scopes: OrderModel.scopes,
       validate: OrderModel.validations,
       tableName: 'orders',
+      paranoid: true,
       sequelize,
     });
   }

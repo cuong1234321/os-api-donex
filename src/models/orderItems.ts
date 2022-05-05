@@ -31,6 +31,7 @@ class OrderItemModel extends Model<OrderItemInterface> implements OrderItemInter
       scopes: OrderItemModel.scopes,
       validate: OrderItemModel.validations,
       tableName: 'order_items',
+      paranoid: true,
       sequelize,
     });
   }

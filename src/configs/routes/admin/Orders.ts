@@ -423,4 +423,29 @@ router.post('/', (req: Request, res: Response) => OrdersController.create(req, r
  */
 router.patch('/:orderId', (req: Request, res: Response) => OrdersController.update(req, res));
 
+/**
+ * @openapi
+ * /a/orders/{orderId}:
+ *   delete:
+ *     tags:
+ *      - "[ADMIN] ORDERS"
+ *     summary: xoa don hang
+ *     description: xoa don hang
+ *     parameters:
+ *      - in: path
+ *        name: "orderId"
+ *        description: "orderId"
+ *        type: "number"
+ *     responses:
+ *       200:
+ *         description: "success"
+ *       404:
+ *         description: Không tìm thấy dữ liệu
+ *       500:
+ *        description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.delete('/:orderId', OrdersController.delete);
+
 export default router;
