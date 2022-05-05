@@ -77,6 +77,9 @@ const SubOrderEntity = {
   orderPartnerCode: {
     type: DataTypes.STRING(255), allowNull: true,
   },
+  billId: {
+    type: DataTypes.INTEGER, allowNull: true,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },

@@ -103,19 +103,25 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
 
   static readonly validations: ModelValidateOptions = {
     async validateShippingWard () {
-      const ward = await MWardModel.findByPk(this.shippingWardId);
+      const ward = await MWardModel.scope([
+        { method: ['byMisaCode', this.shippingWardId] },
+      ]).findOne();
       if (!ward) {
         throw new ValidationErrorItem('Địa chỉ không hợp lệ', 'validateShippingWard', 'shippingWardId', this.shippingWardId);
       }
     },
     async validateShippingDistrict () {
-      const ward = await MDistrictModel.findByPk(this.shippingDistrictId);
+      const ward = await MDistrictModel.scope([
+        { method: ['byMisaCode', this.shippingDistrictId] },
+      ]).findOne();
       if (!ward) {
         throw new ValidationErrorItem('Địa chỉ không hợp lệ', 'validateShippingDistrict', 'shippingDistrictId', this.shippingDistrictId);
       }
     },
     async validateShippingProvince () {
-      const ward = await MProvinceModel.findByPk(this.shippingProvinceId);
+      const ward = await MProvinceModel.scope([
+        { method: ['byMisaCode', this.shippingProvinceId] },
+      ]).findOne();
       if (!ward) {
         throw new ValidationErrorItem('Địa chỉ không hợp lệ', 'validateShippingProvince', 'shippingProvinceId', this.shippingProvinceId);
       }

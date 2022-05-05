@@ -36,6 +36,7 @@ public orderFinishAt?: Date;
 public pickUpAt?: Date;
 public paymentStatus: string;
 public orderPartnerCode: string;
+public billId: number;
 public createdAt?: Date;
 public updatedAt?: Date;
 public deletedAt?: Date;
@@ -391,6 +392,9 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
                 Sequelize.literal('(SELECT fullName FROM admins WHERE admins.id = order.creatableId)'),
                 'createAbleName',
               ],
+              [Sequelize.literal('(SELECT title FROM m_districts WHERE misaCode = order.shippingDistrictId)'), 'districtName'],
+              [Sequelize.literal('(SELECT title FROM m_wards WHERE misaCode = order.shippingWardId)'), 'wardName'],
+              [Sequelize.literal('(SELECT title FROM m_provinces WHERE misaCode = order.shippingProvinceId)'), 'provinceName'],
             ],
           },
         }],
