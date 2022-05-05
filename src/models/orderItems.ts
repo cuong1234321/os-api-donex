@@ -16,6 +16,8 @@ class OrderItemModel extends Model<OrderItemInterface> implements OrderItemInter
   public updatedAt?: Date;
   public deletedAt?: Date;
 
+  static readonly UPDATABLE_ON_DUPLICATE_PARAMETERS = ['id', 'productVariantId', 'quantity', 'saleCampaignId', 'sellingPrice'];
+
   static readonly hooks: Partial<ModelHooks<OrderItemModel>> = {
   }
 

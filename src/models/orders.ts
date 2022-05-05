@@ -1,7 +1,8 @@
 import settings from '@configs/settings';
 import OrderEntity from '@entities/orders';
 import OrderInterface from '@interfaces/orders';
-import { BelongsToGetAssociationMixin, Model, ModelScopeOptions, ModelValidateOptions, Sequelize, ValidationErrorItem } from 'sequelize';
+import SubOrderInterface from '@interfaces/subOrders';
+import { BelongsToGetAssociationMixin, Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, Transaction, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import AdminModel from './admins';
 import MDistrictModel from './mDistricts';
@@ -63,6 +64,15 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
       subOrders: [
         'warehouseId', 'weight', 'length', 'width', 'height', 'pickUpAt', 'shippingFeeMisa', 'shippingFee', 'deposit', 'deliveryType', 'deliveryInfo', 'note', 'shippingType', 'shippingAttributeType',
         { items: ['productVariantId', 'quantity'] },
+      ],
+    }]
+
+  static readonly ADMIN_UPDATABLE_PARAMETERS = ['orderableType', 'appliedVoucherId', 'orderableId', 'saleChannel', 'shippingFullName', 'shippingProvinceId',
+    'shippingDistrictId', 'shippingPhoneNumber', 'shippingWardId', 'shippingAddress', 'saleCampaignId',
+    {
+      subOrders: [
+        'id', 'warehouseId', 'weight', 'length', 'width', 'height', 'pickUpAt', 'shippingFeeMisa', 'shippingFee', 'deposit', 'deliveryType', 'deliveryInfo', 'note', 'shippingType', 'shippingAttributeType',
+        { items: ['id', 'productVariantId', 'quantity'] },
       ],
     }]
 
@@ -278,6 +288,26 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
       }
     }
     return subOrders;
+  }
+
+  public async updateSubOrders (subOrders: any[], transaction?: Transaction) {
+    if (!subOrders) return;
+    subOrders.forEach((record: any) => {
+      record.orderId = this.id;
+    });
+    const resultSubOrders = await SubOrderModel.bulkCreate(subOrders, {
+      updateOnDuplicate: SubOrderModel.UPDATABLE_ON_DUPLICATE_PARAMETERS as (keyof SubOrderInterface)[],
+      individualHooks: true,
+      transaction,
+    });
+    await SubOrderModel.destroy({
+      where: { orderId: this.id, id: { [Op.notIn]: resultSubOrders.map((subOrder) => subOrder.id) } },
+      individualHooks: true,
+      transaction,
+    });
+    for (const [index, subOrder] of resultSubOrders.entries()) {
+      await subOrder.updateItems(subOrders[index].items, transaction);
+    }
   }
 
   private static async getOrderAttributes (subOrders: any) {

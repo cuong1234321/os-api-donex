@@ -46,7 +46,7 @@ const swaggerDefinition = {
       description: 'Quản lý Danh mục tin tức',
     },
     {
-      name: '[ADMIN] Orders',
+      name: '[ADMIN] ORDERS',
       description: 'Quản lý đơn hàng',
     },
     {

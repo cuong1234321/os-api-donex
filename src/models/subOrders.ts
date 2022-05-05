@@ -1,7 +1,8 @@
 import SubOrderEntity from '@entities/subOrders';
+import OrderItemInterface from '@interfaces/orderItems';
 import SubOrderInterface from '@interfaces/subOrders';
 import dayjs from 'dayjs';
-import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, ValidationErrorItem } from 'sequelize';
+import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, Transaction, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import AdminModel from './admins';
 import OrderItemModel from './orderItems';
@@ -42,6 +43,9 @@ public warehouse?: WarehouseModel;
 public items?: OrderItemModel[];
 
 static readonly STATUS_ENUM = { DRAFT: 'draft' }
+
+static readonly UPDATABLE_ON_DUPLICATE_PARAMETERS = ['id', 'warehouseId', 'weight', 'length', 'width', 'height', 'pickUpAt', 'shippingFeeMisa',
+  'shippingFee', 'deposit', 'deliveryType', 'deliveryInfo', 'note', 'shippingType', 'shippingAttributeType', 'subTotal', 'total'];
 
 static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
   async beforeCreate (record: SubOrderModel) {
@@ -87,6 +91,13 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
   }
 
   static readonly scopes: ModelScopeOptions = {
+    isNotDraft () {
+      return {
+        where: {
+          status: { [Op.ne]: SubOrderModel.STATUS_ENUM.DRAFT },
+        },
+      };
+    },
     byCode (code) {
       return {
         where: { code },
@@ -381,6 +392,23 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
         }],
       };
     },
+  }
+
+  public async updateItems (items: any[], transaction?: Transaction) {
+    if (!items) return;
+    items.forEach((record: any) => {
+      record.subOrderId = this.id;
+    });
+    const resultItems = await OrderItemModel.bulkCreate(items, {
+      updateOnDuplicate: OrderItemModel.UPDATABLE_ON_DUPLICATE_PARAMETERS as (keyof OrderItemInterface)[],
+      individualHooks: true,
+      transaction,
+    });
+    await OrderItemModel.destroy({
+      where: { subOrderId: this.id, id: { [Op.notIn]: resultItems.map((item) => item.id) } },
+      individualHooks: true,
+      transaction,
+    });
   }
 
   public static initialize (sequelize: Sequelize) {
