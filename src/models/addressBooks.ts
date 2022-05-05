@@ -84,6 +84,26 @@ class AddressBookModel extends Model<AddressBookInterface> implements AddressBoo
         },
       };
     },
+    withMisaCode () {
+      return {
+        attributes: {
+          include: [
+            [
+              Sequelize.literal('(SELECT misaCode FROM m_provinces WHERE m_provinces.id = AddressBookModel.provinceId)'),
+              'provinceMisaCode',
+            ],
+            [
+              Sequelize.literal('(SELECT misaCode FROM m_districts WHERE m_districts.id = AddressBookModel.districtId)'),
+              'districtMisaCode',
+            ],
+            [
+              Sequelize.literal('(SELECT misaCode FROM m_wards WHERE m_wards.id = AddressBookModel.wardId)'),
+              'wardMisaCode',
+            ],
+          ],
+        },
+      };
+    },
     withAddressInfo () {
       return {
         include: [

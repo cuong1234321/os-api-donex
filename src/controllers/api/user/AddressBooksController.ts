@@ -10,6 +10,7 @@ class AddressController {
       const addressBooks = await AddressBookModel.scope([
         { method: ['byUser', currentUser.id] },
         'addressInfo',
+        'withMisaCode',
       ]).findAll();
       sendSuccess(res, addressBooks);
     } catch (error) {
@@ -24,6 +25,7 @@ class AddressController {
         { method: ['byUser', currentUser.id] },
         { method: ['byId', req.params.addressBookId] },
         'addressInfo',
+        'withMisaCode',
       ]).findOne();
       if (!addressBook) { return sendError(res, 404, NoData); }
       sendSuccess(res, addressBook);
