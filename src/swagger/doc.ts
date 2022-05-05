@@ -90,6 +90,10 @@ const swaggerDefinition = {
       description: 'Quản lý chương trình giảm giá',
     },
     {
+      name: '[ADMIN] SUB ORDERS',
+      description: 'Quản lý đơn hàng con',
+    },
+    {
       name: '[ADMIN] Shipping Partners',
       description: 'Don vi Van Chuyen',
     },

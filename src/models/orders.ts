@@ -2,7 +2,7 @@ import settings from '@configs/settings';
 import OrderEntity from '@entities/orders';
 import OrderInterface from '@interfaces/orders';
 import SubOrderInterface from '@interfaces/subOrders';
-import { BelongsToGetAssociationMixin, Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, Transaction, ValidationErrorItem } from 'sequelize';
+import { BelongsToGetAssociationMixin, HasManyGetAssociationsMixin, Model, ModelScopeOptions, Op, Transaction, ModelValidateOptions, Sequelize, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import AdminModel from './admins';
 import MDistrictModel from './mDistricts';
@@ -10,8 +10,10 @@ import MProvinceModel from './mProvinces';
 import MWardModel from './mWards';
 import OrderItemModel from './orderItems';
 import ProductVariantModel from './productVariants';
+import SaleCampaignModel from './saleCampaigns';
 import SubOrderModel from './subOrders';
 import UserModel from './users';
+import VoucherApplicationModel from './voucherApplications';
 import VoucherModel from './vouchers';
 import WarehouseModel from './warehouses';
 
@@ -154,6 +156,7 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
   public getWard: BelongsToGetAssociationMixin<MWardModel>
   public getDistrict: BelongsToGetAssociationMixin<MDistrictModel>
   public getProvince: BelongsToGetAssociationMixin<MProvinceModel>
+  public getSubOrders: HasManyGetAssociationsMixin<SubOrderModel>
 
   static readonly scopes: ModelScopeOptions = {
     byCode (code) {
@@ -188,10 +191,54 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
           include: [
             {
               model: OrderItemModel,
-              as: 'orderItems',
+              as: 'items',
             },
           ],
         }],
+      };
+    },
+    withVoucher () {
+      return {
+        include: [
+          {
+            model: VoucherModel,
+            as: 'voucher',
+            include: [
+              {
+                model: VoucherApplicationModel,
+                as: 'application',
+              },
+            ],
+          },
+        ],
+      };
+    },
+    withOrderAbleName () {
+      return {
+        attributes: {
+          include: [
+            [
+              Sequelize.literal('(SELECT' +
+                '(CASE orders.orderableType ' +
+                'WHEN "user" THEN (SELECT users.fullName from users WHERE users.id = orders.orderableId) ' +
+                'WHEN "collaborator" THEN (SELECT collaborators.fullName from collaborators WHERE collaborators.id = orders.orderableId) ' +
+                'WHEN "agency" THEN (SELECT collaborators.fullName from collaborators WHERE collaborators.id = orders.orderableId) ' +
+                'WHEN "distributor" THEN (SELECT collaborators.fullName from collaborators WHERE collaborators.id = orders.orderableId) ' +
+                'END) FROM orders WHERE orders.id = OrderModel.orderableId)'),
+              'orderAbleName',
+            ],
+          ],
+        },
+      };
+    },
+    withsaleCampaign () {
+      return {
+        include: [
+          {
+            model: SaleCampaignModel,
+            as: 'saleCampaign',
+          },
+        ],
       };
     },
   }
@@ -215,6 +262,59 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
 
   public async deleteOrderDetails () {
     await SubOrderModel.destroy({ where: { orderId: this.id }, individualHooks: true });
+  }
+
+  public async getSubOrderDetail () {
+    const subOrders = await this.getSubOrders({
+      include: [
+        {
+          model: OrderItemModel,
+          as: 'items',
+          include: [
+            {
+              model: ProductVariantModel,
+              as: 'variant',
+              attributes: {
+                include: [
+                  [
+                    Sequelize.literal('(SELECT title FROM m_colors INNER JOIN product_options ON product_options.value = m_colors.id AND product_options.key = "color" AND product_options.deletedAt IS NULL ' +
+                    'INNER JOIN product_variant_options ON product_variant_options.optionId = product_options.id AND product_variant_options.deletedAt IS NULL ' +
+                    'WHERE product_variant_options.variantId = `items->variant`.id)'),
+                    'colorTitle',
+                  ],
+                  [
+                    Sequelize.literal('(SELECT code FROM m_sizes INNER JOIN product_options ON product_options.value = m_sizes.id AND product_options.key = "size" AND product_options.deletedAt IS NULL ' +
+                    'INNER JOIN product_variant_options ON product_variant_options.optionId = product_options.id AND product_variant_options.deletedAt IS NULL ' +
+                    'WHERE product_variant_options.variantId = `items->variant`.id)'),
+                    'sizeTitle',
+                  ],
+                  [
+                    Sequelize.literal('(SELECT name FROM products WHERE id = `items->variant`.productId)'),
+                    'productName',
+                  ],
+                  [
+                    Sequelize.literal('(SELECT source FROM product_media WHERE productId = `items->variant`.productId AND isThumbnail = true LIMIT 1)'),
+                    'productMedia',
+                  ],
+                ],
+              },
+            },
+          ],
+        },
+        {
+          model: WarehouseModel,
+          as: 'warehouse',
+          attributes: {
+            include: [
+              [Sequelize.literal('(SELECT title FROM m_districts WHERE id = warehouse.districtId)'), 'districtName'],
+              [Sequelize.literal('(SELECT title FROM m_wards WHERE id = warehouse.wardId)'), 'wardName'],
+              [Sequelize.literal('(SELECT title FROM m_provinces WHERE id = warehouse.provinceId)'), 'provinceName'],
+            ],
+          },
+        },
+      ],
+    });
+    return subOrders;
   }
 
   public static async formatOrder (subOrders: any) {
@@ -357,6 +457,8 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
     this.belongsTo(UserModel, { as: 'orderableUser', foreignKey: 'orderableId' });
     this.belongsTo(UserModel, { as: 'creatableUser', foreignKey: 'creatableId' });
     this.belongsTo(AdminModel, { as: 'creatableAdmin', foreignKey: 'creatableId', scope: { key: OrderModel.CREATABLE_TYPE.ADMIN } });
+    this.belongsTo(VoucherModel, { as: 'voucher', foreignKey: 'appliedVoucherId' });
+    this.belongsTo(SaleCampaignModel, { as: 'saleCampaign', foreignKey: 'saleCampaignId' });
   }
 }
 

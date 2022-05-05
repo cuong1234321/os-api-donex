@@ -2,6 +2,7 @@ import OrderItemEntity from '@entities/orderItems';
 import OrderItemInterface from '@interfaces/orderItems';
 import { Model, ModelScopeOptions, ModelValidateOptions, Sequelize } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
+import ProductVariantModel from './productVariants';
 import SubOrderModel from './subOrders';
 
 class OrderItemModel extends Model<OrderItemInterface> implements OrderItemInterface {
@@ -38,6 +39,7 @@ class OrderItemModel extends Model<OrderItemInterface> implements OrderItemInter
 
   public static associate () {
     this.belongsTo(SubOrderModel, { as: 'subOrder', foreignKey: 'subOrderId' });
+    this.belongsTo(ProductVariantModel, { as: 'variant', foreignKey: 'productVariantId' });
   }
 }
 

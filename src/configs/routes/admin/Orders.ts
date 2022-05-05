@@ -118,6 +118,28 @@ router.get('/', (req: Request, res: Response) => OrdersController.index(req, res
 
 /**
  * @openapi
+ * /a/orders/{orderId}:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] ORDERS"
+ *     summary: chi tiet order
+ *     parameters:
+ *      - in: path
+ *        name: "orderId"
+ *        description: ""
+ *        type: number
+ *     responses:
+ *       200:
+ *         description: "OK"
+ *       500:
+ *         description: "Internal error"
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/:orderId', (req: Request, res: Response) => OrdersController.show(req, res));
+
+/**
+ * @openapi
  * /a/orders:
  *   post:
  *     tags:
