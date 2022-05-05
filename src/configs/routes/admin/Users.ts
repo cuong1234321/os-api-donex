@@ -9,7 +9,7 @@ const router = Router();
  * /a/users/:
  *   get:
  *     tags:
- *      - "[ADMIN] Users"
+ *      - "[ADMIN] USERS"
  *     summary: Danh sách khách hàng
  *     description: Danh sách khách hàng
  *     parameters:
@@ -64,7 +64,7 @@ router.get('/', UserController.index);
  * /a/users/{userId}:
  *   get:
  *     tags:
- *      - "[ADMIN] Users"
+ *      - "[ADMIN] USERS"
  *     summary: Chi tiet user
  *     description: Chi tiet user
  *     parameters:
@@ -88,7 +88,7 @@ router.get('/:userId', UserController.show);
   * /a/users:
   *   post:
   *     tags:
-  *      - "[ADMIN] Users"
+  *      - "[ADMIN] USERS"
   *     summary: Thêm mới khách hàng
   *     parameters:
   *      - in: "body"
@@ -131,7 +131,7 @@ router.post('/', UserController.create);
  * /a/users/{userId}:
  *   patch:
  *     tags:
- *      - "[ADMIN] Users"
+ *      - "[ADMIN] USERS"
  *     summary: Cap nhat user
  *     parameters:
  *      - in: path
@@ -175,7 +175,7 @@ router.patch('/:userId', UserController.update);
  * /a/users/{userId}/change_password:
  *   patch:
  *     tags:
- *      - "[ADMIN] Users"
+ *      - "[ADMIN] USERS"
  *     summary: thay doi password
  *     parameters:
  *      - in: path
@@ -205,7 +205,7 @@ router.patch('/:userId/change_password', UserController.changePassword);
   * /a/users/{userId}/active:
   *   patch:
   *     tags:
-  *      - "[ADMIN] Users"
+  *      - "[ADMIN] USERS"
   *     summary: Mở khóa TK user
   *     parameters:
   *      - in: path
@@ -227,7 +227,7 @@ router.patch('/:userId/active', UserController.active);
   * /a/users/{userId}/inactive:
   *   patch:
   *     tags:
-  *      - "[ADMIN] Users"
+  *      - "[ADMIN] USERS"
   *     summary: Khóa TK user
   *     parameters:
   *      - in: path
@@ -249,7 +249,7 @@ router.patch('/:userId/inactive', UserController.inactive);
   * /a/users/{userId}/upload_avatar:
   *   patch:
   *     tags:
-  *      - "[ADMIN] Users"
+  *      - "[ADMIN] USERS"
   *     summary: Tải lên avatar
   *     consumes:
   *      - "multipart/form-data"
@@ -281,7 +281,7 @@ router.patch('/:userId/upload_avatar',
   * /a/users/{userId}:
   *   delete:
   *     tags:
-  *      - "[ADMIN] Users"
+  *      - "[ADMIN] USERS"
   *     summary: Xóa TK user
   *     parameters:
   *      - in: path

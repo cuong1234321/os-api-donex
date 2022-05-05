@@ -8,7 +8,7 @@ const router = Router();
  * /u/favorite_products:
  *   get:
  *     tags:
- *      - "[USER] PRODUCT Favorite Product"
+ *      - "[USER] PRODUCT FAVORITE"
  *     summary: Danh sách yêu thích
  *     parameters:
  *       - in: "query"
@@ -30,7 +30,7 @@ router.get('/', FavoriteProductController.index);
  * /u/favorite_products:
  *   post:
  *     tags:
- *      - "[USER] PRODUCT Favorite Product"
+ *      - "[USER] PRODUCT FAVORITE"
  *     summary: Thêm sản phẩm yêu thích
  *     parameters:
  *      - in: "body"
@@ -56,7 +56,7 @@ router.post('/', FavoriteProductController.create);
  * /u/favorite_products/{productId}:
  *   delete:
  *     tags:
- *      - "[USER] PRODUCT Favorite Product"
+ *      - "[USER] PRODUCT FAVORITE"
  *     summary: Bỏ yêu thích
  *     parameters:
  *      - in: "path"

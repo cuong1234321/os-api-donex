@@ -9,7 +9,7 @@ const router = Router();
  * /u/users:
  *   patch:
  *     tags:
- *      - "[USER] Users"
+ *      - "[USER] USERS"
  *     summary: update user
  *     parameters:
  *      - in: "body"
@@ -47,7 +47,7 @@ router.patch('/', UserController.update);
   * /u/users/upload_avatar:
   *   patch:
   *     tags:
-  *      - "[USER] Users"
+  *      - "[USER] USERS"
   *     summary: Tải lên avatar
   *     consumes:
   *      - "multipart/form-data"

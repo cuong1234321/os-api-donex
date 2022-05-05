@@ -17,15 +17,15 @@ const swaggerDefinition = {
       description: 'Quản lý admin',
     },
     {
-      name: '[ADMIN] Banners',
+      name: '[ADMIN] BANNERS',
       description: 'Quản lý banners',
     },
     {
-      name: '[ADMIN] Bill Templates',
+      name: '[ADMIN] BILL TEMPLATES',
       description: 'Quản lý mẫu hóa đơn',
     },
     {
-      name: '[ADMIN] Collaborators',
+      name: '[ADMIN] COLLABORATORS',
       description: 'Quản lý CTV/DL/NPP',
     },
     {
@@ -34,7 +34,7 @@ const swaggerDefinition = {
     },
 
     {
-      name: '[ADMIN] News',
+      name: '[ADMIN] NEWS',
       description: 'Quản lý tin tức',
     },
     {
@@ -42,7 +42,7 @@ const swaggerDefinition = {
       description: 'Quản lý Thông báo',
     },
     {
-      name: '[ADMIN] News Categories',
+      name: '[ADMIN] NEWS CATEGORIES',
       description: 'Quản lý Danh mục tin tức',
     },
     {
@@ -54,7 +54,7 @@ const swaggerDefinition = {
       description: 'Quản lý danh muc',
     },
     {
-      name: '[ADMIN] Passwords',
+      name: '[ADMIN] PASSWORDS',
       description: 'Thông tin mật khẩu',
     },
     {
@@ -70,11 +70,11 @@ const swaggerDefinition = {
       description: 'Quản lý popup',
     },
     {
-      name: '[ADMIN] Rank',
+      name: '[ADMIN] RANK',
       description: 'Quản lý rank',
     },
     {
-      name: '[ADMIN] Sessions',
+      name: '[ADMIN] SESSIONS',
       description: 'Phiên đăng nhập admin',
     },
     {
@@ -94,11 +94,11 @@ const swaggerDefinition = {
       description: 'Quản lý đơn hàng con',
     },
     {
-      name: '[ADMIN] Shipping Partners',
+      name: '[ADMIN] SHIPPING PARTNERS',
       description: 'Don vi Van Chuyen',
     },
     {
-      name: '[ADMIN] Users',
+      name: '[ADMIN] USERS',
       description: 'Quản lý user',
     },
     {
@@ -110,43 +110,43 @@ const swaggerDefinition = {
       description: 'Quản lý Chương trình khuyến mãi',
     },
     {
-      name: '[ADMIN] Warehouses',
+      name: '[ADMIN] WAREHOUSES',
       description: 'Quản lý kho hàng',
     },
     {
-      name: '[ADMIN] Warehouse Receipts',
+      name: '[ADMIN] WAREHOUSE RECEIPTS',
       description: 'Quản lý kho nhập',
     },
     {
-      name: '[ADMIN] Warehouse Exports',
+      name: '[ADMIN] WAREHOUSE EXPORTS',
       description: 'Quản lý kho xuất',
     },
     {
-      name: '[ADMIN] Warehouse Transfers',
+      name: '[ADMIN] WAREHOUSE TRANSFERS',
       description: 'Quản lý chuyển kho',
     },
     {
-      name: '[ADMIN] Warehouse Report',
+      name: '[ADMIN] WAREHOUSE REPORT',
       description: 'Báo cáo tồn kho',
     },
     {
-      name: '[USER] Accounts',
+      name: '[USER] ACCOUNTS',
       description: 'Quản lý tài khoản user',
     },
     {
-      name: '[USER] AddressBooks',
+      name: '[USER] ADDRESS BOOKS',
       description: 'Quản lý sổ địa chỉ',
     },
     {
-      name: '[USER] Authentication Otps',
+      name: '[USER] AUTHENTICATION OTPS',
       description: 'Quản lý mã xác thực tài khoản',
     },
     {
-      name: '[USER] Banners',
+      name: '[USER] BANNERS',
       description: 'Danh sách banners',
     },
     {
-      name: '[USER] Collaborators',
+      name: '[USER] COLLABORATORS',
       description: 'Danh sách cửa hàng',
     },
     {
@@ -158,7 +158,7 @@ const swaggerDefinition = {
       description: 'Tính giá van chuyen',
     },
     {
-      name: '[USER] Homepage',
+      name: '[USER] HOMEPAGE',
       description: 'Trang chủ',
     },
     {
@@ -166,11 +166,11 @@ const swaggerDefinition = {
       description: 'lịch sử điểm thưởng',
     },
     {
-      name: '[USER] News',
+      name: '[USER] NEWS',
       description: 'Quản lý tin tức',
     },
     {
-      name: '[USER] News Categories',
+      name: '[USER] NEWS CATEGORIES',
       description: 'Danh mục tin tức',
     },
     {
@@ -178,11 +178,11 @@ const swaggerDefinition = {
       description: 'Quản lý đơn hàng',
     },
     {
-      name: '[USER] Passwords',
+      name: '[USER] PASSWORDS',
       description: 'Quản lý mật khẩu',
     },
     {
-      name: '[USER] PRODUCT Favorite Product',
+      name: '[USER] PRODUCT FAVORITE',
       description: 'Quản lý sản phẩm yêu thích',
     },
     {
@@ -202,15 +202,15 @@ const swaggerDefinition = {
       description: 'Cài đặt hệ thống',
     },
     {
-      name: '[USER] Sessions',
+      name: '[USER] SESSIONS',
       description: 'Phiên đăng nhập user',
     },
     {
-      name: '[USER] Shipping Partners',
+      name: '[USER] SHIPPING PARTNERS',
       description: 'Don vi Van Chuyen',
     },
     {
-      name: '[USER] Users',
+      name: '[USER] USERS',
       description: 'Thông tin user',
     },
     {
@@ -218,11 +218,11 @@ const swaggerDefinition = {
       description: 'Upload file',
     },
     {
-      name: '[USER] User vouchers',
+      name: '[USER] USER VOUCHERS',
       description: 'Voucher user',
     },
     {
-      name: '[COLLABORATOR] Collaborators',
+      name: '[COLLABORATOR] COLLABORATORS',
       description: 'Quan ly ctv/dl',
     },
     {
@@ -230,7 +230,7 @@ const swaggerDefinition = {
       description: 'tinh gia van chuyen',
     },
     {
-      name: '[COLLABORATOR] Shipping Partners',
+      name: '[COLLABORATOR] SHIPPING PARTNERS',
       description: 'Don vi Van Chuyen',
     },
   ],

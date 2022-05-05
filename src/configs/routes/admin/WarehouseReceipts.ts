@@ -8,7 +8,7 @@ const router = Router();
  * /a/warehouse_receipts:
  *   get:
  *     tags:
- *      - "[ADMIN] Warehouse Receipts"
+ *      - "[ADMIN] WAREHOUSE RECEIPTS"
  *     summary: Danh sach phieu nhap
  *     description: Danh sach phieu nhap
  *     parameters:
@@ -52,7 +52,7 @@ router.get('/', WarehouseReceiptController.index);
  * /a/warehouse_receipts/{warehouseReceiptId}:
  *   get:
  *     tags:
- *      - "[ADMIN] Warehouse Receipts"
+ *      - "[ADMIN] WAREHOUSE RECEIPTS"
  *     summary: Chi tiet phieu nhap
  *     description: Chi tiet phieu nhap
  *     parameters:
@@ -76,7 +76,7 @@ router.get('/:warehouseReceiptId', WarehouseReceiptController.show);
  * /a/warehouse_receipts:
  *   post:
  *     tags:
- *      - "[ADMIN] Warehouse Receipts"
+ *      - "[ADMIN] WAREHOUSE RECEIPTS"
  *     summary: Tao phieu nhap
  *     parameters:
  *      - in: "body"
@@ -145,7 +145,7 @@ router.post('/', WarehouseReceiptController.create);
  * /a/warehouse_receipts/{warehouseReceiptId}:
  *   patch:
  *     tags:
- *      - "[ADMIN] Warehouse Receipts"
+ *      - "[ADMIN] WAREHOUSE RECEIPTS"
  *     summary: Sua phieu nhap
  *     parameters:
  *      - in: "path"

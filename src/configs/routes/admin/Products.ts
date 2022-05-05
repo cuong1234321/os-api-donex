@@ -1,4 +1,4 @@
-import ProductController from '@controllers/api/admin/ProductController';
+import ProductController from '@controllers/api/admin/ProductsController';
 import { withoutSavingUploader } from '@middlewares/uploaders';
 import { Request, Response, Router } from 'express';
 

@@ -8,7 +8,7 @@ const router = Router();
  * /a/warehouse_reports:
  *   get:
  *     tags:
- *      - "[ADMIN] Warehouse Report"
+ *      - "[ADMIN] WAREHOUSE REPORT"
  *     summary: Bao cao ton kho
  *     parameters:
  *      - in: query

@@ -8,7 +8,7 @@ const router = Router();
  * /a/ranks/:
  *   get:
  *     tags:
- *      - "[ADMIN] Rank"
+ *      - "[ADMIN] RANK"
  *     summary: Xem chi tiết
  *     responses:
  *       200:
@@ -25,7 +25,7 @@ router.get('/', RanksController.show);
  * /a/ranks/:
  *   patch:
  *     tags:
- *      - "[ADMIN] Rank"
+ *      - "[ADMIN] RANK"
  *     summary: Chỉnh sửa rank
  *     parameters:
  *      - in: "body"

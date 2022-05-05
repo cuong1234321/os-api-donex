@@ -8,7 +8,7 @@ const router = Router();
  * /u/address_books:
  *   get:
  *     tags:
- *      - "[USER] AddressBooks"
+ *      - "[USER] ADDRESS BOOKS"
  *     summary: Danh sách sổ địa chỉ
  *     responses:
  *       200:
@@ -25,7 +25,7 @@ router.get('/', AddressBookController.index);
  * /u/address_books/{addressBookId}:
  *   get:
  *     tags:
- *      - "[USER] AddressBooks"
+ *      - "[USER] ADDRESS BOOKS"
  *     summary: Xem chi tiết sổ địa chỉ
  *     parameters:
  *      - in: "path"
@@ -46,7 +46,7 @@ router.get('/:addressBookId', AddressBookController.show);
  * /u/address_books:
  *   post:
  *     tags:
- *      - "[USER] AddressBooks"
+ *      - "[USER] ADDRESS BOOKS"
  *     summary: Thêm mới sổ địa chỉ
  *     parameters:
  *      - in: "body"
@@ -90,7 +90,7 @@ router.post('/', AddressBookController.create);
  * /u/address_books/{addressBookId}:
  *   patch:
  *     tags:
- *      - "[USER] AddressBooks"
+ *      - "[USER] ADDRESS BOOKS"
  *     summary: Sửa sổ địa chỉ
  *     parameters:
  *      - in: "path"
@@ -137,7 +137,7 @@ router.patch('/:addressBookId', AddressBookController.update);
  * /u/address_books/{addressBookId}:
  *   delete:
  *     tags:
- *      - "[USER] AddressBooks"
+ *      - "[USER] ADDRESS BOOKS"
  *     summary: Xoá sổ địa chỉ
  *     parameters:
  *      - in: "path"

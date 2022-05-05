@@ -8,7 +8,7 @@ const router = Router();
  * /u/news:
  *   get:
  *     tags:
- *      - "[USER] News"
+ *      - "[USER] NEWS"
  *     summary: Lấy danh sách tin tức
  *     parameters:
  *      - in: query
@@ -38,7 +38,7 @@ router.get('/', NewsController.index);
  * /u/news/{newsId}:
  *   get:
  *     tags:
- *      - "[USER] News"
+ *      - "[USER] NEWS"
  *     summary: Chi tiết tin tức
  *     parameters:
  *      - in: path

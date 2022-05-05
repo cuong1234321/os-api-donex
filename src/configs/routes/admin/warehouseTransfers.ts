@@ -8,7 +8,7 @@ const router = Router();
  * /a/warehouse_transfers:
  *   get:
  *     tags:
- *      - "[ADMIN] Warehouse Transfers"
+ *      - "[ADMIN] WAREHOUSE TRANSFERS"
  *     summary: Danh sach phieu chuyen
  *     description: Danh sach phieu chuyen
  *     parameters:
@@ -45,7 +45,7 @@ router.get('/', WarehouseTransferController.index);
  * /a/warehouse_transfers/{warehouseTransferId}:
  *   get:
  *     tags:
- *      - "[ADMIN] Warehouse Transfers"
+ *      - "[ADMIN] WAREHOUSE TRANSFERS"
  *     summary: Chi tiet phieu chuyen
  *     description: Chi tiet phieu chuyen
  *     parameters:
@@ -70,7 +70,7 @@ router.get('/:warehouseTransferId', WarehouseTransferController.show);
  * /a/warehouse_transfers:
  *   post:
  *     tags:
- *      - "[ADMIN] Warehouse Transfers"
+ *      - "[ADMIN] WAREHOUSE TRANSFERS"
  *     summary: Tao phieu chuyen kho
  *     parameters:
  *      - in: "body"
@@ -122,7 +122,7 @@ router.post('/', WarehouseTransferController.create);
  * /a/warehouse_transfers/{warehouseTransferId}:
  *   patch:
  *     tags:
- *      - "[ADMIN] Warehouse Transfers"
+ *      - "[ADMIN] WAREHOUSE TRANSFERS"
  *     summary: Sua phieu chuyen kho
  *     parameters:
  *      - in: path
@@ -180,7 +180,7 @@ router.patch('/:warehouseTransferId', WarehouseTransferController.update);
   * /a/warehouse_transfers/{warehouseTransferId}/change_status:
   *   patch:
   *     tags:
-  *      - "[ADMIN] Warehouse Transfers"
+  *      - "[ADMIN] WAREHOUSE TRANSFERS"
   *     summary: Sua trang thai phieu chuyen kho
   *     parameters:
   *      - in: path

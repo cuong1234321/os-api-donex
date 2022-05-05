@@ -7,7 +7,7 @@ const router = Router();
  * /a/warehouse_exports:
  *   get:
  *     tags:
- *      - "[ADMIN] Warehouse Exports"
+ *      - "[ADMIN] WAREHOUSE EXPORTS"
  *     summary: Danh sach phieu xuat
  *     description: Danh sach phieu xuat
  *     parameters:
@@ -50,7 +50,7 @@ router.get('/', WarehouseExportController.index);
  * /a/warehouse_exports/{warehouseExportId}:
  *   get:
  *     tags:
- *      - "[ADMIN] Warehouse Exports"
+ *      - "[ADMIN] WAREHOUSE EXPORTS"
  *     summary: Chi tiet phieu xuat
  *     description: Chi tiet phieu xuat
  *     parameters:
@@ -74,7 +74,7 @@ router.get('/:warehouseExportId', WarehouseExportController.show);
  * /a/warehouse_exports:
  *   post:
  *     tags:
- *      - "[ADMIN] Warehouse Exports"
+ *      - "[ADMIN] WAREHOUSE EXPORTS"
  *     summary: Tao phieu xuat
  *     parameters:
  *      - in: "body"
@@ -142,7 +142,7 @@ router.post('/', WarehouseExportController.create);
  * /a/warehouse_exports/{warehouseExportId}:
  *   patch:
  *     tags:
- *      - "[ADMIN] Warehouse Exports"
+ *      - "[ADMIN] WAREHOUSE EXPORTS"
  *     summary: Sua phieu xuat
  *     parameters:
  *      - in: "path"

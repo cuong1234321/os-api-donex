@@ -9,7 +9,7 @@ const router = Router();
  * /a/news:
  *   get:
  *     tags:
- *      - "[ADMIN] News"
+ *      - "[ADMIN] NEWS"
  *     summary: Lấy danh sách tin tức
  *     parameters:
  *      - in: query
@@ -43,7 +43,7 @@ router.get('/', NewsController.index);
  * /a/news:
  *   post:
  *     tags:
- *      - "[ADMIN] News"
+ *      - "[ADMIN] NEWS"
  *     summary: Tạo mới tin tức
  *     parameters:
  *      - in: "body"
@@ -78,7 +78,7 @@ router.post('/', NewsController.create);
  * /a/news/{newsId}:
  *   patch:
  *     tags:
- *      - "[ADMIN] News"
+ *      - "[ADMIN] NEWS"
  *     summary: Sửa tin tức
  *     parameters:
  *      - in: path
@@ -117,7 +117,7 @@ router.patch('/:newsId', NewsController.update);
  * /a/news/{newsId}/upload_thumbnail:
  *   patch:
  *     tags:
- *      - "[ADMIN] News"
+ *      - "[ADMIN] NEWS"
  *     summary: Tải lên thumbnail
  *     consumes:
  *      - "multipart/form-data"
@@ -148,7 +148,7 @@ router.patch('/:newsId/upload_thumbnail', withoutSavingUploader.single('thumbnai
  * /a/news/{newsId}:
  *   get:
  *     tags:
- *      - "[ADMIN] News"
+ *      - "[ADMIN] NEWS"
  *     summary: Chi tiết tin tức
  *     parameters:
  *      - in: path
@@ -172,7 +172,7 @@ router.get('/:newsId', NewsController.show);
  * /a/news/{newsId}/active:
  *   patch:
  *     tags:
- *      - "[ADMIN] News"
+ *      - "[ADMIN] NEWS"
  *     summary: active tin tức
  *     parameters:
  *      - in: path
@@ -196,7 +196,7 @@ router.patch('/:newsId/active', NewsController.active);
  * /a/news/{newsId}/inactive:
  *   patch:
  *     tags:
- *      - "[ADMIN] News"
+ *      - "[ADMIN] NEWS"
  *     summary: active tin tức
  *     parameters:
  *      - in: path
@@ -220,7 +220,7 @@ router.patch('/:newsId/inactive', NewsController.inactive);
  * /a/news/{newsId}:
  *   delete:
  *     tags:
- *      - "[ADMIN] News"
+ *      - "[ADMIN] NEWS"
  *     summary: Xóa tin tức
  *     parameters:
  *      - in: path

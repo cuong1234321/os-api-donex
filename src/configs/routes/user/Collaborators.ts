@@ -8,7 +8,7 @@ const router = Router();
  * /u/collaborators:
  *   get:
  *     tags:
- *      - "[USER] Collaborators"
+ *      - "[USER] COLLABORATORS"
  *     summary: danh sach cua hang
  *     parameters:
  *      - in: "query"
@@ -33,7 +33,7 @@ router.get('/', CollaboratorController.index);
   * /u/collaborators/{collaboratorId}:
   *   get:
   *     tags:
-  *      - "[USER] Collaborators"
+  *      - "[USER] COLLABORATORS"
   *     summary: chi tiet cua hang
   *     parameters:
   *      - in: "path"

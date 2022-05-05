@@ -3,7 +3,7 @@ import { sendError, sendSuccess } from '@libs/response';
 import AddressBookModel from '@models/addressBooks';
 import { Request, Response } from 'express';
 
-class AddressController {
+class AddressBookController {
   public async index (req: Request, res: Response) {
     try {
       const currentUser = req.currentUser;
@@ -77,4 +77,4 @@ class AddressController {
     }
   }
 }
-export default new AddressController();
+export default new AddressBookController();

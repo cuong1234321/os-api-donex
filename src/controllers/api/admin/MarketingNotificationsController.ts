@@ -9,7 +9,7 @@ import { NoData } from '@libs/errors';
 import ImageUploaderService from '@services/imageUploader';
 import { Sequelize } from 'sequelize';
 
-class MarketingNotificationsController {
+class MarketingNotificationController {
   public async index (req: Request, res: Response) {
     try {
       const page = req.query.page as string || '1';
@@ -127,4 +127,4 @@ class MarketingNotificationsController {
   }
 }
 
-export default new MarketingNotificationsController();
+export default new MarketingNotificationController();

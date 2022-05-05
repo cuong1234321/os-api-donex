@@ -8,7 +8,7 @@ const router = Router();
  * /c/collaborators/:
  *   post:
  *     tags:
- *      - "[COLLABORATOR] Collaborators"
+ *      - "[COLLABORATOR] COLLABORATORS"
  *     summary: Dang ky CTV/ĐL/NPP
  *     parameters:
  *      - in: "body"

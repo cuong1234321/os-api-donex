@@ -8,7 +8,7 @@ const router = Router();
  * /a/news_categories:
  *   get:
  *     tags:
- *      - "[ADMIN] News Categories"
+ *      - "[ADMIN] NEWS CATEGORIES"
  *     summary: Lấy danh sách danh mục tin tức
  *     parameters:
  *       - in: "query"
@@ -30,7 +30,7 @@ router.get('/', NewsCategoryController.index);
  * /a/news_categories/{newsCategoryId}:
  *   get:
  *     tags:
- *      - "[ADMIN] News Categories"
+ *      - "[ADMIN] NEWS CATEGORIES"
  *     summary: xem 1 category
  *     parameters:
  *      - in: "path"
@@ -55,7 +55,7 @@ router.get('/:newsCategoryId', NewsCategoryController.show);
  * /a/news_categories:
  *   post:
  *     tags:
- *      - "[ADMIN] News Categories"
+ *      - "[ADMIN] NEWS CATEGORIES"
  *     summary: Tạo mới category
  *     parameters:
  *      - in: "body"
@@ -86,7 +86,7 @@ router.post('/', NewsCategoryController.create);
  * /a/news_categories/{newsCategoryId}:
  *   patch:
  *     tags:
- *      - "[ADMIN] News Categories"
+ *      - "[ADMIN] NEWS CATEGORIES"
  *     summary: Sửa category
  *     parameters:
  *      - in: "path"
@@ -121,7 +121,7 @@ router.patch('/:newsCategoryId', NewsCategoryController.update);
  * /a/news_categories/{newsCategoryId}:
  *   delete:
  *     tags:
- *      - "[ADMIN] News Categories"
+ *      - "[ADMIN] NEWS CATEGORIES"
  *     summary: xóa category
  *     parameters:
  *      - in: "path"
