@@ -32,7 +32,9 @@ router.get('/provinces', SelectionController.provinceSelections);
   *       - in: "query"
   *         name: "provinceId"
   *         description: "Mã tỉnh/thành"
-  *         required: true
+  *       - in: "query"
+  *         name: "misaCodeProvince"
+  *         description: "Mã misa tỉnh/thành"
   *     responses:
   *       200:
   *         description: Success
@@ -55,7 +57,9 @@ router.get('/districts', SelectionController.districtSelections);
   *       - in: "query"
   *         name: "districtId"
   *         description: "Mã quận/huyện"
-  *         required: true
+  *       - in: "query"
+  *         name: "misaCodeDistrict"
+  *         description: "Mã misa quận/huyện"
   *     responses:
   *       200:
   *         description: Success

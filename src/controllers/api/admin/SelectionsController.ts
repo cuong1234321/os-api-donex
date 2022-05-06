@@ -30,7 +30,14 @@ class SelectionController {
 
   public async districtSelections (req: Request, res: Response) {
     try {
-      const districts = await MDistrictModel.scope([{ method: ['byProvince', req.query.provinceId] }]).findAll();
+      const { misaCodeProvince, provinceId } = req.query;
+      const provinceIds: any = [];
+      if (misaCodeProvince) {
+        const province = await MProvinceModel.scope([{ method: ['byMisaCode', misaCodeProvince] }]).findOne();
+        provinceIds.push(province.id);
+      }
+      if (provinceId) provinceIds.push(provinceId);
+      const districts = await MDistrictModel.scope([{ method: ['byProvince', provinceIds] }]).findAll();
       sendSuccess(res, districts);
     } catch (error) {
       sendError(res, 500, error.message, error);
@@ -48,7 +55,14 @@ class SelectionController {
 
   public async wardSelections (req: Request, res: Response) {
     try {
-      const wards = await MWardModel.scope([{ method: ['byDistrict', req.query.districtId] }]).findAll();
+      const { misaCodeDistrict, districtId } = req.query;
+      const districtIds: any = [];
+      if (misaCodeDistrict) {
+        const district = await MDistrictModel.scope([{ method: ['byMisaCode', misaCodeDistrict] }]).findOne();
+        districtIds.push(district.id);
+      }
+      if (districtId) districtIds.push(districtId);
+      const wards = await MWardModel.scope([{ method: ['byDistrict', districtIds] }]).findAll();
       sendSuccess(res, wards);
     } catch (error) {
       sendError(res, 500, error.message, error);
