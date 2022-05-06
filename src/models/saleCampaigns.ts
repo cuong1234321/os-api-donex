@@ -256,6 +256,7 @@ class SaleCampaignModel extends Model<SaleCampaignInterface> implements SaleCamp
         where: {
           isActive: true,
           appliedAt: { [Op.lt]: dayjs().format() },
+          appliedTo: { [Op.gt]: dayjs().format() },
         },
       };
     },
@@ -265,6 +266,11 @@ class SaleCampaignModel extends Model<SaleCampaignInterface> implements SaleCamp
           model: SaleCampaignProductModel,
           as: 'productVariants',
         }],
+      };
+    },
+    bySorting (sortBy, sortOrder) {
+      return {
+        order: [[Sequelize.literal(sortBy), sortOrder]],
       };
     },
   }

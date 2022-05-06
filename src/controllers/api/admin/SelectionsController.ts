@@ -158,6 +158,7 @@ class SelectionController {
       const scopes: any = [
         'withThumbnail',
         'withVariantDetails',
+        'withPriceRange',
       ];
       if (productId) scopes.push({ method: ['byId', (productId as string).split(',')] });
       if (warehouseId) scopes.push({ method: ['byWarehouseId', warehouseId] });
@@ -193,6 +194,21 @@ class SelectionController {
       if (userId) scopes.push({ method: ['byUser', userId] });
       const addressBooks = await AddressBookModel.scope(scopes).findAll();
       sendSuccess(res, addressBooks);
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async listSaleCampaign (req: Request, res: Response) {
+    try {
+      const sortBy = req.query.sortBy || 'createdAt';
+      const sortOrder = req.query.sortOrder || 'DESC';
+      const scopes: any = [
+        'isAbleToUse',
+        { method: ['bySorting', sortBy, sortOrder] },
+      ];
+      const saleCampaign = await SaleCampaignModel.scope(scopes).findAll();
+      sendSuccess(res, saleCampaign);
     } catch (error) {
       sendError(res, 500, error.message, error);
     }
