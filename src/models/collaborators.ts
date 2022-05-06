@@ -7,6 +7,8 @@ import bcrypt from 'bcryptjs';
 import settings from '@configs/settings';
 import CollaboratorWorkingDayInterface from '@interfaces/collaboratorWorkingDays';
 import dayjs from 'dayjs';
+import MailerService from '@services/mailer';
+import randomString from 'randomstring';
 import CollaboratorWorkingDayModel from './collaboratorWorkingDays';
 import CollaboratorMediaModel from './collaboratorMedia';
 import VoucherApplicationModel from './voucherApplications';
@@ -207,6 +209,11 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
         },
       };
     },
+    byPhoneNumber (phoneNumber) {
+      return {
+        where: { phoneNumber },
+      };
+    },
     withWorkingDay () {
       return {
         include: [{
@@ -305,6 +312,32 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
     });
     const collaboratorWorkingDayIds = listCollaboratorWorkingDay.map((index: any) => index.id);
     await CollaboratorWorkingDayModel.destroy({ where: { id: { [Op.notIn]: collaboratorWorkingDayIds } }, transaction });
+  }
+
+  public async sendOtp () {
+    const token = (Math.random() * (999999 - 100000) + 100000).toString().slice(0, 6);
+    const expireAt = (dayjs().add(settings.forgotPasswordTokenExpiresIn, 'hour'));
+    await this.update(
+      {
+        forgotPasswordToken: token,
+        forgotPasswordExpireAt: expireAt,
+      },
+    );
+    MailerService.collaboratorForgotPassWord(this, token);
+  }
+
+  public async checkValidForgotPasswordToken (token: string) {
+    return this.forgotPasswordToken === token && (!this.forgotPasswordExpireAt || dayjs(this.forgotPasswordExpireAt) > dayjs());
+  }
+
+  public async genLifetimeForgotPasswordToken () {
+    const token = randomString.generate(64);
+    await this.update(
+      {
+        forgotPasswordToken: token,
+        forgotPasswordExpireAt: null,
+      },
+    );
   }
 
   public static initialize (sequelize: Sequelize) {

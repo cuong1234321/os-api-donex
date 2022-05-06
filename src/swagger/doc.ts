@@ -233,6 +233,10 @@ const swaggerDefinition = {
       name: '[COLLABORATOR] SHIPPING PARTNERS',
       description: 'Don vi Van Chuyen',
     },
+    {
+      name: '[SELLER] PASSWORDS',
+      description: 'Quản lý mật khẩu',
+    },
   ],
   securityDefinitions: {
     Bearer: {
