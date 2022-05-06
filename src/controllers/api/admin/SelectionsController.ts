@@ -145,7 +145,7 @@ class SelectionController {
         'withThumbnail',
         'withVariantDetails',
       ];
-      if (productId) scopes.push({ method: ['byId', productId] });
+      if (productId) scopes.push({ method: ['byId', (productId as string).split(',')] });
       if (warehouseId) scopes.push({ method: ['byWarehouseId', warehouseId] });
       if (name) scopes.push({ method: ['byName', name] });
       if (sku) scopes.push({ method: ['bySkuCode', sku] });
