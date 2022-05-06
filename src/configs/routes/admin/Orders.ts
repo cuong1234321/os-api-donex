@@ -118,6 +118,23 @@ router.get('/', (req: Request, res: Response) => OrdersController.index(req, res
 
 /**
  * @openapi
+ * /a/orders/download:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] ORDERS"
+ *     summary: download orders
+ *     responses:
+ *       200:
+ *         description: "OK"
+ *       500:
+ *         description: "Internal error"
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/download', (req: Request, res: Response) => OrdersController.download(req, res));
+
+/**
+ * @openapi
  * /a/orders/{orderId}:
  *   get:
  *     tags:
