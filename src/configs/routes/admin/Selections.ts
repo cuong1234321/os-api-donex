@@ -260,8 +260,8 @@ router.get('/bill_templates', SelectionController.listBillTemplateKeys);
  *     parameters:
  *      - in: query
  *        name: "productId"
- *        description: "Ma san pham"
- *        type: "number"
+ *        description: "Ma san pham ngan cach boi dau phay"
+ *        type: "string"
  *      - in: query
  *        name: "name"
  *        description: "ten san pham"
