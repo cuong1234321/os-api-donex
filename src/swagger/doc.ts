@@ -234,6 +234,10 @@ const swaggerDefinition = {
       description: 'Don vi Van Chuyen',
     },
     {
+      name: '[SELLER] SESSIONS',
+      description: 'Phiên đăng nhập CTV/DL/NPP',
+    },
+    {
       name: '[SELLER] PASSWORDS',
       description: 'Quản lý mật khẩu',
     },
