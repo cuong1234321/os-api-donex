@@ -314,4 +314,21 @@ router.get('/products', SelectionController.listProducts);
  */
 router.get('/address_books', SelectionController.listAddressBooks);
 
+/**
+ * @openapi
+ * /a/selections/sale_campaigns:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] SELECTION"
+ *     summary: danh sach bang gia
+ *     responses:
+ *       200:
+ *         description: "success"
+ *       500:
+ *         description: "failed"
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/sale_campaigns', SelectionController.listSaleCampaign);
+
 export default router;
