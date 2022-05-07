@@ -30,6 +30,7 @@ interface OrderInterface {
   paidAt?: Date;
   portalConfirmAt?: Date;
   saleCampaignId: number;
+  rankDiscount: number;
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;

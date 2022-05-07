@@ -37,6 +37,7 @@ public pickUpAt?: Date;
 public paymentStatus: string;
 public orderPartnerCode: string;
 public billId: number;
+public rankDiscount: number;
 public createdAt?: Date;
 public updatedAt?: Date;
 public deletedAt?: Date;

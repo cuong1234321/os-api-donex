@@ -29,6 +29,7 @@ interface SubOrderInterface {
   orderPartnerCode: string;
   pickUpAt?: Date;
   billId: number;
+  rankDiscount: number;
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;
