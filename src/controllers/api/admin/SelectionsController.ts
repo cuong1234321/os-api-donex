@@ -203,10 +203,18 @@ class SelectionController {
     try {
       const sortBy = req.query.sortBy || 'createdAt';
       const sortOrder = req.query.sortOrder || 'DESC';
+      const { beneficiaries } = req.query;
       const scopes: any = [
         'isAbleToUse',
         { method: ['bySorting', sortBy, sortOrder] },
       ];
+      if (beneficiaries) {
+        const beneficiaryType = (beneficiaries as string).split(',');
+        if (beneficiaryType.includes('distributor')) { scopes.push('isApplyToDistributor'); }
+        if (beneficiaryType.includes('agency')) { scopes.push('isApplyToAgency'); }
+        if (beneficiaryType.includes('collaborator')) { scopes.push('isApplyToCollaborator'); }
+        if (beneficiaryType.includes('user')) { scopes.push('isApplyToUser'); }
+      }
       const saleCampaign = await SaleCampaignModel.scope(scopes).findAll();
       sendSuccess(res, saleCampaign);
     } catch (error) {

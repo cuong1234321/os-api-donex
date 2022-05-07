@@ -1,7 +1,7 @@
 import settings from '@configs/settings';
 import ApplySaleCampaignVariantDecorator from '@decorators/applySaleCampaignVariants';
 import sequelize from '@initializers/sequelize';
-import { NoData } from '@libs/errors';
+import { NoData, orderProcessing } from '@libs/errors';
 import { sendError, sendSuccess } from '@libs/response';
 import BillTemplateModel from '@models/billTemplates';
 import OrderItemModel from '@models/orderItems';
@@ -120,7 +120,7 @@ class OrderController {
         { method: ['byOrderId', orderId] },
         'isNotDraft',
       ]).findOne();
-      if (subOrderNotDraft) { return sendError(res, 404, NoData); }
+      if (subOrderNotDraft) { return sendError(res, 404, orderProcessing); }
       const params = req.parameters.permit(OrderModel.ADMIN_UPDATABLE_PARAMETERS).value();
       let total = 0;
       let subTotal = 0;
@@ -160,7 +160,7 @@ class OrderController {
         { method: ['byOrderId', orderId] },
         'isNotDraft',
       ]).findOne();
-      if (subOrderNotDraft) { return sendError(res, 404, NoData); }
+      if (subOrderNotDraft) { return sendError(res, 404, orderProcessing); }
       await order.destroy();
       sendSuccess(res, {});
     } catch (error) {

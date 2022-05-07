@@ -81,3 +81,8 @@ export const existProduct = {
   code: 445,
   message: 'Product existed in warehouse',
 };
+
+export const orderProcessing = {
+  code: 455,
+  message: 'Order is processing',
+};
