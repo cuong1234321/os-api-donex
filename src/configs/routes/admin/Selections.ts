@@ -321,6 +321,12 @@ router.get('/address_books', SelectionController.listAddressBooks);
  *     tags:
  *      - "[ADMIN] SELECTION"
  *     summary: danh sach bang gia
+ *     parameters:
+ *      - in: query
+ *        name: "beneficiaries"
+ *        description: "ĐỐi tượng áp dụng, cách nhau bởi dấu phẩy"
+ *        type: "string"
+ *        default: "user,collaborator,agency,distributor"
  *     responses:
  *       200:
  *         description: "success"
