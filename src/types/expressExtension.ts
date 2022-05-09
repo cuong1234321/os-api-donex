@@ -6,7 +6,7 @@ declare global {
       parameters: Parameters<any>;
       currentUser: any;
       currentAdmin: any;
-      currentCollaborator: any;
+      currentSeller: any;
     }
   }
 }

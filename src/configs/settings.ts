@@ -15,7 +15,7 @@ export default {
   jwt: {
     adminSecret: 'M85IWlSRy0nqckt3mTZzIsPVjR8cjm29tGevQUIgmrgSmhKjBz7BhySLd0jOhAVQ',
     userSecret: 'oG1VDoCZ9CPD4T99nv0OzFMyHP0G4uT3fznWrEli20aMqvaFA0ibCIt0OLHHLgIG',
-    collaboratorSecret: 'cz8aIt8kXinpjyHJjOrKeKIjOy4vQzdveQOC4HxdwjMlMG0w6GkK6e1JSMg6Lj1c',
+    sellerSecret: 'cz8aIt8kXinpjyHJjOrKeKIjOy4vQzdveQOC4HxdwjMlMG0w6GkK6e1JSMg6Lj1c',
     ttl: '30d',
   },
   forgotPasswordTokenExpiresIn: 1,

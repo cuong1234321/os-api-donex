@@ -1,5 +1,5 @@
 import SessionController from '@controllers/api/seller/SessionsController';
-import { collaboratorPassport } from '@middlewares/passport';
+import { sellerPassport } from '@middlewares/passport';
 import { Router } from 'express';
 
 const router = Router();
@@ -35,7 +35,7 @@ router.post('/login', SessionController.create);
 
 /**
  * @openapi
- * /s/sessions/current_collaborator:
+ * /s/sessions/current:
  *   get:
  *     tags:
  *      - "[SELLER] SESSIONS"
@@ -50,6 +50,6 @@ router.post('/login', SessionController.create);
  *     security:
  *      - Bearer: []
  */
-router.get('/current_collaborator', collaboratorPassport.authenticate('jwt', { session: false }), SessionController.getCurrentCollaborator);
+router.get('/current', sellerPassport.authenticate('jwt', { session: false }), SessionController.current);
 
 export default router;
