@@ -79,6 +79,17 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
       ],
     }]
 
+  static readonly SELLER_CREATABLE_PARAMETERS = ['appliedVoucherId', 'saleChannel', 'shippingFullName', 'shippingProvinceId',
+    'shippingDistrictId', 'shippingPhoneNumber', 'shippingWardId', 'shippingAddress', 'saleCampaignId', 'paymentMethod',
+    {
+      subOrders: [
+        'warehouseId', 'weight', 'length', 'width', 'height', 'pickUpAt', 'shippingFeeMisa', 'shippingFee', 'deposit',
+        'deliveryType', 'deliveryInfo', 'note', 'shippingType', 'shippingAttributeType',
+        { items: ['productVariantId', 'quantity'] },
+      ],
+    },
+  ]
+
   public static readonly ORDERABLE_TYPE = { USER: 'user', COLLABORATOR: 'collaborator', AGENCY: 'agency', DISTRIBUTOR: 'distributor' }
   public static readonly CREATABLE_TYPE = { USER: 'user', ADMIN: 'admin', COLLABORATOR: 'collaborator', AGENCY: 'agency', DISTRIBUTOR: 'distributor' }
   public static readonly PAYMENT_METHOD = { BANKING: 'banking', COD: 'COD', VN_PAY: 'vnPay', WALLET: 'wallet' }
