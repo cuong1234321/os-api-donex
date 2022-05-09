@@ -9,6 +9,7 @@ import CollaboratorWorkingDayInterface from '@interfaces/collaboratorWorkingDays
 import dayjs from 'dayjs';
 import MailerService from '@services/mailer';
 import randomString from 'randomstring';
+import jwt from 'jsonwebtoken';
 import CollaboratorWorkingDayModel from './collaboratorWorkingDays';
 import CollaboratorMediaModel from './collaboratorMedia';
 import VoucherApplicationModel from './voucherApplications';
@@ -260,7 +261,31 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
         ],
       };
     },
+    withParent () {
+      return {
+        include: [
+          {
+            model: CollaboratorModel,
+            as: 'parent',
+            attributes: ['fullName'],
+          },
+        ],
+      };
+    },
   }
+
+  public async validPassword (password: string) {
+    try {
+      return await bcrypt.compare(password, this.password);
+    } catch (error) {
+      return false;
+    }
+  }
+
+  public async generateAccessToken () {
+    const token = jwt.sign({ id: this.id }, settings.jwt.collaboratorSecret, { expiresIn: settings.jwt.ttl });
+    return token;
+  };
 
   public async checkStatus (status: string) {
     if (this.status !== status) {
@@ -363,6 +388,7 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
     this.belongsTo(MProvinceModel, { as: 'province', foreignKey: 'provinceId' });
     this.belongsTo(MDistrictModel, { as: 'district', foreignKey: 'districtId' });
     this.belongsTo(MWardModel, { as: 'ward', foreignKey: 'wardId' });
+    this.belongsTo(CollaboratorModel, { as: 'parent', foreignKey: 'parentId' });
   }
 }
 

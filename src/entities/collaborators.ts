@@ -19,10 +19,22 @@ const collaboratorEntity = {
   paperProofFront: {
     type: DataTypes.STRING(255),
     allowNull: true,
+    get (): string {
+      const paperProofFront = this.getDataValue('paperProofFront') !== null
+        ? `${settings.imageStorageHost}/${this.getDataValue('paperProofFront')}`
+        : null;
+      return paperProofFront;
+    },
   },
   paperProofBack: {
     type: DataTypes.STRING(255),
     allowNull: true,
+    get (): string {
+      const paperProofBack = this.getDataValue('paperProofBack') !== null
+        ? `${settings.imageStorageHost}/${this.getDataValue('paperProofBack')}`
+        : null;
+      return paperProofBack;
+    },
   },
   rejectionReason: {
     type: DataTypes.TEXT,
