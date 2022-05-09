@@ -25,6 +25,22 @@ class MailerService {
     await this.sendMail(mailerOptions, templateName, templateArgs);
   }
 
+  public static async collaboratorForgotPassWord (collaborator: any, otp: string) {
+    const mailerOptions: Mail.Options = {
+      from: 'Admin',
+      to: collaborator.email,
+      subject: '[DONEX-SPORT] Quên mật khẩu',
+    };
+    const templateArgs = {
+      otp: otp,
+      // url: `${process.env.SELLER_HOST}/quen-mat-khau?adminEmail=${collaborator.email}`,
+      name: collaborator.fullName,
+      expireTime: settings.forgotPasswordTokenExpiresIn,
+    };
+    const templateName = 'forgotPasswordMailer';
+    await this.sendMail(mailerOptions, templateName, templateArgs);
+  }
+
   public static async sendCollaboratorLoginInfo (collaborator: any, password: string) {
     const mailerOptions: Mail.Options = {
       from: 'Admin',
