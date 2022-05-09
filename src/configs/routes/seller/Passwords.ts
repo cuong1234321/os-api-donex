@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import PasswordController from '@controllers/api/seller/PasswordsController';
+import { sellerPassport } from '@middlewares/passport';
 
 const router = Router();
 
@@ -88,5 +89,35 @@ router.post('/verify_otp', PasswordController.verifyOtp);
   *      - Bearer: []
   */
 router.post('/', PasswordController.resetPassword);
+
+/**
+  * @openapi
+  * /s/passwords/change_password:
+  *   patch:
+  *     tags:
+  *      - "[SELLER] PASSWORDS"
+  *     summary: thay đổi mật khẩu
+  *     parameters:
+  *      - in: "body"
+  *        name: "body"
+  *        description: ""
+  *        schema:
+  *          type: "object"
+  *          properties:
+  *            oldPassword:
+  *              type: "string"
+  *            newPassword:
+  *              type: "string"
+  *            confirmPassword:
+  *              type: "string"
+  *     responses:
+  *       200:
+  *         description: Return data.
+  *       500:
+  *         description: Lỗi không xác định
+  *     security:
+  *      - Bearer: []
+  */
+router.patch('/change_password', sellerPassport.authenticate('jwt', { session: false }), PasswordController.changePassword);
 
 export default router;
