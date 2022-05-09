@@ -74,6 +74,10 @@ const swaggerDefinition = {
       description: 'Quản lý rank',
     },
     {
+      name: '[ADMIN] SELLER LEVELS',
+      description: 'Quản lý cấp CTV/DL/NPP',
+    },
+    {
       name: '[ADMIN] SESSIONS',
       description: 'Phiên đăng nhập admin',
     },
