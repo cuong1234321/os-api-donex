@@ -4,6 +4,10 @@ const RankEntity = {
   id: {
     type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false,
   },
+  type: {
+    type: DataTypes.ENUM({ values: ['basic', 'vip'] }),
+    defaultValue: 'basic',
+  },
   title: {
     type: DataTypes.STRING(255), allowNull: false, defaultValue: 'VIP',
   },

@@ -8,9 +8,12 @@ import RankConditionModel from '@models/rankConditions';
 class RankController {
   public async show (req: Request, res: Response) {
     try {
+      const { type } = req.params;
       const ranks = (await RankModel.findOrCreate({
-        where: { },
-        defaults: { id: undefined },
+        where: {
+          type,
+        },
+        defaults: { id: undefined, type },
       }))[0];
       const conditions = await ranks.getConditions();
       ranks.setDataValue('conditions', conditions);
@@ -22,9 +25,12 @@ class RankController {
 
   public async update (req: Request, res: Response) {
     try {
+      const { type } = req.params;
       const rank = (await RankModel.findOrCreate({
-        where: { },
-        defaults: { id: undefined },
+        where: {
+          type,
+        },
+        defaults: { id: undefined, type },
       }))[0];
       const params = req.parameters.permit(RankModel.UPDATABLE_PARAMETERS).value();
       params.dateEarnDiscount = req.body.dateEarnDiscount;
