@@ -7,6 +7,8 @@ import BillTemplateModel from '@models/billTemplates';
 import OrderItemModel from '@models/orderItems';
 import OrderModel from '@models/orders';
 import SubOrderModel from '@models/subOrders';
+import XlsxService from '@services/xlsx';
+import dayjs from 'dayjs';
 import { Request, Response } from 'express';
 import { Transaction } from 'sequelize/types';
 
@@ -163,6 +165,28 @@ class OrderController {
       if (subOrderNotDraft) { return sendError(res, 404, orderProcessing); }
       await order.destroy();
       sendSuccess(res, {});
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async download (req: Request, res: Response) {
+    try {
+      const time = dayjs().format('DD-MM-YY-hh:mm:ss');
+      const fileName = `Bao-cao-danh-sach-don-hang-${time}.xlsx`;
+      const sortBy = req.query.sortBy || 'createdAt';
+      const sortOrder = req.query.sortOrder || 'DESC';
+      const scopes: any = [
+        'withOrders',
+        { method: ['bySortOrder', sortBy, sortOrder] },
+      ];
+      const subOrders = await SubOrderModel.scope(scopes).findAll();
+      const buffer: any = await XlsxService.downloadListOrders(subOrders);
+      res.writeHead(200, [
+        ['Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+        ['Content-Disposition', 'attachment; filename=' + `${fileName}`],
+      ]);
+      res.end(Buffer.from(buffer, 'base64'));
     } catch (error) {
       sendError(res, 500, error.message, error);
     }
