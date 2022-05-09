@@ -1,7 +1,7 @@
 import CollaboratorEntity from '@entities/collaborators';
 import CollaboratorMediaInterface from '@interfaces/collaboratorMedia';
 import CollaboratorInterface from '@interfaces/collaborators';
-import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, Transaction, ValidationErrorItem } from 'sequelize';
+import { BelongsToGetAssociationMixin, HasManyGetAssociationsMixin, Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, Transaction, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import bcrypt from 'bcryptjs';
 import settings from '@configs/settings';
@@ -121,6 +121,13 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
       }
     },
   }
+
+  public getProvince: BelongsToGetAssociationMixin<MProvinceModel>;
+  public getDistrict: BelongsToGetAssociationMixin<MDistrictModel>;
+  public getWard: BelongsToGetAssociationMixin<MWardModel>;
+  public getParent: BelongsToGetAssociationMixin<CollaboratorModel>;
+  public getMedia: HasManyGetAssociationsMixin<CollaboratorMediaModel>;
+  public getWorkingDays: HasManyGetAssociationsMixin<CollaboratorWorkingDayModel>;
 
   static readonly scopes: ModelScopeOptions = {
     addressInfo () {
@@ -283,7 +290,7 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
   }
 
   public async generateAccessToken () {
-    const token = jwt.sign({ id: this.id }, settings.jwt.collaboratorSecret, { expiresIn: settings.jwt.ttl });
+    const token = jwt.sign({ id: this.id }, settings.jwt.sellerSecret, { expiresIn: settings.jwt.ttl });
     return token;
   };
 

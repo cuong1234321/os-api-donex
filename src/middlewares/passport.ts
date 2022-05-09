@@ -22,17 +22,17 @@ const userOptions = {
   secretOrKey: settings.jwt.userSecret,
   passReqToCallback: true,
 };
-const collaboratorOptions = {
+const sellerOptions = {
   jwtFromRequest: ExtractJwt.fromExtractors([
     ExtractJwt.fromUrlQueryParameter('accessToken'),
     ExtractJwt.fromAuthHeaderAsBearerToken(),
   ]),
-  secretOrKey: settings.jwt.collaboratorSecret,
+  secretOrKey: settings.jwt.sellerSecret,
   passReqToCallback: true,
 };
 const adminPassport = new Passport();
 const userPassport = new Passport();
-const collaboratorPassport = new Passport();
+const sellerPassport = new Passport();
 
 const adminStrategy = new Strategy(adminOptions, async (req: Request, payload: {id: string}, next: any) => {
   try {
@@ -66,14 +66,14 @@ const userStrategy = new Strategy(userOptions, async (req: Request, payload: {id
   }
 });
 
-const collaboratorStrategy = new Strategy(collaboratorOptions, async (req: Request, payload: {id: string}, next: any) => {
+const sellerStrategy = new Strategy(sellerOptions, async (req: Request, payload: {id: string}, next: any) => {
   try {
-    const collaborator = await CollaboratorModel.scope([
+    const seller = await CollaboratorModel.scope([
       { method: ['byStatus', CollaboratorModel.STATUS_ENUM.ACTIVE] },
     ]).findByPk(payload.id);
-    if (collaborator) {
-      req.currentCollaborator = collaborator;
-      next(null, collaborator);
+    if (seller) {
+      req.currentSeller = seller;
+      next(null, seller);
     } else {
       next(null, false);
     }
@@ -84,10 +84,10 @@ const collaboratorStrategy = new Strategy(collaboratorOptions, async (req: Reque
 
 adminPassport.use(adminStrategy);
 userPassport.use(userStrategy);
-collaboratorPassport.use(collaboratorStrategy);
+sellerPassport.use(sellerStrategy);
 
 export {
   adminPassport,
   userPassport,
-  collaboratorPassport,
+  sellerPassport,
 };
