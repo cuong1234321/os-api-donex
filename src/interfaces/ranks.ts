@@ -2,6 +2,7 @@ import RankConditionInterface from './rankConditions';
 
 interface RankInterface {
   id: number;
+  type: string;
   title?: string;
   orderValueFrom?: number;
   dateEarnDiscount?: string[];

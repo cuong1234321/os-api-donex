@@ -5,11 +5,19 @@ const router = Router();
 
 /**
  * @openapi
- * /a/ranks/:
+ * /a/ranks/{type}:
  *   get:
  *     tags:
  *      - "[ADMIN] RANK"
  *     summary: Xem chi tiết
+ *     parameters:
+ *      - in: "path"
+ *        name: "type"
+ *        type: "string"
+ *        description: "Loai rank"
+ *        enum:
+ *         - basic
+ *         - vip
  *     responses:
  *       200:
  *         description: "Upload success"
@@ -18,16 +26,23 @@ const router = Router();
  *     security:
  *      - Bearer: []
  */
-router.get('/', RanksController.show);
+router.get('/:type', RanksController.show);
 
 /**
  * @openapi
- * /a/ranks/:
+ * /a/ranks/{type}:
  *   patch:
  *     tags:
  *      - "[ADMIN] RANK"
  *     summary: Chỉnh sửa rank
  *     parameters:
+ *      - in: "path"
+ *        name: "type"
+ *        type: "string"
+ *        description: "Loai rank"
+ *        enum:
+ *         - basic
+ *         - vip
  *      - in: "body"
  *        name: "body"
  *        description: "Thông tin rank"
@@ -84,6 +99,6 @@ router.get('/', RanksController.show);
  *     security:
  *      - Bearer: []
  */
-router.patch('/', RanksController.update);
+router.patch('/:type', RanksController.update);
 
 export default router;

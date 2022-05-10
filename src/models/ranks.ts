@@ -7,6 +7,7 @@ import RankConditionModel from './rankConditions';
 
 class RankModel extends Model<RankInterface> implements RankInterface {
   public id: number;
+  public type: string;
   public title?: string;
   public orderValueFrom?: number;
   public dateEarnDiscount?: string[];
