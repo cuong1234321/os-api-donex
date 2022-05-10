@@ -21,6 +21,8 @@ import SelectionRouter from './Selections';
 import SaleCampaignRouter from './SaleCampaigns';
 import SystemSettingRouter from './SystemSetting';
 import ShippingPartnerRouter from './ShippingPartners';
+import SubOrderRouter from './SubOrders';
+import SellerLevelRouter from './SellerLevels';
 import TermRouter from './Terms';
 import UserRouter from './Users';
 import UploadRouter from './Uploads';
@@ -30,7 +32,6 @@ import WarehouseReceiptRouter from './WarehouseReceipts';
 import WarehouseExportRouter from './WarehouseExports';
 import WarehouseTransferRouter from './warehouseTransfers';
 import WarehouseReportRouter from './WarehouseReports';
-import SubOrderRouter from './SubOrders';
 
 const router = Router();
 
@@ -56,6 +57,7 @@ router.use('/sale_campaigns', SaleCampaignRouter);
 router.use('/system_setting', SystemSettingRouter);
 router.use('/selections', SelectionRouter);
 router.use('/shipping_partners', ShippingPartnerRouter);
+router.use('/seller_levels', SellerLevelRouter);
 router.use('/terms', TermRouter);
 router.use('/users', UserRouter);
 router.use('/uploads', UploadRouter);
