@@ -2,6 +2,7 @@ import SellerLevelEntity from '@entities/sellerLevels';
 import SellerLevelInterface from '@interfaces/sellerLevels';
 import { Model, ModelScopeOptions, ModelValidateOptions, Sequelize, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
+import CollaboratorModel from './collaborators';
 
 class SellerLevelModel extends Model<SellerLevelInterface> implements SellerLevelInterface {
   public id: number;
@@ -15,11 +16,13 @@ class SellerLevelModel extends Model<SellerLevelInterface> implements SellerLeve
   public deletedAt?: Date;
 
   static readonly CREATABLE_PARAMETERS = ['type', 'title', 'conditionValue', 'discountValue', 'description'];
+  static readonly UPDATABLE_PARAMETERS = ['title', 'conditionValue', 'discountValue', 'description'];
 
   static readonly TYPE_ENUM = { COLLABORATOR: 'collaborator', AGENCY: 'agency', DISTRIBUTOR: 'distributor' }
 
   static readonly validations: ModelValidateOptions = {
     async validateCondition () {
+      if (this.deletedAt) return;
       const level = await SellerLevelModel.scope([
         { method: ['byType', this.type] },
         { method: ['byCondition', this.conditionValue] },
@@ -29,12 +32,23 @@ class SellerLevelModel extends Model<SellerLevelInterface> implements SellerLeve
       }
     },
     async validateDiscountValue () {
+      if (this.deletedAt) return;
       const level = await SellerLevelModel.scope([
         { method: ['byType', this.type] },
         { method: ['byDiscountValue', this.discountValue] },
       ]).findOne();
       if (level) {
         throw new ValidationErrorItem('Mức chiết khấu không được trùng nhau.', 'validateDiscountValue', 'discountValue');
+      }
+    },
+    async validateDelete () {
+      if (this.deletedAt) {
+        const seller = await CollaboratorModel.scope([
+          { method: ['byRank', this.id] },
+        ]).findOne();
+        if (seller) {
+          throw new ValidationErrorItem('Tồn tại CTV/DL/NPP đang ở mức hạng này.', 'validateDelete', 'deletedAt');
+        }
       }
     },
   }

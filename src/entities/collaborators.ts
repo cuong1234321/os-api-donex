@@ -108,6 +108,9 @@ const collaboratorEntity = {
   defaultRank: {
     type: DataTypes.INTEGER, allowNull: true,
   },
+  currentRank: {
+    type: DataTypes.INTEGER, allowNull: true,
+  },
   forgotPasswordToken: {
     type: DataTypes.STRING(100), allowNull: true,
   },
