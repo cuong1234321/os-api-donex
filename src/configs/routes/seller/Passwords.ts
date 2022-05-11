@@ -17,7 +17,7 @@ const router = Router();
  *        schema:
  *          type: "object"
  *          properties:
- *            phoneNumber:
+ *            email:
  *              type: "string"
  *     responses:
  *       200:
@@ -43,7 +43,7 @@ router.post('/forgot_password', PasswordController.forgotPassword);
   *        schema:
   *          type: "object"
   *          properties:
-  *            phoneNumber:
+  *            email:
   *              type: "string"
   *            otp:
   *              type: "string"
@@ -71,7 +71,7 @@ router.post('/verify_otp', PasswordController.verifyOtp);
   *        schema:
   *          type: "object"
   *          properties:
-  *            phoneNumber:
+  *            email:
   *              type: "string"
   *            token:
   *              type: "string"

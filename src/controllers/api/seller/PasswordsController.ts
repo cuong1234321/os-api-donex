@@ -7,9 +7,9 @@ import CollaboratorModel from '@models/collaborators';
 class PasswordController {
   public async forgotPassword (req:Request, res: Response) {
     try {
-      const { phoneNumber } = req.body;
+      const { email } = req.body;
       const seller = await CollaboratorModel.scope([
-        { method: ['byPhoneNumber', phoneNumber] },
+        { method: ['byEmail', email] },
       ]).findOne();
       if (!seller) { return sendError(res, 404, NoData); }
       if (seller) await seller.sendOtp();
@@ -21,9 +21,9 @@ class PasswordController {
 
   public async verifyOtp (req: Request, res: Response) {
     try {
-      const { phoneNumber, otp } = req.body;
+      const { email, otp } = req.body;
       const seller = await CollaboratorModel.scope([
-        { method: ['byPhoneNumber', phoneNumber] },
+        { method: ['byEmail', email] },
       ]).findOne();
       if (!seller || !seller.checkValidForgotPasswordToken(otp)) sendError(res, 404, NoData);
       await seller.genLifetimeForgotPasswordToken();
@@ -36,9 +36,9 @@ class PasswordController {
 
   public async resetPassword (req:Request, res:Response) {
     try {
-      const { phoneNumber, token, newPassword, confirmPassword } = req.body;
+      const { email, token, newPassword, confirmPassword } = req.body;
       const seller = await CollaboratorModel.scope([
-        { method: ['byPhoneNumber', phoneNumber] },
+        { method: ['byEmail', email] },
       ]).findOne();
       if (!seller || !await seller.checkValidForgotPasswordToken(token)) return sendError(res, 404, NoData);
       const params = {
