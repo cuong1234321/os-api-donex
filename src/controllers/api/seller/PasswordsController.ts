@@ -1,8 +1,9 @@
 import { sendError, sendSuccess } from '@libs/response';
 import { Request, Response } from 'express';
-import { NoData } from '@libs/errors';
+import { invalidParameter, InvalidPassword, NoData } from '@libs/errors';
 import dayjs from 'dayjs';
 import CollaboratorModel from '@models/collaborators';
+import bcrypt from 'bcryptjs';
 
 class PasswordController {
   public async forgotPassword (req:Request, res: Response) {
@@ -48,6 +49,20 @@ class PasswordController {
       };
       await seller.update(params);
       sendSuccess(res, { });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async changePassword (req: Request, res: Response) {
+    try {
+      const currentSeller = req.currentSeller;
+      const { oldPassword, newPassword, confirmPassword } = req.body;
+      const checkOldPassword = await bcrypt.compare(oldPassword, currentSeller.password);
+      if (!checkOldPassword) { return sendError(res, 400, InvalidPassword); }
+      if (!newPassword || newPassword !== confirmPassword) { return sendError(res, 400, invalidParameter); }
+      await currentSeller.update({ password: newPassword }, { individualHooks: true });
+      sendSuccess(res, {});
     } catch (error) {
       sendError(res, 500, error.message, error);
     }
