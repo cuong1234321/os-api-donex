@@ -41,6 +41,26 @@ router.get('/', SellerLevelsController.index);
 
 /**
  * @openapi
+ * /a/seller_levels/{levelId}:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] SELLER LEVELS"
+ *     summary: xem chi tiet level
+ *     parameters:
+ *      - in: "path"
+ *        name: "levelId"
+ *     responses:
+ *       200:
+ *         description: Return data.
+ *       500:
+ *         description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/:levelId', SellerLevelsController.show);
+
+/**
+ * @openapi
  * /a/seller_levels:
  *   post:
  *     tags:
@@ -81,5 +101,63 @@ router.get('/', SellerLevelsController.index);
  *      - Bearer: []
  */
 router.post('/', SellerLevelsController.create);
+
+/**
+ * @openapi
+ * /a/seller_levels/{levelId}:
+ *   patch:
+ *     tags:
+ *      - "[ADMIN] SELLER LEVELS"
+ *     summary: update level
+ *     parameters:
+ *      - in: "path"
+ *        name: "levelId"
+ *      - in: "body"
+ *        name: "body"
+ *        description: "thông tin level"
+ *        schema:
+ *          type: "object"
+ *          properties:
+ *            title:
+ *              type: "string"
+ *              description: "ten cap"
+ *            conditionValue:
+ *              type: "number"
+ *              description: "dieu kien len cap"
+ *            discountValue:
+ *              type: "number"
+ *              description: "muc chiet khau"
+ *            description:
+ *              type: "string"
+ *              description: "mo ta"
+ *     responses:
+ *       200:
+ *         description: Return data.
+ *       500:
+ *         description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.patch('/:levelId', SellerLevelsController.update);
+
+/**
+ * @openapi
+ * /a/seller_levels/{levelId}:
+ *   delete:
+ *     tags:
+ *      - "[ADMIN] SELLER LEVELS"
+ *     summary: xoa level
+ *     parameters:
+ *      - in: "path"
+ *        name: "levelId"
+ *     responses:
+ *       200:
+ *         description: Return data.
+ *       500:
+ *         description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.delete('/:levelId', SellerLevelsController.delete);
 
 export default router;

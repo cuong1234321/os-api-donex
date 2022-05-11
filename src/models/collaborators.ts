@@ -43,6 +43,7 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
   public email: string;
   public dateOfBirth: Date;
   public defaultRank: number;
+  public currentRank: number;
   public forgotPasswordToken: string;
   public forgotPasswordExpireAt: Date;
   public avatar: string;
@@ -220,6 +221,16 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
     byPhoneNumber (phoneNumber) {
       return {
         where: { phoneNumber },
+      };
+    },
+    byRank (levelId) {
+      return {
+        where: {
+          [Op.or]: [
+            { defaultRank: levelId },
+            { currentRank: levelId },
+          ],
+        },
       };
     },
     withWorkingDay () {

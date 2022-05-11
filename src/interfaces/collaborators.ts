@@ -23,6 +23,7 @@ interface CollaboratorInterface {
   email: string,
   dateOfBirth: Date,
   defaultRank: number,
+  currentRank: number,
   forgotPasswordToken: string;
   forgotPasswordExpireAt: Date;
   avatar: string;
