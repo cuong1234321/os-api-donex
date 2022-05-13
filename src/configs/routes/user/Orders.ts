@@ -1,5 +1,5 @@
 import OrdersController from '@controllers/api/user/OrdersController';
-import { userPassport } from '@middlewares/passport';
+import { authGuest } from '@middlewares/auth';
 import { Router } from 'express';
 
 const router = Router();
@@ -94,7 +94,7 @@ const router = Router();
  *     security:
  *      - Bearer: []
  */
-router.post('/', userPassport.authenticate('jwt', { session: false }), OrdersController.create);
+router.post('/', authGuest, OrdersController.create);
 
 /**
  * @openapi
