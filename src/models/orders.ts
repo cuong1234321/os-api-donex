@@ -463,7 +463,7 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
     this.belongsTo(UserModel, { as: 'ownerUser', foreignKey: 'ownerId' });
     this.belongsTo(UserModel, { as: 'orderableUser', foreignKey: 'orderableId' });
     this.belongsTo(UserModel, { as: 'creatableUser', foreignKey: 'creatableId' });
-    this.belongsTo(AdminModel, { as: 'creatableAdmin', foreignKey: 'creatableId', scope: { key: OrderModel.CREATABLE_TYPE.ADMIN } });
+    this.belongsTo(AdminModel, { as: 'creatableAdmin', foreignKey: 'creatableId' });
     this.belongsTo(VoucherModel, { as: 'voucher', foreignKey: 'appliedVoucherId' });
     this.belongsTo(SaleCampaignModel, { as: 'saleCampaign', foreignKey: 'saleCampaignId' });
   }

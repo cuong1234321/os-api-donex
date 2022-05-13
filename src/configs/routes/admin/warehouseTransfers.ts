@@ -28,6 +28,14 @@ const router = Router();
  *        name: "toDate"
  *        description: "Ngay ket thuc"
  *        type: "string"
+ *      - in: query
+ *        name: "status"
+ *        description: "trang thai"
+ *        type: "string"
+ *        enum:
+ *         - pending
+ *         - confirm
+ *         - reject
  *     responses:
  *       200:
  *         description: "Success"

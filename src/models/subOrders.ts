@@ -201,6 +201,9 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
           model: OrderModel,
           as: 'order',
           required: true,
+          where: {
+            creatableType: OrderModel.CREATABLE_TYPE.ADMIN,
+          },
           include: [
             {
               model: AdminModel,
@@ -263,7 +266,7 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
     byShippingType (type) {
       return {
         where: {
-          shippingType: { [Op.like]: `%${type || ''}%` },
+          shippingType: type,
         },
       };
     },

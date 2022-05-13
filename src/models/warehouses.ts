@@ -40,6 +40,7 @@ class WarehouseModel extends Model<WarehouseInterface> implements WarehouseInter
   static readonly CREATABLE_PARAMETERS = ['name', 'type', 'description', 'code', 'wardId', 'districtId', 'provinceId', 'address', 'phoneNumber', 'warehouseManager']
   static readonly UPDATABLE_PARAMETERS = ['name', 'type', 'description', 'code', 'status', 'wardId', 'districtId', 'provinceId', 'address', 'phoneNumber', 'warehouseManager']
 
+  static readonly STATUS_ENUM = { INACTIVE: 'inactive', ACTIVE: 'active' }
   static readonly hooks: Partial<ModelHooks<WarehouseModel>> = {}
 
   static readonly validations: ModelValidateOptions = {
@@ -66,6 +67,11 @@ class WarehouseModel extends Model<WarehouseInterface> implements WarehouseInter
     async validatePhoneNumber () {
       if (this.phoneNumber && !settings.phonePattern.test(this.phoneNumber)) {
         throw new ValidationErrorItem('Số điện thoại không hợp lệ', 'validatePhoneNumber', 'phoneNumber');
+      }
+    },
+    async validateStatus () {
+      if (this.deletedAt && this.status !== WarehouseModel.STATUS_ENUM.INACTIVE) {
+        throw new ValidationErrorItem('Không được xóa kho ở trạng thái Đang hoạt động.', 'validStatus', 'status', this.status);
       }
     },
   }

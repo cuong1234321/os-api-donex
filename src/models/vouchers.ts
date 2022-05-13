@@ -39,6 +39,10 @@ class VoucherModel extends Model<VoucherInterface> implements VoucherInterface {
           {
             model: VoucherApplicationModel,
             as: 'application',
+            required: true,
+            where: {
+              status: VoucherApplicationModel.STATUS_ENUM.ACTIVE,
+            },
           },
         ],
       };

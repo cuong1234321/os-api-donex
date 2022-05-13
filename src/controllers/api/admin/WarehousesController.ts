@@ -34,7 +34,7 @@ class WarehouseController {
       const limit = parseInt(req.query.size as string || Settings.defaultPerPage, 10);
       const offset = (page - 1) * limit;
       const { freeWord, type, status } = req.query;
-      const scopes: any = ['newest'];
+      const scopes: any = ['newest', 'withAddress'];
       if (freeWord) { scopes.push({ method: ['byFreeWord', freeWord] }); }
       if (type) { scopes.push({ method: ['byType', type] }); }
       if (status) { scopes.push({ method: ['byStatus', status] }); }

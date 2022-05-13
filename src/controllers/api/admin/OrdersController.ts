@@ -15,6 +15,9 @@ import XlsxService from '@services/xlsx';
 import dayjs from 'dayjs';
 import { Request, Response } from 'express';
 import { Transaction } from 'sequelize/types';
+import Auth from '@repositories/models/auth';
+import ShippingPartner from '@repositories/models/shippingPartners';
+import SlugGeneration from '@libs/slugGeneration';
 
 class OrderController {
   public async show (req: Request, res: Response) {
@@ -105,7 +108,7 @@ class OrderController {
       const page = parseInt(req.query.page as string || '1');
       const limit = parseInt(req.query.size as string || settings.defaultPerPage);
       const offset = (page - 1) * limit;
-      const scopes = this.listProductQueryBuilder(req);
+      const scopes = await this.listProductQueryBuilder(req);
       const { rows, count } = await SubOrderModel.scope(scopes).findAndCountAll({
         offset,
         limit,
@@ -198,7 +201,7 @@ class OrderController {
     }
   }
 
-  private listProductQueryBuilder (req: any) {
+  private async listProductQueryBuilder (req: any) {
     const sortBy = req.query.sortBy || 'createdAt';
     const sortOrder = req.query.sortOrder || 'DESC';
     const {
@@ -218,7 +221,12 @@ class OrderController {
     if (pickUpAt) scopes.push({ method: ['byPickUpAt', pickUpAt] });
     if (phoneNumber) scopes.push({ method: ['byPhoneNumber', phoneNumber] });
     if (createdAt) scopes.push({ method: ['byCreatedAt', createdAt] });
-    if (shippingType) scopes.push({ method: ['byShippingType', shippingType] });
+    if (shippingType) {
+      const auth = await Auth.login();
+      const shippingPartners = await ShippingPartner.index(auth);
+      const ShippingPartnerFilters = shippingPartners.filter((record: any) => SlugGeneration.execute(record.PartnerName).includes(SlugGeneration.execute(shippingType)));
+      scopes.push({ method: ['byShippingType', ShippingPartnerFilters.map((record: any) => record.Partner)] });
+    }
     if (shippingCode) scopes.push({ method: ['byShippingCode', shippingCode] });
     if (orderPartnerCode) scopes.push({ method: ['byOrderPartnerCode', orderPartnerCode] });
     if (paymentMethod) scopes.push({ method: ['byPaymentMethod', paymentMethod] });
