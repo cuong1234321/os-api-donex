@@ -20,6 +20,8 @@ class RankModel extends Model<RankInterface> implements RankInterface {
     { conditions: ['id', 'orderAmountFrom', 'orderAmountTo', 'discountValue', 'discountType'] },
   ]
 
+  static readonly TYPE_ENUM = { BASIC: 'basic', VIP: 'vip' }
+
   static readonly hooks: Partial<ModelHooks<RankModel>> = { }
 
   static readonly validations: ModelValidateOptions = { }

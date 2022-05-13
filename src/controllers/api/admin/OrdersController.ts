@@ -4,9 +4,13 @@ import sequelize from '@initializers/sequelize';
 import { NoData, orderProcessing } from '@libs/errors';
 import { sendError, sendSuccess } from '@libs/response';
 import BillTemplateModel from '@models/billTemplates';
+import CollaboratorModel from '@models/collaborators';
 import OrderItemModel from '@models/orderItems';
 import OrderModel from '@models/orders';
+import RankModel from '@models/ranks';
+import SellerLevelModel from '@models/sellerLevels';
 import SubOrderModel from '@models/subOrders';
+import UserModel from '@models/users';
 import XlsxService from '@services/xlsx';
 import dayjs from 'dayjs';
 import { Request, Response } from 'express';
@@ -34,7 +38,7 @@ class OrderController {
   public async create (req: Request, res: Response) {
     try {
       const currentAdmin = req.currentAdmin || { id: 1 };
-      const params = req.parameters.permit(OrderModel.ADMIN_CREATABLE_PARAMETERS).value();
+      let params = req.parameters.permit(OrderModel.ADMIN_CREATABLE_PARAMETERS).value();
       params.ownerId = currentAdmin.id;
       let total = 0;
       let subTotal = 0;
@@ -61,6 +65,7 @@ class OrderController {
         total += totalQuantity;
         shippingFee += subOrder.shippingFee;
       }
+      params = await this.applyRankDiscount(params, total, subTotal);
       const result = await sequelize.transaction(async (transaction: Transaction) => {
         const order = await OrderModel.create({
           ...params,
@@ -123,7 +128,7 @@ class OrderController {
         'isNotDraft',
       ]).findOne();
       if (subOrderNotDraft) { return sendError(res, 404, orderProcessing); }
-      const params = req.parameters.permit(OrderModel.ADMIN_UPDATABLE_PARAMETERS).value();
+      let params = req.parameters.permit(OrderModel.ADMIN_UPDATABLE_PARAMETERS).value();
       let total = 0;
       let subTotal = 0;
       let shippingFee = 0;
@@ -137,6 +142,7 @@ class OrderController {
         total += totalQuantity;
         shippingFee += subOrder.shippingFee;
       }
+      params = await this.applyRankDiscount(params, total, subTotal);
       await sequelize.transaction(async (transaction: Transaction) => {
         await order.update({
           ...params,
@@ -245,6 +251,70 @@ class OrderController {
       if (operator === 'gte') scopes.push({ method: ['byFinalAmountGte', value] });
     }
     return scopes;
+  }
+
+  private async applyRankDiscount (order: any, totalQuantity: number, totalPrice: number) {
+    if (order.orderableType === OrderModel.ORDERABLE_TYPE.USER) {
+      const user = await UserModel.findByPk(order.orderableId, { paranoid: false });
+      const basicRank = (await RankModel.findOrCreate({
+        where: {
+          type: RankModel.TYPE_ENUM.BASIC,
+        },
+        defaults: { id: undefined, type: RankModel.TYPE_ENUM.BASIC },
+      }))[0];
+      const basicConditions = await basicRank.getConditions();
+      if (user.getDataValue('rank') === UserModel.RANK_ENUM.BASIC) {
+        order = this.applyBasicRankUser(order, totalQuantity, totalPrice, basicConditions);
+      } else if (user.getDataValue('rank') === UserModel.RANK_ENUM.VIP) {
+        order = await this.applyVipRankUser(order, totalQuantity, totalPrice, basicConditions);
+      }
+    } else {
+      const seller = await CollaboratorModel.findByPk(order.orderableId, { paranoid: false });
+      const levelId = seller.defaultRank || seller.currentRank;
+      if (!levelId) return order;
+      const sellerLevel = await SellerLevelModel.findByPk(levelId);
+      const rankDiscount = totalPrice * sellerLevel.discountValue / 100;
+      order.rankDiscount = rankDiscount;
+      order.subOrders.forEach((subOrder: any) => {
+        subOrder.rankDiscount = subOrder.subTotal / totalPrice * rankDiscount;
+      });
+    }
+    return order;
+  }
+
+  private applyBasicRankUser (order: any, totalQuantity: number, totalPrice: number, basicConditions: any) {
+    if (basicConditions.length === 0) return order;
+    const basicRankCondition = basicConditions.find((record: any) => record.orderAmountFrom < totalQuantity && (record.orderAmountTo || 999999999) > totalQuantity);
+    if (!basicRankCondition) return order;
+    const rankDiscount = totalPrice * basicRankCondition.discountValue / 100;
+    order.rankDiscount = rankDiscount;
+    order.subOrders.forEach((subOrder: any) => {
+      subOrder.rankDiscount = subOrder.subTotal / totalPrice * rankDiscount;
+    });
+    return order;
+  }
+
+  private async applyVipRankUser (order: any, totalQuantity: number, totalPrice: number, basicConditions: any) {
+    const vipRank = (await RankModel.findOrCreate({
+      where: {
+        type: RankModel.TYPE_ENUM.VIP,
+      },
+      defaults: { id: undefined, type: RankModel.TYPE_ENUM.VIP },
+    }))[0];
+    if (vipRank.dateEarnDiscount.includes(dayjs().format('DD'))) {
+      const vipConditions = await vipRank.getConditions();
+      if (vipConditions.length === 0) return order;
+      const vipRankCondition = vipConditions.find((record: any) => record.orderAmountFrom < totalQuantity && (record.orderAmountTo || 9999999) > totalQuantity);
+      if (!vipRankCondition) return order;
+      const rankDiscount = totalPrice * vipRankCondition.discountValue / 100;
+      order.rankDiscount = rankDiscount;
+      order.subOrders.forEach((subOrder: any) => {
+        subOrder.rankDiscount = subOrder.subTotal / totalPrice * rankDiscount;
+      });
+    } else {
+      order = this.applyBasicRankUser(order, totalQuantity, totalPrice, basicConditions);
+    }
+    return order;
   }
 }
 
