@@ -242,6 +242,10 @@ const swaggerDefinition = {
       description: 'Phiên đăng nhập CTV/DL/NPP',
     },
     {
+      name: '[SELLER] SELLERS',
+      description: 'Cập nhật CTV/DL/NPP',
+    },
+    {
       name: '[SELLER] PASSWORDS',
       description: 'Quản lý mật khẩu',
     },

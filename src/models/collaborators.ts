@@ -59,6 +59,7 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
 
   public static readonly CREATABLE_PARAMETERS = ['type', 'parentId', 'openTime', 'closeTime', 'lat', 'long', 'addressTitle', 'fullName', 'dateOfBirth', 'phoneNumber', 'username', 'password', 'email', 'provinceId', 'districtId', 'wardId', 'address', 'defaultRank']
   public static readonly UPDATABLE_PARAMETERS = ['type', 'parentId', 'openTime', 'closeTime', 'lat', 'long', 'addressTitle', 'fullName', 'dateOfBirth', 'phoneNumber', 'email', 'provinceId', 'districtId', 'wardId', 'address', 'defaultRank']
+  public static readonly SELLER_UPDATABLE_PARAMETERS = ['openTime', 'closeTime', 'lat', 'long', 'addressTitle', 'fullName', 'dateOfBirth', 'phoneNumber', 'email', 'provinceId', 'districtId', 'wardId', 'address']
   public static readonly CREATABLE_COLLABORATOR_PARAMETERS = ['phoneNumber', 'fullName', 'email', 'provinceId', 'districtId', 'wardId', 'address', 'dateOfBirth', 'type', 'lat', 'long', 'addressTitle', 'paperProofFront', 'paperProofBack',
     { media: ['source', 'type'] },
   ]

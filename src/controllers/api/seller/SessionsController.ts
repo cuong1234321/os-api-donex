@@ -29,7 +29,7 @@ class SessionController {
       seller.setDataValue('media', await seller.getMedia());
       seller.setDataValue('workingDays', await seller.getWorkingDays());
       const parent = await seller.getParent();
-      seller.setDataValue('parent', { fullName: parent.fullName || '', id: parent.id || null });
+      seller.setDataValue('parent', { fullName: parent?.fullName || '', id: parent?.id || null });
       if (!seller) sendError(res, 404, NoData);
       sendSuccess(res, seller);
     } catch (error) {
