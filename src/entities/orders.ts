@@ -8,7 +8,7 @@ const OrderEntity = {
     type: DataTypes.STRING(255), allowNull: true,
   },
   ownerId: {
-    type: DataTypes.INTEGER, allowNull: false,
+    type: DataTypes.INTEGER, allowNull: true,
   },
   orderableType: {
     type: DataTypes.ENUM({ values: ['user', 'collaborator', 'distributor', 'agency'] }), defaultValue: 'user',

@@ -12,16 +12,26 @@ import { Transaction } from 'sequelize/types';
 class OrderController {
   public async create (req: Request, res: Response) {
     try {
-      const { currentUser } = req;
+      const currentUser = req.currentUser;
       const params = req.parameters.permit(OrderModel.USER_CREATABLE_PARAMETERS).value();
-      params.ownerId = currentUser.id;
-      const result = await sequelize.transaction(async (transaction: Transaction) => {
-        const order = await OrderModel.create({
+      let orderParams: any = { };
+      if (currentUser) {
+        orderParams = {
           ...params,
           orderableType: OrderModel.ORDERABLE_TYPE.USER,
           orderableId: currentUser.id,
           ownerId: currentUser.id,
-        }, {
+          creatableType: OrderModel.CREATABLE_TYPE.USER,
+        };
+      } else {
+        orderParams = {
+          ...params,
+          orderableType: OrderModel.ORDERABLE_TYPE.USER,
+          creatableType: OrderModel.CREATABLE_TYPE.ADMIN,
+        };
+      }
+      const result = await sequelize.transaction(async (transaction: Transaction) => {
+        const order = await OrderModel.create(orderParams, {
           include: [
             {
               model: SubOrderModel,
