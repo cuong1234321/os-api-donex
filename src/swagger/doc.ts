@@ -245,6 +245,10 @@ const swaggerDefinition = {
       name: '[SELLER] PASSWORDS',
       description: 'Quản lý mật khẩu',
     },
+    {
+      name: '[SELLER] PRODUCT',
+      description: 'Quản lý sản phẩm',
+    },
   ],
   securityDefinitions: {
     Bearer: {
