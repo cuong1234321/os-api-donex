@@ -23,7 +23,8 @@ class RankConditionModel extends Model<RankConditionInterface> implements RankCo
 
   static readonly validations: ModelValidateOptions = { }
 
-  static readonly scopes: ModelScopeOptions = { }
+  static readonly scopes: ModelScopeOptions = {
+  }
 
   public static initialize (sequelize: Sequelize) {
     this.init(RankConditionEntity, {

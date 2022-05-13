@@ -79,6 +79,10 @@ const OrderEntity = {
   saleCampaignId: {
     type: DataTypes.INTEGER, allowNull: true,
   },
+  rankDiscount: {
+    type: DataTypes.BIGINT,
+    defaultValue: 0,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },

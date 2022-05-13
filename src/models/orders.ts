@@ -44,6 +44,7 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
   public paidAt?: Date;
   public portalConfirmAt?: Date;
   public saleCampaignId: number;
+  public rankDiscount: number;
   public createdAt?: Date;
   public updatedAt?: Date;
   public deletedAt?: Date;
