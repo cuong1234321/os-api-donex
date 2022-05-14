@@ -18,6 +18,9 @@ interface SystemSettingInterface {
   bonusCoinUserBirthday?: number;
   bonusCoinDonexBirthday?: number;
   donexBirthDay?: Date;
+  environment?: string;
+  accessToken?: string;
+  companyCode?: string;
   createdAt?: Date;
   updatedAt?: Date;
 };

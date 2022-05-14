@@ -58,6 +58,15 @@ const SystemSettingEntity = {
   donexBirthDay: {
     type: DataTypes.DATE, allowNull: true,
   },
+  environment: {
+    type: DataTypes.STRING(255), allowNull: true,
+  },
+  accessToken: {
+    type: DataTypes.TEXT, allowNull: true,
+  },
+  companyCode: {
+    type: DataTypes.STRING(255), allowNull: true,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },
