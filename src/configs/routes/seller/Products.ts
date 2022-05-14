@@ -17,8 +17,8 @@ const router = Router();
  *        description: "page"
  *        type: "number"
  *      - in: query
- *        name: "limit"
- *        description: "limit"
+ *        name: "size"
+ *        description: "size"
  *        type: "number"
  *      - in: query
  *        name: "sku"
@@ -45,14 +45,6 @@ const router = Router();
  *        description: "gia"
  *        type: "number"
  *      - in: query
- *        name: "status"
- *        description: "Trạng thái hiển thị"
- *        type: "string"
- *        enum:
- *          - active
- *          - inactive
- *          - draft
- *      - in: query
  *        name: "skuOrder"
  *        description: "sort"
  *        type: "enum"
@@ -75,13 +67,6 @@ const router = Router();
  *          - ASC
  *      - in: query
  *        name: "priceOrder"
- *        description: "sort"
- *        type: "enum"
- *        enum:
- *          - DESC
- *          - ASC
- *      - in: query
- *        name: "statusOrder"
  *        description: "sort"
  *        type: "enum"
  *        enum:

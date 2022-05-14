@@ -9,7 +9,7 @@ const router = Router();
 
 router.use('/passwords', PasswordRouter);
 router.use('/sessions', SessionsRouter);
-router.use('/products', ProductRouter);
+router.use('/products', sellerPassport.authenticate('jwt', { session: false }), ProductRouter);
 router.use('/sellers', sellerPassport.authenticate('jwt', { session: false }), SellerRouter);
 
 export default router;
