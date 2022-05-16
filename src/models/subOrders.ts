@@ -367,7 +367,7 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
       return {
         where: {
           [Op.and]: [
-            Sequelize.where(Sequelize.literal('(SELECT (subTotal + shippingFee - deposit) FROM sub_orders WHERE id = SubOrderModel.id)'), {
+            Sequelize.where(Sequelize.literal('(SELECT (subTotal + shippingFee - deposit - rankDiscount) FROM sub_orders WHERE id = SubOrderModel.id)'), {
               [Op.lte]: value,
             }),
           ],
@@ -378,9 +378,21 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
       return {
         where: {
           [Op.and]: [
-            Sequelize.where(Sequelize.literal('(SELECT (subTotal + shippingFee - deposit) FROM sub_orders WHERE id = SubOrderModel.id)'), {
+            Sequelize.where(Sequelize.literal('(SELECT (subTotal + shippingFee - deposit - rankDiscount) FROM sub_orders WHERE id = SubOrderModel.id)'), {
               [Op.gte]: value,
             }),
+          ],
+        },
+      };
+    },
+    withFinalAmount () {
+      return {
+        attributes: {
+          include: [
+            [
+              Sequelize.literal('(SELECT (subTotal + shippingFee - deposit - rankDiscount) FROM sub_orders WHERE id = SubOrderModel.id)'),
+              'finalAmount',
+            ],
           ],
         },
       };
