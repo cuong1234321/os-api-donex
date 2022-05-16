@@ -1,0 +1,24 @@
+title,key
+AdminsController,Quản Lý Thông Tin Tài Khoản
+BannersController,Quản Lý Banner
+BillTemplatesController,Quản Lý Mẫu Hóa Đơn Thanh Toán
+CollaboratorsController,Quản Lý Đơn Vị Đối Tác
+MarketingNotificationsController,Quản Lý Thông Báo Marketing
+NewsCategoriesController,Quản Lý Danh Mục Tin Tức
+NewsController,Quản Lý TIn Tức
+OrdersController,Quản Lý Đơn Hàng
+PopupsController,Quản Lý PopUp Quảng Cáo
+ProductCategoriesController,Quản Lý Danh Mục Sản Phẩm
+ProductsController,Quản Lý Sản Phẩm
+RanksController,Quản Lý Hạng Đối Tác
+SaleCampaignsController,Quản Lý Bảng Giá
+SystemSettingsController,Quản Lý Cài Đặt Hệ Thống
+SellerLevelsController, Quản Lý Cấp Bậc Đối Tác
+TermsController,Quản Lý Chính Sách Và Bảo Mật
+UsersController,Quản Lý Người dùng
+VoucherApplicationsController,Quản Lý Voucher Khuyến Mãi
+WarehouseExportsController,Quản Lý Xuất kho
+WarehouseReceiptsController,Quản Lý Nhập kho
+WarehouseTransfersController,Quản Lý Chuyển Kho
+WarehouseReportsController,Quản Lý Báo cáo Kho
+WarehousesController,Quản Lý Kho
