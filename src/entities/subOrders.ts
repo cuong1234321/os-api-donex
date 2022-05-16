@@ -14,16 +14,20 @@ const SubOrderEntity = {
     type: DataTypes.INTEGER, allowNull: false,
   },
   subTotal: {
-    type: DataTypes.BIGINT, allowNull: true,
+    type: DataTypes.BIGINT,
+    defaultValue: 0,
   },
   shippingFee: {
-    type: DataTypes.BIGINT, allowNull: true,
+    type: DataTypes.BIGINT,
+    defaultValue: 0,
   },
   shippingDiscount: {
-    type: DataTypes.BIGINT, allowNull: true,
+    type: DataTypes.BIGINT,
+    defaultValue: 0,
   },
   total: {
-    type: DataTypes.BIGINT, allowNull: true,
+    type: DataTypes.BIGINT,
+    defaultValue: 0,
   },
   shippingCode: {
     type: DataTypes.STRING(255), allowNull: true,
@@ -53,10 +57,12 @@ const SubOrderEntity = {
     type: DataTypes.BIGINT, allowNull: true,
   },
   deposit: {
-    type: DataTypes.BIGINT, allowNull: true,
+    type: DataTypes.BIGINT,
+    defaultValue: 0,
   },
   deliveryType: {
-    type: DataTypes.STRING(255), allowNull: true,
+    type: DataTypes.STRING(255),
+    defaultValue: 'partner',
   },
   deliveryInfo: {
     type: DataTypes.TEXT, allowNull: true,
