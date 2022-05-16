@@ -86,3 +86,8 @@ export const orderProcessing = {
   code: 455,
   message: 'Order is processing',
 };
+
+export const Unauthorized = {
+  code: 220,
+  message: 'Your credentials do not allow access to this resource.',
+};
