@@ -6,6 +6,8 @@ import { Sequelize } from 'sequelize';
 import CollaboratorModel from '@models/collaborators';
 import SaleCampaignModel from '@models/saleCampaigns';
 import SaleCampaignProductDecorator from '@decorators/saleCampaignProducts';
+import ProductVariantModel from '@models/productVariants';
+import { NoData } from '@libs/errors';
 
 class ProductController {
   public async index (req: Request, res: Response) {
@@ -28,6 +30,31 @@ class ProductController {
       const total = products.length;
       const productRefs = products.splice(offset, limit);
       sendSuccess(res, { products: productRefs, pagination: { total, page, perPage: limit } });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async show (req: Request, res: Response) {
+    try {
+      const currentSeller = req.currentSeller;
+      const { productId } = req.params;
+      let product: any = await ProductModel.findByPk(productId);
+      if (!product) { return sendError(res, 404, NoData); }
+      const scopes: any = [
+        'withOptions',
+        'withAboutQuantity',
+        { method: ['byProductId', productId] },
+      ];
+      const variants = await ProductVariantModel.scope(scopes).findAll({
+        attributes: {
+          exclude: ['buyPrice'],
+        },
+      });
+      product.setDataValue('variants', variants);
+      const saleCampaigns = await this.getSaleCampaigns(currentSeller.type);
+      product = await SaleCampaignProductDecorator.calculatorVariantPrice([product], saleCampaigns);
+      sendSuccess(res, { variants: product[0].getDataValue('variants') });
     } catch (error) {
       sendError(res, 500, error.message, error);
     }
