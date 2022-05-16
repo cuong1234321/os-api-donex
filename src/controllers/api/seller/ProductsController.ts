@@ -40,6 +40,7 @@ class ProductController {
       'withCollections',
       'withCategories',
       'withVariants',
+      'withPriceRange',
       { method: ['byStatus', ProductModel.STATUS_ENUM.ACTIVE] },
     ];
     if (sku) scopes.push({ method: ['bySkuCodeName', sku] });
