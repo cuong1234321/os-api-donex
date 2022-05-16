@@ -3,27 +3,43 @@ import { sendError, sendSuccess } from '@libs/response';
 import ProductModel from '@models/products';
 import settings from '@configs/settings';
 import { Sequelize } from 'sequelize';
+import CollaboratorModel from '@models/collaborators';
+import SaleCampaignModel from '@models/saleCampaigns';
+import SaleCampaignProductDecorator from '@decorators/saleCampaignProducts';
 
 class ProductController {
   public async index (req: Request, res: Response) {
     try {
-      const page = req.query.page as string || '1';
+      const currentSeller = req.currentSeller || { type: 'collaborator' };
+      const page = parseInt(req.query.page as string || '1', 10);
       const limit = parseInt(req.query.size as string) || parseInt(settings.defaultPerPage);
-      const offset = (parseInt(page, 10) - 1) * limit;
+      const offset = (page - 1) * limit;
+      const { price, priceOrder } = req.query;
       const scopes = this.listProductQueryBuilder(req);
-      const { count, rows } = await ProductModel.scope(scopes).findAndCountAll({ limit, offset, distinct: true, col: 'ProductModel.id' });
-      sendSuccess(res, { products: rows, pagination: { total: count, page, perPage: limit } });
+      let products = await ProductModel.scope(scopes).findAll();
+      const saleCampaigns = await this.getSaleCampaigns(currentSeller.type);
+      products = await SaleCampaignProductDecorator.calculatorVariantPrice(products, saleCampaigns);
+      if (price) {
+        products = products.filter((record: any) => record.getDataValue('minPrice') === parseInt(price as string));
+      }
+      if (priceOrder) {
+        products = this.sortProducts(products, priceOrder as string);
+      }
+      const total = products.length;
+      const productRefs = products.splice(offset, limit);
+      sendSuccess(res, { products: productRefs, pagination: { total, page, perPage: limit } });
     } catch (error) {
       sendError(res, 500, error.message, error);
     }
   }
 
   private listProductQueryBuilder (req: Request) {
-    const { sku, name, category, collectionId, unit, status, price, skuOrder, nameOrder, categoryOrder, priceOrder, statusOrder } = req.query;
+    const { sku, name, category, collectionId, unit, skuOrder, nameOrder, categoryOrder } = req.query;
     const orderConditions: any = [];
     const scopes: any = [
       'withCollections',
       'withCategories',
+      'withVariants',
       { method: ['byStatus', ProductModel.STATUS_ENUM.ACTIVE] },
     ];
     if (sku) scopes.push({ method: ['bySkuCodeName', sku] });
@@ -31,15 +47,49 @@ class ProductController {
     if (category) { scopes.push({ method: ['byCategoryName', category] }); }
     if (collectionId) scopes.push({ method: ['byCollectionId', collectionId] });
     if (unit) scopes.push({ method: ['byUnit', unit] });
-    if (price) scopes.push({ method: ['byPrice', parseInt(price as string)] });
-    if (status) scopes.push({ method: ['byStatus', status] });
     if (skuOrder) orderConditions.push([Sequelize.literal('skuCode'), skuOrder]);
     if (nameOrder) orderConditions.push([Sequelize.literal('name'), nameOrder]);
     if (categoryOrder) orderConditions.push([Sequelize.literal('category'), categoryOrder]);
-    if (priceOrder) orderConditions.push([Sequelize.literal('price'), priceOrder]);
-    if (statusOrder) orderConditions.push([Sequelize.literal('status'), statusOrder]);
     scopes.push({ method: ['bySortOrder', orderConditions] });
     return scopes;
+  }
+
+  private sortProducts (products: any, sortOrder: string) {
+    if (sortOrder === 'ASC') {
+      products = products.sort((a: any, b: any) => {
+        return a.getDataValue('minPrice') - b.getDataValue('minPrice');
+      });
+    } else if (sortOrder === 'DESC') {
+      products = products.sort((a: any, b: any) => {
+        return b.getDataValue('minPrice') - a.getDataValue('minPrice');
+      });
+    }
+    return products;
+  }
+
+  private async getSaleCampaigns (userType: string) {
+    const scopes: any = [
+      'isAbleToUse',
+      'withProductVariant',
+    ];
+    switch (userType) {
+      case CollaboratorModel.TYPE_ENUM.DISTRIBUTOR:
+        scopes.push('isApplyToDistributor');
+        break;
+      case CollaboratorModel.TYPE_ENUM.AGENCY:
+        scopes.push('isApplyToAgency');
+        break;
+      case CollaboratorModel.TYPE_ENUM.COLLABORATOR:
+        scopes.push('isApplyToCollaborator');
+        break;
+      case 'USER':
+        scopes.push('isApplyToUser');
+        break;
+      default:
+        break;
+    }
+    const saleCampaigns = await SaleCampaignModel.scope(scopes).findAll();
+    return saleCampaigns;
   }
 }
 

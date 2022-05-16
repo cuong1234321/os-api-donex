@@ -18,8 +18,8 @@ const router = Router();
  *        description: "page"
  *        type: "number"
  *      - in: query
- *        name: "limit"
- *        description: "limit"
+ *        name: "size"
+ *        description: "size"
  *        type: "number"
  *      - in: query
  *        name: "sku"
