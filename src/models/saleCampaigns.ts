@@ -85,7 +85,7 @@ class SaleCampaignModel extends Model<SaleCampaignInterface> implements SaleCamp
       }
     },
     async validateProductVariant () {
-      if (this.productVariants.length === 0) return;
+      if (!this.productVariants?.length) return;
       const variantIds = this.productVariants.map((variant: any) => variant.productVariantId);
       const productVariants = await ProductVariantModel.scope([
         { method: ['byId', variantIds] },
@@ -95,7 +95,7 @@ class SaleCampaignModel extends Model<SaleCampaignInterface> implements SaleCamp
       }
     },
     async validateSaleCampaignProductUniqueActive () {
-      if (this.productVariants.length === 0) return;
+      if (!this.productVariants?.length) return;
       const variantIds = this.productVariants.map((variant: any) => variant.productVariantId);
       const scopes: any = [
         { method: ['byId', variantIds] },
