@@ -1,3 +1,4 @@
+import SystemSettingModel from '@models/systemSetting';
 import axios, { AxiosRequestConfig } from 'axios';
 import { HmacSHA256 } from 'crypto-js';
 
@@ -18,6 +19,15 @@ class Auth {
       };
       const result = await axios(requestConfigs);
       const auth = result.data.Data;
+      const systemSetting: any = (await SystemSettingModel.findOrCreate({
+        where: { },
+        defaults: { id: undefined },
+      }))[0];
+      await systemSetting.update({
+        environment: auth.Environment,
+        accessToken: auth.AccessToken,
+        companyCode: auth.CompanyCode,
+      });
       return auth;
     } catch (error) {
       console.log(error);

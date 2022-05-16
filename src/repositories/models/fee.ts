@@ -3,11 +3,12 @@ import configs from '@configs/configs';
 import MDistrictModel from '@models/mDistricts';
 import MProvinceModel from '@models/mProvinces';
 import MWardModel from '@models/mWards';
+import SystemSettingModel from '@models/systemSetting';
 import WarehouseModel from '@models/warehouses';
-import AuthInterface from '@repositories/interfaces/auth';
 import FeeInterFace from '@repositories/interfaces/fee';
 import axios, { AxiosRequestConfig } from 'axios';
 import { ValidationError, ValidationErrorItem } from 'sequelize';
+import Auth from './auth';
 
 class Fee {
   static readonly FEE_CALCULATE_PARAMS = [
@@ -15,7 +16,7 @@ class Fee {
     'warehouseId', 'shippingProvinceId', 'shippingDistrictId', 'shippingWardId', 'shippingAddress', 'partnerType',
   ];
 
-  public static async calculate (authenticate: AuthInterface, data: any) {
+  public static async calculate (data: any) {
     try {
       await this.validWarehouse(data);
       await this.validProductValue(data);
@@ -24,13 +25,27 @@ class Fee {
         { method: ['byId', data.warehouseId] },
         'withAddressInfo',
       ]).findOne();
+      let authenticate: any;
+      const systemSetting: any = (await SystemSettingModel.findOrCreate({
+        where: { },
+        defaults: { id: undefined },
+      }))[0];
+      if (!systemSetting.environment || !systemSetting.environment || !systemSetting.environment) {
+        authenticate = await Auth.login();
+      } else {
+        authenticate = {
+          Environment: systemSetting.environment,
+          CompanyCode: systemSetting.companyCode,
+          Authorization: systemSetting.accessToken,
+        };
+      }
       const params = await Fee.formatFeeParams(data, warehouse);
       const requestConfigs: AxiosRequestConfig = {
         method: 'POST',
         url: `${process.env.MISA_ENDPOINT}/${authenticate.Environment}/api/v1/shipping/calculate-all`,
         headers: {
           CompanyCode: authenticate.CompanyCode,
-          Authorization: 'Bearer ' + authenticate.AccessToken,
+          Authorization: 'Bearer ' + authenticate.Authorization,
         },
         data: params,
       };
