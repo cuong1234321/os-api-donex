@@ -84,4 +84,29 @@ const router = Router();
  */
 router.get('/', (req: Request, res: Response) => ProductController.index(req, res));
 
+/**
+ * @openapi
+ * /s/products/{productId}:
+ *   get:
+ *     tags:
+ *      - "[SELLER] PRODUCT"
+ *     summary: Danh sách sản phẩm con
+ *     description: Danh sách sản phẩm con
+ *     parameters:
+ *      - in: path
+ *        name: "productId"
+ *        description: "productId"
+ *        type: "number"
+ *     responses:
+ *       200:
+ *         description: "success"
+ *       404:
+ *         description: Không tìm thấy dữ liệu
+ *       500:
+ *        description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/:productId', (req: Request, res: Response) => ProductController.show(req, res));
+
 export default router;

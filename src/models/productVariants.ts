@@ -181,12 +181,35 @@ class ProductVariantModel extends Model<ProductVariantInterface> implements Prod
         where: { skuCode },
       };
     },
+    byProductId (productId) {
+      return {
+        where: { productId },
+      };
+    },
     withProduct () {
       return {
         include: [{
           model: ProductModel,
           as: 'product',
         }],
+      };
+    },
+    withAboutQuantity () {
+      return {
+        attributes: {
+          include: [
+            [
+              Sequelize.literal('(SELECT ' +
+                '(CASE ' +
+                'WHEN SUM(quantity) > 100 THEN "100+" ' +
+                'WHEN SUM(quantity) > 50 THEN "50+" ' +
+                'WHEN SUM(quantity) > 10 THEN "10+" ' +
+                'ELSE "1+" ' +
+                'END) FROM warehouse_variants WHERE variantId = ProductVariantModel.id)'),
+              'quantity',
+            ],
+          ],
+        },
       };
     },
   }
