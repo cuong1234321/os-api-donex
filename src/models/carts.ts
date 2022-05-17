@@ -15,6 +15,7 @@ class CartModel extends Model<CartInterface> implements CartInterface {
   public totalFee?: number;
   public totalTax?: number;
   public finalAmount?: number;
+  public totalVariants?: number;
 
   static readonly hooks: Partial<ModelHooks<CartModel>> = {
   }

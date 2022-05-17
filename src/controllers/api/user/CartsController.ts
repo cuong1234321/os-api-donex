@@ -42,13 +42,14 @@ class CartController {
       await this.variantOptions(cartItems);
       const saleCampaigns = await this.getSaleCampaigns('USER');
       cartItems = await SaleCampaignProductDecorator.calculatorVariantPrice(cartItems, saleCampaigns);
-      const warehouses = await this.groupByWarehouse(cartItems);
+      const { warehouses, totalVariants } = await this.groupByWarehouse(cartItems);
       cart.setDataValue('warehouses', warehouses);
       cart.setDataValue('totalBill', totalBill);
       cart.setDataValue('totalDiscount', totalDiscount);
       cart.setDataValue('totalFee', totalFee);
       cart.setDataValue('totalTax', totalTax);
       cart.setDataValue('finalAmount', finalAmount);
+      cart.setDataValue('totalVariants', totalVariants);
       sendSuccess(res, { cart });
     } catch (error) {
       sendError(res, 500, error.message, error);
@@ -149,6 +150,7 @@ class CartController {
   }
 
   private async groupByWarehouse (cartItems: any) {
+    let totalVariants = 0;
     const warehouses = await WarehouseModel.scope([
       { method: ['byId', [...new Set(cartItems.map((record: any) => record.warehouseId))]] },
       'withWarehouseVariant',
@@ -159,13 +161,14 @@ class CartController {
       let totalBill = 0;
       for (const warehouseCartItem of warehouseCartItems) {
         totalBill = totalBill + warehouseCartItem.variants.getDataValue('saleCampaignPrice');
+        totalVariants = totalVariants + warehouseCartItem.quantity;
       }
       warehouse.setDataValue('totalBill', totalBill);
       warehouse.setDataValue('totalFee', 0);
       warehouse.setDataValue('totalDiscount', 0);
-      warehouse.setDataValue('finalAmount', 0);
+      warehouse.setDataValue('finalAmount', totalBill);
     }
-    return warehouses;
+    return { warehouses, totalVariants };
   }
 
   private async getSaleCampaigns (userType: string) {
