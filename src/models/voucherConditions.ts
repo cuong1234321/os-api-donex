@@ -16,7 +16,7 @@ class VoucherConditionModel extends Model<VoucherConditionInterface> implements 
 
   static readonly UPDATABLE_ON_DUPLICATE_PARAMETERS = ['id', 'discountValue', 'orderValue'];
 
-  static readonly DISCOUNT_TYPE_ENUM = { ACTIVE: 'cash', INACTIVE: 'percent' }
+  static readonly DISCOUNT_TYPE_ENUM = { CASH: 'cash', PERCENT: 'percent' }
 
   static readonly hooks: Partial<ModelHooks<VoucherConditionModel>> = {
   }
@@ -24,6 +24,16 @@ class VoucherConditionModel extends Model<VoucherConditionInterface> implements 
   static readonly validations: ModelValidateOptions = { }
 
   static readonly scopes: ModelScopeOptions = {
+    byVoucherApplication (voucherApplicationId) {
+      return {
+        where: { voucherApplicationId },
+      };
+    },
+    bySorting (sortBy, sortOrder) {
+      return {
+        order: [[Sequelize.literal(sortBy), sortOrder]],
+      };
+    },
   }
 
   public static initialize (sequelize: Sequelize) {

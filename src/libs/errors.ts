@@ -87,6 +87,11 @@ export const orderProcessing = {
   message: 'Order is processing',
 };
 
+export const notEnoughCondition = {
+  code: 465,
+  message: 'Order not enough condition to apply this voucher',
+};
+
 export const Unauthorized = {
   code: 220,
   message: 'Your credentials do not allow access to this resource.',

@@ -1,7 +1,7 @@
 import settings from '@configs/settings';
 import ApplySaleCampaignVariantDecorator from '@decorators/applySaleCampaignVariants';
 import sequelize from '@initializers/sequelize';
-import { NoData, orderProcessing } from '@libs/errors';
+import { NoData, notEnoughCondition, orderProcessing } from '@libs/errors';
 import { sendError, sendSuccess } from '@libs/response';
 import BillTemplateModel from '@models/billTemplates';
 import CollaboratorModel from '@models/collaborators';
@@ -18,6 +18,7 @@ import { Transaction } from 'sequelize/types';
 import Auth from '@repositories/models/auth';
 import ShippingPartner from '@repositories/models/shippingPartners';
 import SlugGeneration from '@libs/slugGeneration';
+import VoucherConditionModel from '@models/voucherConditions';
 
 class OrderController {
   public async show (req: Request, res: Response) {
@@ -69,6 +70,7 @@ class OrderController {
         shippingFee += subOrder.shippingFee;
       }
       params = await this.applyRankDiscount(params, total, subTotal);
+      params = await this.applyVoucher(params, subTotal, res);
       const result = await sequelize.transaction(async (transaction: Transaction) => {
         const order = await OrderModel.create({
           ...params,
@@ -146,6 +148,7 @@ class OrderController {
         shippingFee += subOrder.shippingFee;
       }
       params = await this.applyRankDiscount(params, total, subTotal);
+      params = await this.applyVoucher(params, subTotal, res);
       await sequelize.transaction(async (transaction: Transaction) => {
         await order.update({
           ...params,
@@ -321,6 +324,30 @@ class OrderController {
       });
     } else {
       order = this.applyBasicRankUser(order, totalQuantity, totalPrice, basicConditions);
+    }
+    return order;
+  }
+
+  private async applyVoucher (order: any, totalPrice: number, res: any) {
+    const conditions = await VoucherConditionModel.scope([
+      { method: ['byVoucherApplication', order.appliedVoucherId] },
+      { method: ['bySorting', 'orderValue', 'DESC'] },
+    ]).findAll();
+    const conditionRefs = conditions.filter((record: any) => record.orderValue <= totalPrice);
+    if (conditionRefs.length === 0) {
+      return sendError(res, 404, notEnoughCondition);
+    };
+    const condition = conditionRefs[0];
+    if (condition.discountType === VoucherConditionModel.DISCOUNT_TYPE_ENUM.CASH) {
+      const discount = condition.discountValue;
+      (order.subOrders).forEach((subOrder: any) => {
+        subOrder.voucherDiscount = subOrder.subTotal / totalPrice * discount;
+      });
+    } else if (condition.discountType === VoucherConditionModel.DISCOUNT_TYPE_ENUM.PERCENT) {
+      const discount = totalPrice * condition.discountValue / 100;
+      (order.subOrders).forEach((subOrder: any) => {
+        subOrder.voucherDiscount = subOrder.subTotal / totalPrice * discount;
+      });
     }
     return order;
   }

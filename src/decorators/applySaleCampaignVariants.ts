@@ -31,10 +31,10 @@ class ApplySaleCampaignVariantDecorator {
             item.sellingPrice = variant.sellPrice + saleCampaign.value;
           }
           if (saleCampaign.calculatePriceType === SaleCampaignModel.CALCULATE_PRICE_TYPE.REDUCE_BY_PERCENT) {
-            item.sellingPrice = variant.sellPrice - (variant.sellPrice * saleCampaign.value);
+            item.sellingPrice = variant.sellPrice - (variant.sellPrice * saleCampaign.value / 100);
           }
           if (saleCampaign.calculatePriceType === SaleCampaignModel.CALCULATE_PRICE_TYPE.INCREASE_BY_PERCENT) {
-            item.sellingPrice = variant.sellPrice + (variant.sellPrice * saleCampaign.value);
+            item.sellingPrice = variant.sellPrice + (variant.sellPrice * saleCampaign.value / 100);
           }
         } else {
           item.sellingPrice = variant.sellPrice;
