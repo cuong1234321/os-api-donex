@@ -1,4 +1,4 @@
-import SubOrderController from '@controllers/api/admin/SubOrdersController';
+import SubOrderController from '@controllers/api/seller/SubOrdersController';
 import { Request, Response, Router } from 'express';
 
 const router = Router();
