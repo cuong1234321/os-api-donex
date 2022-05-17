@@ -90,6 +90,31 @@ router.get('/', (req: Request, res: Response) => ProductController.index(req, re
  *   get:
  *     tags:
  *      - "[SELLER] PRODUCT"
+ *     summary: Chi tiết sản phẩm
+ *     description: Chi tiết sản phẩm
+ *     parameters:
+ *      - in: path
+ *        name: "productId"
+ *        description: "productId"
+ *        type: "number"
+ *     responses:
+ *       200:
+ *         description: "success"
+ *       404:
+ *         description: Không tìm thấy dữ liệu
+ *       500:
+ *        description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/:productId', (req: Request, res: Response) => ProductController.show(req, res));
+
+/**
+ * @openapi
+ * /s/products/{productId}/variants:
+ *   get:
+ *     tags:
+ *      - "[SELLER] PRODUCT"
  *     summary: Danh sách sản phẩm con
  *     description: Danh sách sản phẩm con
  *     parameters:
@@ -107,6 +132,6 @@ router.get('/', (req: Request, res: Response) => ProductController.index(req, re
  *     security:
  *      - Bearer: []
  */
-router.get('/:productId', (req: Request, res: Response) => ProductController.show(req, res));
+router.get('/:productId/variants', (req: Request, res: Response) => ProductController.variantIndex(req, res));
 
 export default router;
