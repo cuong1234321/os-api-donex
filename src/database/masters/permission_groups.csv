@@ -1,0 +1,24 @@
+id,title,key
+1,Quản Lý Thông Tin Tài Khoản,AdminsController
+2,Quản Lý Banner,BannersController
+3,Quản Lý Mẫu Hóa Đơn Thanh Toán,BillTemplatesController
+4,Quản Lý Đơn Vị Đối Tác,CollaboratorsController
+5,Quản Lý Thông Báo Marketing,MarketingNotificationsController
+6,Quản Lý Danh Mục Tin Tức,NewsCategoriesController
+7,Quản Lý TIn Tức,NewsController
+8,Quản Lý Đơn Hàng,OrdersController
+9,Quản Lý PopUp Quảng Cáo,PopupsController
+10,Quản Lý Danh Mục Sản Phẩm,ProductCategoriesController
+11,Quản Lý Sản Phẩm,ProductsController
+12,Quản Lý Hạng Đối Tác,RanksController
+13,Quản Lý Bảng Giá,SaleCampaignsController
+14,Quản Lý Cài Đặt Hệ Thống,SystemSettingsController
+15,Quản Lý Cấp Bậc Đối Tác,SellerLevelsController
+16,Quản Lý Chính Sách Và Bảo Mật,TermsController
+17,Quản Lý Người dùng,UsersController
+18,Quản Lý Voucher Khuyến Mãi,VoucherApplicationsController
+19,Quản Lý Xuất kho,WarehouseExportsController
+20,Quản Lý Nhập kho,WarehouseReceiptsController
+21,Quản Lý Chuyển Kho,WarehouseTransfersController
+22,Quản Lý Báo cáo Kho,WarehouseReportsController
+23,Quản Lý Kho,WarehousesController

@@ -1,4 +1,4 @@
-groupId,key,key
+groupId,title,key
 1,Danh Sách Tài khoản,index
 1,Chi Tiết Tài khoản Quản Trị,show
 1,Tạo Mới Tài Khoản Quản Trị,create
@@ -16,16 +16,16 @@ groupId,key,key
 2,Xóa Banner,delete
 3,Xem Mẫu Hóa Đơn Thanh Toán,show
 3,Tạo Mới Mẫu Hóa Đơn Thanh Toán,create
-4,Thêm Mới Đơn Vị Đối Tác,"create, uploadMedia, uploadAvatar"
+4,Thêm Mới Đơn Vị Đối Tác,"create,uploadMedia,uploadAvatar"
 4,Danh Sách Đơn Vị Đối Tác,index
-4,Chỉnh sửa Thông Tin Đơn Vị Đối Tác,"uploadPaperProof, update, active, inactive, uploadMedia, uploadAvatar, changePassword"
+4,Chỉnh sửa Thông Tin Đơn Vị Đối Tác,"uploadPaperProof,update,active,inactive,uploadMedia,uploadAvatar,changePassword"
 4,Xem Thông tin Đơn Vị Đối Tác,show
 4,Xóa Đơn Vị Đối Tác,delete
-4,Duyệt Đơn Vị Đối Tác,"active, inactive"
+4,Duyệt Đơn Vị Đối Tác,"active,inactive"
 5,Danh Sách Thông Báo Marketing,index
 5,Chi Tiết Thông Báo Marketing,show
-5,Tạo Mới Thông Báo Marketing,"create, uploadThumbnail"
-5,Chỉnh Sửa Thông Báo Marketing,"update, uploadThumbnail"
+5,Tạo Mới Thông Báo Marketing,"create,uploadThumbnail"
+5,Chỉnh Sửa Thông Báo Marketing,"update,uploadThumbnail"
 5,Xóa Thông Báo Marketing,delete
 5,Gửi Ngay Thông báo Marketing,sendNow
 6,Danh Sách Danh Mục Tin Tức,index
@@ -34,8 +34,8 @@ groupId,key,key
 6,Tạo Mới Danh Mục Tin Tức,create
 6,Xóa Danh Mục Tin Tức,delete
 7,Danh Sách Tin Tức,index
-7,Tạo Mới Tin Tức,"create, uploadThumbnail"
-7,Chỉnh Sửa Tin Tức,"update, uploadThumbnail, active, inactive"
+7,Tạo Mới Tin Tức,"create,uploadThumbnail"
+7,Chỉnh Sửa Tin Tức,"update,uploadThumbnail,active,inactive"
 7,Xóa Tin Tức,delete
 7,Chi Tiết Tin Tức,show
 8,Xem Đơn Hàng Tổng,show
@@ -45,25 +45,25 @@ groupId,key,key
 8,Xóa Đơn Hàng,delete
 8,Tải Xuống Báo Cáo Đơn Hàng,download
 9,Xem PopUp Quảng Cáo,show
-9,Tạo Mới PopUp Quảng Cáo,"create, uploadImage"
+9,Tạo Mới PopUp Quảng Cáo,"create,uploadImage"
 9,Danh Sách PopUp Quảng Cáo,index
-9,Chỉnh Sửa PopUp Quảng Cáo,"update, uploadImage"
+9,Chỉnh Sửa PopUp Quảng Cáo,"update,uploadImage"
 9,Xóa PopUp Quảng Cáo,delete
 10,Xem Danh Mục Sản Phẩm,show
-10,Tạo mới Danh Mục Sản Phẩm,"create, uploadThumbnail"
-10,Chỉnh sửa Mục Sản Phẩm,"update, uploadThumbnail"
+10,Tạo mới Danh Mục Sản Phẩm,"create,uploadThumbnail"
+10,Chỉnh sửa Mục Sản Phẩm,"update,uploadThumbnail"
 10,Danh Sách Danh Mục Sản Phẩm,index
 10,Xóa Danh Mục Sản Phẩm,delete
 11,Danh Sách Sản Phẩm,index
-11,Tạo mới Sản Phẩm,"create, uploadMedia, uploadOptionMedia"
-11,Chỉnh sửa Sản Phẩm,"update, uploadMedia, uploadOptionMedia, active, inactive"
+11,Tạo mới Sản Phẩm,"create,uploadMedia,uploadOptionMedia"
+11,Chỉnh sửa Sản Phẩm,"update,uploadMedia,uploadOptionMedia,active,inactive"
 11,Xem Chi Tiết Sản Phẩm,show
 11,Xóa Sản Phẩm,delete
 12,Chỉnh Sửa Hạng Đối Tác,update
 12,Xem Chi Tiết Hạng Đối Tác,show
 13,Xem Chi Tiết Bảng Giá,show
 13,Tạo Mới Bảng Giá,create
-13,Chỉnh Sửa Bảng Giá,"update, inactive, active"
+13,Chỉnh Sửa Bảng Giá,"update,inactive,active"
 13,Danh Sách Bảng Giá,index
 13,Xóa Bảng Giá,delete
 14,Xem Cài Đặt Hệ Thống,show
@@ -76,14 +76,14 @@ groupId,key,key
 16,Xem Chính Sách Và Bảo Mật,show
 16,Chỉnh Sửa Chính Sách Và Bảo Mật,update
 17,Danh Sách Người Dùng,index
-17,Tạo Mới Người Dùng,"create, uploadAvatar"
-17,Chỉnh Sửa Thông Tin Người Dùng,"update, active, inactive, uploadAvatar, changePassword"
+17,Tạo Mới Người Dùng,"create,uploadAvatar"
+17,Chỉnh Sửa Thông Tin Người Dùng,"update,active,inactive,uploadAvatar,changePassword"
 17,Xem Chi Tiết Thông Tin Người Dùng,show
 17,Xóa Người Dùng,delete
 18,Danh Sách Voucher Khuyến Mãi,index
 18,Chi Tiết Voucher Khuyến Mãi,show
-18,Tạo Mới Voucher Khuyến Mãi ,"create, uploadThumbnail"
-18,Chỉnh Sửa Voucher Khuyến Mãi,"update, active, inactive"
+18,Tạo Mới Voucher Khuyến Mãi ,"create,uploadThumbnail"
+18,Chỉnh Sửa Voucher Khuyến Mãi,"update,active,inactive"
 18,Xóa Voucher Khuyến Mãi,delete
 19,Tạo Mới Phiếu Xuất Kho,create
 19,Chỉnh Sửa Phiếu Xuất Kho,update

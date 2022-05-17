@@ -1,4 +1,4 @@
-import { Model, ModelScopeOptions, ModelValidateOptions, Sequelize } from 'sequelize';
+import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize } from 'sequelize';
 import PermissionGroupEntity from '@entities/permissionGroups';
 import PermissionGroupInterface from '@interfaces/permissionGroups';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
@@ -20,7 +20,21 @@ class PermissionGroupModel extends Model<PermissionGroupInterface> implements Pe
   }
 
   static readonly scopes: ModelScopeOptions = {
-
+    byFreeWord (freeWord) {
+      return {
+        where: { title: { [Op.like]: `%${freeWord || ''}%` } },
+      };
+    },
+    withPermissions () {
+      return {
+        include: [
+          {
+            model: PermissionModel,
+            as: 'permissions',
+          },
+        ],
+      };
+    },
   }
 
   public static initialize (sequelize: Sequelize) {

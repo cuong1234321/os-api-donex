@@ -14,6 +14,8 @@ class RolePermissionModel extends Model<RolePermissionInterface> implements Role
   public deletedAt?: Date;
   public permission?: PermissionInterface;
 
+  static readonly UPDATABLE_ON_DUPLICATE_PARAMETERS = ['id', 'permissionId'];
+
   static readonly hooks: Partial<ModelHooks<RolePermissionModel>> = { }
 
   static readonly validations: ModelValidateOptions = {
@@ -30,6 +32,7 @@ class RolePermissionModel extends Model<RolePermissionInterface> implements Role
       hooks: RolePermissionModel.hooks,
       scopes: RolePermissionModel.scopes,
       tableName: 'role_permissions',
+      paranoid: true,
       sequelize,
     });
   }
