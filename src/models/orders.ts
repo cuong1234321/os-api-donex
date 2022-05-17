@@ -242,7 +242,7 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
                 'WHEN "collaborator" THEN (SELECT collaborators.fullName from collaborators WHERE collaborators.id = orders.orderableId) ' +
                 'WHEN "agency" THEN (SELECT collaborators.fullName from collaborators WHERE collaborators.id = orders.orderableId) ' +
                 'WHEN "distributor" THEN (SELECT collaborators.fullName from collaborators WHERE collaborators.id = orders.orderableId) ' +
-                'END) FROM orders WHERE orders.id = OrderModel.orderableId)'),
+                'END) FROM orders WHERE orders.id = OrderModel.id)'),
               'orderAbleName',
             ],
           ],
