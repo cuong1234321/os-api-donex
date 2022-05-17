@@ -164,15 +164,15 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
         where: { orderId },
       };
     },
-    byOrderAble (orderAbleId, orderAbleType) {
+    byOrderAble (orderableId, orderableType) {
       return {
         include: [
           {
             model: OrderModel,
             as: 'order',
             where: {
-              orderAbleId,
-              orderAbleType,
+              orderableId,
+              orderableType,
             },
           },
         ],
