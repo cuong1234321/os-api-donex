@@ -99,7 +99,7 @@ class SaleCampaignModel extends Model<SaleCampaignInterface> implements SaleCamp
       const variantIds = this.productVariants.map((variant: any) => variant.productVariantId);
       const scopes: any = [
         { method: ['byId', variantIds] },
-        'withSaleCampaignActiveSameTime',
+        { method: ['withSaleCampaignActiveSameTime', this.appliedAt, this.appliedTo] },
       ];
       const conditions: any = [];
       if (this.isApplyToDistributor) { conditions.push({ isApplyToDistributor: true }); }

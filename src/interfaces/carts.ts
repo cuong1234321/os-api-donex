@@ -15,6 +15,7 @@ interface CartInterface {
   totalTax?: number;
   finalAmount?: number;
   totalItems?: number;
+  totalVariants?: number;
 };
 
 export default CartInterface;

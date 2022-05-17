@@ -95,6 +95,20 @@ class VoucherModel extends Model<VoucherInterface> implements VoucherInterface {
         where: { voucherApplicationId, recipientId, recipientType },
       };
     },
+    byFreeWork (freeWord) {
+      return {
+        include: [
+          {
+            model: VoucherApplicationModel,
+            as: 'application',
+            required: true,
+            where: {
+              title: { [Op.like]: `%${freeWord || ''}%` },
+            },
+          },
+        ],
+      };
+    },
   }
 
   public static initialize (sequelize: Sequelize) {

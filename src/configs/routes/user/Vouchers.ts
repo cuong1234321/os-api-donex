@@ -23,6 +23,10 @@ const router = Router();
  *          - used
  *          - outOfDate
  *          - active
+ *       - in: "query"
+ *         name: "freeWord"
+ *         description: "tìm kiếm theo tên chương trình"
+ *         type: "string"
  *     responses:
  *       200:
  *         description: Success.
