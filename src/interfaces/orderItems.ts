@@ -5,7 +5,9 @@ interface OrderItemInterface {
   productVariantId: number;
   quantity: number;
   sellingPrice: number;
-  commission?: number;
+  listedPrice: number;
+  commission: number;
+  saleCampaignDiscount: number;
   saleCampaignId: number;
   createdAt?: Date;
   updatedAt?: Date;

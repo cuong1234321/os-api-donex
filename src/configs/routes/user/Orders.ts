@@ -61,6 +61,11 @@ const router = Router();
  *              description: "địa chỉ mua hàng"
  *              default: "string"
  *              require: true
+ *            appliedVoucherId:
+ *              type: "number"
+ *              description: "id voucher"
+ *              default: "string"
+ *              require: false
  *            subOrders:
  *              type: "array"
  *              items:

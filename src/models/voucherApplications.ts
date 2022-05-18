@@ -124,7 +124,7 @@ class VoucherApplicationModel extends Model<VoucherApplicationInterface> impleme
       return {
         where: {
           [Op.or]: [
-            Sequelize.literal(`FIND_IN_SET('${paymentMethod}', REPLACE(REPLACE(REPLACE(VoucherModel.paymentMethod, '[', ''), ']', ''), '"', '')) <> 0`),
+            Sequelize.literal(`FIND_IN_SET('${paymentMethod}', REPLACE(REPLACE(REPLACE(VoucherApplicationModel.paymentMethod, '[', ''), ']', ''), '"', '')) <> 0`),
           ],
         },
       };

@@ -17,6 +17,9 @@ interface ProductVariantInterface {
 
   options?: ProductOptionModel[];
   saleCampaignPrice?: number;
+  colorTitle?: string;
+  sizeTitle?: string;
+  saleCampaignId?: number;
 };
 
 export default ProductVariantInterface;

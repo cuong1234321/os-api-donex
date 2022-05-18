@@ -16,7 +16,13 @@ const OrderItemEntity = {
   sellingPrice: {
     type: DataTypes.BIGINT, allowNull: true,
   },
+  listedPrice: {
+    type: DataTypes.BIGINT, allowNull: false,
+  },
   commission: {
+    type: DataTypes.BIGINT, allowNull: true,
+  },
+  saleCampaignDiscount: {
     type: DataTypes.BIGINT, allowNull: true,
   },
   saleCampaignId: {
