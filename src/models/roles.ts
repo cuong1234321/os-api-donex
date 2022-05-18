@@ -118,6 +118,11 @@ class RoleModel extends Model<RoleInterface> implements RoleInterface {
         where: { id },
       };
     },
+    byFreeWord (freeWord) {
+      return {
+        where: { title: { [Op.like]: `%${freeWord || ''}%` } },
+      };
+    },
   }
 
   public static initialize (sequelize: Sequelize) {
