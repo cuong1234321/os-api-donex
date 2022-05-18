@@ -74,6 +74,7 @@ class RoleController {
       const scopes: any = [
         { method: ['bySorting', 'createdAt', 'DESC'] },
         'withRolePermission',
+        'withTotalUser',
       ];
       const { freeWord } = req.query;
       if (freeWord) { scopes.push({ method: ['byFreeWord', freeWord] }); }

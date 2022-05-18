@@ -21,6 +21,8 @@ module.exports = {
       deletedAt: {
         type: Sequelize.DATE,
       },
+    }, {
+      charset: 'utf8mb4',
     });
   },
 

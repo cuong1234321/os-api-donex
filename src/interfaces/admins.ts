@@ -15,6 +15,7 @@ interface AdminInterface {
   note: string,
   forgotPasswordToken: string;
   forgotPasswordExpireAt: Date;
+  roleId: number;
   createdAt?: Date,
   updatedAt?: Date,
   deletedAt?: Date,

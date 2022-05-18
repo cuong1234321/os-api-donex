@@ -25,6 +25,7 @@ class AdminModel extends Model<AdminInterface> implements AdminInterface {
   public note: string;
   public forgotPasswordToken: string;
   public forgotPasswordExpireAt: Date;
+  public roleId: number;
   public createdAt?: Date;
   public updatedAt?: Date;
   public deletedAt?: Date;

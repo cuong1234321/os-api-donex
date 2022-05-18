@@ -48,6 +48,9 @@ const AdminEntity = {
   forgotPasswordExpireAt: {
     type: DataTypes.DATE, allowNull: true,
   },
+  roleId: {
+    type: DataTypes.INTEGER, allowNull: true,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },
