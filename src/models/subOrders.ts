@@ -356,7 +356,7 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
       return {
         where: {
           [Op.and]: [
-            Sequelize.where(Sequelize.literal('(SELECT (subTotal + shippingFee - deposit) FROM sub_orders WHERE id = SubOrderModel.id)'), {
+            Sequelize.where(Sequelize.literal('(SELECT (subTotal + shippingFee - deposit - rankDiscount) FROM sub_orders WHERE id = SubOrderModel.id)'), {
               [Op.between]: [value, value],
             }),
           ],
@@ -429,7 +429,7 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
                 attributes: {
                   include: [
                     [
-                      Sequelize.literal('(SELECT products.unit FROM products WHERE products.id = `items->variant`.id)'),
+                      Sequelize.literal('(SELECT products.unit FROM products WHERE products.id = `items->variant`.productId)'),
                       'unit',
                     ],
                   ],

@@ -5,6 +5,34 @@ const router = Router();
 
 /**
  * @openapi
+ * /a/sub_orders/:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] SUB ORDERS"
+ *     summary: danh sach don hang con
+ *     parameters:
+ *      - in: query
+ *        name: "code"
+ *        description: ""
+ *        type: "string"
+ *        default: ""
+ *      - in: query
+ *        name: "subOrderId"
+ *        description: ""
+ *        type: "number"
+ *        default: ""
+ *     responses:
+ *       200:
+ *         description: "success"
+ *       500:
+ *         description: "failed"
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/', SubOrderController.index);
+
+/**
+ * @openapi
  * /a/sub_orders/{subOrderId}:
  *   get:
  *     tags:
