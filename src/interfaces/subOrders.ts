@@ -30,6 +30,7 @@ interface SubOrderInterface {
   pickUpAt?: Date;
   billId: number;
   rankDiscount: number;
+  voucherDiscount: number;
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;

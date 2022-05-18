@@ -73,10 +73,10 @@ class ProductVariantController {
           variant.setDataValue('saleCampaignPrice', variant.sellPrice + saleCampaign.value);
         }
         if (saleCampaign.calculatePriceType === SaleCampaignModel.CALCULATE_PRICE_TYPE.REDUCE_BY_PERCENT) {
-          variant.setDataValue('saleCampaignPrice', variant.sellPrice - (variant.sellPrice * saleCampaign.value));
+          variant.setDataValue('saleCampaignPrice', variant.sellPrice - (variant.sellPrice * saleCampaign.value / 100));
         }
         if (saleCampaign.calculatePriceType === SaleCampaignModel.CALCULATE_PRICE_TYPE.INCREASE_BY_PERCENT) {
-          variant.setDataValue('saleCampaignPrice', variant.sellPrice + (variant.sellPrice * saleCampaign.value));
+          variant.setDataValue('saleCampaignPrice', variant.sellPrice + (variant.sellPrice * saleCampaign.value / 100));
         }
       } else {
         variant.setDataValue('saleCampaignPrice', variant.sellPrice);

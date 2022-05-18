@@ -136,6 +136,29 @@ class VoucherApplicationModel extends Model<VoucherApplicationInterface> impleme
         },
       };
     },
+    byDateStatus (status) {
+      if (status === 'outOfDate') {
+        return {
+          where: {
+            expiredAt: { [Op.lt]: dayjs().format() },
+          },
+        };
+      } else if (status === 'active') {
+        return {
+          where: {
+            expiredAt: { [Op.gte]: dayjs() },
+            appliedAt: { [Op.lte]: dayjs() },
+            status: VoucherApplicationModel.STATUS_ENUM.ACTIVE,
+          },
+        };
+      } else if (status === 'inactive') {
+        return {
+          where: {
+            status: VoucherApplicationModel.STATUS_ENUM.INACTIVE,
+          },
+        };
+      }
+    },
     withConditions () {
       return {
         include: [

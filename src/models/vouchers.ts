@@ -109,6 +109,13 @@ class VoucherModel extends Model<VoucherInterface> implements VoucherInterface {
         ],
       };
     },
+    isNotUsed () {
+      return {
+        where: {
+          activeAt: null,
+        },
+      };
+    },
   }
 
   public static initialize (sequelize: Sequelize) {

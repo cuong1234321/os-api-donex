@@ -90,6 +90,10 @@ const SubOrderEntity = {
     type: DataTypes.BIGINT,
     defaultValue: 0,
   },
+  voucherDiscount: {
+    type: DataTypes.BIGINT,
+    defaultValue: 0,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },

@@ -38,6 +38,7 @@ public paymentStatus: string;
 public orderPartnerCode: string;
 public billId: number;
 public rankDiscount: number;
+public voucherDiscount: number;
 public createdAt?: Date;
 public updatedAt?: Date;
 public deletedAt?: Date;
