@@ -99,6 +99,18 @@ class RoleModel extends Model<RoleInterface> implements RoleInterface {
         where: { code },
       };
     },
+    withTotalUser () {
+      return {
+        attributes: {
+          include: [
+            [
+              Sequelize.literal('(SELECT COUNT(*) from admins where admins.roleId = RoleModel.id)'),
+              'totalUsers',
+            ],
+          ],
+        },
+      };
+    },
   }
 
   public static initialize (sequelize: Sequelize) {
