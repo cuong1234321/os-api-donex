@@ -1,4 +1,4 @@
-import { Model, ModelScopeOptions, ModelValidateOptions, Sequelize, ValidationErrorItem } from 'sequelize';
+import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, ValidationErrorItem } from 'sequelize';
 import PopupEntity from '@entities/popups';
 import PopupInterface from '@interfaces/popups';
 import dayjs from 'dayjs';
@@ -30,6 +30,15 @@ class PopupModel extends Model<PopupInterface> implements PopupInterface {
   }
 
   static readonly scopes: ModelScopeOptions = {
+    isActive () {
+      return {
+        where: {
+          status: PopupModel.STATUS_ENUM.ACTIVE,
+          applyAt: { [Op.lte]: dayjs().format() },
+          applyTo: { [Op.gte]: dayjs().format() },
+        },
+      };
+    },
     bySortOrder (orderConditions) {
       orderConditions.push([Sequelize.literal('createdAt'), 'DESC']);
       return {

@@ -194,6 +194,10 @@ const swaggerDefinition = {
       description: 'Quản lý mật khẩu',
     },
     {
+      name: '[USER] POPUPS',
+      description: 'Quản lý popup',
+    },
+    {
       name: '[USER] PRODUCT FAVORITE',
       description: 'Quản lý sản phẩm yêu thích',
     },
