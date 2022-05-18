@@ -386,6 +386,15 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
         },
       };
     },
+    byDate (from, to) {
+      if (!from && !to) return { where: {} };
+      const createdAtCondition: any = {};
+      if (from) Object.assign(createdAtCondition, { [Op.gte]: dayjs(from as string).startOf('day').format() });
+      if (to) Object.assign(createdAtCondition, { [Op.lte]: dayjs(to as string).endOf('day').format() });
+      return {
+        where: { createdAt: createdAtCondition },
+      };
+    },
     withFinalAmount () {
       return {
         attributes: {
