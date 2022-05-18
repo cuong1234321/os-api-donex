@@ -30,7 +30,7 @@ class AdminController {
 
   public async show (req: Request, res: Response) {
     try {
-      const admin = await AdminModel.findByPk(req.params.adminId);
+      const admin = await AdminModel.scope(['withRole']).findByPk(req.params.adminId);
       if (!admin) { return sendError(res, 404, NoData); }
       sendSuccess(res, admin);
     } catch (error) {

@@ -23,7 +23,7 @@ class SessionController {
   public async getCurrentAdmin (req: Request, res: Response) {
     try {
       let admin = req.currentAdmin;
-      admin = await AdminModel.findByPk(admin.id);
+      admin = await AdminModel.scope(['withRole']).findByPk(admin.id);
       if (!admin) sendError(res, 404, NoData);
       sendSuccess(res, { admin });
     } catch (error) {

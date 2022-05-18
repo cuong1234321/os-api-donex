@@ -4,6 +4,7 @@ import RolePermissionInterface from '@interfaces/rolePermissions';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import PermissionInterface from '@interfaces/permissions';
 import PermissionModel from './permissions';
+import RoleModel from './roles';
 
 class RolePermissionModel extends Model<RolePermissionInterface> implements RolePermissionInterface {
   public id: number;
@@ -39,6 +40,7 @@ class RolePermissionModel extends Model<RolePermissionInterface> implements Role
 
   public static associate () {
     this.belongsTo(PermissionModel, { as: 'permission', foreignKey: 'permissionId' });
+    this.belongsTo(RoleModel, { as: 'role', foreignKey: 'roleId' });
   }
 }
 

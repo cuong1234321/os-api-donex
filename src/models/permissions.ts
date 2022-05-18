@@ -4,6 +4,8 @@ import PermissionInterface from '@interfaces/permissions';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import PermissionGroupInterface from '@interfaces/permissionGroups';
 import PermissionGroupModel from './permissionGroups';
+import RoleModel from './roles';
+import RolePermissionModel from './rolePermissions';
 
 class PermissionModel extends Model<PermissionInterface> implements PermissionInterface {
   public id: number;
@@ -36,6 +38,7 @@ class PermissionModel extends Model<PermissionInterface> implements PermissionIn
 
   public static associate () {
     this.belongsTo(PermissionGroupModel, { as: 'group', foreignKey: 'groupId' });
+    this.belongsToMany(RoleModel, { through: RolePermissionModel, as: 'permission', foreignKey: 'permissionId' });
   }
 }
 

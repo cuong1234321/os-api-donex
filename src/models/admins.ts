@@ -9,6 +9,7 @@ import dayjs from 'dayjs';
 import MailerService from '@services/mailer';
 import randomString from 'randomstring';
 import RoleModel from './roles';
+import PermissionModel from './permissions';
 
 class AdminModel extends Model<AdminInterface> implements AdminInterface {
   public id: number;
@@ -153,6 +154,20 @@ class AdminModel extends Model<AdminInterface> implements AdminInterface {
         order: orderConditions,
       };
     },
+    withRole () {
+      return {
+        include: [{
+          model: RoleModel,
+          as: 'role',
+          include: [
+            {
+              model: PermissionModel,
+              as: 'permissions',
+            },
+          ],
+        }],
+      };
+    },
   }
 
   public async validPassword (password: string) {
@@ -206,6 +221,7 @@ class AdminModel extends Model<AdminInterface> implements AdminInterface {
   }
 
   public static associate () {
+    this.belongsTo(RoleModel, { as: 'role', foreignKey: 'roleId' });
   }
 }
 
