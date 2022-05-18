@@ -8,6 +8,7 @@ import settings from '@configs/settings';
 import dayjs from 'dayjs';
 import MailerService from '@services/mailer';
 import randomString from 'randomstring';
+import RoleModel from './roles';
 
 class AdminModel extends Model<AdminInterface> implements AdminInterface {
   public id: number;
@@ -30,8 +31,8 @@ class AdminModel extends Model<AdminInterface> implements AdminInterface {
   public updatedAt?: Date;
   public deletedAt?: Date;
 
-  static readonly CREATABLE_PARAMETERS = ['fullName', 'username', 'phoneNumber', 'gender', 'email', 'dateOfBirth', 'note']
-  static readonly UPDATABLE_PARAMETERS = ['fullName', 'phoneNumber', 'gender', 'email', 'dateOfBirth', 'note']
+  static readonly CREATABLE_PARAMETERS = ['fullName', 'username', 'phoneNumber', 'gender', 'email', 'dateOfBirth', 'note', 'roleId']
+  static readonly UPDATABLE_PARAMETERS = ['fullName', 'phoneNumber', 'gender', 'email', 'dateOfBirth', 'note', 'roleId']
   static readonly ADMIN_UPDATABLE_PARAMETERS = ['fullName', 'username', 'avatar', 'phoneNumber', 'gender', 'email', 'dateOfBirth']
 
   public static readonly STATUS_ENUM = { ACTIVE: 'active', INACTIVE: 'inactive' }
@@ -42,6 +43,7 @@ class AdminModel extends Model<AdminInterface> implements AdminInterface {
         const salt = bcrypt.genSaltSync();
         record.password = bcrypt.hashSync(record.password, salt);
       }
+      if (record.username === 'Admin001') { record.roleId = 0; }
     },
   }
 
@@ -84,6 +86,12 @@ class AdminModel extends Model<AdminInterface> implements AdminInterface {
     async validateEmail () {
       if (this.email && !settings.emailPattern.test(this.email)) {
         throw new ValidationErrorItem('Email không hợp lệ', 'validateEmail', 'email');
+      }
+    },
+    async validateRole () {
+      if (this.roleId) {
+        const role = await RoleModel.findByPk(this.roleId);
+        if (!role) throw new ValidationErrorItem('Quyền không hợp lệ', 'validateRole', 'roleId', this.roleId);
       }
     },
   }

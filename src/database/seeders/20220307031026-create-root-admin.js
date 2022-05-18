@@ -12,6 +12,7 @@ module.exports = {
       email: 'anhlee556@gmail.com',
       password: password,
       address: 'fffff',
+      roleId: 0,
       createdAt: new Date(),
       updatedAt: new Date(),
     }];

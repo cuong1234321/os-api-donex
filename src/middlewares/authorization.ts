@@ -23,7 +23,6 @@ class Authorization {
                 model: PermissionGroupModel,
                 as: 'group',
               },
-
             ],
           },
         ],
