@@ -70,8 +70,16 @@ const swaggerDefinition = {
       description: 'Quản lý popup',
     },
     {
+      name: '[ADMIN] PERMISSION GROUPS',
+      description: 'Quản lý danh sách quyền',
+    },
+    {
       name: '[ADMIN] RANK',
       description: 'Quản lý rank',
+    },
+    {
+      name: '[ADMIN] ROLES',
+      description: 'Quản lý phân quyền',
     },
     {
       name: '[ADMIN] SELLER LEVELS',

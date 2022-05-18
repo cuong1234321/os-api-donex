@@ -52,7 +52,7 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
   public subOrders?: SubOrderModel[];
 
   static readonly USER_CREATABLE_PARAMETERS = ['paymentMethod', 'coinUsed', 'shippingFullName', 'shippingProvinceId',
-    'shippingDistrictId', 'shippingPhoneNumber', 'shippingWardId', 'shippingAddress',
+    'shippingDistrictId', 'shippingPhoneNumber', 'shippingWardId', 'shippingAddress', 'appliedVoucherId',
     {
       subOrders: [
         'warehouseId',

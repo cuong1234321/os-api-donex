@@ -8,7 +8,7 @@ const PermissionGroupEntity = {
     type: DataTypes.STRING(255), allowNull: false,
   },
   key: {
-    type: DataTypes.STRING(255), allowNull: false,
+    type: DataTypes.STRING(255), allowNull: true,
   },
   createdAt: {
     type: DataTypes.DATE,
