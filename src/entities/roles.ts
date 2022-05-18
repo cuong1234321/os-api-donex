@@ -10,6 +10,9 @@ const RoleEntity = {
   description: {
     type: DataTypes.STRING(255), allowNull: true,
   },
+  code: {
+    type: DataTypes.STRING(255), allowNull: true,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },

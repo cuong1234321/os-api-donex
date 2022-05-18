@@ -87,6 +87,13 @@ router.delete('/:roleId', RolesController.delete);
  *        schema:
  *          type: "object"
  *          properties:
+ *            title:
+ *              type: "string"
+ *              description: "Tên role"
+ *              default: "Tên role"
+ *            description:
+ *              type: "string"
+ *              description: "mô tả"
  *            rolePermissions:
  *              type: "array"
  *              items:
