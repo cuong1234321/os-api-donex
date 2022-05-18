@@ -37,6 +37,10 @@ router.get('/', RolesController.index);
  *        name: "roleId"
  *        type: "string"
  *        description: "roleId"
+ *      - in: "query"
+ *        name: "freeWord"
+ *        type: "string"
+ *        description: "ten nv"
  *     responses:
  *       200:
  *         description: "Upload success"
