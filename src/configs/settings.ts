@@ -30,6 +30,7 @@ export default {
   defaultUserPassword: 'Aa@123456',
   defaultTax: 8,
   defaultValueConvertCoin: 0.5,
-  warehouseTransferCode: 'WT',
+  warehouseTransferCode: 'CK',
+  warehouseReceiptCode: 'NK',
   branchName: 'f651fce0-e8f8-499d-b5f6-86fbafa15cea',
 };

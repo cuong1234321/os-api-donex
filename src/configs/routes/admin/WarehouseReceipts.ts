@@ -73,6 +73,30 @@ router.get('/:warehouseReceiptId', WarehouseReceiptController.show);
 
 /**
  * @openapi
+ * /a/warehouse_receipts/{warehouseReceiptId}/download:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] WAREHOUSE RECEIPTS"
+ *     summary: Chi tiet phieu nhap
+ *     description: Chi tiet phieu nhap
+ *     parameters:
+ *      - in: path
+ *        name: "warehouseReceiptId"
+ *        type: "number"
+ *     responses:
+ *       200:
+ *         description: "Upload success"
+ *       404:
+ *         description: Không tìm thấy dữ liệu
+ *       500:
+ *        description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/:warehouseReceiptId/download', WarehouseReceiptController.download);
+
+/**
+ * @openapi
  * /a/warehouse_receipts:
  *   post:
  *     tags:
