@@ -8,6 +8,7 @@ import SaleCampaignModel from '@models/saleCampaigns';
 import SaleCampaignProductDecorator from '@decorators/saleCampaignProducts';
 import ProductVariantModel from '@models/productVariants';
 import { NoData } from '@libs/errors';
+import ProductOptionModel from '@models/productOptions';
 
 class ProductController {
   public async index (req: Request, res: Response) {
@@ -35,7 +36,7 @@ class ProductController {
     }
   }
 
-  public async show (req: Request, res: Response) {
+  public async variantIndex (req: Request, res: Response) {
     try {
       const currentSeller = req.currentSeller;
       const { productId } = req.params;
@@ -55,6 +56,45 @@ class ProductController {
       const saleCampaigns = await this.getSaleCampaigns(currentSeller.type);
       product = await SaleCampaignProductDecorator.calculatorVariantPrice([product], saleCampaigns);
       sendSuccess(res, { variants: product[0].getDataValue('variants') });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async show (req: Request, res: Response) {
+    try {
+      const currentSeller = req.currentSeller;
+      let product: any = await ProductModel.scope([
+        { method: ['byId', req.params.productId] },
+        'withCollections',
+        'withCategories',
+        'withProductType',
+        'withGender',
+        { method: ['byStatus', ProductModel.STATUS_ENUM.ACTIVE] },
+      ]).findOne();
+      if (!product) {
+        return sendError(res, 404, NoData);
+      }
+      const options = await ProductOptionModel.scope([
+        { method: ['byProductId', product.id] },
+        'withValueName',
+      ]).findAll();
+      product.setDataValue('options', options);
+      product.setDataValue('medias', await product.getMedias());
+      const scopes: any = [
+        'withOptions',
+        'withAboutQuantity',
+        { method: ['byProductId', req.params.productId] },
+      ];
+      const variants = await ProductVariantModel.scope(scopes).findAll({
+        attributes: {
+          exclude: ['buyPrice'],
+        },
+      });
+      product.setDataValue('variants', variants);
+      const saleCampaigns = await this.getSaleCampaigns(currentSeller.type);
+      product = await SaleCampaignProductDecorator.calculatorVariantPrice([product], saleCampaigns);
+      sendSuccess(res, { product: product[0] });
     } catch (error) {
       sendError(res, 500, error.message, error);
     }
