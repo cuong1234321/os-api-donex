@@ -57,10 +57,14 @@ class RoleController {
 
   public async show (req: Request, res: Response) {
     try {
-      const role = await RoleModel.scope([
+      const scopes: any = [
         { method: ['withRolePermission'] },
         'withTotalUser',
-      ]).findByPk(req.params.roleId);
+        'withAdmin',
+      ];
+      const { freeWord } = req.query;
+      if (freeWord) { scopes.push({ method: ['byAdminFreeWord', freeWord] }); }
+      const role = await RoleModel.scope(scopes).findByPk(req.params.roleId);
       if (!role) {
         return sendError(res, 404, NoData);
       }

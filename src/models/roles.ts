@@ -123,6 +123,26 @@ class RoleModel extends Model<RoleInterface> implements RoleInterface {
         where: { title: { [Op.like]: `%${freeWord || ''}%` } },
       };
     },
+    withAdmin () {
+      return {
+        include: [{
+          model: AdminModel,
+          as: 'admins',
+          attributes: ['id', 'fullName', 'phoneNumber', 'gender', 'email', 'roleId'],
+        }],
+      };
+    },
+    byAdminFreeWord (freeWord) {
+      return {
+        include: [{
+          model: AdminModel,
+          as: 'admins',
+          required: false,
+          where: { fullName: { [Op.like]: `%${freeWord || ''}%` } },
+          attributes: ['id', 'fullName', 'phoneNumber', 'gender', 'email', 'roleId'],
+        }],
+      };
+    },
   }
 
   public static initialize (sequelize: Sequelize) {
