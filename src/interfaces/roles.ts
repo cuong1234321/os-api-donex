@@ -6,6 +6,8 @@ interface RoleInterface {
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;
+
+  totalUsers?: number
 };
 
 export default RoleInterface;

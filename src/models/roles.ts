@@ -15,6 +15,7 @@ class RoleModel extends Model<RoleInterface> implements RoleInterface {
   public createdAt?: Date;
   public updatedAt?: Date;
   public deletedAt?: Date;
+  public totalUsers?: number
 
   public static readonly CREATABLE_PARAMETERS = ['title', 'description',
     { rolePermissions: ['permissionId'] }]
@@ -24,7 +25,7 @@ class RoleModel extends Model<RoleInterface> implements RoleInterface {
 
   static readonly hooks: Partial<ModelHooks<RoleModel>> = {
     async afterDestroy (record) {
-      await RolePermissionModel.destroy({ where: { roleId: this.id }, individualHooks: true });
+      await RolePermissionModel.destroy({ where: { roleId: record.id }, individualHooks: true });
     },
     async beforeSave (record: any) {
       if (!record.code || record._previousDataValues.title !== record.dataValues.title) {
@@ -104,11 +105,16 @@ class RoleModel extends Model<RoleInterface> implements RoleInterface {
         attributes: {
           include: [
             [
-              Sequelize.literal('(SELECT COUNT(*) from admins where admins.roleId = RoleModel.id)'),
+              Sequelize.cast(Sequelize.literal('(SELECT COUNT(*) from admins where admins.roleId = RoleModel.id)'), 'SIGNED'),
               'totalUsers',
             ],
           ],
         },
+      };
+    },
+    byId (id) {
+      return {
+        where: { id },
       };
     },
   }

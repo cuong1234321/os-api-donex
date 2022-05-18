@@ -44,12 +44,12 @@ class RoleController {
 
   public async delete (req: Request, res: Response) {
     try {
-      const role = await RoleModel.findByPk(req.params.roleId);
-      if (!role) {
+      const role = await RoleModel.scope(['withTotalUser', { method: ['byId', req.params.roleId] }]).findOne();
+      if (!role || role.getDataValue('totalUsers') !== 0) {
         return sendError(res, 404, NoData);
       }
       await role.destroy();
-      sendSuccess(res, { role });
+      sendSuccess(res, { });
     } catch (error) {
       sendError(res, 500, error.message, error);
     }
@@ -59,6 +59,7 @@ class RoleController {
     try {
       const role = await RoleModel.scope([
         { method: ['withRolePermission'] },
+        'withTotalUser',
       ]).findByPk(req.params.roleId);
       if (!role) {
         return sendError(res, 404, NoData);
