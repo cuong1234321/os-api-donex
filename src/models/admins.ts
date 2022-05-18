@@ -168,6 +168,18 @@ class AdminModel extends Model<AdminInterface> implements AdminInterface {
         }],
       };
     },
+    withRoleName () {
+      return {
+        attributes: {
+          include: [
+            [
+              Sequelize.literal('(SELECT title  FROM roles WHERE roles.id = AdminModel.roleId)'),
+              'roleName',
+            ],
+          ],
+        },
+      };
+    },
   }
 
   public async validPassword (password: string) {
