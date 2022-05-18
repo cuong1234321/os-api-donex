@@ -15,7 +15,7 @@ class AdminController {
       const offset = (parseInt(page, 10) - 1) * limit;
       const orderConditions: any = [];
       const { freeWord, gender, status, nameOrder } = req.query;
-      const scopes: any = [];
+      const scopes: any = ['withRole'];
       if (freeWord) { scopes.push({ method: ['byFreeWord', freeWord] }); }
       if (gender) { scopes.push({ method: ['byGender', gender] }); }
       if (status) { scopes.push({ method: ['byStatus', status] }); }
