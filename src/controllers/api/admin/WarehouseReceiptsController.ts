@@ -6,6 +6,8 @@ import sequelize from '@initializers/sequelize';
 import { Transaction } from 'sequelize/types';
 import WarehouseReceiptVariantModel from '@models/warehouseReceiptVariants';
 import settings from '@configs/settings';
+import XlsxService from '@services/xlsx';
+import dayjs from 'dayjs';
 
 class WarehouseReceiptController {
   public async create (req: Request, res: Response) {
@@ -79,6 +81,31 @@ class WarehouseReceiptController {
       });
       await warehouseReceipt.reloadWithDetail();
       sendSuccess(res, warehouseReceipt);
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async download (req: Request, res: Response) {
+    try {
+      const time = dayjs().format('DD-MM-YY-hh:mm:ss');
+      const fileName = `Bao-cao-nhap-kho-${time}.xlsx`;
+      const { warehouseReceiptId } = req.params;
+      const scopes: any = [
+        { method: ['byId', warehouseReceiptId] },
+        'withImportAbleName',
+        'withTotalPrice',
+        'withTotalQuantity',
+      ];
+      const warehouseReceipt = await WarehouseReceiptModel.scope(scopes).findOne();
+      if (!warehouseReceipt) { return sendError(res, 404, NoData); }
+      await warehouseReceipt.reloadWithDetail();
+      const buffer: any = await XlsxService.downloadWarehouseReceipt(warehouseReceipt);
+      res.writeHead(200, [
+        ['Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+        ['Content-Disposition', 'attachment; filename=' + `${fileName}`],
+      ]);
+      res.end(Buffer.from(buffer, 'base64'));
     } catch (error) {
       sendError(res, 500, error.message, error);
     }
