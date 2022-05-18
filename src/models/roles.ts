@@ -6,6 +6,7 @@ import RolePermissionInterface from '@interfaces/rolePermissions';
 import SlugGeneration from '@libs/slugGeneration';
 import RolePermissionModel from './rolePermissions';
 import PermissionModel from './permissions';
+import AdminModel from './admins';
 
 class RoleModel extends Model<RoleInterface> implements RoleInterface {
   public id: number;
@@ -131,6 +132,8 @@ class RoleModel extends Model<RoleInterface> implements RoleInterface {
 
   public static associate () {
     this.hasMany(RolePermissionModel, { as: 'rolePermissions', foreignKey: 'roleId' });
+    this.belongsToMany(PermissionModel, { through: RolePermissionModel, as: 'permissions', foreignKey: 'roleId' });
+    this.hasMany(AdminModel, { as: 'admins', foreignKey: 'roleId' });
   }
 }
 
