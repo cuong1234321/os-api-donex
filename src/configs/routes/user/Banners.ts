@@ -20,6 +20,7 @@ const router = Router();
  *         - product
  *         - profile
  *         - news
+ *         - carts
  *      - in: query
  *        name: "position"
  *        type: "string"
