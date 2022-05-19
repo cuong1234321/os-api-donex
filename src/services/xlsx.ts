@@ -168,6 +168,110 @@ class XlsxService {
     return await XlsxService.exportToExcel([{ sheetName: 'Báo cáo nhập kho', sheetData: workSheet }]);
   }
 
+  public static async downloadWarehouseTransfer (warehouseTransfer: any) {
+    dayjs.extend(utc);
+    dayjs.extend(timezone);
+    warehouseTransfer = JSON.parse(JSON.stringify(warehouseTransfer));
+    const companyName = [
+      [{ v: 'Công ty TNHH DONEXPRO Việt Nam', s: { alignment: { horizontal: 'left' }, font: { bold: true, name: 'Times New Roman' } } }],
+    ];
+    const dateVN = dayjs(warehouseTransfer.transferDate).tz('Asia/Ho_Chi_Minh');
+    const information = [
+      [{ v: 'PHIẾU CHUYỂN KHO', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '18' } } }],
+      [{ v: `Ngày ${dateVN.format('DD')} tháng ${dateVN.format('MM')} năm ${dateVN.format('YYYY')}`, s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' } } }],
+      [{ v: `Số: ${settings.warehouseTransferCode}${String(warehouseTransfer.id).padStart(6, '0')}`, s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' } } }],
+      [{ v: `Người vận chuyển: ${warehouseTransfer?.deliverer || ''}`, s: { alignment: { horizontal: 'left' }, font: { bold: false, name: 'Times New Roman', sz: '12' } } }],
+      [{ v: `Diễn giải: ${warehouseTransfer?.note || ''}`, s: { alignment: { horizontal: 'left' }, font: { bold: false, name: 'Times New Roman', sz: '12' } } }],
+    ];
+    const rows = (warehouseTransfer.warehouseTransferVariants).map((record: any, index: any) => {
+      return [
+        { v: index + 1, s: { alignment: { horizontal: 'center' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: record.variant.skuCode, s: { alignment: { horizontal: 'left' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: record.variant.name, s: { alignment: { horizontal: 'left' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: warehouseTransfer.fromWarehouseName, s: { alignment: { horizontal: 'left' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: warehouseTransfer.toWarehouseName, s: { alignment: { horizontal: 'left' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: record.variant.product.unit, s: { alignment: { horizontal: 'left' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: parseInt(record.quantity, 10).toLocaleString('de-DE'), s: { alignment: { horizontal: 'right' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: parseInt(record.price, 10).toLocaleString('de-DE'), s: { alignment: { horizontal: 'right' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: parseInt(record.totalPrice, 10).toLocaleString('de-DE'), s: { alignment: { horizontal: 'right' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      ];
+    });
+    rows.push([
+      { v: '', s: { border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: '', s: { border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'Tổng', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: '', s: { border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: '', s: { border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: '', s: { border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: parseInt(warehouseTransfer.totalQuantity, 10).toLocaleString('de-DE'), s: { alignment: { horizontal: 'right' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: '', s: { alignment: { horizontal: 'right' }, font: { name: 'Times New Roman' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: parseInt(warehouseTransfer.totalPrice, 10).toLocaleString('de-DE'), s: { alignment: { horizontal: 'right' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+    ]);
+    const headers = [
+      { v: 'STT', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'Mã SKU', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'Tên hàng hóa', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'Kho xuất', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'Kho nhập', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'ĐVT', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'Số lượng', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'Đơn giá', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'Thành tiền', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+    ];
+    rows.unshift(headers);
+    const footers = [
+      [
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        { v: 'Ngày.......tháng.......năm............', s: { alignment: { horizontal: 'center' }, font: { italic: true, name: 'Times New Roman', sz: '12' } } },
+      ],
+      [
+        {},
+        { v: 'Người lập phiếu', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' } } },
+        { v: 'Người Người yêu cầu', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' } } },
+        { v: 'Thủ kho xuất', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' } } },
+        { v: 'Người vận chuyển', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' } } },
+        {},
+        { v: 'Thủ kho nhập', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' } } },
+      ],
+      [
+        {},
+        { v: '(Ký, họ tên)', s: { alignment: { horizontal: 'center' }, font: { italic: true, name: 'Times New Roman', sz: '12' } } },
+        { v: '(Ký, họ tên)', s: { alignment: { horizontal: 'center' }, font: { italic: true, name: 'Times New Roman', sz: '12' } } },
+        { v: '(Ký, họ tên)', s: { alignment: { horizontal: 'center' }, font: { italic: true, name: 'Times New Roman', sz: '12' } } },
+        { v: '(Ký, họ tên)', s: { alignment: { horizontal: 'center' }, font: { italic: true, name: 'Times New Roman', sz: '12' } } },
+        {},
+        { v: '(Ký, họ tên)', s: { alignment: { horizontal: 'center' }, font: { italic: true, name: 'Times New Roman', sz: '12' } } },
+      ],
+    ];
+    const workSheet = XLSX.utils.aoa_to_sheet(companyName);
+    XLSX.utils.sheet_add_aoa(workSheet, information, { origin: 'A5' });
+    XLSX.utils.sheet_add_aoa(workSheet, rows, { origin: 'A12' });
+    XLSX.utils.sheet_add_aoa(workSheet, footers, { origin: `A${rows.length + 14}` });
+    const merges = [
+      { s: { r: 4, c: 0 }, e: { r: 4, c: 8 } },
+      { s: { r: 5, c: 0 }, e: { r: 5, c: 8 } },
+      { s: { r: 6, c: 0 }, e: { r: 6, c: 8 } },
+      { s: { r: 7, c: 0 }, e: { r: 7, c: 8 } },
+      { s: { r: 8, c: 0 }, e: { r: 8, c: 8 } },
+      { s: { r: 9, c: 0 }, e: { r: 9, c: 8 } },
+      { s: { r: rows.length + 13, c: 6 }, e: { r: rows.length + 13, c: 7 } },
+      { s: { r: rows.length + 14, c: 6 }, e: { r: rows.length + 14, c: 7 } },
+      { s: { r: rows.length + 14, c: 4 }, e: { r: rows.length + 14, c: 5 } },
+      { s: { r: rows.length + 15, c: 4 }, e: { r: rows.length + 15, c: 5 } },
+      { s: { r: rows.length + 15, c: 6 }, e: { r: rows.length + 15, c: 7 } },
+    ];
+    const wsColsOpts = [{ wch: 10 }, { wch: 20 }, { wch: 50 }, { wch: 25 }, { wch: 25 }, { wch: 15 }, { wch: 15 }, { wch: 20 }, { wch: 20 }];
+    workSheet['!merges'] = merges;
+    workSheet['!cols'] = wsColsOpts;
+    workSheet['!rows'] = [{}, {}, {}, {}, { hpx: 30 }];
+    return await XlsxService.exportToExcel([{ sheetName: 'Báo cáo nhập kho', sheetData: workSheet }]);
+  }
+
   private static appendSingleSheet (data: any, wsColsOpts: XLSX.ColInfo[] = undefined) {
     const workSheetData = [
       ...data,

@@ -6,6 +6,8 @@ import settings from '@configs/settings';
 import WarehouseTransferModel from '@models/warehouseTransfers';
 import WarehouseTransferVariantModel from '@models/warehouseTransferVariants';
 import { NoData } from '@libs/errors';
+import XlsxService from '@services/xlsx';
+import dayjs from 'dayjs';
 
 class WarehouseTransferController {
   public async create (req: Request, res: Response) {
@@ -99,6 +101,31 @@ class WarehouseTransferController {
       const params = req.body;
       await warehouseTransfer.update(params);
       sendSuccess(res, {});
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async download (req: Request, res: Response) {
+    try {
+      const time = dayjs().format('DD-MM-YY-hh:mm:ss');
+      const fileName = `Bao-cao-chuyen-kho-${time}.xlsx`;
+      const { warehouseTransferId } = req.params;
+      const scopes: any = [
+        { method: ['byId', warehouseTransferId] },
+        'withTotalPrice',
+        'withTotalQuantity',
+        'withWarehouseName',
+      ];
+      const warehouseTransfer = await WarehouseTransferModel.scope(scopes).findOne();
+      if (!warehouseTransfer) { return sendError(res, 404, NoData); }
+      await warehouseTransfer.reloadWithDetail();
+      const buffer: any = await XlsxService.downloadWarehouseTransfer(warehouseTransfer);
+      res.writeHead(200, [
+        ['Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+        ['Content-Disposition', 'attachment; filename=' + `${fileName}`],
+      ]);
+      res.end(Buffer.from(buffer, 'base64'));
     } catch (error) {
       sendError(res, 500, error.message, error);
     }

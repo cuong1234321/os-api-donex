@@ -75,6 +75,30 @@ router.get('/:warehouseTransferId', WarehouseTransferController.show);
 
 /**
  * @openapi
+ * /a/warehouse_transfers/{warehouseTransferId}/download:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] WAREHOUSE TRANSFERS"
+ *     summary: tai xuong chi tiet phieu chuyen kho
+ *     description: tai xuong chi tiet phieu chuyen kho
+ *     parameters:
+ *      - in: path
+ *        name: "warehouseTransferId"
+ *        type: "number"
+ *     responses:
+ *       200:
+ *         description: "Upload success"
+ *       404:
+ *         description: Không tìm thấy dữ liệu
+ *       500:
+ *        description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/:warehouseTransferId/download', WarehouseTransferController.download);
+
+/**
+ * @openapi
  * /a/warehouse_transfers:
  *   post:
  *     tags:
