@@ -1,12 +1,17 @@
 import ProductVariantModel from '@models/productVariants';
 import SaleCampaignModel from '@models/saleCampaigns';
 import SubOrderModel from '@models/subOrders';
+import SystemSettingModel from '@models/systemSetting';
+import VoucherConditionModel from '@models/voucherConditions';
 import WarehouseModel from '@models/warehouses';
 import SaleCampaignProductDecorator from './saleCampaignProducts';
 
 class OrderDecorator {
   public static async formatOrder (order: any, promoApplication: any) {
     const { warehouses, productVariants } = await this.getOrderAttributes(order.subOrders);
+    let OrderSubTotal = 0;
+    order.subTotal = 0;
+    const coinDiscount = order.coinUsed ? await this.calculatorCoinDiscount(order.coinUsed) : 0;
     for (const subOrder of order.subOrders) {
       const warehouse = warehouses.find((warehouse: any) => warehouse.id === subOrder.warehouseId);
       let totalWeight = 0;
@@ -39,7 +44,7 @@ class OrderDecorator {
           },
         };
         item.listedPrice = productVariant.sellPrice;
-        item.sellingPrice = (productVariant.saleCampaignPrice || 0) * item.quantity;
+        item.sellingPrice = (productVariant.saleCampaignPrice || productVariant.sellPrice) * item.quantity;
         item.productVariantInfo = productVariantInfo;
         item.saleCampaignId = productVariant.getDataValue('saleCampaignId');
         item.saleCampaignDiscount = productVariant.sellPrice - (productVariant.saleCampaignPrice || 0);
@@ -50,7 +55,16 @@ class OrderDecorator {
       subOrder.weight = totalWeight;
       subOrder.subTotal = subTotal;
       subOrder.voucherDiscount = 0;
+      OrderSubTotal = OrderSubTotal + subOrder.subTotal;
+      OrderSubTotal = (OrderSubTotal - coinDiscount) > 0 ? (OrderSubTotal - coinDiscount) : 0;
+      const applicationDiscount: number = await this.calculatorOrderDiscount(promoApplication, OrderSubTotal);
+      for (const subOrder of order.subOrders) {
+        subOrder.voucherDiscount = (subOrder.subTotal / OrderSubTotal) * applicationDiscount;
+        subOrder.subTotal = subOrder.subTotal - subOrder.voucherDiscount;
+        order.subTotal = order.subTotal + subOrder.subTotal;
+      }
     }
+
     return { order };
   }
 
@@ -79,6 +93,40 @@ class OrderDecorator {
     const saleCampaigns = await SaleCampaignModel.scope(scopes).findAll();
     productVariants = await SaleCampaignProductDecorator.calculatorProductVariantPrice(productVariants, saleCampaigns);
     return { warehouses, productVariants };
+  }
+
+  private static async calculatorCoinDiscount (coinUsed: number) {
+    const systemSetting: any = (await SystemSettingModel.findOrCreate({
+      where: { },
+      defaults: { id: undefined },
+    }))[0];
+    const countDiscount = coinUsed ? systemSetting.coinConversionLevel * coinUsed : 0;
+    return countDiscount;
+  }
+
+  private static async calculatorOrderDiscount (promoApplication: any, subtotal: number) {
+    let applicationDiscount = 0;
+    if (!promoApplication || !promoApplication?.application || !promoApplication?.application?.conditions?.length) {
+      return applicationDiscount;
+    }
+    const conditions = promoApplication?.application?.conditions;
+    let applicationCondition: any;
+    for (const condition of conditions) {
+      if (condition.orderValue < subtotal) {
+        applicationCondition = condition;
+      }
+    }
+    if (!applicationCondition) {
+      return applicationDiscount;
+    }
+    if (applicationCondition.discountType === VoucherConditionModel.DISCOUNT_TYPE_ENUM.CASH) {
+      applicationDiscount = applicationCondition.discountValue;
+    } else {
+      (
+        applicationDiscount = subtotal * (applicationCondition.discountValue / 100)
+      );
+    };
+    return applicationDiscount;
   }
 }
 

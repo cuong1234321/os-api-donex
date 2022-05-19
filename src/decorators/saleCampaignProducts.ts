@@ -36,7 +36,6 @@ class SaleCampaignProductDecorator {
 
   public static async calculatorProductVariantPrice (variants: any, saleCampaigns: any) {
     for (const saleCampaign of saleCampaigns) {
-      const sellPrices = [];
       for (const variant of variants) {
         variant.setDataValue('saleCampaignPrice', variant.sellPrice);
         if (saleCampaign.productVariants.find((record: any) => record.productVariantId === variant.id)) {
@@ -55,7 +54,6 @@ class SaleCampaignProductDecorator {
         }
         if (variant.getDataValue('saleCampaignPrice') < 0) variant.setDataValue('saleCampaignPrice', 0);
         variant.setDataValue('saleCampaignId', saleCampaign.id);
-        sellPrices.push(variant.getDataValue('saleCampaignPrice'));
       }
     }
     return variants;

@@ -8,7 +8,7 @@ const SystemSettingEntity = {
     type: DataTypes.STRING(255), allowNull: true, defaultValue: 0,
   },
   coinConversionLevel: {
-    type: DataTypes.INTEGER, allowNull: true, defaultValue: 0,
+    type: DataTypes.INTEGER, allowNull: true, defaultValue: 1000,
   },
   hotline: {
     type: DataTypes.INTEGER, allowNull: true,

@@ -146,9 +146,9 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
     async validateVoucher () {
       if (this.appliedVoucherId && this.promotionType === OrderModel.PROMOTION_TYPE.USER_VOUCHER) {
         const voucher = await VoucherModel.scope([
-          { method: ['byUserVoucher', this.appliedVoucherId, this.orderableId, this.orderableType] },
+          { method: ['byUserVoucher', this.appliedVoucherId, this.ownerId, this.orderableType] },
+          { method: ['byVoucherApplication', this.paymentMethod] },
           'isNotUsed',
-          { method: ['byStatus', VoucherApplicationModel.STATUS_ENUM.ACTIVE] },
         ]).findOne();
         if (!voucher) {
           throw new ValidationErrorItem('Voucher áp dụng không hợp lệ', 'validateVoucher', 'appliedVocherId', this.appliedVoucherId);

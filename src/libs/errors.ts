@@ -96,3 +96,8 @@ export const Unauthorized = {
   code: 220,
   message: 'Your credentials do not allow access to this resource.',
 };
+
+export const voucherIsCannotApply = {
+  code: 310,
+  message: 'Your voucher is cannot apply to this order',
+};
