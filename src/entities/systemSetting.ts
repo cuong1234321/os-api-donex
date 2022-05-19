@@ -4,8 +4,11 @@ const SystemSettingEntity = {
   id: {
     type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false,
   },
-  applicationLink: {
-    type: DataTypes.STRING(255), allowNull: true, defaultValue: 0,
+  androidAppLink: {
+    type: DataTypes.STRING(255), allowNull: true,
+  },
+  iosAppLink: {
+    type: DataTypes.STRING(255), allowNull: true,
   },
   coinConversionLevel: {
     type: DataTypes.INTEGER, allowNull: true, defaultValue: 1000,

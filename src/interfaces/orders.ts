@@ -39,6 +39,7 @@ interface OrderInterface {
   province?: MProvinceInterface;
   district?: MDistrictInterface;
   subOrders?: SubOrderInterface[];
+  applicationDiscount?: number;
 };
 
 export default OrderInterface;

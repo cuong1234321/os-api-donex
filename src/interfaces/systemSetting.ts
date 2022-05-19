@@ -1,6 +1,7 @@
 interface SystemSettingInterface {
   id: number;
-  applicationLink?: number;
+  androidAppLink?: string;
+  iosAppLink?: string;
   coinConversionLevel?: number;
   hotline?: number;
   hotlineUser?: number;
