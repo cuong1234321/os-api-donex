@@ -79,7 +79,7 @@ class OrderDecorator {
           subOrder.subTotal = subOrder.subTotal ? subOrder.subTotal - coinDiscount : 0;
         }
       } else {
-        subOrder.subTotal = coinDiscount ? ((subOrder.subTotal / OrderSubTotal) * coinDiscount) : subOrder.subTotal;
+        subOrder.subTotal = subOrder.subTotal - Math.round(coinDiscount ? ((subOrder.subTotal / OrderSubTotal) * coinDiscount) : subOrder.subTotal);
       }
       subOrder.voucherDiscount = applicationDiscount ? ((subOrder.subTotal / OrderSubTotal) * applicationDiscount) : 0;
       subOrder.subTotal = subOrder.subTotal - subOrder.voucherDiscount;
