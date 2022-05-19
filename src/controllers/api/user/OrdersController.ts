@@ -1,4 +1,5 @@
-import { NoData } from '@libs/errors';
+import OrderDecorator from '@decorators/orders';
+import { voucherIsCannotApply } from '@libs/errors';
 import sequelize from '@initializers/sequelize';
 import { sendError, sendSuccess } from '@libs/response';
 import MDistrictModel from '@models/mDistricts';
@@ -6,7 +7,6 @@ import MProvinceModel from '@models/mProvinces';
 import MWardModel from '@models/mWards';
 import OrderItemModel from '@models/orderItems';
 import OrderModel from '@models/orders';
-import VoucherApplicationModel from '@models/voucherApplications';
 import VoucherModel from '@models/vouchers';
 import SubOrderModel from '@models/subOrders';
 import { Request, Response } from 'express';
@@ -18,16 +18,18 @@ class OrderController {
       const { currentUser } = req;
       const params = req.parameters.permit(OrderModel.USER_CREATABLE_PARAMETERS).value();
       let orderParams: any = { };
+      let promoApplication: any = {};
       if (params.appliedVoucherId) {
         const voucher = await VoucherModel.scope([
           { method: ['byRecipient', currentUser.id] },
           { method: ['byId', params.appliedVoucherId] },
-          { method: ['byStatus', VoucherApplicationModel.STATUS_ENUM.ACTIVE] },
+          { method: ['byVoucherApplication', params.paymentMethod] },
           'isNotUsed',
         ]).findOne();
         if (!voucher) {
-          return sendError(res, 404, NoData);
+          return sendError(res, 404, voucherIsCannotApply);
         }
+        promoApplication = voucher;
       }
       if (currentUser) {
         orderParams = {
@@ -44,8 +46,10 @@ class OrderController {
           creatableType: OrderModel.CREATABLE_TYPE.ADMIN,
         };
       }
+      const orderFormat: any = await OrderDecorator.formatOrder(orderParams, promoApplication);
+      console.log(orderFormat);
       const result = await sequelize.transaction(async (transaction: Transaction) => {
-        const order = await OrderModel.create(orderParams, {
+        const order = await OrderModel.create(orderFormat.order, {
           include: [
             {
               model: SubOrderModel,
