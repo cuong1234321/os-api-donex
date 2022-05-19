@@ -33,6 +33,7 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
   public coinUsed: number;
   public total: number;
   public appliedVoucherId: number;
+  public promotionType: string;
   public shippingFullName: string;
   public shippingPhoneNumber: string;
   public shippingProvinceId: string;
@@ -40,11 +41,10 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
   public shippingWardId: number;
   public shippingAddress: string;
   public transactionId: string;
-  public promotionType: string;
+  public rankDiscount: number;
+  public saleCampaignId: number;
   public paidAt?: Date;
   public portalConfirmAt?: Date;
-  public saleCampaignId: number;
-  public rankDiscount: number;
   public createdAt?: Date;
   public updatedAt?: Date;
   public deletedAt?: Date;
@@ -116,7 +116,7 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
   static readonly validations: ModelValidateOptions = {
     async validateShippingWard () {
       const ward = await MWardModel.scope([
-        { method: ['byMisaCode', this.shippingWardId] },
+        { method: ['byId', this.shippingWardId] },
       ]).findOne();
       if (!ward) {
         throw new ValidationErrorItem('Địa chỉ không hợp lệ', 'validateShippingWard', 'shippingWardId', this.shippingWardId);
@@ -124,7 +124,7 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
     },
     async validateShippingDistrict () {
       const ward = await MDistrictModel.scope([
-        { method: ['byMisaCode', this.shippingDistrictId] },
+        { method: ['byId', this.shippingDistrictId] },
       ]).findOne();
       if (!ward) {
         throw new ValidationErrorItem('Địa chỉ không hợp lệ', 'validateShippingDistrict', 'shippingDistrictId', this.shippingDistrictId);
@@ -132,7 +132,7 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
     },
     async validateShippingProvince () {
       const ward = await MProvinceModel.scope([
-        { method: ['byMisaCode', this.shippingProvinceId] },
+        { method: ['byId', this.shippingProvinceId] },
       ]).findOne();
       if (!ward) {
         throw new ValidationErrorItem('Địa chỉ không hợp lệ', 'validateShippingProvince', 'shippingProvinceId', this.shippingProvinceId);
@@ -151,7 +151,7 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
           { method: ['byStatus', VoucherApplicationModel.STATUS_ENUM.ACTIVE] },
         ]).findOne();
         if (!voucher) {
-          throw new ValidationErrorItem('Voucher áp dụng không hợp lệ', 'validateVoucher', 'appliedVoucherId', this.appliedVoucherId);
+          throw new ValidationErrorItem('Voucher áp dụng không hợp lệ', 'validateVoucher', 'appliedVocherId', this.appliedVoucherId);
         }
       }
     },
@@ -196,9 +196,9 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
       return {
         attributes: {
           include: [
-            [Sequelize.literal('(SELECT title FROM m_districts WHERE misaCode = OrderModel.shippingDistrictId)'), 'districtName'],
-            [Sequelize.literal('(SELECT title FROM m_wards WHERE misaCode = OrderModel.shippingWardId)'), 'wardName'],
-            [Sequelize.literal('(SELECT title FROM m_provinces WHERE misaCode = OrderModel.shippingProvinceId)'), 'provinceName'],
+            [Sequelize.literal('(SELECT title FROM m_districts WHERE id = OrderModel.shippingDistrictId)'), 'districtName'],
+            [Sequelize.literal('(SELECT title FROM m_wards WHERE id = OrderModel.shippingWardId)'), 'wardName'],
+            [Sequelize.literal('(SELECT title FROM m_provinces WHERE id = OrderModel.shippingProvinceId)'), 'provinceName'],
           ],
         },
       };
@@ -400,8 +400,8 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
           slug: productVariant.slug,
           skuCode: productVariant.skuCode,
           barCode: productVariant.barCode,
-          colorTitle: productVariant.colorTitle,
-          sizeTitle: productVariant.sizeTitle,
+          colorTitle: productVariant.getDataValue('colorTitle'),
+          sizeTitle: productVariant.getDataValue('sizeTitle'),
           product: {
             avatar: productVariant.product.avatar,
             name: productVariant.product.name,

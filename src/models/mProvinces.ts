@@ -16,6 +16,11 @@ class MProvinceModel extends Model<MProvinceInterface> implements MProvinceInter
         where: { misaCode },
       };
     },
+    byId (id) {
+      return {
+        where: { id },
+      };
+    },
   }
 
   public static initialize (sequelize: Sequelize) {

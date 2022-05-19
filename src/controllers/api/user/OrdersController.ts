@@ -1,3 +1,4 @@
+import { NoData } from '@libs/errors';
 import sequelize from '@initializers/sequelize';
 import { sendError, sendSuccess } from '@libs/response';
 import MDistrictModel from '@models/mDistricts';
@@ -5,6 +6,8 @@ import MProvinceModel from '@models/mProvinces';
 import MWardModel from '@models/mWards';
 import OrderItemModel from '@models/orderItems';
 import OrderModel from '@models/orders';
+import VoucherApplicationModel from '@models/voucherApplications';
+import VoucherModel from '@models/vouchers';
 import SubOrderModel from '@models/subOrders';
 import { Request, Response } from 'express';
 import { Transaction } from 'sequelize/types';
@@ -12,9 +15,20 @@ import { Transaction } from 'sequelize/types';
 class OrderController {
   public async create (req: Request, res: Response) {
     try {
-      const currentUser = req.currentUser;
+      const { currentUser } = req;
       const params = req.parameters.permit(OrderModel.USER_CREATABLE_PARAMETERS).value();
       let orderParams: any = { };
+      if (params.appliedVoucherId) {
+        const voucher = await VoucherModel.scope([
+          { method: ['byRecipient', currentUser.id] },
+          { method: ['byId', params.appliedVoucherId] },
+          { method: ['byStatus', VoucherApplicationModel.STATUS_ENUM.ACTIVE] },
+          'isNotUsed',
+        ]).findOne();
+        if (!voucher) {
+          return sendError(res, 404, NoData);
+        }
+      }
       if (currentUser) {
         orderParams = {
           ...params,
@@ -67,7 +81,7 @@ class OrderController {
         districtName: district ? district.title : '',
         wardName: ward ? ward.title : '',
         shippingProvinceId: params.shippingProvinceId || '',
-        shippingDistrictId: params.shippingProvinceId || '',
+        shippingDistrictId: params.shippingDistrictId || '',
         shippingWardId: params.shippingWardId || '',
         shippingAddress: params.shippingAddress || '',
         shippingPhoneNumber: params.shippingPhoneNumber || '',

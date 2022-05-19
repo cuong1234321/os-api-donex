@@ -20,6 +20,11 @@ class MDistrictModel extends Model<MDistrictInterface> implements MDistrictInter
         where: { misaCode },
       };
     },
+    byId (id) {
+      return {
+        where: { id },
+      };
+    },
   }
 
   public static initialize (sequelize: Sequelize) {
