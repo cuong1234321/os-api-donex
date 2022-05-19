@@ -6,6 +6,8 @@ import { Transaction } from 'sequelize/types';
 import sequelize from '@initializers/sequelize';
 import settings from '@configs/settings';
 import { NoData } from '@libs/errors';
+import dayjs from 'dayjs';
+import XlsxService from '@services/xlsx';
 
 class WarehouseExportController {
   public async create (req: Request, res: Response) {
@@ -81,6 +83,31 @@ class WarehouseExportController {
       });
       await warehouseExport.reloadWithDetail();
       sendSuccess(res, warehouseExport);
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async download (req: Request, res: Response) {
+    try {
+      const time = dayjs().format('DD-MM-YY-hh:mm:ss');
+      const fileName = `Bao-cao-xuat-kho-${time}.xlsx`;
+      const { warehouseExportId } = req.params;
+      const scopes: any = [
+        { method: ['byId', warehouseExportId] },
+        'withExportAbleName',
+        'withTotalPrice',
+        'withTotalQuantity',
+      ];
+      const warehouseExport = await WarehouseExportModel.scope(scopes).findOne();
+      if (!warehouseExport) { return sendError(res, 404, NoData); }
+      await warehouseExport.reloadWithDetail();
+      const buffer: any = await XlsxService.downloadWarehouseExport(warehouseExport);
+      res.writeHead(200, [
+        ['Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+        ['Content-Disposition', 'attachment; filename=' + `${fileName}`],
+      ]);
+      res.end(Buffer.from(buffer, 'base64'));
     } catch (error) {
       sendError(res, 500, error.message, error);
     }
