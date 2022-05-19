@@ -71,6 +71,30 @@ router.get('/:warehouseExportId', WarehouseExportController.show);
 
 /**
  * @openapi
+ * /a/warehouse_exports/{warehouseExportId}/download:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] WAREHOUSE EXPORTS"
+ *     summary: Chi tiet phieu xuat
+ *     description: tai xuong chi tiet phieu xuat
+ *     parameters:
+ *      - in: path
+ *        name: "warehouseExportId"
+ *        type: "number"
+ *     responses:
+ *       200:
+ *         description: "Upload success"
+ *       404:
+ *         description: Không tìm thấy dữ liệu
+ *       500:
+ *        description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/:warehouseExportId/download', WarehouseExportController.download);
+
+/**
+ * @openapi
  * /a/warehouse_exports:
  *   post:
  *     tags:

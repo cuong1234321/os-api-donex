@@ -32,5 +32,6 @@ export default {
   defaultValueConvertCoin: 0.5,
   warehouseTransferCode: 'CK',
   warehouseReceiptCode: 'NK',
+  warehouseExportCode: 'XK',
   branchName: 'f651fce0-e8f8-499d-b5f6-86fbafa15cea',
 };
