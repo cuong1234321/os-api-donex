@@ -1,23 +1,23 @@
 import { sendError, sendSuccess } from '@libs/response';
 import CartItemModel from '@models/cartItems';
 import CartModel from '@models/carts';
+import { Request, Response } from 'express';
+import { RequestDiscountInvalid, voucherIsCannotApply } from '@libs/errors';
+import VoucherModel from '@models/vouchers';
 import ProductVariantOptionModel from '@models/productVariantOptions';
 import WarehouseModel from '@models/warehouses';
 import WarehouseVariantModel from '@models/warehouseVariants';
-import { Request, Response } from 'express';
-import SystemSettingModel from '@models/systemSetting';
-import { RequestDiscountInvalid } from '@libs/errors';
-import SaleCampaignProductDecorator from '@decorators/saleCampaignProducts';
-import SaleCampaignModel from '@models/saleCampaigns';
 import CollaboratorModel from '@models/collaborators';
+import SaleCampaignModel from '@models/saleCampaigns';
+import SaleCampaignProductDecorator from '@decorators/saleCampaignProducts';
+import CartDecorator from '@decorators/carts';
 class CartController {
   public async show (req: Request, res: Response) {
     try {
-      const totalBill = 0;
-      let totalDiscount = 0;
+      const { currentUser } = req;
       const totalFee = 0;
       const totalTax = 0;
-      const finalAmount = 0;
+      let promoApplication: any = {};
       const { coins } = req.query;
       const cart = (await CartModel.findOrCreate({
         where: { userId: req.currentUser.id },
@@ -31,25 +31,32 @@ class CartController {
         if (req.currentUser.coinReward < parseInt(coins as string)) {
           return sendError(res, 403, RequestDiscountInvalid);
         }
-        const systemSetting = (await SystemSettingModel.findOrCreate({
-          where: { },
-          defaults: { id: undefined },
-        }))[0];
-        const reduceTotalBillByCoin = parseInt(coins as string) * (systemSetting.coinConversionLevel || 1);
-        totalDiscount = totalDiscount + reduceTotalBillByCoin;
+      }
+      if (req.query.voucherId && req.query.paymentMethod) {
+        const voucher = await VoucherModel.scope([
+          { method: ['byRecipient', currentUser.id] },
+          { method: ['byId', req.query.voucherId] },
+          { method: ['byVoucherApplication', req.query.paymentMethod] },
+          'isNotUsed',
+        ]).findOne();
+        if (!voucher) {
+          return sendError(res, 404, voucherIsCannotApply);
+        }
+        promoApplication = voucher;
       }
       let cartItems = await CartItemModel.scope(scopes).findAll({ order: [['createdAt', 'DESC']] });
       await this.variantOptions(cartItems);
       const saleCampaigns = await this.getSaleCampaigns('USER');
       cartItems = await SaleCampaignProductDecorator.calculatorVariantPrice(cartItems, saleCampaigns);
-      const { warehouses, totalVariants } = await this.groupByWarehouse(cartItems);
-      cart.setDataValue('warehouses', warehouses);
-      cart.setDataValue('totalBill', totalBill);
-      cart.setDataValue('totalDiscount', totalDiscount);
+      const { warehouses }: any = await this.groupByWarehouse(cartItems);
+      const result = await CartDecorator.formatCart(warehouses, promoApplication, parseInt(coins as string));
+      cart.setDataValue('warehouses', result.warehouses);
+      cart.setDataValue('totalBill', result.cartSubTotal);
+      cart.setDataValue('totalDiscount', result.applicationDiscount + result.coinDiscount);
       cart.setDataValue('totalFee', totalFee);
       cart.setDataValue('totalTax', totalTax);
-      cart.setDataValue('finalAmount', finalAmount);
-      cart.setDataValue('totalVariants', totalVariants);
+      cart.setDataValue('finalAmount', result.subTotal);
+      cart.setDataValue('totalVariants', result.total);
       sendSuccess(res, { cart });
     } catch (error) {
       sendError(res, 500, error.message, error);
@@ -150,7 +157,6 @@ class CartController {
   }
 
   private async groupByWarehouse (cartItems: any) {
-    let totalVariants = 0;
     const warehouses = await WarehouseModel.scope([
       { method: ['byId', [...new Set(cartItems.map((record: any) => record.warehouseId))]] },
       'withWarehouseVariant',
@@ -161,14 +167,13 @@ class CartController {
       let totalBill = 0;
       for (const warehouseCartItem of warehouseCartItems) {
         totalBill = totalBill + warehouseCartItem.variants.getDataValue('saleCampaignPrice');
-        totalVariants = totalVariants + warehouseCartItem.quantity;
       }
       warehouse.setDataValue('totalBill', totalBill);
       warehouse.setDataValue('totalFee', 0);
       warehouse.setDataValue('totalDiscount', 0);
       warehouse.setDataValue('finalAmount', totalBill);
     }
-    return { warehouses, totalVariants };
+    return { warehouses };
   }
 
   private async getSaleCampaigns (userType: string) {

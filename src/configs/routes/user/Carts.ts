@@ -35,6 +35,15 @@ const router = Router();
  *        type: "number"
  *        name: "address"
  *        description: "id province"
+ *      - in: "query"
+ *        type: "string"
+ *        name: "paymentMethod"
+ *        description: "Phương thức thanh toán"
+ *        default: 'COD'
+ *        enum:
+ *          - COD
+ *          - banking
+ *          - vnPay
  *     responses:
  *       200:
  *         description: Success.
