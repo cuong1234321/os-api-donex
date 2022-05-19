@@ -11,8 +11,10 @@ class ApplySaleCampaignVariantDecorator {
       items.forEach((item: any) => {
         const variant = variants.find((record: any) => record.id === item.productVariantId);
         item.sellingPrice = variant.sellPrice;
+        item.listedPrice = variant.sellPrice;
         totalPrice += item.sellingPrice * item.quantity;
         totalQuantity += item.quantity;
+        item.saleCampaignDiscount = 0;
       });
     } else {
       const scopes: any = [
