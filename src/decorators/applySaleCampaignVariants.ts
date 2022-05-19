@@ -5,7 +5,8 @@ class ApplySaleCampaignVariantDecorator {
   public static async calculatorVariantPrice (items: any, saleCampaignId?: any) {
     let totalPrice = 0;
     let totalQuantity = 0;
-    const variants = await ProductVariantModel.findAll();
+    let totalWeight = 0;
+    const variants = await ProductVariantModel.scope(['withProduct']).findAll();
     if (!saleCampaignId) {
       items.forEach((item: any) => {
         const variant = variants.find((record: any) => record.id === item.productVariantId);
@@ -22,6 +23,7 @@ class ApplySaleCampaignVariantDecorator {
       const saleCampaign = await SaleCampaignModel.scope(scopes).findOne();
       items.forEach((item: any) => {
         const variant = variants.find((record: any) => record.id === item.productVariantId);
+        item.listedPrice = variant.sellPrice;
         if (saleCampaign.productVariants.find((record: any) => record.productVariantId === item.productVariantId)) {
           item.saleCampaignId = saleCampaignId;
           if (saleCampaign.calculatePriceType === SaleCampaignModel.CALCULATE_PRICE_TYPE.REDUCE_BY_AMOUNT) {
@@ -39,11 +41,13 @@ class ApplySaleCampaignVariantDecorator {
         } else {
           item.sellingPrice = variant.sellPrice;
         }
+        item.saleCampaignDiscount = variant.sellPrice - item.sellingPrice;
         totalPrice += item.sellingPrice * item.quantity;
         totalQuantity += item.quantity;
+        totalWeight += item.quantity * ((JSON.parse(JSON.stringify(variant))).product.weight);
       });
     }
-    return { items, totalPrice, totalQuantity };
+    return { items, totalPrice, totalQuantity, totalWeight };
   }
 }
 

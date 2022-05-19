@@ -208,17 +208,17 @@ router.get('/:orderId', (req: Request, res: Response) => OrdersController.show(r
  *              default: "null"
  *              require: true
  *            shippingProvinceId:
- *              type: "string"
+ *              type: "number"
  *              description: "địa chỉ mua hàng"
  *              default: "null"
  *              require: true
  *            shippingDistrictId:
- *              type: "string"
+ *              type: "number"
  *              description: "địa chỉ mua hàng"
  *              default: "null"
  *              require: true
  *            shippingWardId:
- *              type: "string"
+ *              type: "number"
  *              description: "địa chỉ mua hàng"
  *              default: "null"
  *              require: true

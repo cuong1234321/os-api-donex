@@ -245,6 +245,19 @@ class VoucherApplicationModel extends Model<VoucherApplicationInterface> impleme
         },
       };
     },
+    byVoucherId (voucherId) {
+      return {
+        include: [
+          {
+            model: VoucherModel,
+            as: 'vouchers',
+            where: {
+              id: voucherId,
+            },
+          },
+        ],
+      };
+    },
   }
 
   public async generateVoucherCode () {
