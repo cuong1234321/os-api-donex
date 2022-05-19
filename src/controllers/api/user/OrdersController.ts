@@ -47,7 +47,6 @@ class OrderController {
         };
       }
       const orderFormat: any = await OrderDecorator.formatOrder(orderParams, promoApplication);
-      console.log(orderFormat);
       const result = await sequelize.transaction(async (transaction: Transaction) => {
         const order = await OrderModel.create(orderFormat.order, {
           include: [

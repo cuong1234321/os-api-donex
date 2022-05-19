@@ -40,9 +40,6 @@ router.get('/', SystemSettingsController.show);
  *        schema:
  *          type: "object"
  *          properties:
- *            applicationLink:
- *              type: "string"
- *              description: "link app"
  *            coinConversionLevel:
  *              type: "integer"
  *              description: "mức chuyển đổi"
@@ -76,6 +73,12 @@ router.get('/', SystemSettingsController.show);
  *            amazonLink:
  *              type: "string"
  *              description: "amazonLink"
+ *            androidAppLink:
+ *              type: "string"
+ *              description: "androidAppLink"
+ *            iosAppLink:
+ *              type: "string"
+ *              description: "iosAppLink"
  *     responses:
  *       200:
  *         description: Success

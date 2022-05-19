@@ -2,6 +2,7 @@ import settings from '@configs/settings';
 import OrderEntity from '@entities/orders';
 import OrderInterface from '@interfaces/orders';
 import SubOrderInterface from '@interfaces/subOrders';
+import dayjs from 'dayjs';
 import { BelongsToGetAssociationMixin, HasManyGetAssociationsMixin, Model, ModelScopeOptions, Op, Transaction, ModelValidateOptions, Sequelize, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import AdminModel from './admins';
@@ -45,6 +46,7 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
   public saleCampaignId: number;
   public paidAt?: Date;
   public portalConfirmAt?: Date;
+  public applicationDiscount?: number;
   public createdAt?: Date;
   public updatedAt?: Date;
   public deletedAt?: Date;
@@ -110,6 +112,13 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
     },
     async afterDestroy (record) {
       record.deleteOrderDetails();
+    },
+    async afterCreate (record) {
+      await VoucherModel.update({ discount: record.applicationDiscount, activeAt: dayjs() }, { where: { id: record.appliedVoucherId } });
+      if (record.orderableType === OrderModel.ORDERABLE_TYPE.USER) {
+        const user = await UserModel.findByPk(record.orderableId);
+        await user.update({ coinReward: (user.coinReward - record.coinUsed) });
+      }
     },
   }
 

@@ -9,9 +9,16 @@ import SaleCampaignProductDecorator from './saleCampaignProducts';
 class OrderDecorator {
   public static async formatOrder (order: any, promoApplication: any) {
     const { warehouses, productVariants } = await this.getOrderAttributes(order.subOrders);
+    const systemSetting: any = (await SystemSettingModel.findOrCreate({
+      where: { },
+      defaults: { id: undefined },
+    }))[0];
     let OrderSubTotal = 0;
     order.subTotal = 0;
-    const coinDiscount = order.coinUsed ? await this.calculatorCoinDiscount(order.coinUsed) : 0;
+    let coinDiscount = 0;
+    if (order.coinUsed) {
+      coinDiscount = order.coinUsed ? (systemSetting.coinConversionLevel * order.coinUsed) : 0;
+    }
     for (const subOrder of order.subOrders) {
       const warehouse = warehouses.find((warehouse: any) => warehouse.id === subOrder.warehouseId);
       let totalWeight = 0;
@@ -44,11 +51,11 @@ class OrderDecorator {
           },
         };
         item.listedPrice = productVariant.sellPrice;
-        item.sellingPrice = (productVariant.saleCampaignPrice || productVariant.sellPrice) * item.quantity;
+        item.sellingPrice = (productVariant.getDataValue('saleCampaignPrice') >= 0 ? productVariant.getDataValue('saleCampaignPrice') : productVariant.sellPrice) * item.quantity;
         item.productVariantInfo = productVariantInfo;
         item.saleCampaignId = productVariant.getDataValue('saleCampaignId');
-        item.saleCampaignDiscount = productVariant.sellPrice - (productVariant.saleCampaignPrice || 0);
-        item.commission = productVariant.sellPrice - (productVariant.saleCampaignPrice || 0);
+        item.saleCampaignDiscount = productVariant.sellPrice - (productVariant.getDataValue('saleCampaignPrice') || 0);
+        item.commission = productVariant.sellPrice - (productVariant.getDataValue('saleCampaignPrice') || 0);
         totalWeight = totalWeight + (productVariant.product.weight * parseInt(item.quantity));
         subTotal = subTotal + item.sellingPrice;
       }
@@ -56,15 +63,22 @@ class OrderDecorator {
       subOrder.subTotal = subTotal;
       subOrder.voucherDiscount = 0;
       OrderSubTotal = OrderSubTotal + subOrder.subTotal;
-      OrderSubTotal = (OrderSubTotal - coinDiscount) > 0 ? (OrderSubTotal - coinDiscount) : 0;
       const applicationDiscount: number = await this.calculatorOrderDiscount(promoApplication, OrderSubTotal);
+      order.applicationDiscount = applicationDiscount;
       for (const subOrder of order.subOrders) {
-        subOrder.voucherDiscount = (subOrder.subTotal / OrderSubTotal) * applicationDiscount;
+        if ((subOrder.subTotal / OrderSubTotal) >= 1) {
+          if (subOrder.subTotal < coinDiscount) {
+            order.coinUsed = Math.round(subOrder.subTotal / systemSetting.coinConversionLevel);
+            subOrder.subTotal = 0;
+          }
+        } else {
+          subOrder.subTotal = coinDiscount ? ((subOrder.subTotal / OrderSubTotal) * coinDiscount) : 0;
+        }
+        subOrder.voucherDiscount = applicationDiscount ? ((subOrder.subTotal / OrderSubTotal) * applicationDiscount) : 0;
         subOrder.subTotal = subOrder.subTotal - subOrder.voucherDiscount;
         order.subTotal = order.subTotal + subOrder.subTotal;
       }
     }
-
     return { order };
   }
 
@@ -100,7 +114,7 @@ class OrderDecorator {
       where: { },
       defaults: { id: undefined },
     }))[0];
-    const countDiscount = coinUsed ? systemSetting.coinConversionLevel * coinUsed : 0;
+    const countDiscount = coinUsed ? (systemSetting.coinConversionLevel * coinUsed) : 0;
     return countDiscount;
   }
 
@@ -122,9 +136,7 @@ class OrderDecorator {
     if (applicationCondition.discountType === VoucherConditionModel.DISCOUNT_TYPE_ENUM.CASH) {
       applicationDiscount = applicationCondition.discountValue;
     } else {
-      (
-        applicationDiscount = subtotal * (applicationCondition.discountValue / 100)
-      );
+      applicationDiscount = subtotal * (applicationCondition.discountValue / 100);
     };
     return applicationDiscount;
   }
