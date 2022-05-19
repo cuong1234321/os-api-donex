@@ -258,6 +258,21 @@ class VoucherApplicationModel extends Model<VoucherApplicationInterface> impleme
         ],
       };
     },
+    byRecipientAble (recipientId, recipientType) {
+      return {
+        include: [
+          {
+            model: VoucherModel,
+            as: 'vouchers',
+            where: {
+              recipientId,
+              recipientType,
+              activeAt: null,
+            },
+          },
+        ],
+      };
+    },
   }
 
   public async generateVoucherCode () {

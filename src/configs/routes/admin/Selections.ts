@@ -337,4 +337,43 @@ router.get('/address_books', SelectionController.listAddressBooks);
  */
 router.get('/sale_campaigns', SelectionController.listSaleCampaign);
 
+/**
+ * @openapi
+ * /a/selections/vouchers:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] SELECTION"
+ *     summary: danh sach voucher
+ *     parameters:
+ *      - in: query
+ *        name: "recipientId"
+ *        type: "string"
+ *        required: true
+ *      - in: query
+ *        name: "recipientType"
+ *        type: "string"
+ *        enum:
+ *         - user
+ *         - collaborator
+ *         - agency
+ *         - distributor
+ *        required: true
+ *      - in: query
+ *        name: "paymentMethod"
+ *        type: "string"
+ *        enum:
+ *         - banking
+ *         - COD
+ *         - vnPay
+ *         - wallet
+ *     responses:
+ *       200:
+ *         description: "success"
+ *       500:
+ *         description: "failed"
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/vouchers', SelectionController.listVoucherApplications);
+
 export default router;

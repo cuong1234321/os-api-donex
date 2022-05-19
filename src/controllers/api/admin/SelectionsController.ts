@@ -16,6 +16,7 @@ import SaleCampaignModel from '@models/saleCampaigns';
 import { NoData } from '@libs/errors';
 import SaleCampaignProductDecorator from '@decorators/saleCampaignProducts';
 import AddressBookModel from '@models/addressBooks';
+import VoucherApplicationModel from '@models/voucherApplications';
 
 class SelectionController {
   public async productCategories (req: Request, res: Response) {
@@ -217,6 +218,25 @@ class SelectionController {
       }
       const saleCampaign = await SaleCampaignModel.scope(scopes).findAll();
       sendSuccess(res, saleCampaign);
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async listVoucherApplications (req: Request, res: Response) {
+    try {
+      const { recipientId, recipientType, paymentMethod } = req.query;
+      const sortBy = req.query.sortBy || 'appliedAt';
+      const sortOrder = req.query.sortOrder || 'DESC';
+      const scopes: any = [
+        'withConditions',
+        { method: ['bySorting', sortBy, sortOrder] },
+        { method: ['byRecipientAble', recipientId, recipientType] },
+        { method: ['byDateStatus', VoucherApplicationModel.STATUS_ENUM.ACTIVE] },
+      ];
+      if (paymentMethod) scopes.push({ method: ['byPaymentMethod', paymentMethod] });
+      const voucherApplications = await VoucherApplicationModel.scope(scopes).findAll();
+      sendSuccess(res, voucherApplications);
     } catch (error) {
       sendError(res, 500, error.message, error);
     }
