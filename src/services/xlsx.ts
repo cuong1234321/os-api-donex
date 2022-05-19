@@ -2,7 +2,6 @@ import SubOrderModel from '@models/subOrders';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
-
 import XLSX from 'xlsx-js-style';
 import settings from '@configs/settings';
 
@@ -65,6 +64,7 @@ class XlsxService {
   public static async downloadWarehouseReceipt (warehouseReceipt: any) {
     dayjs.extend(utc);
     dayjs.extend(timezone);
+    const VNnum2words = require('vn-num2words');
     warehouseReceipt = JSON.parse(JSON.stringify(warehouseReceipt));
     const companyName = [
       [{ v: 'Công ty TNHH DONEXPRO Việt Nam', s: { alignment: { horizontal: 'left' }, font: { bold: true, name: 'Times New Roman' } } }],
@@ -96,7 +96,16 @@ class XlsxService {
       { v: '', s: { border: XlsxService.DEFAULT_BORDER_OPTIONS } },
       { v: warehouseReceipt.totalQuantity, s: { alignment: { horizontal: 'right' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
       { v: '', s: { alignment: { horizontal: 'right' }, font: { name: 'Times New Roman' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
-      { v: warehouseReceipt.totalPrice, s: { alignment: { horizontal: 'right' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: parseInt(warehouseReceipt.totalPrice, 10).toLocaleString('de-DE'), s: { alignment: { horizontal: 'right' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+    ],
+    [
+      { v: `Số tiền viết bằng chữ: ${VNnum2words(warehouseReceipt.totalPrice)}đồng`, s: { bold: true, alignment: { horizontal: 'left' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: '', s: { border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: '', s: { border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: '', s: { border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: '', s: { border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: '', s: { border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: '', s: { border: XlsxService.DEFAULT_BORDER_OPTIONS } },
     ]);
     const headers = [
       { v: 'STT', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
@@ -115,6 +124,7 @@ class XlsxService {
         {},
         {},
         {},
+        {},
         { v: 'Ngày.......tháng.......năm............', s: { alignment: { horizontal: 'center' }, font: { italic: true, name: 'Times New Roman', sz: '12' } } },
       ],
       [
@@ -123,6 +133,7 @@ class XlsxService {
         { v: 'Người nhận hàng', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' } } },
         { v: 'Thủ kho', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' } } },
         { v: 'Kế toán trưởng', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' } } },
+        {},
         { v: 'Giám đốc/Thủ trưởng đơn vị', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' } } },
       ],
       [
@@ -131,6 +142,7 @@ class XlsxService {
         { v: '(Ký, họ tên)', s: { alignment: { horizontal: 'center' }, font: { italic: true, name: 'Times New Roman', sz: '12' } } },
         { v: '(Ký, họ tên)', s: { alignment: { horizontal: 'center' }, font: { italic: true, name: 'Times New Roman', sz: '12' } } },
         { v: '(Ký, họ tên)', s: { alignment: { horizontal: 'center' }, font: { italic: true, name: 'Times New Roman', sz: '12' } } },
+        {},
         { v: '(Ký, họ tên)', s: { alignment: { horizontal: 'center' }, font: { italic: true, name: 'Times New Roman', sz: '12' } } },
       ],
     ];
@@ -145,6 +157,9 @@ class XlsxService {
       { s: { r: 7, c: 0 }, e: { r: 7, c: 6 } },
       { s: { r: 8, c: 0 }, e: { r: 8, c: 6 } },
       { s: { r: 9, c: 0 }, e: { r: 9, c: 6 } },
+      { s: { r: 10 + rows.length, c: 0 }, e: { r: 10 + rows.length, c: 6 } },
+      { s: { r: 14 + rows.length, c: 4 }, e: { r: 14 + rows.length, c: 5 } },
+      { s: { r: 15 + rows.length, c: 4 }, e: { r: 15 + rows.length, c: 5 } },
     ];
     const wsColsOpts = [{ wch: 10 }, { wch: 20 }, { wch: 50 }, { wch: 25 }, { wch: 25 }, { wch: 25 }, { wch: 30 }];
     workSheet['!merges'] = merges;
