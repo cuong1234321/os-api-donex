@@ -69,15 +69,26 @@ class OrderController {
   public async show (req: Request, res: Response) {
     try {
       const params = req.parameters.permit(OrderModel.USER_CREATABLE_PARAMETERS).value();
-      const subOrders = await OrderModel.formatViewOrder(params.subOrders);
+      let promoApplication: any = {};
+      if (params.appliedVoucherId) {
+        const voucher = await VoucherModel.scope([
+          { method: ['byId', params.appliedVoucherId] },
+          { method: ['byVoucherApplication', params.paymentMethod] },
+        ]).findOne();
+        if (!voucher) {
+          return sendError(res, 404, voucherIsCannotApply);
+        }
+        promoApplication = voucher;
+      }
+      const orderFormat: any = await OrderDecorator.formatOrder(params, promoApplication);
       const province = await MProvinceModel.scope([
-        { method: ['byMisaCode', params.shippingProvinceId] },
+        { method: ['byId', params.shippingProvinceId] },
       ]).findOne();
       const district = await MDistrictModel.scope([
-        { method: ['byMisaCode', params.shippingDistrictId] },
+        { method: ['byId', params.shippingDistrictId] },
       ]).findOne();
       const ward = await MWardModel.scope([
-        { method: ['byMisaCode', params.shippingWardId] },
+        { method: ['byId', params.shippingWardId] },
       ]).findOne();
       const order: any = {
         provinceName: province ? province.title : '',
@@ -90,14 +101,14 @@ class OrderController {
         shippingPhoneNumber: params.shippingPhoneNumber || '',
         shippingFullName: params.shippingFullName || '',
         paymentMethod: params.paymentMethod || 'COD',
-        total: 0,
-        coinUsed: 0,
+        total: orderFormat.order.total,
+        coinUsed: orderFormat.order.coinUsed,
         shippingDiscount: 0,
         shippingFee: 0,
-        subTotal: 0,
+        subTotal: orderFormat.order.subTotal,
         saleChannel: OrderModel.SALE_CHANNEL.RETAIL,
         code: await OrderModel.generateOderCode(),
-        subOrders: subOrders,
+        subOrders: orderFormat.order.subOrders,
       };
       sendSuccess(res, { order });
     } catch (error) {

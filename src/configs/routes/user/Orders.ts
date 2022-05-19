@@ -76,6 +76,26 @@ const router = Router();
  *                    description: "id kho"
  *                    default: "null"
  *                    require: true
+ *                  deliveryType:
+ *                    type: "string"
+ *                    description: "thong tin"
+ *                    default: "null"
+ *                    require: true
+ *                  deliveryInfo:
+ *                    type: "string"
+ *                    description: "thong tin"
+ *                    default: "null"
+ *                    require: true
+ *                  shippingType:
+ *                    type: "string"
+ *                    description: "thong tin"
+ *                    default: "null"
+ *                    require: true
+ *                  shippingAttributeType:
+ *                    type: "string"
+ *                    description: "thong tin"
+ *                    default: "null"
+ *                    require: true
  *                  items:
  *                    type: "array"
  *                    items:
@@ -166,6 +186,26 @@ router.post('/', authGuest, OrdersController.create);
  *                  warehouseId:
  *                    type: "integer"
  *                    description: "id kho"
+ *                    default: "null"
+ *                    require: true
+ *                  deliveryType:
+ *                    type: "string"
+ *                    description: "thong tin"
+ *                    default: "null"
+ *                    require: true
+ *                  deliveryInfo:
+ *                    type: "string"
+ *                    description: "thong tin"
+ *                    default: "null"
+ *                    require: true
+ *                  shippingType:
+ *                    type: "string"
+ *                    description: "thong tin"
+ *                    default: "null"
+ *                    require: true
+ *                  shippingAttributeType:
+ *                    type: "string"
+ *                    description: "thong tin"
  *                    default: "null"
  *                    require: true
  *                  items:
