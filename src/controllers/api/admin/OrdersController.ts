@@ -19,6 +19,7 @@ import Auth from '@repositories/models/auth';
 import ShippingPartner from '@repositories/models/shippingPartners';
 import SlugGeneration from '@libs/slugGeneration';
 import VoucherConditionModel from '@models/voucherConditions';
+import VoucherApplicationModel from '@models/voucherApplications';
 
 class OrderController {
   public async show (req: Request, res: Response) {
@@ -43,7 +44,6 @@ class OrderController {
     try {
       const currentAdmin = req.currentAdmin || { id: 1 };
       let params = req.parameters.permit(OrderModel.ADMIN_CREATABLE_PARAMETERS).value();
-      params.ownerId = currentAdmin.id;
       let total = 0;
       let subTotal = 0;
       let shippingFee = 0;
@@ -59,12 +59,13 @@ class OrderController {
         },
       }))[0];
       for (const subOrder of params.subOrders) {
-        const { items, totalPrice, totalQuantity } = await ApplySaleCampaignVariantDecorator.calculatorVariantPrice(subOrder.items, params.saleCampaignId);
+        const { items, totalPrice, totalQuantity, totalWeight } = await ApplySaleCampaignVariantDecorator.calculatorVariantPrice(subOrder.items, params.saleCampaignId);
         subOrder.items = items;
         subOrder.status = SubOrderModel.STATUS_ENUM.DRAFT;
         subOrder.subTotal = totalPrice;
         subOrder.total = totalQuantity;
         subOrder.billId = billTemplate.id;
+        subOrder.weight = totalWeight;
         subTotal += totalPrice;
         total += totalQuantity;
         shippingFee += subOrder.shippingFee;
@@ -76,7 +77,7 @@ class OrderController {
           ...params,
           creatableType: OrderModel.CREATABLE_TYPE.ADMIN,
           creatableId: currentAdmin.id,
-          ownerId: currentAdmin.id,
+          ownerId: params.orderableId,
           total,
           subTotal,
           shippingFee,
@@ -138,11 +139,12 @@ class OrderController {
       let subTotal = 0;
       let shippingFee = 0;
       for (const subOrder of params.subOrders) {
-        const { items, totalPrice, totalQuantity } = await ApplySaleCampaignVariantDecorator.calculatorVariantPrice(subOrder.items, params.saleCampaignId);
+        const { items, totalPrice, totalQuantity, totalWeight } = await ApplySaleCampaignVariantDecorator.calculatorVariantPrice(subOrder.items, params.saleCampaignId);
         subOrder.items = items;
         subOrder.status = SubOrderModel.STATUS_ENUM.DRAFT;
         subOrder.subTotal = totalPrice;
         subOrder.total = totalQuantity;
+        subOrder.weight = totalWeight;
         subTotal += totalPrice;
         total += totalQuantity;
         shippingFee += subOrder.shippingFee;
@@ -329,8 +331,12 @@ class OrderController {
   }
 
   private async applyVoucher (order: any, totalPrice: number, res: any) {
+    const voucherApplication = await VoucherApplicationModel.scope([
+      { method: ['byVoucherId', order.appliedVoucherId] },
+    ]).findOne();
+    if (!voucherApplication) { return order; }
     const conditions = await VoucherConditionModel.scope([
-      { method: ['byVoucherApplication', order.appliedVoucherId] },
+      { method: ['byVoucherApplication', voucherApplication.id] },
       { method: ['bySorting', 'orderValue', 'DESC'] },
     ]).findAll();
     const conditionRefs = conditions.filter((record: any) => record.orderValue <= totalPrice);
