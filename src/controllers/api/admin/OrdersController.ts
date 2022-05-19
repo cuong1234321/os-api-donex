@@ -71,7 +71,9 @@ class OrderController {
         shippingFee += subOrder.shippingFee;
       }
       params = await this.applyRankDiscount(params, total, subTotal);
-      params = await this.applyVoucher(params, subTotal, res);
+      if (params.appliedVoucherId) {
+        params = await this.applyVoucher(params, subTotal, res);
+      }
       const result = await sequelize.transaction(async (transaction: Transaction) => {
         const order = await OrderModel.create({
           ...params,

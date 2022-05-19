@@ -114,10 +114,14 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
       record.deleteOrderDetails();
     },
     async afterCreate (record) {
-      await VoucherModel.update({ discount: record.applicationDiscount, activeAt: dayjs() }, { where: { id: record.appliedVoucherId } });
-      if (record.orderableType === OrderModel.ORDERABLE_TYPE.USER) {
-        const user = await UserModel.findByPk(record.orderableId);
-        await user.update({ coinReward: (user.coinReward - record.coinUsed) });
+      if (record.appliedVoucherId) {
+        await VoucherModel.update({ discount: record.applicationDiscount, activeAt: dayjs() }, { where: { id: record.appliedVoucherId } });
+      }
+      if (record.coinUsed) {
+        if (record.orderableType === OrderModel.ORDERABLE_TYPE.USER) {
+          const user = await UserModel.findByPk(record.orderableId);
+          await user.update({ coinReward: (user.coinReward - record.coinUsed) });
+        }
       }
     },
   }
