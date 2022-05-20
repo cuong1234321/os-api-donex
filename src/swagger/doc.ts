@@ -162,6 +162,10 @@ const swaggerDefinition = {
       description: 'Danh sách cửa hàng',
     },
     {
+      name: '[USER] COIN WALLET CHANGES',
+      description: 'Lich xử xu',
+    },
+    {
       name: '[USER] CARTS',
       description: 'Giỏ hàng user',
     },
