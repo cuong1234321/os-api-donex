@@ -233,6 +233,7 @@ class SelectionController {
         { method: ['bySorting', sortBy, sortOrder] },
         { method: ['byRecipientAble', recipientId, recipientType] },
         { method: ['byDateStatus', VoucherApplicationModel.STATUS_ENUM.ACTIVE] },
+        'withOrderValue',
       ];
       if (paymentMethod) scopes.push({ method: ['byPaymentMethod', paymentMethod] });
       const voucherApplications = await VoucherApplicationModel.scope(scopes).findAll();
