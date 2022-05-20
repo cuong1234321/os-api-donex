@@ -1,7 +1,7 @@
 import settings from '@configs/settings';
 import ApplySaleCampaignVariantDecorator from '@decorators/applySaleCampaignVariants';
 import sequelize from '@initializers/sequelize';
-import { NoData, notEnoughCondition, orderProcessing } from '@libs/errors';
+import { NoData, orderProcessing, voucherIsCannotApply } from '@libs/errors';
 import { sendError, sendSuccess } from '@libs/response';
 import BillTemplateModel from '@models/billTemplates';
 import CollaboratorModel from '@models/collaborators';
@@ -19,7 +19,7 @@ import Auth from '@repositories/models/auth';
 import ShippingPartner from '@repositories/models/shippingPartners';
 import SlugGeneration from '@libs/slugGeneration';
 import VoucherConditionModel from '@models/voucherConditions';
-import VoucherApplicationModel from '@models/voucherApplications';
+import VoucherModel from '@models/vouchers';
 
 class OrderController {
   public async show (req: Request, res: Response) {
@@ -71,8 +71,11 @@ class OrderController {
         shippingFee += subOrder.shippingFee;
       }
       params = await this.applyRankDiscount(params, total, subTotal);
+      params.paymentMethod = OrderModel.PAYMENT_METHOD.COD;
       if (params.appliedVoucherId) {
-        params = await this.applyVoucher(params, subTotal, res);
+        const order = await this.applyVoucher(params, subTotal);
+        if (!order) { return sendError(res, 404, voucherIsCannotApply); }
+        params = order;
       }
       const result = await sequelize.transaction(async (transaction: Transaction) => {
         const order = await OrderModel.create({
@@ -83,7 +86,6 @@ class OrderController {
           total,
           subTotal,
           shippingFee,
-          paymentMethod: OrderModel.PAYMENT_METHOD.COD,
         }, {
           include: [
             {
@@ -152,7 +154,11 @@ class OrderController {
         shippingFee += subOrder.shippingFee;
       }
       params = await this.applyRankDiscount(params, total, subTotal);
-      params = await this.applyVoucher(params, subTotal, res);
+      if (params.appliedVoucherId) {
+        const order = await this.applyVoucher(params, subTotal);
+        if (!order) { return sendError(res, 404, voucherIsCannotApply); }
+        params = order;
+      }
       await sequelize.transaction(async (transaction: Transaction) => {
         await order.update({
           ...params,
@@ -203,6 +209,27 @@ class OrderController {
         ['Content-Disposition', 'attachment; filename=' + `${fileName}`],
       ]);
       res.end(Buffer.from(buffer, 'base64'));
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async calculatorVoucher (req: Request, res: Response) {
+    try {
+      const params = req.body;
+      const order = await this.applyVoucher(params, params.totalPrice);
+      if (!order) { return sendError(res, 404, voucherIsCannotApply); }
+      sendSuccess(res, { order });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async calculatorRankDiscount (req: Request, res: Response) {
+    try {
+      let params = req.body;
+      params = await this.applyRankDiscount(params, params.totalQuantity, params.totalPrice);
+      sendSuccess(res, { order: params });
     } catch (error) {
       sendError(res, 500, error.message, error);
     }
@@ -269,6 +296,7 @@ class OrderController {
   }
 
   private async applyRankDiscount (order: any, totalQuantity: number, totalPrice: number) {
+    order.rankDiscount = 0;
     if (order.orderableType === OrderModel.ORDERABLE_TYPE.USER) {
       const user = await UserModel.findByPk(order.orderableId, { paranoid: false });
       const basicRank = (await RankModel.findOrCreate({
@@ -290,9 +318,11 @@ class OrderController {
       const sellerLevel = await SellerLevelModel.findByPk(levelId);
       const rankDiscount = totalPrice * sellerLevel.discountValue / 100;
       order.rankDiscount = rankDiscount;
-      order.subOrders.forEach((subOrder: any) => {
-        subOrder.rankDiscount = subOrder.subTotal / totalPrice * rankDiscount;
-      });
+      if (order.subOrder) {
+        order.subOrders.forEach((subOrder: any) => {
+          subOrder.rankDiscount = subOrder.subTotal / totalPrice * rankDiscount;
+        });
+      }
     }
     return order;
   }
@@ -303,9 +333,11 @@ class OrderController {
     if (!basicRankCondition) return order;
     const rankDiscount = totalPrice * basicRankCondition.discountValue / 100;
     order.rankDiscount = rankDiscount;
-    order.subOrders.forEach((subOrder: any) => {
-      subOrder.rankDiscount = subOrder.subTotal / totalPrice * rankDiscount;
-    });
+    if (order.subOrder) {
+      order.subOrders.forEach((subOrder: any) => {
+        subOrder.rankDiscount = subOrder.subTotal / totalPrice * rankDiscount;
+      });
+    }
     return order;
   }
 
@@ -323,39 +355,52 @@ class OrderController {
       if (!vipRankCondition) return order;
       const rankDiscount = totalPrice * vipRankCondition.discountValue / 100;
       order.rankDiscount = rankDiscount;
-      order.subOrders.forEach((subOrder: any) => {
-        subOrder.rankDiscount = subOrder.subTotal / totalPrice * rankDiscount;
-      });
+      if (order.subOrder) {
+        order.subOrders.forEach((subOrder: any) => {
+          subOrder.rankDiscount = subOrder.subTotal / totalPrice * rankDiscount;
+        });
+      }
     } else {
       order = this.applyBasicRankUser(order, totalQuantity, totalPrice, basicConditions);
     }
     return order;
   }
 
-  private async applyVoucher (order: any, totalPrice: number, res: any) {
-    const voucherApplication = await VoucherApplicationModel.scope([
-      { method: ['byVoucherId', order.appliedVoucherId] },
+  private async applyVoucher (order: any, totalPrice: number) {
+    const voucher = await VoucherModel.scope([
+      { method: ['byUserVoucher', order.appliedVoucherId, order.orderableId, order.orderableType] },
+      { method: ['byVoucherApplication', order.paymentMethod] },
+      'isNotUsed',
     ]).findOne();
-    if (!voucherApplication) { return order; }
+    if (!voucher) {
+      return false;
+    }
     const conditions = await VoucherConditionModel.scope([
-      { method: ['byVoucherApplication', voucherApplication.id] },
+      { method: ['byVoucherApplication', voucher.voucherApplicationId] },
       { method: ['bySorting', 'orderValue', 'DESC'] },
     ]).findAll();
     const conditionRefs = conditions.filter((record: any) => record.orderValue <= totalPrice);
     if (conditionRefs.length === 0) {
-      return sendError(res, 404, notEnoughCondition);
+      return false;
     };
     const condition = conditionRefs[0];
+    order.voucherDiscount = 0;
     if (condition.discountType === VoucherConditionModel.DISCOUNT_TYPE_ENUM.CASH) {
       const discount = condition.discountValue;
-      (order.subOrders).forEach((subOrder: any) => {
-        subOrder.voucherDiscount = subOrder.subTotal / totalPrice * discount;
-      });
+      order.voucherDiscount = discount;
+      if (order.subOrder) {
+        (order.subOrders).forEach((subOrder: any) => {
+          subOrder.voucherDiscount = subOrder.subTotal / totalPrice * discount;
+        });
+      }
     } else if (condition.discountType === VoucherConditionModel.DISCOUNT_TYPE_ENUM.PERCENT) {
       const discount = totalPrice * condition.discountValue / 100;
-      (order.subOrders).forEach((subOrder: any) => {
-        subOrder.voucherDiscount = subOrder.subTotal / totalPrice * discount;
-      });
+      order.voucherDiscount = discount;
+      if (order.subOrder) {
+        (order.subOrders).forEach((subOrder: any) => {
+          subOrder.voucherDiscount = subOrder.subTotal / totalPrice * discount;
+        });
+      }
     }
     return order;
   }

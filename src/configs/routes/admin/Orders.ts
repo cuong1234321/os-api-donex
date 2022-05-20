@@ -306,6 +306,96 @@ router.post('/', (req: Request, res: Response) => OrdersController.create(req, r
 
 /**
  * @openapi
+ * /a/orders/calculator_ranks:
+ *   post:
+ *     tags:
+ *      - "[ADMIN] ORDERS"
+ *     summary: tinh chiet khau theo hang khach hang
+ *     parameters:
+ *      - in: "body"
+ *        name: "body"
+ *        description: "Thông tin order"
+ *        schema:
+ *          type: "object"
+ *          properties:
+ *            orderableType:
+ *              type: "string"
+ *              description: "Loai khach hang"
+ *              enum:
+ *               - user
+ *               - collaborator
+ *               - agency
+ *               - distributor
+ *            orderableId:
+ *              type: "number"
+ *              description: "id khach hang"
+ *            totalQuantity:
+ *              type: "number"
+ *              description: "tong so luong"
+ *            totalPrice:
+ *              type: "number"
+ *              description: "tong gia"
+ *     responses:
+ *       200:
+ *         description: "OK"
+ *       500:
+ *         description: "Internal error"
+ *     security:
+ *      - Bearer: []
+ */
+router.post('/calculator_ranks', (req: Request, res: Response) => OrdersController.calculatorRankDiscount(req, res));
+
+/**
+ * @openapi
+ * /a/orders/calculator_vouchers:
+ *   post:
+ *     tags:
+ *      - "[ADMIN] ORDERS"
+ *     summary: Tinh gia tri giam gia cho voucher
+ *     parameters:
+ *      - in: "body"
+ *        name: "body"
+ *        description: "Thông tin order"
+ *        schema:
+ *          type: "object"
+ *          properties:
+ *            orderableType:
+ *              type: "string"
+ *              description: "Loai khach hang"
+ *              enum:
+ *               - user
+ *               - collaborator
+ *               - agency
+ *               - distributor
+ *            orderableId:
+ *              type: "number"
+ *              description: "id khach hang"
+ *            appliedVoucherId:
+ *              type: "number"
+ *              description: "id voucher user"
+ *            totalPrice:
+ *              type: "number"
+ *              description: "tong gia"
+ *            paymentMethod:
+ *              type: "string"
+ *              description: "phuong thuc thanh toan"
+ *              enum:
+ *               - banking
+ *               - COD
+ *               - vnPay
+ *               - wallet
+ *     responses:
+ *       200:
+ *         description: "OK"
+ *       500:
+ *         description: "Internal error"
+ *     security:
+ *      - Bearer: []
+ */
+router.post('/calculator_vouchers', (req: Request, res: Response) => OrdersController.calculatorVoucher(req, res));
+
+/**
+ * @openapi
  * /a/orders/{orderId}:
  *   patch:
  *     tags:
