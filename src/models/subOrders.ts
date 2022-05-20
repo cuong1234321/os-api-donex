@@ -39,6 +39,8 @@ public orderPartnerCode: string;
 public billId: number;
 public rankDiscount: number;
 public voucherDiscount: number;
+public coinUsed: number;
+public coinDiscount: number;
 public createdAt?: Date;
 public updatedAt?: Date;
 public deletedAt?: Date;

@@ -75,11 +75,21 @@ class OrderDecorator {
         if (subOrder.subTotal < coinDiscount) {
           order.coinUsed = Math.round(subOrder.subTotal / systemSetting.coinConversionLevel);
           subOrder.subTotal = 0;
+          subOrder.coinUsed = order.coinUsed || 0;
+          subOrder.coinDiscount = OrderSubTotal;
         } else {
           subOrder.subTotal = subOrder.subTotal ? subOrder.subTotal - coinDiscount : 0;
+          subOrder.coinUsed = order.coinUsed;
+          subOrder.coinDiscount = coinDiscount;
         }
       } else {
-        subOrder.subTotal = subOrder.subTotal - Math.round(coinDiscount ? ((subOrder.subTotal / OrderSubTotal) * coinDiscount) : subOrder.subTotal);
+        if (OrderSubTotal < coinDiscount) {
+          order.coinUsed = Math.round(OrderSubTotal / systemSetting.coinConversionLevel);
+          coinDiscount = OrderSubTotal;
+        }
+        subOrder.subTotal = coinDiscount ? subOrder.subTotal - Math.round(((subOrder.subTotal / OrderSubTotal) * coinDiscount)) : subOrder.subTotal;
+        subOrder.coinDiscount = coinDiscount ? Math.round(((subOrder.subTotal / OrderSubTotal) * coinDiscount)) : 0;
+        subOrder.coinUsed = Math.round(subOrder.coinDiscount / systemSetting.coinConversionLevel);
       }
       subOrder.voucherDiscount = applicationDiscount ? ((subOrder.subTotal / OrderSubTotal) * applicationDiscount) : 0;
       subOrder.subTotal = subOrder.subTotal - subOrder.voucherDiscount;

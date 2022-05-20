@@ -31,6 +31,8 @@ interface SubOrderInterface {
   billId: number;
   rankDiscount: number;
   voucherDiscount: number;
+  coinUsed: number;
+  coinDiscount: number;
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;

@@ -94,6 +94,14 @@ const SubOrderEntity = {
     type: DataTypes.BIGINT,
     defaultValue: 0,
   },
+  coinUsed: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
+  },
+  coinDiscount: {
+    type: DataTypes.BIGINT,
+    defaultValue: 0,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },

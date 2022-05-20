@@ -49,6 +49,7 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
   public options?: ProductOptionModel[];
   public minPrice?: number;
   public maxPrice?: number;
+  public thumbnail?: string;
 
   static readonly STATUS_ENUM = { DRAFT: 'draft', ACTIVE: 'active', INACTIVE: 'inActive' };
 

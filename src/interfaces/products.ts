@@ -35,6 +35,7 @@ interface ProductInterface {
   variants?: ProductVariantModel[];
   minPrice?: number;
   maxPrice?: number;
+  thumbnail?: string;
 };
 
 export default ProductInterface;
