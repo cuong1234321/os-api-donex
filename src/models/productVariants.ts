@@ -4,6 +4,7 @@ import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize } from 's
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import CartItemModel from './cartItems';
 import ProductCategoryModel from './productCategories';
+import ProductMediaModel from './productMedias';
 import ProductOptionModel from './productOptions';
 import ProductModel from './products';
 import ProductVariantOptionModel from './productVariantOptions';
@@ -191,6 +192,14 @@ class ProductVariantModel extends Model<ProductVariantInterface> implements Prod
         include: [{
           model: ProductModel,
           as: 'product',
+          attributes: {
+            include: [
+              [
+                Sequelize.literal('(SELECT source FROM product_media WHERE productId = 16 AND isThumbnail is true AND ' +
+                `type = "${ProductMediaModel.TYPE_ENUM.IMAGE}")`), 'thumbnail',
+              ],
+            ],
+          },
         }],
       };
     },

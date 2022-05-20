@@ -367,7 +367,7 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
           colorTitle: productVariant.colorTitle,
           sizeTitle: productVariant.sizeTitle,
           product: {
-            avatar: productVariant.product.avatar,
+            avatar: productVariant.product.getDataValue('thumbnail'),
             name: productVariant.product.name,
             slug: productVariant.product.slug,
             shortDescription: productVariant.product.shortDescription,
