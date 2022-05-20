@@ -273,6 +273,16 @@ class VoucherApplicationModel extends Model<VoucherApplicationInterface> impleme
         ],
       };
     },
+    withOrderValue () {
+      return {
+        attributes: {
+          include: [
+            [Sequelize.literal('(SELECT MIN(orderValue) FROM voucher_conditions WHERE voucherApplicationId = VoucherApplicationModel.id )'), 'minValue'],
+            [Sequelize.literal('(SELECT MAX(orderValue) FROM voucher_conditions WHERE voucherApplicationId = VoucherApplicationModel.id )'), 'maxValue'],
+          ],
+        },
+      };
+    },
   }
 
   public async generateVoucherCode () {
