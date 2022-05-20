@@ -52,6 +52,12 @@ class VoucherModel extends Model<VoucherInterface> implements VoucherInterface {
                 as: 'conditions',
               },
             ],
+            attributes: {
+              include: [
+                [Sequelize.literal('(SELECT MIN(orderValue) FROM voucher_conditions WHERE voucherApplicationId = application.id )'), 'minValue'],
+                [Sequelize.literal('(SELECT MAX(orderValue) FROM voucher_conditions WHERE voucherApplicationId = application.id )'), 'maxValue'],
+              ],
+            },
           },
         ],
       };
