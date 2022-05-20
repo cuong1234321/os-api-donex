@@ -3,6 +3,8 @@ import RatingInterface from '@interfaces/ratings';
 import { Model, ModelScopeOptions, ModelValidateOptions, Sequelize, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import RatingImageModel from './ratingImages';
+import SubOrderModel from './subOrders';
+import UserModel from './users';
 
 class RatingModel extends Model<RatingInterface> implements RatingInterface {
   public id: number;
@@ -14,6 +16,7 @@ class RatingModel extends Model<RatingInterface> implements RatingInterface {
   public point: number;
   public status: string;
   public adminId: number;
+  public isAnonymous: boolean;
   public createdAt?: Date;
   public updatedAt?: Date;
   public deletedAt?: Date;
@@ -21,9 +24,12 @@ class RatingModel extends Model<RatingInterface> implements RatingInterface {
   public static readonly STATUS_ENUM = { DRAFT: 'draft', ACTIVE: 'active', INACTIVE: 'inactive' }
   public static readonly CREATABLE_ENUM = { USER: 'user' }
 
-  public static readonly CREATABLE_PARAMETERS = ['content', 'point']
+  public static readonly CREATABLE_PARAMETERS = ['content', 'point', 'isAnonymous']
 
   static readonly hooks: Partial<ModelHooks<RatingModel>> = {
+    async afterCreate (record: any) {
+      await SubOrderModel.update({ isAlreadyRating: true }, { where: { id: record.subOrderId } });
+    },
   }
 
   static readonly validations: ModelValidateOptions = {
@@ -82,6 +88,17 @@ class RatingModel extends Model<RatingInterface> implements RatingInterface {
         order: [[Sequelize.literal(sortBy), sortOrder]],
       };
     },
+    withUserInfo () {
+      return {
+        where: { isAnonymous: false },
+        include: [
+          {
+            model: UserModel,
+            as: 'user',
+          },
+        ],
+      };
+    },
   }
 
   public static initialize (sequelize: Sequelize) {
@@ -97,6 +114,7 @@ class RatingModel extends Model<RatingInterface> implements RatingInterface {
 
   public static associate () {
     this.hasMany(RatingImageModel, { as: 'images', foreignKey: 'ratingAbleId' });
+    this.belongsTo(UserModel, { as: 'user', foreignKey: 'creatableId' });
   }
 }
 

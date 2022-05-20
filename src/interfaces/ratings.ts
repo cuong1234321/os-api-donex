@@ -8,6 +8,7 @@ interface RatingInterface {
   point: number;
   status: string;
   adminId: number;
+  isAnonymous: boolean;
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;
