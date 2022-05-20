@@ -17,6 +17,7 @@ import VoucherModel from './vouchers';
 import MDistrictModel from './mDistricts';
 import MProvinceModel from './mProvinces';
 import MWardModel from './mWards';
+import SellerLevelModel from './sellerLevels';
 
 class CollaboratorModel extends Model<CollaboratorInterface> implements CollaboratorInterface {
   public id: number;
@@ -291,6 +292,26 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
         ],
       };
     },
+    withDefaultRank () {
+      return {
+        include: [
+          {
+            model: SellerLevelModel,
+            as: 'defaultLevel',
+          },
+        ],
+      };
+    },
+    withCurrentRank () {
+      return {
+        include: [
+          {
+            model: SellerLevelModel,
+            as: 'currentLevel',
+          },
+        ],
+      };
+    },
   }
 
   public async validPassword (password: string) {
@@ -408,6 +429,8 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
     this.belongsTo(MDistrictModel, { as: 'district', foreignKey: 'districtId' });
     this.belongsTo(MWardModel, { as: 'ward', foreignKey: 'wardId' });
     this.belongsTo(CollaboratorModel, { as: 'parent', foreignKey: 'parentId' });
+    this.belongsTo(SellerLevelModel, { as: 'defaultLevel', foreignKey: 'defaultRank' });
+    this.belongsTo(SellerLevelModel, { as: 'currentLevel', foreignKey: 'currentRank' });
   }
 }
 

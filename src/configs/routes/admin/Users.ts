@@ -155,6 +155,11 @@ router.post('/', UserController.create);
  *               - male
  *               - female
  *               - other
+ *            defaultRank:
+ *              type: "string"
+ *              enum:
+ *               - Basic
+ *               - Vip
  *            dateOfBirth:
  *              type: "string"
  *              default: "2000/01/01"

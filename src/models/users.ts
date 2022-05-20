@@ -28,7 +28,7 @@ class UserModel extends Model<UserInterface> implements UserInterface {
   public gender: string;
   public status: string;
   public note: string;
-  public defaultRank: number;
+  public defaultRank: string;
   public currentRank: number;
   public forgotPasswordToken: string;
   public forgotPasswordExpireAt: Date;
@@ -44,7 +44,7 @@ class UserModel extends Model<UserInterface> implements UserInterface {
   public static readonly CREATABLE_PARAMETERS = ['phoneNumber', 'fullName', 'password', 'confirmPassword']
   public static readonly USER_CREATABLE_PARAMETERS = ['phoneNumber', 'fullName', 'username', 'gender', 'dateOfBirth', 'email', 'note']
   public static readonly USER_UPDATABLE_PARAMETERS = ['fullName', 'dateOfBirth', 'provinceId', 'districtId', 'wardId', 'address', 'email']
-  static readonly UPDATABLE_PARAMETERS = ['fullName', 'phoneNumber', 'gender', 'email', 'dateOfBirth', 'note']
+  static readonly UPDATABLE_PARAMETERS = ['fullName', 'phoneNumber', 'gender', 'email', 'dateOfBirth', 'note', 'defaultRank']
 
   public static readonly CREATABLE_COLLABORATOR_PARAMETERS = ['phoneNumber', 'fullName', 'email', 'provinceId', 'districtId', 'wardId', 'address', 'dateOfBirth',
     { collaborator: ['type', 'lat', 'long', 'title'] },

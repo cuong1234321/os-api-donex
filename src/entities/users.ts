@@ -53,7 +53,7 @@ const UserEntity = {
     type: DataTypes.TEXT, allowNull: true,
   },
   defaultRank: {
-    type: DataTypes.INTEGER, allowNull: true,
+    type: DataTypes.ENUM({ values: ['Basic', 'Vip'] }), allowNull: true,
   },
   currentRank: {
     type: DataTypes.INTEGER, allowNull: true,
