@@ -98,6 +98,10 @@ const SubOrderEntity = {
     type: DataTypes.INTEGER,
     defaultValue: 0,
   },
+  isAlreadyRating: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  },
   coinDiscount: {
     type: DataTypes.BIGINT,
     defaultValue: 0,

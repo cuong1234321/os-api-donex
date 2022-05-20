@@ -33,6 +33,7 @@ interface SubOrderInterface {
   voucherDiscount: number;
   coinUsed: number;
   coinDiscount: number;
+  isAlreadyRating: boolean;
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;

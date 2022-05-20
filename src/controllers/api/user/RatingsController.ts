@@ -71,6 +71,7 @@ class RatingController {
         'withImage',
         { method: ['byProductVariantId', productVariantIds] },
         { method: ['bySortOrder', sortBy, sortOrder] },
+        'withUserInfo',
       ];
       const { rows, count } = await RatingModel.scope(scopes).findAndCountAll({ limit, offset });
       return sendSuccess(res, { rows, pagination: { total: count, page, perPage: limit } });

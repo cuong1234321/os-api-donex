@@ -35,6 +35,9 @@ const RatingEntity = {
   adminId: {
     type: DataTypes.INTEGER, allowNull: true,
   },
+  isAnonymous: {
+    type: DataTypes.BOOLEAN, defaultValue: false,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },

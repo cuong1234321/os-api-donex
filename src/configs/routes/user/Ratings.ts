@@ -33,6 +33,10 @@ const router = Router();
  *            point:
  *              type: "number"
  *              description: "0 - 5"
+ *            isAnonymous:
+ *              type: "boolean"
+ *              description: "danh gia an danh"
+ *              default: 0
  *     responses:
  *       200:
  *         description: "OK"
