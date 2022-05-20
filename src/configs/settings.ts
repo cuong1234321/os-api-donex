@@ -34,4 +34,6 @@ export default {
   warehouseReceiptCode: 'NK',
   warehouseExportCode: 'XK',
   branchName: 'f651fce0-e8f8-499d-b5f6-86fbafa15cea',
+  vnPayDefaultFee: 1650,
+  vnPayDefaultFeePercent: 1.1,
 };

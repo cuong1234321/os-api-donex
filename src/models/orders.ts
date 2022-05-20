@@ -2,6 +2,7 @@ import settings from '@configs/settings';
 import OrderEntity from '@entities/orders';
 import OrderInterface from '@interfaces/orders';
 import SubOrderInterface from '@interfaces/subOrders';
+import VnpayPaymentService from '@services/vnpayPayment';
 import dayjs from 'dayjs';
 import { BelongsToGetAssociationMixin, HasManyGetAssociationsMixin, Model, ModelScopeOptions, Op, Transaction, ModelValidateOptions, Sequelize, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
@@ -45,6 +46,7 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
   public transactionId: string;
   public rankDiscount: number;
   public saleCampaignId: number;
+  public status: string;
   public paidAt?: Date;
   public portalConfirmAt?: Date;
   public applicationDiscount?: number;
@@ -106,6 +108,8 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
     RETAIL: 'retail',
     OTHER: 'other',
   }
+
+  public static readonly STATUS_ENUM = { DRAFT: 'draft', PENDING: 'pending', PAID: 'paid' }
 
   static readonly hooks: Partial<ModelHooks<OrderModel>> = {
     async beforeCreate (record: OrderModel) {
@@ -446,12 +450,26 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
     }
   }
 
+  public async validSignature (responseParams?: any) {
+    let result: boolean = false;
+    const params = JSON.parse(JSON.stringify(responseParams));
+    result = await (new VnpayPaymentService(this.id, this.transactionId, this.total, VnpayPaymentService.TXN_REF_PREFIX.TOP_UP)).validSignature(params);
+    return result;
+  }
+
   private async subtractUserCoin () {
     if (!this.coinUsed) return;
     if (this.orderableType !== OrderModel.ORDERABLE_TYPE.USER) return;
     await CoinWalletChangeModel.create(
       { id: undefined, userId: this.orderableId, type: CoinWalletChangeModel.TYPE_ENUM.SUBTRACT, mutableType: CoinWalletChangeModel.MUTABLE_TYPE.ORDER, mutableId: this.id, amount: 0 - this.coinUsed },
     );
+  }
+
+  public async isPaid (responseParams?: any) {
+    const params = JSON.parse(JSON.stringify(responseParams));
+    const result = params.vnp_TransactionStatus === '00' &&
+          (await (new VnpayPaymentService(this.id, this.transactionId, this.total, VnpayPaymentService.TXN_REF_PREFIX.TOP_UP)).validSignature(params));
+    return result;
   }
 
   private static async getOrderAttributes (subOrders: any) {

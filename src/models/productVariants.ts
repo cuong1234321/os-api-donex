@@ -195,7 +195,7 @@ class ProductVariantModel extends Model<ProductVariantInterface> implements Prod
           attributes: {
             include: [
               [
-                Sequelize.literal('(SELECT source FROM product_media WHERE productId = 16 AND isThumbnail is true AND ' +
+                Sequelize.literal('(SELECT source FROM product_media WHERE productId = product.id AND isThumbnail is true AND ' +
                 `type = "${ProductMediaModel.TYPE_ENUM.IMAGE}")`), 'thumbnail',
               ],
             ],
