@@ -6,6 +6,7 @@ import dayjs from 'dayjs';
 import { BelongsToGetAssociationMixin, HasManyGetAssociationsMixin, Model, ModelScopeOptions, Op, Transaction, ModelValidateOptions, Sequelize, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import AdminModel from './admins';
+import CoinWalletChangeModel from './coinWalletChanges';
 import MDistrictModel from './mDistricts';
 import MProvinceModel from './mProvinces';
 import MWardModel from './mWards';
@@ -117,12 +118,7 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
       if (record.appliedVoucherId) {
         await VoucherModel.update({ discount: record.applicationDiscount, activeAt: dayjs() }, { where: { id: record.appliedVoucherId } });
       }
-      if (record.coinUsed) {
-        if (record.orderableType === OrderModel.ORDERABLE_TYPE.USER) {
-          const user = await UserModel.findByPk(record.orderableId);
-          await user.update({ coinReward: (user.coinReward - record.coinUsed) });
-        }
-      }
+      await record.subtractUserCoin();
     },
   }
 
@@ -448,6 +444,14 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
     for (const [index, subOrder] of resultSubOrders.entries()) {
       await subOrder.updateItems(subOrders[index].items, transaction);
     }
+  }
+
+  private async subtractUserCoin () {
+    if (!this.coinUsed) return;
+    if (this.orderableType !== OrderModel.ORDERABLE_TYPE.USER) return;
+    await CoinWalletChangeModel.create(
+      { id: undefined, userId: this.orderableId, type: CoinWalletChangeModel.TYPE_ENUM.SUBTRACT, mutableType: CoinWalletChangeModel.MUTABLE_TYPE.ORDER, mutableId: this.id, amount: 0 - this.coinUsed },
+    );
   }
 
   private static async getOrderAttributes (subOrders: any) {
