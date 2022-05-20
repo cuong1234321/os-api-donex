@@ -32,7 +32,10 @@ const swaggerDefinition = {
       name: '[ADMIN] FEE',
       description: 'tinh gia van chuyen',
     },
-
+    {
+      name: '[ADMIN] HISTORY EARNED POINT',
+      description: 'lịch sử điểm thưởng',
+    },
     {
       name: '[ADMIN] NEWS',
       description: 'Quản lý tin tức',
