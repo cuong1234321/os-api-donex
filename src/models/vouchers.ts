@@ -46,6 +46,12 @@ class VoucherModel extends Model<VoucherInterface> implements VoucherInterface {
             where: {
               status: VoucherApplicationModel.STATUS_ENUM.ACTIVE,
             },
+            include: [
+              {
+                model: VoucherConditionModel,
+                as: 'conditions',
+              },
+            ],
           },
         ],
       };
