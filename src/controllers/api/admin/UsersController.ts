@@ -6,6 +6,8 @@ import ImageUploaderService from '@services/imageUploader';
 import settings from '@configs/settings';
 import { Sequelize } from 'sequelize';
 import MailerService from '@services/mailer';
+import RankModel from '@models/ranks';
+import SlugGeneration from '@libs/slugGeneration';
 
 class UserController {
   public async index (req: Request, res: Response) {
@@ -99,6 +101,8 @@ class UserController {
     try {
       const user = await UserModel.findByPk(req.params.userId);
       if (!user) { return sendError(res, 404, NoData); }
+      user.setDataValue('defaultRankInfo', user.defaultRank ? await RankModel.scope([{ method: ['byType', SlugGeneration.execute(user.defaultRank)] }]).findOne() : null);
+      user.setDataValue('currentRankInfo', await RankModel.scope([{ method: ['byType', SlugGeneration.execute(user.rank)] }]).findOne() || null);
       sendSuccess(res, user);
     } catch (error) {
       sendError(res, 500, error.message, error);

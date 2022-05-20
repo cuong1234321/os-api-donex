@@ -54,6 +54,13 @@ class RankModel extends Model<RankInterface> implements RankInterface {
         }],
       };
     },
+    byType (type) {
+      return {
+        where: {
+          type,
+        },
+      };
+    },
   }
 
   public static initialize (sequelize: Sequelize) {

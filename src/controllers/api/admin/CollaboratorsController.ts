@@ -143,6 +143,8 @@ class CollaboratorController {
         'withWorkingDay',
         'withMedia',
         'withRejectorName',
+        'withDefaultRank',
+        'withCurrentRank',
       ]).findByPk(collaboratorId);
       if (!collaborator) return sendError(res, 404, NoData);
       sendSuccess(res, { collaborator });

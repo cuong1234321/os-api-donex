@@ -1,3 +1,5 @@
+import RankModel from '@models/ranks';
+
 interface UserInterface {
   id: number,
   adminId: number,
@@ -15,7 +17,7 @@ interface UserInterface {
   gender: string,
   status: string,
   note: string,
-  defaultRank: number,
+  defaultRank: string,
   currentRank: number,
   forgotPasswordToken: string;
   forgotPasswordExpireAt: Date;
@@ -25,6 +27,9 @@ interface UserInterface {
   createdAt?: Date,
   updatedAt?: Date,
   deletedAt?: Date,
+
+  defaultRankInfo?: RankModel,
+  currentRankInfo?: RankModel,
 };
 
 export default UserInterface;
