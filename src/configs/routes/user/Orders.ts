@@ -66,6 +66,11 @@ const router = Router();
  *              description: "id voucher"
  *              default: "string"
  *              require: false
+ *            note:
+ *              type: "string"
+ *              description: "ghi chu tu khach hang"
+ *              default: "string"
+ *              require: false
  *            subOrders:
  *              type: "array"
  *              items:

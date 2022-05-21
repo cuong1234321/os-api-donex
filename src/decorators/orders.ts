@@ -32,6 +32,7 @@ class OrderDecorator {
       subOrder.height = 0;
       subOrder.warehouseId = warehouse.id;
       subOrder.warehouse = warehouse;
+      subOrder.note = order.note;
       for (const item of subOrder.items) {
         const productVariant = productVariants.find((productVariant: any) => productVariant.id === item.productVariantId);
         const productVariantInfo = {

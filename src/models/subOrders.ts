@@ -453,6 +453,11 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
         ],
       };
     },
+    withIsNotRating () {
+      return {
+        where: { isAlreadyRating: false },
+      };
+    },
   }
 
   public async updateItems (items: any[], transaction?: Transaction) {
