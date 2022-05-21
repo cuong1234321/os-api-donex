@@ -92,6 +92,11 @@ class HistoryEarnedPointModel extends Model<HistoryEarnedPointInterface> impleme
         where: { createdAt: createdAtCondition },
       };
     },
+    byType (type) {
+      return {
+        where: { type },
+      };
+    },
   }
 
   public static initialize (sequelize: Sequelize) {
