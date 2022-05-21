@@ -28,7 +28,8 @@ class RatingModel extends Model<RatingInterface> implements RatingInterface {
 
   static readonly hooks: Partial<ModelHooks<RatingModel>> = {
     async afterCreate (record: any) {
-      await SubOrderModel.update({ isAlreadyRating: true }, { where: { id: record.subOrderId } });
+      const subOrder = await SubOrderModel.findByPk(record.subOrderId);
+      await subOrder.update({ isAlreadyRating: true }, { validate: false });
     },
   }
 
