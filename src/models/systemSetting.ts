@@ -23,6 +23,7 @@ class SystemSettingModel extends Model<SystemSettingInterface> implements System
   public bonusCoinUserBirthday?: number;
   public bonusCoinDonexBirthday?: number;
   public donexBirthDay?: Date;
+  public ratingDuration?: number;
   public environment?: string;
   public accessToken?: string;
   public companyCode?: string;

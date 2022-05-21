@@ -61,6 +61,9 @@ const SystemSettingEntity = {
   donexBirthDay: {
     type: DataTypes.DATE, allowNull: true,
   },
+  ratingDuration: {
+    type: DataTypes.INTEGER, allowNull: true, defaultValue: 7,
+  },
   environment: {
     type: DataTypes.STRING(255), allowNull: true,
   },
