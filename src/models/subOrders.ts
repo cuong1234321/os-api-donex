@@ -539,6 +539,41 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
         ],
       };
     },
+    withItemDetail () {
+      return {
+        include: [
+          {
+            model: OrderItemModel,
+            as: 'items',
+            attributes: {
+              include: [
+                [Sequelize.literal('(SELECT name FROM product_variants WHERE product_variants.id = `items.productVariantId`)'), 'productVariantName'],
+                [Sequelize.literal('(SELECT skuCode FROM product_variants WHERE product_variants.id = `items.productVariantId`)'), 'skuCode'],
+                [Sequelize.cast(Sequelize.literal('(SELECT sellingPrice * quantity / SubOrderModel.subTotal * SubOrderModel.rankDiscount FROM order_items WHERE order_items.id = `items.id`)'), 'SIGNED'), 'rankDiscount'],
+              ],
+            },
+          },
+        ],
+      };
+    },
+    withWarehouseDetail () {
+      return {
+        include: [
+          {
+            model: WarehouseModel,
+            as: 'warehouse',
+            attributes: {
+              exclude: ['type', 'status', 'phoneNumber', 'warehouseManager', 'createdAt', 'updatedAt', 'deletedAt', 'code'],
+              include: [
+                [Sequelize.literal('(SELECT title FROM m_districts WHERE id = `warehouse.districtId`)'), 'districtName'],
+                [Sequelize.literal('(SELECT title FROM m_wards WHERE id = `warehouse.wardId`)'), 'wardName'],
+                [Sequelize.literal('(SELECT title FROM m_provinces WHERE id = `warehouse.provinceId`)'), 'provinceName'],
+              ],
+            },
+          },
+        ],
+      };
+    },
   }
 
   public static initialize (sequelize: Sequelize) {
