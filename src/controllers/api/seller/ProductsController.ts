@@ -90,6 +90,9 @@ class ProductController {
         attributes: {
           exclude: ['buyPrice'],
         },
+        include: [
+          { model: ProductOptionModel, as: 'options' },
+        ],
       });
       product.setDataValue('variants', variants);
       const saleCampaigns = await this.getSaleCampaigns(currentSeller.type);
