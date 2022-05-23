@@ -12,6 +12,16 @@ class FeeController {
       sendError(res, 500, error.message, error);
     }
   }
+
+  public async getServices (req: Request, res: Response) {
+    try {
+      const params = req.parameters.permit(Fee.FEE_SERVICE_PARAMS).value();
+      const servicePacks = await Fee.getServicePack(params);
+      sendSuccess(res, { servicePacks });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
 }
 
 export default new FeeController();

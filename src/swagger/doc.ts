@@ -77,6 +77,10 @@ const swaggerDefinition = {
       description: 'Quản lý danh sách quyền',
     },
     {
+      name: '[ADMIN] PICK SHIFT',
+      description: 'Quản lý thời gian giao hàng của giao hàng nhanh',
+    },
+    {
       name: '[ADMIN] RANK',
       description: 'Quản lý rank',
     },
@@ -249,7 +253,7 @@ const swaggerDefinition = {
       description: 'Quan ly ctv/dl',
     },
     {
-      name: '[COLLABORATOR] FEE',
+      name: '[SELLER] FEE',
       description: 'tinh gia van chuyen',
     },
     {

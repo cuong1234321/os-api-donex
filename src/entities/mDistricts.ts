@@ -16,6 +16,9 @@ const MDistrictEntity = {
   misaCode: {
     type: DataTypes.STRING(30), allowNull: false,
   },
+  ghnDistrictId: {
+    type: DataTypes.STRING(30), allowNull: false,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },

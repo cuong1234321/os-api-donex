@@ -10,6 +10,7 @@ import MailerService from '@services/mailer';
 import randomString from 'randomstring';
 import RoleModel from './roles';
 import PermissionModel from './permissions';
+import PermissionGroupModel from './permissionGroups';
 
 class AdminModel extends Model<AdminInterface> implements AdminInterface {
   public id: number;
@@ -163,6 +164,12 @@ class AdminModel extends Model<AdminInterface> implements AdminInterface {
             {
               model: PermissionModel,
               as: 'permissions',
+              include: [
+                {
+                  model: PermissionGroupModel,
+                  as: 'group',
+                },
+              ],
             },
           ],
         }],

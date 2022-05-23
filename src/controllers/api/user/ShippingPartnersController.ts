@@ -6,7 +6,7 @@ import { Request, Response } from 'express';
 class FeeController {
   public async index (req: Request, res: Response) {
     try {
-      const auth = await Auth.login();
+      const auth = await Auth.misaLogin();
       const shippingPartners = await ShippingPartner.index(auth);
       const result = ShippingPartner.shippingPartnerDTO(shippingPartners);
       sendSuccess(res, result);

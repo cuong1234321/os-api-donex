@@ -1,6 +1,8 @@
 import { Model, ModelScopeOptions, Sequelize } from 'sequelize';
 import MDistrictEntity from '@entities/mDistricts';
 import MDistrictInterface from '@interfaces/mDistricts';
+import MProvinceModel from './mProvinces';
+import MWardModel from './mWards';
 
 class MDistrictModel extends Model<MDistrictInterface> implements MDistrictInterface {
   public id: number;
@@ -8,6 +10,7 @@ class MDistrictModel extends Model<MDistrictInterface> implements MDistrictInter
   public code: string;
   public title: string;
   public misaCode: string;
+  public ghnDistrictId: string;
   public createdAt?: Date;
   public updatedAt?: Date;
 
@@ -35,7 +38,10 @@ class MDistrictModel extends Model<MDistrictInterface> implements MDistrictInter
     });
   }
 
-  public static associate () { }
+  public static associate () {
+    this.hasMany(MWardModel, { as: 'wards', foreignKey: 'districtId' });
+    this.belongsTo(MProvinceModel, { as: 'province', foreignKey: 'provinceId' });
+  }
 }
 
 export default MDistrictModel;

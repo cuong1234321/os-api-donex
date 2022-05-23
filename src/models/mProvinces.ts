@@ -1,12 +1,14 @@
 import { Model, ModelScopeOptions, Sequelize } from 'sequelize';
 import MProvinceEntity from '@entities/mProvinces';
 import MProvinceInterface from '@interfaces/mProvinces';
+import MDistrictModel from './mDistricts';
 
 class MProvinceModel extends Model<MProvinceInterface> implements MProvinceInterface {
   public id: number;
   public title: string;
   public code: string;
   public misaCode: string;
+  public ghnProvinceId: string;
   public createdAt?: Date;
   public updatedAt?: Date;
 
@@ -31,7 +33,9 @@ class MProvinceModel extends Model<MProvinceInterface> implements MProvinceInter
     });
   }
 
-  public static associate () { }
+  public static associate () {
+    this.hasMany(MDistrictModel, { as: 'district', foreignKey: 'provinceId' });
+  }
 }
 
 export default MProvinceModel;

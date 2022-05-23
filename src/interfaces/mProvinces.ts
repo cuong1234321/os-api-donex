@@ -3,6 +3,7 @@ interface MProvinceInterface {
   title: string;
   code: string;
   misaCode: string;
+  ghnProvinceId: string;
   createdAt?: Date;
   updatedAt?: Date;
 };

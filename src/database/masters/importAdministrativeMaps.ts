@@ -40,6 +40,7 @@ const importAdministrativeMaps = async () => {
                 code: row.province_code,
                 title: row.province,
                 misaCode: row.province_misa_code,
+                ghnProvinceId: row.ghn_provinceId,
               });
             }
             if (districtAttributes[districtAttributes.length - 1]?.code !== row.district_code) {
@@ -50,6 +51,7 @@ const importAdministrativeMaps = async () => {
                 code: row.district_code,
                 title: row.district,
                 misaCode: row.district_misa_code,
+                ghnDistrictId: row.ghn_districtId,
               });
             }
             if (wardAttributes[wardAttributes.length - 1]?.code !== row.ward_code) {
@@ -60,6 +62,7 @@ const importAdministrativeMaps = async () => {
                 code: row.ward_code,
                 title: row.ward,
                 misaCode: row.ward_misa_code,
+                ghnWardCode: row.ghn_ward_code,
               });
             }
           });

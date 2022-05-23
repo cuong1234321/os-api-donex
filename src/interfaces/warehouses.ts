@@ -24,6 +24,7 @@ interface WarehouseInterface {
   totalDiscount?: number;
   finalAmount?: number;
   warehouseVariants?: WarehouseVariantInterface[];
+  ghnDistrictId?: number;
 };
 
 export default WarehouseInterface;
