@@ -143,6 +143,11 @@ class RoleModel extends Model<RoleInterface> implements RoleInterface {
         }],
       };
     },
+    byTitle (title) {
+      return {
+        where: { title: title },
+      };
+    },
   }
 
   public static initialize (sequelize: Sequelize) {

@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import AdminController from '@controllers/api/admin/AdminsController';
 import { withoutSavingUploader } from '@middlewares/uploaders';
+import { adminPassport } from '@middlewares/passport';
 
 const router = Router();
 
@@ -58,6 +59,40 @@ const router = Router();
  *      - Bearer: []
  */
 router.get('/', AdminController.index);
+
+/**
+ * @openapi
+ * /a/admins/admins_template:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] ADMINS"
+ *     summary: Tải xuống template danh sách nhân viên
+ *     responses:
+ *       200:
+ *         description: "Upload success"
+ *       500:
+ *         description: "Upload failed"
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/admins_template', AdminController.downloadAdminTemplate);
+
+/**
+ * @openapi
+ * /a/admins/download:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] ADMINS"
+ *     summary: download admins
+ *     responses:
+ *       200:
+ *         description: "OK"
+ *       500:
+ *         description: "Internal error"
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/download', AdminController.download);
 
 /**
  * @openapi
@@ -125,6 +160,34 @@ router.get('/:adminId', AdminController.show);
  *      - Bearer: []
  */
 router.post('/', AdminController.create);
+
+/**
+ * @openapi
+ * /a/admins/upload:
+ *   post:
+ *     tags:
+ *      - "[ADMIN] ADMINS"
+ *     summary: upload admin
+ *     consumes:
+ *      - "multipart/form-data"
+ *     produces:
+ *      - "application/json"
+ *     parameters:
+ *      - in: "formData"
+ *        name: "file"
+ *        description: "File upload"
+ *        required: true
+ *        allowMultiple: false
+ *        type: "file"
+ *     responses:
+ *       200:
+ *         description: Return data.
+ *       500:
+ *         description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.post('/upload', adminPassport.authenticate('jwt', { session: false }), withoutSavingUploader.single('file'), AdminController.uploadAdmins);
 
 /**
  * @openapi

@@ -25,7 +25,7 @@ class PasswordController {
       const user = await UserModel.scope([
         { method: ['byPhoneNumber', phoneNumber] },
       ]).findOne();
-      if (!user || !user.checkValidForgotPasswordToken(otp)) sendError(res, 404, NoData);
+      if (!user || !(await user.checkValidForgotPasswordToken(otp))) { return sendError(res, 404, NoData); }
       await user.genLifetimeForgotPasswordToken();
       await user.reload();
       sendSuccess(res, { token: user.forgotPasswordToken });

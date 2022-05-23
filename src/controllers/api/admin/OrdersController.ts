@@ -318,7 +318,7 @@ class OrderController {
       const sellerLevel = await SellerLevelModel.findByPk(levelId);
       const rankDiscount = totalPrice * sellerLevel.discountValue / 100;
       order.rankDiscount = rankDiscount;
-      if (order.subOrder) {
+      if (order.subOrders) {
         order.subOrders.forEach((subOrder: any) => {
           subOrder.rankDiscount = subOrder.subTotal / totalPrice * rankDiscount;
         });
@@ -333,7 +333,7 @@ class OrderController {
     if (!basicRankCondition) return order;
     const rankDiscount = totalPrice * basicRankCondition.discountValue / 100;
     order.rankDiscount = rankDiscount;
-    if (order.subOrder) {
+    if (order.subOrders) {
       order.subOrders.forEach((subOrder: any) => {
         subOrder.rankDiscount = subOrder.subTotal / totalPrice * rankDiscount;
       });
@@ -355,7 +355,7 @@ class OrderController {
       if (!vipRankCondition) return order;
       const rankDiscount = totalPrice * vipRankCondition.discountValue / 100;
       order.rankDiscount = rankDiscount;
-      if (order.subOrder) {
+      if (order.subOrders) {
         order.subOrders.forEach((subOrder: any) => {
           subOrder.rankDiscount = subOrder.subTotal / totalPrice * rankDiscount;
         });
@@ -388,7 +388,7 @@ class OrderController {
     if (condition.discountType === VoucherConditionModel.DISCOUNT_TYPE_ENUM.CASH) {
       const discount = condition.discountValue;
       order.voucherDiscount = discount;
-      if (order.subOrder) {
+      if (order.subOrders) {
         (order.subOrders).forEach((subOrder: any) => {
           subOrder.voucherDiscount = subOrder.subTotal / totalPrice * discount;
         });
@@ -396,7 +396,7 @@ class OrderController {
     } else if (condition.discountType === VoucherConditionModel.DISCOUNT_TYPE_ENUM.PERCENT) {
       const discount = totalPrice * condition.discountValue / 100;
       order.voucherDiscount = discount;
-      if (order.subOrder) {
+      if (order.subOrders) {
         (order.subOrders).forEach((subOrder: any) => {
           subOrder.voucherDiscount = subOrder.subTotal / totalPrice * discount;
         });
