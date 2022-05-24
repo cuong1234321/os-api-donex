@@ -17,6 +17,7 @@ import { NoData } from '@libs/errors';
 import SaleCampaignProductDecorator from '@decorators/saleCampaignProducts';
 import AddressBookModel from '@models/addressBooks';
 import VoucherApplicationModel from '@models/voucherApplications';
+import SellerLevelModel from '@models/sellerLevels';
 
 class SelectionController {
   public async productCategories (req: Request, res: Response) {
@@ -238,6 +239,19 @@ class SelectionController {
       if (paymentMethod) scopes.push({ method: ['byPaymentMethod', paymentMethod] });
       const voucherApplications = await VoucherApplicationModel.scope(scopes).findAll();
       sendSuccess(res, voucherApplications);
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async listSellerLevels (req: Request, res: Response) {
+    try {
+      const { levelId, sellerType } = req.query;
+      const scopes: any = [];
+      if (levelId) scopes.push({ method: ['byId', levelId] });
+      if (sellerType) scopes.push({ method: ['byType', sellerType] });
+      const levels = await SellerLevelModel.scope(scopes).findAll();
+      sendSuccess(res, levels);
     } catch (error) {
       sendError(res, 500, error.message, error);
     }
