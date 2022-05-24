@@ -1,6 +1,7 @@
 import SubOrderEntity from '@entities/subOrders';
 import OrderItemInterface from '@interfaces/orderItems';
 import SubOrderInterface from '@interfaces/subOrders';
+import Fee from '@repositories/models/fee';
 import dayjs from 'dayjs';
 import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, Transaction, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
@@ -49,10 +50,12 @@ public deletedAt?: Date;
 public warehouse?: WarehouseModel;
 public items?: OrderItemModel[];
 
-static readonly STATUS_ENUM = { DRAFT: 'draft', PENDING: 'pending' }
+static readonly STATUS_ENUM = { DRAFT: 'draft', PENDING: 'pending', CANCEL: 'cancel', REJECT: 'reject' }
 
 static readonly UPDATABLE_ON_DUPLICATE_PARAMETERS = ['id', 'warehouseId', 'weight', 'length', 'width', 'height', 'pickUpAt', 'shippingFeeMisa',
   'shippingFee', 'deposit', 'deliveryType', 'deliveryInfo', 'note', 'shippingType', 'shippingAttributeType', 'subTotal', 'total'];
+
+static readonly UPDATABLE_PARAMETERS = ['status'];
 
 static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
   async beforeCreate (record: SubOrderModel) {
@@ -458,6 +461,16 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
         where: { isAlreadyRating: false },
       };
     },
+    withOrderInfo () {
+      return {
+        include: [
+          {
+            model: OrderModel,
+            as: 'order',
+          },
+        ],
+      };
+    },
   }
 
   public async updateItems (items: any[], transaction?: Transaction) {
@@ -475,6 +488,40 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
       individualHooks: true,
       transaction,
     });
+  }
+
+  public async formatOrder (subOrder: any) {
+    const order = await OrderModel.scope([
+      'withAddress',
+    ]).findOne();
+    const warehouse = await WarehouseModel.scope([
+      { method: ['byId', subOrder.warehouseId] },
+      'withGhnDistrict',
+    ]).findOne();
+    const service = await Fee.getServicePack({ shippingWardId: order.ward.id, warehouseId: subOrder.warehouseId });
+    const params = {
+      subOrderId: subOrder.id,
+      to_name: order.shippingFullName,
+      to_phone: order.shippingPhoneNumber,
+      to_address: order.shippingAddress,
+      ghnWardCode: order.ward.ghnWardCode,
+      ghnDistrictId: parseInt(order.district.ghnDistrictId),
+      weight: subOrder.weight,
+      length: subOrder.length,
+      height: subOrder.height,
+      width: subOrder.width,
+      service_type_id: service.data[0].service_id,
+      pickStationId: parseInt(warehouse.district.ghnDistrictId),
+      Items: [{
+        name: 'product Name',
+        quantity: 1,
+        price: 100000,
+        length: 100,
+        width: 100,
+        height: 100,
+      }],
+    };
+    return params;
   }
 
   public async deleteSubOrderDetails () {

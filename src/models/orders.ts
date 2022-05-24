@@ -55,6 +55,9 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
   public deletedAt?: Date;
 
   public subOrders?: SubOrderModel[];
+  public province?: MProvinceModel;
+  public district?: MDistrictModel;
+  public ward?: MWardModel;
 
   static readonly USER_CREATABLE_PARAMETERS = ['paymentMethod', 'coinUsed', 'shippingFullName', 'shippingProvinceId',
     'shippingDistrictId', 'shippingPhoneNumber', 'shippingWardId', 'shippingAddress', 'appliedVoucherId', 'note',
@@ -76,7 +79,7 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
     }]
 
   static readonly ADMIN_UPDATABLE_PARAMETERS = ['orderableType', 'appliedVoucherId', 'orderableId', 'saleChannel', 'shippingFullName', 'shippingProvinceId',
-    'shippingDistrictId', 'shippingPhoneNumber', 'shippingWardId', 'shippingAddress', 'saleCampaignId',
+    'shippingDistrictId', 'shippingPhoneNumber', 'shippingWardId', 'shippingAddress', 'saleCampaignId', 'status',
     {
       subOrders: [
         'id', 'warehouseId', 'weight', 'length', 'width', 'height', 'pickUpAt', 'shippingFeeMisa', 'shippingFee', 'deposit', 'deliveryType', 'deliveryInfo', 'note', 'shippingType', 'shippingAttributeType',
@@ -109,7 +112,7 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
     OTHER: 'other',
   }
 
-  public static readonly STATUS_ENUM = { DRAFT: 'draft', PENDING: 'pending', PAID: 'paid' }
+  public static readonly STATUS_ENUM = { DRAFT: 'draft', PENDING: 'pending', PAID: 'paid', COMPLETE: 'complete', CANCEL: 'cancel' }
 
   static readonly hooks: Partial<ModelHooks<OrderModel>> = {
     async beforeCreate (record: OrderModel) {
@@ -136,18 +139,18 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
       }
     },
     async validateShippingDistrict () {
-      const ward = await MDistrictModel.scope([
+      const district = await MDistrictModel.scope([
         { method: ['byId', this.shippingDistrictId] },
       ]).findOne();
-      if (!ward) {
+      if (!district) {
         throw new ValidationErrorItem('Địa chỉ không hợp lệ', 'validateShippingDistrict', 'shippingDistrictId', this.shippingDistrictId);
       }
     },
     async validateShippingProvince () {
-      const ward = await MProvinceModel.scope([
+      const province = await MProvinceModel.scope([
         { method: ['byId', this.shippingProvinceId] },
       ]).findOne();
-      if (!ward) {
+      if (!province) {
         throw new ValidationErrorItem('Địa chỉ không hợp lệ', 'validateShippingProvince', 'shippingProvinceId', this.shippingProvinceId);
       }
     },
@@ -270,6 +273,24 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
           {
             model: SaleCampaignModel,
             as: 'saleCampaign',
+          },
+        ],
+      };
+    },
+    withAddress () {
+      return {
+        include: [
+          {
+            model: MProvinceModel,
+            as: 'province',
+          },
+          {
+            model: MDistrictModel,
+            as: 'district',
+          },
+          {
+            model: MWardModel,
+            as: 'ward',
           },
         ],
       };

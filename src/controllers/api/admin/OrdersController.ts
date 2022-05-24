@@ -256,7 +256,7 @@ class OrderController {
     if (phoneNumber) scopes.push({ method: ['byPhoneNumber', phoneNumber] });
     if (createdAt) scopes.push({ method: ['byCreatedAt', createdAt] });
     if (shippingType) {
-      const auth = await Auth.login();
+      const auth = await Auth.misaLogin();
       const shippingPartners = await ShippingPartner.index(auth);
       const ShippingPartnerFilters = shippingPartners.filter((record: any) => SlugGeneration.execute(record.PartnerName).includes(SlugGeneration.execute(shippingType)));
       scopes.push({ method: ['byShippingType', ShippingPartnerFilters.map((record: any) => record.Partner)] });

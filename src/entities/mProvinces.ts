@@ -13,6 +13,9 @@ const MProvinceEntity = {
   misaCode: {
     type: DataTypes.STRING(30), allowNull: false,
   },
+  ghnProvinceId: {
+    type: DataTypes.STRING(30), allowNull: true,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },

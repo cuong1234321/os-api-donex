@@ -16,6 +16,9 @@ const MWardEntity = {
   misaCode: {
     type: DataTypes.STRING(30), allowNull: false,
   },
+  ghnWardCode: {
+    type: DataTypes.STRING(30), allowNull: false,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },

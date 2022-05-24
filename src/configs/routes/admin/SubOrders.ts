@@ -55,6 +55,38 @@ router.get('/:subOrderId', (req: Request, res: Response) => SubOrderController.s
 
 /**
  * @openapi
+ * /a/sub_orders/{subOrderId}:
+ *   patch:
+ *     tags:
+ *      - "[ADMIN] SUB ORDERS"
+ *     summary: cập nhật subOrder
+ *     parameters:
+ *      - in: path
+ *        name: "subOrderId"
+ *        description: ""
+ *        type: number
+ *      - in: "body"
+ *        name: "body"
+ *        description: "Thông tin subOrder"
+ *        schema:
+ *          type: "object"
+ *          properties:
+ *            status:
+ *              type: "string"
+ *              description: "tranjg thai suborder"
+ *              default: "string"
+ *     responses:
+ *       200:
+ *         description: "OK"
+ *       500:
+ *         description: "Internal error"
+ *     security:
+ *      - Bearer: []
+ */
+router.patch('/:subOrderId', (req: Request, res: Response) => SubOrderController.update(req, res));
+
+/**
+ * @openapi
  * /a/sub_orders/{subOrderId}/bill:
  *   get:
  *     tags:

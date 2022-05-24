@@ -1,6 +1,8 @@
 import { Model, ModelScopeOptions, Sequelize } from 'sequelize';
+import MDistrictModel from '@models/mDistricts';
 import MWardEntity from '@entities/mWards';
 import MWardInterface from '@interfaces/mWards';
+import MProvinceModel from './mProvinces';
 
 class MWardModel extends Model<MWardInterface> implements MWardInterface {
   public id: number;
@@ -8,8 +10,11 @@ class MWardModel extends Model<MWardInterface> implements MWardInterface {
   public code: string;
   public title: string;
   public misaCode: string;
+  public ghnWardCode: string;
   public createdAt?: Date;
   public updatedAt?: Date;
+
+  public district?: MDistrictModel
 
   static readonly scopes: ModelScopeOptions = {
     byDistrict (districtId) {
@@ -25,6 +30,22 @@ class MWardModel extends Model<MWardInterface> implements MWardInterface {
         where: { id },
       };
     },
+    withAddress () {
+      return {
+        include: [
+          {
+            model: MDistrictModel,
+            as: 'district',
+            required: true,
+            include: [{
+              model: MProvinceModel,
+              as: 'province',
+              required: true,
+            }],
+          },
+        ],
+      };
+    },
   }
 
   public static initialize (sequelize: Sequelize) {
@@ -35,7 +56,9 @@ class MWardModel extends Model<MWardInterface> implements MWardInterface {
     });
   }
 
-  public static associate () { }
+  public static associate () {
+    this.belongsTo(MDistrictModel, { as: 'district', foreignKey: 'districtId' });
+  }
 }
 
 export default MWardModel;

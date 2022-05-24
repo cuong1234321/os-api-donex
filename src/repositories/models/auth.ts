@@ -3,7 +3,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 import { HmacSHA256 } from 'crypto-js';
 
 class Auth {
-  public static async login () {
+  public static async misaLogin () {
     const loginParams: any = {
       AppID: process.env.MISA_APP_ID,
       Domain: process.env.MISA_DOMAIN,

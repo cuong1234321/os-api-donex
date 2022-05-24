@@ -31,8 +31,24 @@ class SubOrderController {
       const subOrder = await SubOrderModel.scope([
         { method: ['byId', subOrderId] },
         'withItems',
+        'withOrderInfo',
       ]).findOne();
       if (!subOrder) { return sendError(res, 404, NoData); }
+      sendSuccess(res, subOrder);
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async update (req: Request, res: Response) {
+    try {
+      const { subOrderId } = req.params;
+      const params = req.parameters.permit(SubOrderModel.UPDATABLE_PARAMETERS).value();
+      const subOrder = await SubOrderModel.scope([
+        { method: ['byId', subOrderId] },
+      ]).findOne();
+      if (!subOrder) { return sendError(res, 404, NoData); }
+      await subOrder.update(params, { validate: false });
       sendSuccess(res, subOrder);
     } catch (error) {
       sendError(res, 500, error.message, error);

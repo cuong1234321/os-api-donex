@@ -36,6 +36,7 @@ class WarehouseModel extends Model<WarehouseInterface> implements WarehouseInter
   public province?: MProvinceModel;
   public ward?: MWardModel;
   public district?: MDistrictModel;
+  public ghnDistrictId?: number;
 
   static readonly CREATABLE_PARAMETERS = ['name', 'type', 'description', 'code', 'wardId', 'districtId', 'provinceId', 'address', 'phoneNumber', 'warehouseManager']
   static readonly UPDATABLE_PARAMETERS = ['name', 'type', 'description', 'code', 'status', 'wardId', 'districtId', 'provinceId', 'address', 'phoneNumber', 'warehouseManager']
@@ -184,6 +185,16 @@ class WarehouseModel extends Model<WarehouseInterface> implements WarehouseInter
           {
             model: MWardModel,
             as: 'ward',
+          },
+        ],
+      };
+    },
+    withGhnDistrict () {
+      return {
+        include: [
+          {
+            model: MDistrictModel,
+            as: 'district',
           },
         ],
       };

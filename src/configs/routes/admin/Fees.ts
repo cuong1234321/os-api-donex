@@ -42,15 +42,59 @@ const router = Router();
  *              description: "chiều cao"
  *              default: "null"
  *              require: true
- *            isCOD:
- *              type: "boolean"
- *              description: "Đơn hàng cod hay chuyển khoản"
- *              default: "false"
+ *            shippingProvinceId:
+ *              type: "string"
+ *              description: "địa chỉ mua hàng"
+ *              default: "null"
  *              require: true
- *            shippingPaymentType:
- *              type: "boolean"
- *              description: "true/ shop trả, false/ khách trả"
- *              default: "false"
+ *            shippingDistrictId:
+ *              type: "string"
+ *              description: "địa chỉ mua hàng"
+ *              default: "null"
+ *              require: true
+ *            shippingWardId:
+ *              type: "string"
+ *              description: "địa chỉ mua hàng"
+ *              default: "null"
+ *              require: true
+ *            insurance_value:
+ *              type: "string"
+ *              description: "Phí bảo hiểm"
+ *              default: "null"
+ *              require: true
+ *            service_id:
+ *              type: "string"
+ *              description: "Hình thức giao vận"
+ *              default: "null"
+ *              require: true
+ *     responses:
+ *       200:
+ *         description: "OK"
+ *       500:
+ *         description: "Internal error"
+ *     security:
+ *      - Bearer: []
+ */
+router.post('/', FeesController.create);
+
+/**
+ * @openapi
+ * /a/fees/services:
+ *   post:
+ *     tags:
+ *      - "[ADMIN] FEE"
+ *     summary: Hình thức giao vận
+ *     parameters:
+ *      - in: "body"
+ *        name: "body"
+ *        description: "Thông tin"
+ *        schema:
+ *          type: "object"
+ *          properties:
+ *            warehouseId:
+ *              type: "integer"
+ *              description: "Id kho"
+ *              default: "null"
  *              require: true
  *            shippingProvinceId:
  *              type: "string"
@@ -67,20 +111,6 @@ const router = Router();
  *              description: "địa chỉ mua hàng"
  *              default: "null"
  *              require: true
- *            shippingAddress:
- *              type: "string"
- *              description: "địa chỉ mua hàng"
- *              default: "string"
- *              require: true
- *            partnerType:
- *              type: "string"
- *              description: "Đơn vị vc"
- *              default: "string"
- *              require: true
- *              enum:
- *                - GHTK
- *                - GHN
- *                - VTP
  *     responses:
  *       200:
  *         description: "OK"
@@ -89,6 +119,6 @@ const router = Router();
  *     security:
  *      - Bearer: []
  */
-router.post('/', FeesController.create);
+router.post('/services', FeesController.getServices);
 
 export default router;

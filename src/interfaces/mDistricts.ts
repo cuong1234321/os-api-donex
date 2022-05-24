@@ -4,6 +4,7 @@ interface MDistrictInterface {
   code: string;
   title: string;
   misaCode: string;
+  ghnDistrictId: string;
   createdAt?: Date;
   updatedAt?: Date;
 };
