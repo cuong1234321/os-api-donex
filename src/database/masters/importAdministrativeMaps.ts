@@ -18,7 +18,7 @@ const importAdministrativeMaps = async () => {
   try {
     const rows: any = [];
     const result: any = await new Promise((resolve, reject) => {
-      fs.createReadStream(csvFilePath('vs20'))
+      fs.createReadStream(csvFilePath('administrative_maps'))
         .pipe(csv())
         .on('data', (row) => rows.push(row))
         .on('error', reject)

@@ -1,3 +1,4 @@
+import OrderModel from '@models/orders';
 import ProductVariantModel from '@models/productVariants';
 import SaleCampaignModel from '@models/saleCampaigns';
 import SubOrderModel from '@models/subOrders';
@@ -26,7 +27,7 @@ class OrderDecorator {
       let subTotal = 0;
       subOrder.total = 0;
       subOrder.shippingCode = 0;
-      subOrder.status = SubOrderModel.STATUS_ENUM.DRAFT;
+      subOrder.status = order.paymentMethod === OrderModel.PAYMENT_METHOD.COD ? SubOrderModel.STATUS_ENUM.DRAFT : SubOrderModel.STATUS_ENUM.PENDING;
       subOrder.length = 0;
       subOrder.width = 0;
       subOrder.height = 0;

@@ -2,6 +2,7 @@ import OrderItemEntity from '@entities/orderItems';
 import OrderItemInterface from '@interfaces/orderItems';
 import { Model, ModelScopeOptions, ModelValidateOptions, Sequelize } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
+import ProductModel from './products';
 import ProductVariantModel from './productVariants';
 import SubOrderModel from './subOrders';
 
@@ -19,6 +20,8 @@ class OrderItemModel extends Model<OrderItemInterface> implements OrderItemInter
   public updatedAt?: Date;
   public deletedAt?: Date;
 
+  public variant?: ProductVariantModel;
+
   static readonly UPDATABLE_ON_DUPLICATE_PARAMETERS = ['id', 'productVariantId', 'quantity', 'saleCampaignId', 'sellingPrice'];
 
   static readonly hooks: Partial<ModelHooks<OrderItemModel>> = {
@@ -26,7 +29,24 @@ class OrderItemModel extends Model<OrderItemInterface> implements OrderItemInter
 
   static readonly validations: ModelValidateOptions = { }
 
-  static readonly scopes: ModelScopeOptions = { }
+  static readonly scopes: ModelScopeOptions = {
+    withProductVariant () {
+      return {
+        include: [
+          {
+            model: ProductVariantModel,
+            as: 'variant',
+            include: [
+              {
+                model: ProductModel,
+                as: 'product',
+              },
+            ],
+          },
+        ],
+      };
+    },
+  }
 
   public static initialize (sequelize: Sequelize) {
     this.init(OrderItemEntity, {

@@ -1,9 +1,9 @@
 import SubOrderEntity from '@entities/subOrders';
 import OrderItemInterface from '@interfaces/orderItems';
 import SubOrderInterface from '@interfaces/subOrders';
-import Fee from '@repositories/models/fee';
+import Order from '@repositories/models/orders';
 import dayjs from 'dayjs';
-import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, Transaction, ValidationErrorItem } from 'sequelize';
+import { HasManyGetAssociationsMixin, Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, Transaction, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import AdminModel from './admins';
 import OrderItemModel from './orderItems';
@@ -64,6 +64,13 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
   async afterDestroy (record) {
     record.deleteSubOrderDetails();
   },
+  async beforeSave (record: any) {
+    if ((record._previousDataValues.status === OrderModel.STATUS_ENUM.DRAFT && record.status !== OrderModel.STATUS_ENUM.DRAFT) ||
+    (record.isNewRecord && record.status === SubOrderModel.STATUS_ENUM.PENDING)) {
+      const getOrderDetail = await record.formatOrder(record);
+      await Order.createGhnOrder(getOrderDetail);
+    }
+  },
 }
 
   static readonly validations: ModelValidateOptions = {
@@ -102,6 +109,67 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
     if (existCode) code = await this.generateOderCode();
     return code;
   }
+
+  public async updateItems (items: any[], transaction?: Transaction) {
+    if (!items) return;
+    items.forEach((record: any) => {
+      record.subOrderId = this.id;
+    });
+    const resultItems = await OrderItemModel.bulkCreate(items, {
+      updateOnDuplicate: OrderItemModel.UPDATABLE_ON_DUPLICATE_PARAMETERS as (keyof OrderItemInterface)[],
+      individualHooks: true,
+      transaction,
+    });
+    await OrderItemModel.destroy({
+      where: { subOrderId: this.id, id: { [Op.notIn]: resultItems.map((item) => item.id) } },
+      individualHooks: true,
+      transaction,
+    });
+  }
+
+  public async formatOrder (subOrder: any) {
+    const order = await OrderModel.scope([
+      'withAddress',
+    ]).findOne();
+    const orderItems = await OrderItemModel.scope([
+      'withProductVariant',
+    ]).findAll();
+    const params: any = {
+      clientCode: subOrder.code,
+      fullName: order.shippingFullName,
+      userPhone: order.shippingPhoneNumber,
+      address: order.shippingAddress,
+      ghnWardCode: order.ward.ghnWardCode,
+      ghnDistrictId: parseInt(order.district.ghnDistrictId),
+      weight: subOrder.weight,
+      length: subOrder.length,
+      height: subOrder.height,
+      width: subOrder.width,
+      codAmount: subOrder.subTotal,
+      items: [],
+    };
+    for (const orderItem of orderItems) {
+      params.items.push(
+        {
+          name: orderItem.variant.name,
+          code: orderItem.variant.skuCode,
+          quantity: orderItem.quantity,
+          price: orderItem.sellingPrice,
+          length: orderItem.variant.product.length,
+          width: orderItem.variant.product.width,
+          height: orderItem.variant.product.height,
+        },
+      );
+    }
+    console.log(params.Items);
+    return params;
+  }
+
+  public async deleteSubOrderDetails () {
+    await OrderItemModel.destroy({ where: { subOrderId: this.id }, individualHooks: true });
+  }
+
+  public getItems: HasManyGetAssociationsMixin<OrderItemModel>
 
   static readonly scopes: ModelScopeOptions = {
     isNotDraft () {
@@ -471,61 +539,6 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
         ],
       };
     },
-  }
-
-  public async updateItems (items: any[], transaction?: Transaction) {
-    if (!items) return;
-    items.forEach((record: any) => {
-      record.subOrderId = this.id;
-    });
-    const resultItems = await OrderItemModel.bulkCreate(items, {
-      updateOnDuplicate: OrderItemModel.UPDATABLE_ON_DUPLICATE_PARAMETERS as (keyof OrderItemInterface)[],
-      individualHooks: true,
-      transaction,
-    });
-    await OrderItemModel.destroy({
-      where: { subOrderId: this.id, id: { [Op.notIn]: resultItems.map((item) => item.id) } },
-      individualHooks: true,
-      transaction,
-    });
-  }
-
-  public async formatOrder (subOrder: any) {
-    const order = await OrderModel.scope([
-      'withAddress',
-    ]).findOne();
-    const warehouse = await WarehouseModel.scope([
-      { method: ['byId', subOrder.warehouseId] },
-      'withGhnDistrict',
-    ]).findOne();
-    const service = await Fee.getServicePack({ shippingWardId: order.ward.id, warehouseId: subOrder.warehouseId });
-    const params = {
-      subOrderId: subOrder.id,
-      to_name: order.shippingFullName,
-      to_phone: order.shippingPhoneNumber,
-      to_address: order.shippingAddress,
-      ghnWardCode: order.ward.ghnWardCode,
-      ghnDistrictId: parseInt(order.district.ghnDistrictId),
-      weight: subOrder.weight,
-      length: subOrder.length,
-      height: subOrder.height,
-      width: subOrder.width,
-      service_type_id: service.data[0].service_id,
-      pickStationId: parseInt(warehouse.district.ghnDistrictId),
-      Items: [{
-        name: 'product Name',
-        quantity: 1,
-        price: 100000,
-        length: 100,
-        width: 100,
-        height: 100,
-      }],
-    };
-    return params;
-  }
-
-  public async deleteSubOrderDetails () {
-    await OrderItemModel.destroy({ where: { subOrderId: this.id }, individualHooks: true });
   }
 
   public static initialize (sequelize: Sequelize) {

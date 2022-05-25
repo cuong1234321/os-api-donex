@@ -50,6 +50,7 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
   public avatar: string;
   public rejectorId: number;
   public rejectDate: Date;
+  public referralCode: string;
 
   public createdAt?: Date;
   public updatedAt?: Date;
@@ -72,6 +73,9 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
         const salt = bcrypt.genSaltSync();
         record.password = bcrypt.hashSync(record.password, salt);
       }
+    },
+    async beforeCreate (record: any) {
+      record.referralCode = await this.generateReferralCode();
     },
   }
 
@@ -312,6 +316,11 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
         ],
       };
     },
+    byReferral (referralCode) {
+      return {
+        where: { referralCode },
+      };
+    },
   }
 
   public async validPassword (password: string) {
@@ -403,6 +412,15 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
         forgotPasswordExpireAt: null,
       },
     );
+  }
+
+  public static async generateReferralCode () {
+    let code = '';
+    const characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    for (let i = 12; i > 0; --i) code += characters[Math.floor(Math.random() * characters.length)];
+    const existCode = await CollaboratorModel.scope([{ method: ['byReferral', code] }]).findOne();
+    if (existCode) code = await this.generateReferralCode();
+    return code;
   }
 
   public static initialize (sequelize: Sequelize) {

@@ -133,6 +133,9 @@ const collaboratorEntity = {
   rejectDate: {
     type: DataTypes.DATE,
   },
+  referralCode: {
+    type: DataTypes.STRING(30),
+  },
   createdAt: {
     type: DataTypes.DATE,
   },

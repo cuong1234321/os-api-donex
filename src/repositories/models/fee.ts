@@ -64,6 +64,8 @@ class Fee {
           to_district: parseInt(ward.district.ghnDistrictId),
         },
       };
+      console.log('---------------------------------');
+
       const result = await axios(requestConfigs);
       return {
         message: result.data.code_message_value,

@@ -29,6 +29,7 @@ interface CollaboratorInterface {
   avatar: string;
   rejectorId: number;
   rejectDate: Date;
+  referralCode: string;
 
   createdAt?: Date,
   updatedAt?: Date,

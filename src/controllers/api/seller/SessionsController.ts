@@ -31,6 +31,7 @@ class SessionController {
       const parent = await seller.getParent();
       seller.setDataValue('parent', { fullName: parent?.fullName || '', id: parent?.id || null });
       if (!seller) sendError(res, 404, NoData);
+      seller.setDataValue('linkAffiliate', process.env.CLIENT_HOST + `/affiliate?referralCode=${seller.referralCode}`);
       sendSuccess(res, seller);
     } catch (error) {
       sendError(res, 500, error.message, error);
