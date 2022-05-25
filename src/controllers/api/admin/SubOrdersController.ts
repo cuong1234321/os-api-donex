@@ -2,6 +2,7 @@ import { NoData } from '@libs/errors';
 import { sendError, sendSuccess } from '@libs/response';
 import BillTemplateModel from '@models/billTemplates';
 import SubOrderModel from '@models/subOrders';
+import SendNotification from '@services/notification';
 import { Request, Response } from 'express';
 import handlebars from 'handlebars';
 
@@ -49,6 +50,8 @@ class SubOrderController {
         { method: ['byId', subOrderId] },
       ]).findOne();
       if (!subOrder) { return sendError(res, 404, NoData); }
+      const order = await subOrder.getOrder();
+      SendNotification.changStatusOrder(params.status, order.orderableType, subOrder.code, order.orderableId);
       await subOrder.update(params, { validate: false });
       sendSuccess(res, subOrder);
     } catch (error) {
@@ -87,7 +90,9 @@ class SubOrderController {
         { method: ['byCancelStatus', SubOrderModel.CANCEL_STATUS.PENDING] },
       ]).findByPk(req.params.subOrderId);
       if (!subOrder) return sendError(res, 404, NoData);
+      const order = await subOrder.getOrder();
       await subOrder.update({ cancelStatus: SubOrderModel.CANCEL_STATUS.APPROVED, status: SubOrderModel.STATUS_ENUM.CANCEL }, { hooks: false, validate: false });
+      SendNotification.notiCancelStatus(SubOrderModel.CANCEL_STATUS.APPROVED, order.orderableType, subOrder.code, order.orderableId);
       sendSuccess(res, { subOrder });
     } catch (error) {
       sendError(res, 500, error.message, error);
@@ -100,7 +105,9 @@ class SubOrderController {
         { method: ['byCancelStatus', SubOrderModel.CANCEL_STATUS.PENDING] },
       ]).findByPk(req.params.subOrderId);
       if (!subOrder) return sendError(res, 404, NoData);
+      const order = await subOrder.getOrder();
       await subOrder.update({ cancelStatus: SubOrderModel.CANCEL_STATUS.REJECTED, cancelRejectNote: req.body.cancelRejectNote }, { hooks: false, validate: false });
+      SendNotification.notiCancelStatus(SubOrderModel.CANCEL_STATUS.REJECTED, order.orderableType, subOrder.code, order.orderableId);
       sendSuccess(res, { subOrder });
     } catch (error) {
       sendError(res, 500, error.message, error);

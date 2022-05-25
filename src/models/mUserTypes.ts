@@ -10,7 +10,13 @@ class MUserTypeModel extends Model<MUsertypeInterface> implements MUsertypeInter
 
   static readonly TYPE_ENUM = { USER: 'user', COLLABORATOR: 'collaborator', AGENCY: 'agency', DISTRIBUTOR: 'distributor' }
 
-  static readonly scopes: ModelScopeOptions = {}
+  static readonly scopes: ModelScopeOptions = {
+    byName (name) {
+      return {
+        where: { name },
+      };
+    },
+  }
 
   public static initialize (sequelize: Sequelize) {
     this.init(MUserTypeEntity, {

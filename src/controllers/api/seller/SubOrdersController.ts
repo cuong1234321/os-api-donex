@@ -4,6 +4,7 @@ import { sendError, sendSuccess } from '@libs/response';
 import SubOrderModel from '@models/subOrders';
 import { Request, Response } from 'express';
 import dayjs from 'dayjs';
+import SendNotification from '@services/notification';
 
 class SubOrderController {
   public async show (req: Request, res: Response) {
@@ -53,6 +54,7 @@ class SubOrderController {
         { method: ['byStatus', [SubOrderModel.STATUS_ENUM.PENDING, SubOrderModel.STATUS_ENUM.DRAFT, SubOrderModel.STATUS_ENUM.WAITING_TO_TRANSFER]] },
       ]).findByPk(req.params.subOrderId);
       if (!subOrder) return sendError(res, 404, NoData);
+      const order = await subOrder.getOrder();
       if (subOrder.status === SubOrderModel.STATUS_ENUM.PENDING || subOrder.status === SubOrderModel.STATUS_ENUM.DRAFT) {
         await subOrder.update({
           status: SubOrderModel.STATUS_ENUM.CANCEL,
@@ -64,6 +66,7 @@ class SubOrderController {
         },
         { validate: false, hooks: false },
         );
+        SendNotification.changStatusOrder(SubOrderModel.STATUS_ENUM.CANCEL, order.orderableType, subOrder.code, order.orderableId);
       } else {
         await subOrder.update({
           cancelStatus: SubOrderModel.CANCEL_STATUS.PENDING,
@@ -73,6 +76,7 @@ class SubOrderController {
           cancelableId: currentSeller.id,
         },
         { validate: false, hooks: false });
+        SendNotification.notiCancelStatus(SubOrderModel.CANCEL_STATUS.PENDING, order.orderableType, subOrder.code, order.orderableId);
       }
       sendSuccess(res, subOrder);
     } catch (error) {
