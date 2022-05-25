@@ -6,12 +6,14 @@ import { Transaction } from 'sequelize/types';
 import ProductOptionModel from '@models/productOptions';
 import ProductCategoryRefModel from '@models/productCategoryRefs';
 import ProductVariantModel from '@models/productVariants';
-import { FileIsNotSupport, NoData } from '@libs/errors';
+import { FileIsNotSupport, MissingImportFile, NoData } from '@libs/errors';
 import ImageUploaderService from '@services/imageUploader';
 import settings from '@configs/settings';
 import VideoUploaderService from '@services/videoUploader';
 import ProductMediaModel from '@models/productMedias';
 import { Sequelize } from 'sequelize';
+import ProductImporterService from '@services/productImporter';
+import ProductImporterWorker from '@workers/productImporter';
 
 class ProductController {
   public async index (req: Request, res: Response) {
@@ -160,6 +162,20 @@ class ProductController {
       product.setDataValue('medias', await product.getMedias());
       product.setDataValue('variants', await product.getVariantDetail());
       sendSuccess(res, { product });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async uploadProducts (req: Request, res: Response) {
+    try {
+      const currentAdmin = req.currentAdmin || { id: 1 };
+      const uploader = new ProductImporterService(req.file.path);
+      await uploader.extractZip();
+      if (!uploader.xlsxEntry) return sendError(res, 400, MissingImportFile);
+      const productImporterWorker = new ProductImporterWorker(req.file.path, currentAdmin.id);
+      await productImporterWorker.scheduleJob();
+      sendSuccess(res, {});
     } catch (error) {
       sendError(res, 500, error.message, error);
     }

@@ -47,6 +47,11 @@ export const FileIsNotSupport = {
   message: 'The file is not in the required format',
 };
 
+export const MissingImportFile = {
+  code: 310,
+  message: 'Xlsx used for import is missing',
+};
+
 export const AccountNotActive = {
   code: 410,
   message: 'Account not active',

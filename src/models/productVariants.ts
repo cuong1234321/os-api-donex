@@ -1,6 +1,6 @@
 import ProductVariantEntity from '@entities/productVariants';
 import ProductVariantInterface from '@interfaces/productVariants';
-import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize } from 'sequelize';
+import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import CartItemModel from './cartItems';
 import ProductCategoryModel from './productCategories';
@@ -41,6 +41,14 @@ class ProductVariantModel extends Model<ProductVariantInterface> implements Prod
   }
 
   static readonly validations: ModelValidateOptions = {
+    async uniqueSku () {
+      if (this.skuCode) {
+        const existedRecord = await ProductVariantModel.scope([{ method: ['bySkuCode', this.skuCode] }]).findOne();
+        if (existedRecord && existedRecord.id !== this.id) {
+          throw new ValidationErrorItem('Mã Sku sản phẩm con đã được sử dụng.', 'uniqueSku', 'skuCode', this.skuCode);
+        }
+      }
+    },
   }
 
   static readonly scopes: ModelScopeOptions = {
