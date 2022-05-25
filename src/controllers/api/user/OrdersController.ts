@@ -38,6 +38,7 @@ class OrderController {
           orderableId: currentUser.id,
           ownerId: currentUser.id,
           creatableType: OrderModel.CREATABLE_TYPE.USER,
+          status: params.paymentMethod === OrderModel.PAYMENT_METHOD.COD ? OrderModel.STATUS_ENUM.DRAFT : OrderModel.STATUS_ENUM.PENDING,
         };
       } else {
         orderParams = {

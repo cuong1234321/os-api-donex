@@ -1,3 +1,4 @@
+import ProductVariantInterface from './productVariants';
 
 interface OrderItemInterface {
   id: number;
@@ -31,6 +32,7 @@ interface OrderItemInterface {
       barCode: string,
     }
   };
+  variant? : ProductVariantInterface;
 };
 
 export default OrderItemInterface;
