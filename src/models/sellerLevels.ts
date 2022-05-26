@@ -61,6 +61,11 @@ class SellerLevelModel extends Model<SellerLevelInterface> implements SellerLeve
         where: { type },
       };
     },
+    byId (id) {
+      return {
+        where: { id },
+      };
+    },
     byCondition (conditionValue) {
       return {
         where: { conditionValue },

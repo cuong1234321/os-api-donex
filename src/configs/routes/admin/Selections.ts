@@ -376,4 +376,32 @@ router.get('/sale_campaigns', SelectionController.listSaleCampaign);
  */
 router.get('/vouchers', SelectionController.listVoucherApplications);
 
+/**
+ * @openapi
+ * /a/selections/levels:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] SELECTION"
+ *     summary: danh sach hang CTV/DL/NPP
+ *     parameters:
+ *      - in: query
+ *        name: "levelId"
+ *        type: "string"
+ *      - in: query
+ *        name: "sellerType"
+ *        type: "string"
+ *        enum:
+ *         - collaborator
+ *         - agency
+ *         - distributor
+ *     responses:
+ *       200:
+ *         description: "success"
+ *       500:
+ *         description: "failed"
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/levels', SelectionController.listSellerLevels);
+
 export default router;
