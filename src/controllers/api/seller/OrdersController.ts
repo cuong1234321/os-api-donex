@@ -1,6 +1,7 @@
 import settings from '@configs/settings';
 import ApplySaleCampaignVariantDecorator from '@decorators/applySaleCampaignVariants';
 import sequelize from '@initializers/sequelize';
+import { NoData } from '@libs/errors';
 import { sendError, sendSuccess } from '@libs/response';
 import SlugGeneration from '@libs/slugGeneration';
 import BillTemplateModel from '@models/billTemplates';
@@ -88,6 +89,31 @@ class OrderController {
         col: 'SubOrderModel.id',
       });
       sendSuccess(res, { subOrders: rows, pagination: { total: count, page, perpage: limit } });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async show (req: Request, res: Response) {
+    try {
+      const currentSeller = req.currentSeller;
+      const { orderId, subOrderId } = req.params;
+      const subOrder = await SubOrderModel.scope([
+        { method: ['byId', subOrderId] },
+        { method: ['byOrderId', orderId] },
+        'withItemDetail',
+        'withWarehouseDetail',
+        'withFinalAmount',
+      ]).findOne();
+      if (!subOrder) { return sendError(res, 404, NoData); }
+      const order = await OrderModel.scope([
+        { method: ['byId', orderId] },
+        'withShippingAddress',
+        'withOrderAbleName',
+        { method: ['byOrderAble', currentSeller.id, currentSeller.type] },
+      ]).findOne();
+      if (!order) { return sendError(res, 404, NoData); }
+      sendSuccess(res, { order, subOrder, currentSeller });
     } catch (error) {
       sendError(res, 500, error.message, error);
     }

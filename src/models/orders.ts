@@ -295,6 +295,11 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
         ],
       };
     },
+    byOrderAble (orderableId, orderableType) {
+      return {
+        where: { orderableId, orderableType },
+      };
+    },
   }
 
   public async reloadWithDetail () {

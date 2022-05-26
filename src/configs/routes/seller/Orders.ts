@@ -118,6 +118,32 @@ router.get('/', (req: Request, res: Response) => OrderController.index(req, res)
 
 /**
  * @openapi
+ * /s/orders/{orderId}/sub_orders/{subOrderId}:
+ *   get:
+ *     tags:
+ *      - "[SELLER] ORDERS"
+ *     summary: chi tiet order
+ *     parameters:
+ *      - in: path
+ *        name: "orderId"
+ *        description: ""
+ *        type: number
+ *      - in: path
+ *        name: "subOrderId"
+ *        description: ""
+ *        type: number
+ *     responses:
+ *       200:
+ *         description: "OK"
+ *       500:
+ *         description: "Internal error"
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/:orderId/sub_orders/:subOrderId', (req: Request, res: Response) => OrderController.show(req, res));
+
+/**
+ * @openapi
  * /s/orders:
  *   post:
  *     tags:
