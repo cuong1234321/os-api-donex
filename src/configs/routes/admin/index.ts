@@ -67,7 +67,7 @@ router.use('/roles', adminPassport.authenticate('jwt', { session: false }), Role
 router.use('/sessions', SessionsRouter);
 router.use('/sale_campaigns', adminPassport.authenticate('jwt', { session: false }), SaleCampaignRouter);
 router.use('/system_setting', SystemSettingRouter);
-router.use('/selections', adminPassport.authenticate('jwt', { session: false }), SelectionRouter);
+router.use('/selections', SelectionRouter);
 router.use('/shipping_partners', adminPassport.authenticate('jwt', { session: false }), ShippingPartnerRouter);
 router.use('/seller_levels', adminPassport.authenticate('jwt', { session: false }), SellerLevelRouter);
 router.use('/terms', adminPassport.authenticate('jwt', { session: false }), TermRouter);
