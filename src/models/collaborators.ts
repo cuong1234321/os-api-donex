@@ -51,6 +51,7 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
   public rejectorId: number;
   public rejectDate: Date;
   public referralCode: string;
+  public accumulatedMoney: number;
 
   public createdAt?: Date;
   public updatedAt?: Date;

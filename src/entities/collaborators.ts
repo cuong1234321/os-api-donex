@@ -136,6 +136,9 @@ const collaboratorEntity = {
   referralCode: {
     type: DataTypes.STRING(30),
   },
+  accumulatedMoney: {
+    type: DataTypes.BIGINT, defaultValue: 0,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },
