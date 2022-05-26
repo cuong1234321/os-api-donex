@@ -3,6 +3,7 @@ import { userPassport } from '@middlewares/passport';
 import AddressBookRouter from './AddressBooks';
 import AccountsRouter from './Accounts';
 import AuthenticationOtpsRouter from './AuthenticationOtps';
+import BankAccountRouter from './BankAccounts';
 import BannerRouter from './Banners';
 import CartRouter from './Carts';
 import CollaboratorRouter from './Collaborators';
@@ -34,6 +35,7 @@ router.use('/address_books', userPassport.authenticate('jwt', { session: false }
 router.use('/accounts', AccountsRouter);
 router.use('/authentication_otps', AuthenticationOtpsRouter);
 router.use('/banners', BannerRouter);
+router.use('/bank_accounts', BankAccountRouter);
 router.use('/carts', userPassport.authenticate('jwt', { session: false }), CartRouter);
 router.use('/collaborators', CollaboratorRouter);
 router.use('/coin_wallet_changes', userPassport.authenticate('jwt', { session: false }), CoinWalletChangeRouter);

@@ -3,7 +3,7 @@ import { importAdministrativeMaps } from '../database/masters/importAdministrati
 
 const execute = async () => {
   for (const tableName of ['m_colors', 'm_sizes', 'm_forms', 'm_user_types',
-    'm_bill_template_keys', 'permissions', 'permission_groups']) {
+    'm_bill_template_keys', 'permissions', 'permission_groups', 'm_banks']) {
     await importMasterData(tableName);
   }
   await importAdministrativeMaps();
