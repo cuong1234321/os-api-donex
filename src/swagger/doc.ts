@@ -25,6 +25,14 @@ const swaggerDefinition = {
       description: 'Quản lý mẫu hóa đơn',
     },
     {
+      name: '[ADMIN] BANK ACCOUNT',
+      description: 'Danh sách tài khoản ngân hàng',
+    },
+    {
+      name: '[ADMIN] BANKS',
+      description: 'Danh sách ngân hàng',
+    },
+    {
       name: '[ADMIN] COLLABORATORS',
       description: 'Quản lý CTV/DL/NPP',
     },
@@ -159,6 +167,10 @@ const swaggerDefinition = {
     {
       name: '[USER] AUTHENTICATION OTPS',
       description: 'Quản lý mã xác thực tài khoản',
+    },
+    {
+      name: '[USER] BANK ACCOUNT',
+      description: 'Danh sách tài khoản ngân hàng',
     },
     {
       name: '[USER] BANNERS',
