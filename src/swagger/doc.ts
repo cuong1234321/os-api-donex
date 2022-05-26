@@ -273,6 +273,10 @@ const swaggerDefinition = {
       description: 'Don vi Van Chuyen',
     },
     {
+      name: '[SELLER] BANK ACCOUNT',
+      description: 'Danh sách tài khoản ngân hàng',
+    },
+    {
       name: '[SELLER] SUB ORDERS',
       description: 'Quản lý đơn hàng con',
     },

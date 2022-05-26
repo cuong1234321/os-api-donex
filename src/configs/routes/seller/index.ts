@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { sellerPassport } from '@middlewares/passport';
+import BankAccountRouter from './BankAccounts';
 import PasswordRouter from './Passwords';
 import SessionsRouter from './Sessions';
 import ProductRouter from './Products';
@@ -9,6 +10,7 @@ import SubOrderRouter from './SubOrders';
 
 const router = Router();
 
+router.use('/bank_accounts', BankAccountRouter);
 router.use('/passwords', PasswordRouter);
 router.use('/sessions', SessionsRouter);
 router.use('/products', sellerPassport.authenticate('jwt', { session: false }), ProductRouter);
