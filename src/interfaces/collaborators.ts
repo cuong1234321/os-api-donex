@@ -30,6 +30,7 @@ interface CollaboratorInterface {
   rejectorId: number;
   rejectDate: Date;
   referralCode: string;
+  accumulatedMoney: number;
 
   createdAt?: Date,
   updatedAt?: Date,
