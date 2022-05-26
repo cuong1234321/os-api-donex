@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mail</title>
+    <style>
+        .container{
+            margin: auto;
+        }
+        .title{
+            text-align: center;
+        }
+        table, th, td {
+          border:1px solid black;
+          border-collapse: collapse;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">Chào mừng đến Donex</h1>
+        <div>
+            <p>Quá trình tải lên sản phẩm của bạn đã hoàn thành.</p>
+            <pDưới đây là kết quả của việc tải lên:</p>
+            <p><strong>- Tổng số sản phẩm:</strong> {{totalRows}}</p>
+            <p><strong>- Tổng số sản phẩm thành công:</strong> {{totalImported}}</p>
+              <p><strong>- Nội dung các bản ghi lỗi</strong></p>
+              <div>
+                <table>
+                  <thead>
+                    <th>Dòng lỗi</th>
+                    <th>Nội dung lỗi</th>
+                  </thead>
+                  {{#each failToImportIndex}}
+                    <tr>
+                      <td>{{@key}}</td>
+                      <td>{{this}}</td>
+                    </tr>
+                  {{/each}}
+                </table>
+              </div>
+        </div>
+    </div>
+</body>
+</html>

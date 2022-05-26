@@ -2,7 +2,7 @@ import ProductEntity from '@entities/products';
 import ProductMediaInterface from '@interfaces/productMedia';
 import ProductOptionInterface from '@interfaces/productOptions';
 import ProductInterface from '@interfaces/products';
-import { BelongsToManySetAssociationsMixin, BelongsToManyGetAssociationsMixin, HasManyGetAssociationsMixin, Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, Transaction } from 'sequelize';
+import { BelongsToManySetAssociationsMixin, BelongsToManyGetAssociationsMixin, HasManyGetAssociationsMixin, Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, Transaction, ValidationErrorItem } from 'sequelize';
 import ProductVariantInterface from '@interfaces/productVariants';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import MColorModel from './mColors';
@@ -52,6 +52,7 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
   public thumbnail?: string;
 
   static readonly STATUS_ENUM = { DRAFT: 'draft', ACTIVE: 'active', INACTIVE: 'inActive' };
+  static readonly SIZE_TYPE_ENUM = { CHILDREN: 'children', CLOTHES: 'clothes', SHOES: 'shoes' }
 
   static readonly CREATABLE_PARAMETERS = [
     'name', 'description', 'shortDescription', 'status', 'gender', 'typeProductId', 'sizeGuide', 'isHighlight',
@@ -73,7 +74,9 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
 
   static readonly hooks: Partial<ModelHooks<ProductModel>> = {
     async beforeCreate (record) {
-      record.skuCode = await record.generateSkuCode();
+      if (!record.skuCode) {
+        record.skuCode = await record.generateSkuCode();
+      }
       record.barCode = await record.generateBarCode();
     },
     async afterDestroy (record) {
@@ -83,6 +86,14 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
   }
 
   static readonly validations: ModelValidateOptions = {
+    async uniqueSku () {
+      if (this.skuCode) {
+        const existedRecord = await ProductModel.scope([{ method: ['bySkuCode', this.skuCode] }]).findOne();
+        if (existedRecord && existedRecord.id !== this.id) {
+          throw new ValidationErrorItem('Mã Sku chung đã được sử dụng.', 'uniqueSku', 'skuCode', this.skuCode);
+        }
+      }
+    },
   }
 
   static readonly scopes: ModelScopeOptions = {
@@ -581,21 +592,25 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
     for (const variant of this.variants) {
       const optionRef: any = [];
       variant.optionMappingIds.forEach((optionMappingId: any) => {
-        const option = options.find((option: any) => option.optionMappingId === optionMappingId);
-        optionRef.push(option);
-        variantOptionAttributes.push({
-          variantId: variant.id,
-          optionId: option.id,
-        });
+        if (optionMappingId) {
+          const option = options.find((option: any) => option.optionMappingId === optionMappingId);
+          optionRef.push(option);
+          variantOptionAttributes.push({
+            variantId: variant.id,
+            optionId: option.id,
+          });
+        }
       });
       const optionColor = optionRef.find((option: any) => option.key === ProductOptionModel.KEY_ENUM.COLOR);
       const optionSize = optionRef.find((option: any) => option.key === ProductOptionModel.KEY_ENUM.SIZE);
       const color = optionColor ? colors.find((record: any) => record.id === optionColor.value) : null;
       const size = optionSize ? sizes.find((record: any) => record.id === optionSize.value) : null;
-      let skuCode = `${this.skuCode}`;
-      if (color) skuCode = skuCode + `-${color.code}`;
-      if (size) skuCode = skuCode + `-${size.code}`;
-      await variant.update({ skuCode: skuCode }, { transaction });
+      if (!variant.skuCode) {
+        let skuCode = `${this.skuCode}`;
+        if (color) skuCode = skuCode + `-${color.code}`;
+        if (size) skuCode = skuCode + `-${size.code}`;
+        await variant.update({ skuCode: skuCode }, { transaction });
+      }
     }
     const variationOptions = await ProductVariantOptionModel.bulkCreate(variantOptionAttributes, { transaction });
     await ProductVariantOptionModel.destroy({

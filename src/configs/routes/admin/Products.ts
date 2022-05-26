@@ -1,5 +1,5 @@
 import ProductController from '@controllers/api/admin/ProductsController';
-import { withoutSavingUploader } from '@middlewares/uploaders';
+import { productZipUploader, withoutSavingUploader } from '@middlewares/uploaders';
 import { Request, Response, Router } from 'express';
 
 const router = Router();
@@ -275,6 +275,34 @@ router.get('/:productId', ProductController.show);
  *      - Bearer: []
  */
 router.post('/', ProductController.create);
+
+/**
+ * @openapi
+ * /a/products/upload:
+ *   post:
+ *     tags:
+ *      - "[ADMIN] PRODUCT"
+ *     summary: Tải lên sản phẩm
+ *     consumes:
+ *      - "multipart/form-data"
+ *     produces:
+ *      - "application/json"
+ *     parameters:
+ *      - in: "formData"
+ *        name: "file"
+ *        description: "File upload"
+ *        required: true
+ *        allowMultiple: false
+ *        type: "file"
+ *     responses:
+ *       200:
+ *         description: "Upload success"
+ *       500:
+ *         description: "Upload failed"
+ *     security:
+ *      - Bearer: []
+ */
+router.post('/upload', productZipUploader.single('file'), ProductController.uploadProducts);
 
 /**
  * @openapi
