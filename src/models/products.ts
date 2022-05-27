@@ -511,6 +511,24 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
         }],
       };
     },
+    withAverageRating () {
+      return {
+        attributes: {
+          include: [
+            [Sequelize.cast(Sequelize.literal('(select ROUND(AVG(point)) from ratings WHERE ratings.status = "active" and productVariantId IN (SELECT id from product_variants WHERE productId = ProductModel.id) )'), 'SIGNED'), 'avgRating'],
+          ],
+        },
+      };
+    },
+    byRating (rating) {
+      return {
+        where: {
+          [Op.and]: [
+            Sequelize.where(Sequelize.cast(Sequelize.literal('(select ROUND(AVG(point)) from ratings WHERE ratings.status = "active" and productVariantId IN (SELECT id from product_variants WHERE productId = ProductModel.id) )'), 'SIGNED'), rating),
+          ],
+        },
+      };
+    },
   }
 
   public getVariants: HasManyGetAssociationsMixin<ProductVariantModel>;

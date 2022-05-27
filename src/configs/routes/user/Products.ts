@@ -52,6 +52,10 @@ const router = Router();
  *         name: "freeWord"
  *         description: "Từ khóa"
  *         type: string
+ *       - in: "query"
+ *         name: "rating"
+ *         description: "rating"
+ *         type: number
  *       - in: query
  *         name: "price"
  *         description: "sap xep theo gia tien"
