@@ -121,6 +121,23 @@ router.get('/list_products', ProductController.listProducts);
 
 /**
  * @openapi
+ * /a/products/product_template:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] PRODUCT"
+ *     summary: Tải xuống template sản phẩm
+ *     responses:
+ *       200:
+ *         description: "Upload success"
+ *       500:
+ *         description: "Upload failed"
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/product_template', ProductController.downloadProductTemplate);
+
+/**
+ * @openapi
  * /a/products/{productId}:
  *   get:
  *     tags:
