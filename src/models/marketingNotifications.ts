@@ -127,6 +127,8 @@ class MarketingNotificationsModel extends Model<MarketingNotificationsInterface>
       const userNotifications = users.map((user: any) => {
         return {
           userId: user.id as number,
+          userType: UserNotificationsModel.USER_TYPE_ENUM.USER,
+          thumbnail: this.thumbnail,
           notificationTargetId: this.notificationTargets.find((element: any) => element.target.name === 'user').id,
           type: UserNotificationsModel.TYPE_ENUM.SYSTEM,
           title: this.title,
@@ -143,6 +145,8 @@ class MarketingNotificationsModel extends Model<MarketingNotificationsInterface>
       const userNotifications = collaborators.map((collaborator: any) => {
         return {
           userId: collaborator.id as number,
+          userType: UserNotificationsModel.USER_TYPE_ENUM.COLLABORATOR,
+          thumbnail: this.thumbnail,
           notificationTargetId: this.notificationTargets.find((element: any) => element.target.name === 'collaborator').id,
           type: UserNotificationsModel.TYPE_ENUM.SYSTEM,
           title: this.title,
@@ -159,6 +163,8 @@ class MarketingNotificationsModel extends Model<MarketingNotificationsInterface>
       const userNotifications = agency.map((agency: any) => {
         return {
           userId: agency.id as number,
+          userType: UserNotificationsModel.USER_TYPE_ENUM.AGENCY,
+          thumbnail: this.thumbnail,
           notificationTargetId: this.notificationTargets.find((element: any) => element.target.name === 'agency').id,
           type: UserNotificationsModel.TYPE_ENUM.SYSTEM,
           title: this.title,
@@ -175,6 +181,8 @@ class MarketingNotificationsModel extends Model<MarketingNotificationsInterface>
       const userNotifications = distributors.map((distributor: any) => {
         return {
           userId: distributor.id as number,
+          userType: UserNotificationsModel.USER_TYPE_ENUM.DISTRIBUTOR,
+          thumbnail: this.thumbnail,
           notificationTargetId: this.notificationTargets.find((element: any) => element.target.name === 'distributor').id,
           type: UserNotificationsModel.TYPE_ENUM.SYSTEM,
           title: this.title,

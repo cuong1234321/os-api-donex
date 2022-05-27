@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { adminPassport } from '@middlewares/passport';
 import AdminRouter from './Admins';
+import AdminNotificationRouter from './AdminNotifications';
 import AccountsRouter from './Accounts';
 import BannerRouter from './Banners';
 import BillTemplateRouter from './BillTemplates';
@@ -42,6 +43,7 @@ import WarehouseReportRouter from './WarehouseReports';
 const router = Router();
 
 router.use('/admins', adminPassport.authenticate('jwt', { session: false }), AdminRouter);
+router.use('/admin_notifications', adminPassport.authenticate('jwt', { session: false }), AdminNotificationRouter);
 router.use('/accounts', adminPassport.authenticate('jwt', { session: false }), adminPassport.authenticate('jwt', { session: false }), AccountsRouter);
 router.use('/banners', adminPassport.authenticate('jwt', { session: false }), BannerRouter);
 router.use('/bill_templates', adminPassport.authenticate('jwt', { session: false }), BillTemplateRouter);
