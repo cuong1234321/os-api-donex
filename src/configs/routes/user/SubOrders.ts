@@ -10,6 +10,15 @@ const router = Router();
  *     tags:
  *      - "[USER] SUB ORDER"
  *     summary: danh sach
+ *     parameters:
+ *      - in: query
+ *        name: "TransportUnit"
+ *        description: ""
+ *        type: "string"
+ *        default: ""
+ *        enum:
+ *          - ghn
+ *          - vtp
  *     responses:
  *       200:
  *         description: Return data.

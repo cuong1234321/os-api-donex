@@ -50,6 +50,7 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
   public paidAt?: Date;
   public portalConfirmAt?: Date;
   public applicationDiscount?: number;
+  public transportUnit: string;
   public createdAt?: Date;
   public updatedAt?: Date;
   public deletedAt?: Date;
@@ -110,6 +111,11 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
     WHOLESALE: 'wholesale',
     RETAIL: 'retail',
     OTHER: 'other',
+  }
+
+  public static readonly TRANSPORT_UNIT = {
+    GHN: 'ghn',
+    VTP: 'vtp',
   }
 
   public static readonly STATUS_ENUM = { DRAFT: 'draft', PENDING: 'pending', PAID: 'paid', COMPLETE: 'complete', CANCEL: 'cancel' }

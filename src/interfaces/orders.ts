@@ -32,6 +32,7 @@ interface OrderInterface {
   saleCampaignId: number;
   status: string;
   rankDiscount: number;
+  transportUnit: string;
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;

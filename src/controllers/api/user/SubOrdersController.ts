@@ -14,7 +14,7 @@ class SubOrderController {
       const offset = (parseInt(page, 10) - 1) * limit;
       const sortBy = req.query.sortBy || 'createdAt';
       const sortOrder = req.query.sortOrder || 'DESC';
-      const { status } = req.query;
+      const { status, transportUnit } = req.query;
       const scopes: any = [
         'withOrder',
         { method: ['byUser', currentUser.id] },
@@ -24,6 +24,7 @@ class SubOrderController {
       if (status) {
         scopes.push({ method: ['byStatus', status] });
       }
+      if (transportUnit) scopes.push({ method: ['byTransportUnit', transportUnit] });
       const { count, rows } = await SubOrderModel.scope(scopes).findAndCountAll({ limit, offset });
       const subOrders = await OrderModel.formatOrder(rows);
       sendSuccess(res, { rows: subOrders, pagination: { total: count, page, perPage: limit } });

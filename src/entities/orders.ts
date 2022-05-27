@@ -85,6 +85,9 @@ const OrderEntity = {
   applicationDiscount: {
     type: DataTypes.VIRTUAL,
   },
+  transportUnit: {
+    type: DataTypes.STRING(30),
+  },
   rankDiscount: {
     type: DataTypes.BIGINT,
     defaultValue: 0,
