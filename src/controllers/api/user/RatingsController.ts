@@ -59,7 +59,7 @@ class RatingController {
       const offset = (parseInt(page, 10) - 1) * limit;
       const sortBy = req.query.sortBy || 'createdAt';
       const sortOrder = req.query.sortOrder || 'DESC';
-      const { productId } = req.query;
+      const { productId, point } = req.query;
       const productVariants = await ProductVariantModel.scope([
         { method: ['byProduct', productId] },
       ]).findAll({ attributes: ['id'] });
@@ -74,6 +74,7 @@ class RatingController {
         { method: ['byStatus', RatingModel.STATUS_ENUM.ACTIVE] },
         'withUserInfo',
       ];
+      if (point) { scopes.push({ method: ['byPoint', point] }); }
       const { rows, count } = await RatingModel.scope(scopes).findAndCountAll({ limit, offset });
       return sendSuccess(res, { rows, pagination: { total: count, page, perPage: limit } });
     } catch (error) {

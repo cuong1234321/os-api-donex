@@ -1,6 +1,6 @@
 import RatingEntity from '@entities/ratings';
 import RatingInterface from '@interfaces/ratings';
-import { Model, ModelScopeOptions, ModelValidateOptions, Sequelize, ValidationErrorItem } from 'sequelize';
+import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import RatingImageModel from './ratingImages';
 import SubOrderModel from './subOrders';
@@ -103,6 +103,13 @@ class RatingModel extends Model<RatingInterface> implements RatingInterface {
     byStatus (status) {
       return {
         where: { status },
+      };
+    },
+    byPoint (point) {
+      return {
+        where: {
+          point: { [Op.gte]: point },
+        },
       };
     },
   }

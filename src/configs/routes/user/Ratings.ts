@@ -93,6 +93,10 @@ router.patch('/:ratingId', userPassport.authenticate('jwt', { session: false }),
  *        name: "productId"
  *        description: "product id"
  *        type: "number"
+ *      - in: query
+ *        name: "point"
+ *        description: "point"
+ *        type: "number"
  *     responses:
  *       200:
  *         description: "OK"
