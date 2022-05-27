@@ -1,11 +1,14 @@
 import settings from '@configs/settings';
-import { NoData } from '@libs/errors';
+import { MissingImportFile, NoData } from '@libs/errors';
 import { sendError, sendSuccess } from '@libs/response';
 import AdminModel from '@models/admins';
 import ImageUploaderService from '@services/imageUploader';
 import MailerService from '@services/mailer';
 import { Sequelize } from 'sequelize';
 import { Request, Response } from 'express';
+import AdminImporterService from '@services/adminImporter';
+import dayjs from 'dayjs';
+import XlsxService from '@services/xlsx';
 
 class AdminController {
   public async index (req: Request, res: Response) {
@@ -125,6 +128,47 @@ class AdminController {
       if (!admin) { return sendError(res, 404, NoData); }
       await admin.destroy();
       sendSuccess(res, {});
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async downloadAdminTemplate (req: Request, res: Response) {
+    try {
+      const file = 'public/Danh-sach-nhan-vien.xlsx';
+      res.download(file, 'Form tải lên nhân viên (Mẫu).xlsx');
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async uploadAdmins (req: Request, res: Response) {
+    try {
+      const currentAdmin = req.currentAdmin;
+      const file = req.file;
+      if (file.originalname.split('.').reverse()[0] !== 'xlsx') {
+        sendError(res, 400, MissingImportFile);
+      }
+      const adminImporter = new AdminImporterService(file);
+      adminImporter.executeImport(currentAdmin.email);
+      sendSuccess(res, {});
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async download (req: Request, res: Response) {
+    try {
+      const time = dayjs().format('DD-MM-YY-hh:mm:ss');
+      const fileName = `Bao-cao-nhan-vien-${time}.xlsx`;
+      const admin = await AdminModel.scope(['withRole']).findAll();
+      const buffer: any = await XlsxService.downloadAdmins(admin);
+      res.writeHead(200, [
+        ['Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+        ['Content-Disposition', 'attachment; filename=' + `${fileName}`],
+      ]);
+      res.end(Buffer.from(buffer, 'base64'));
+      sendSuccess(res, admin);
     } catch (error) {
       sendError(res, 500, error.message, error);
     }

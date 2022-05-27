@@ -36,6 +36,8 @@ class AdminModel extends Model<AdminInterface> implements AdminInterface {
   static readonly CREATABLE_PARAMETERS = ['fullName', 'username', 'phoneNumber', 'gender', 'email', 'dateOfBirth', 'note', 'roleId']
   static readonly UPDATABLE_PARAMETERS = ['fullName', 'phoneNumber', 'gender', 'email', 'dateOfBirth', 'note', 'roleId']
   static readonly ADMIN_UPDATABLE_PARAMETERS = ['fullName', 'username', 'avatar', 'phoneNumber', 'gender', 'email', 'dateOfBirth']
+  static readonly GENDER_VN_ENUM = { MALE: 'nam', FEMALE: 'nữ', OTHER: 'khác' }
+  static readonly GENDER_ENUM = { MALE: 'male', FEMALE: 'female', OTHER: 'other' }
 
   public static readonly STATUS_ENUM = { ACTIVE: 'active', INACTIVE: 'inactive' }
 

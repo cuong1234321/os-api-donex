@@ -7,6 +7,7 @@ import handlebars from 'handlebars';
 import settings from '@configs/settings';
 import AdminInterface from '@interfaces/admins';
 import CollaboratorModel from '@models/collaborators';
+import _ from 'lodash';
 
 class MailerService {
   public static async forgotPassWord (admin: AdminInterface, otp: string) {
@@ -152,6 +153,17 @@ class MailerService {
     };
     const templateName = 'importProductReport';
     await this.sendMail(mailerOptions, templateName, templateArgs);
+  }
+
+  public static async adminImporterReport (failureList: any, email: string) {
+    const mailerOptions: Mail.Options = {
+      to: email,
+      subject: '[Hệ thống Donex] Báo cáo kết quả nhập liệu nhân viên',
+    };
+    const templateArgs = _.mapValues(failureList, (indexes) => {
+      return indexes.length ? indexes.join(', ') : 'Không có lỗi';
+    });
+    await this.sendMail(mailerOptions, 'adminImporterReport', templateArgs);
   }
 
   private static async sendMailChangePassword (name: string, password: string, mailerOptions: Mail.Options, host: string) {
