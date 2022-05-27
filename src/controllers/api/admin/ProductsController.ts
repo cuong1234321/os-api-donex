@@ -210,6 +210,15 @@ class ProductController {
     }
   }
 
+  public async downloadProductTemplate (req: Request, res: Response) {
+    try {
+      const file = 'public/product_import_sample.zip';
+      res.download(file, 'Form tải lên sản phẩm.zip');
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
   private listProductQueryBuilder (req: Request) {
     const { sku, name, category, collectionId, unit, status, price, skuOrder, nameOrder, categoryOrder, priceOrder, statusOrder } = req.query;
     const orderConditions: any = [];
