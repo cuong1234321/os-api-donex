@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { sendError, sendSuccess } from '@libs/response';
 import SystemSettingModel from '@models/systemSetting';
+import settings from '@configs/settings';
 
 class SystemSettingController {
   public async show (req: Request, res: Response) {
@@ -13,6 +14,7 @@ class SystemSettingController {
       delete systemSetting.environment;
       delete systemSetting.accessToken;
       delete systemSetting.companyCode;
+      systemSetting.tax = settings.defaultTax;
       sendSuccess(res, { systemSetting });
     } catch (error) {
       sendError(res, 500, error.message, error);
@@ -30,6 +32,7 @@ class SystemSettingController {
       delete systemSetting.environment;
       delete systemSetting.accessToken;
       delete systemSetting.companyCode;
+      systemSetting.tax = settings.defaultTax;
       sendSuccess(res, { systemSetting });
     } catch (error) {
       sendError(res, 500, error.message, error);
