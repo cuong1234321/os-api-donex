@@ -21,6 +21,14 @@ const router = Router();
  *        description: ""
  *        type: "number"
  *        default: ""
+ *      - in: query
+ *        name: "TransportUnit"
+ *        description: ""
+ *        type: "string"
+ *        default: ""
+ *        enum:
+ *          - ghn
+ *          - vtp
  *     responses:
  *       200:
  *         description: "success"

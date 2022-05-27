@@ -10,7 +10,7 @@ class SubOrderController {
     try {
       const sortBy = req.query.sortBy || 'createdAt';
       const sortOrder = req.query.sortOrder || 'DESC';
-      const { code, subOrderId } = req.query;
+      const { code, subOrderId, transportUnit } = req.query;
       const scopes: any = [
         { method: ['bySortOrder', sortBy, sortOrder] },
         'withItems',
@@ -18,6 +18,7 @@ class SubOrderController {
       ];
       if (code) scopes.push({ method: ['byCode', code] });
       if (subOrderId) scopes.push({ method: ['byId', subOrderId] });
+      if (transportUnit) scopes.push({ method: ['byTransportUnit', transportUnit] });
       const subOrders = await SubOrderModel.scope(scopes).findAll();
       sendSuccess(res, subOrders);
     } catch (error) {
