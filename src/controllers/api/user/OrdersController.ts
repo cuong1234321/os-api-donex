@@ -69,6 +69,7 @@ class OrderController {
 
   public async show (req: Request, res: Response) {
     try {
+      const { currentUser } = req;
       const params = req.parameters.permit(OrderModel.USER_CREATABLE_PARAMETERS).value();
       let promoApplication: any = {};
       if (params.appliedVoucherId) {
@@ -81,6 +82,7 @@ class OrderController {
         }
         promoApplication = voucher;
       }
+      if (currentUser) params.orderableId = currentUser.id;
       const orderFormat: any = await OrderDecorator.formatOrder(params, promoApplication);
       const province = await MProvinceModel.scope([
         { method: ['byId', params.shippingProvinceId] },
@@ -109,6 +111,7 @@ class OrderController {
         subTotal: orderFormat.order.subTotal,
         saleChannel: OrderModel.SALE_CHANNEL.RETAIL,
         code: await OrderModel.generateOderCode(),
+        rankDiscount: orderFormat.order.rankDiscount,
         subOrders: orderFormat.order.subOrders,
       };
       sendSuccess(res, { order });

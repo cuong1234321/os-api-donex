@@ -236,6 +236,6 @@ router.post('/', authGuest, OrdersController.create);
  *     security:
  *      - Bearer: []
  */
-router.post('/view', OrdersController.show);
+router.post('/view', authGuest, OrdersController.show);
 
 export default router;
