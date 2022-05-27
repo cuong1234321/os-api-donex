@@ -100,6 +100,11 @@ class RatingModel extends Model<RatingInterface> implements RatingInterface {
         ],
       };
     },
+    byStatus (status) {
+      return {
+        where: { status },
+      };
+    },
   }
 
   public static initialize (sequelize: Sequelize) {
