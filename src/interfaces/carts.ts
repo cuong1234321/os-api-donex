@@ -16,6 +16,9 @@ interface CartInterface {
   finalAmount?: number;
   totalItems?: number;
   totalVariants?: number;
+  rankDiscount?: number;
+  voucherDiscount?: number;
+  coinDiscount?: number;
 };
 
 export default CartInterface;
