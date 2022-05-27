@@ -34,6 +34,12 @@ interface SubOrderInterface {
   coinUsed: number;
   coinDiscount: number;
   isAlreadyRating: boolean;
+  cancelReason: string;
+  cancelRequestAt: Date;
+  cancelStatus: string;
+  cancelableType: string;
+  cancelableId: number;
+  cancelRejectNote: string;
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;

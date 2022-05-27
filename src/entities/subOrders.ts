@@ -106,6 +106,24 @@ const SubOrderEntity = {
     type: DataTypes.BIGINT,
     defaultValue: 0,
   },
+  cancelReason: {
+    type: DataTypes.TEXT, allowNull: true,
+  },
+  cancelRequestAt: {
+    type: DataTypes.DATE, allowNull: true,
+  },
+  cancelStatus: {
+    type: DataTypes.ENUM({ values: ['pending', 'approved', 'rejected'] }), allowNull: true,
+  },
+  cancelableType: {
+    type: DataTypes.ENUM({ values: ['user', 'collaborator', 'agency', 'distributor'] }), allowNull: true,
+  },
+  cancelableId: {
+    type: DataTypes.INTEGER, allowNull: true,
+  },
+  cancelRejectNote: {
+    type: DataTypes.TEXT, allowNull: true,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },
