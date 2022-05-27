@@ -1,3 +1,4 @@
+import settings from '@configs/settings';
 import { DataTypes } from 'sequelize';
 
 const UserNotificationEntity = {
@@ -7,6 +8,10 @@ const UserNotificationEntity = {
   userId: {
     type: DataTypes.INTEGER,
     allowNull: false,
+  },
+  userType: {
+    type: DataTypes.ENUM({ values: ['admin', 'user', 'collaborator', 'agency', 'distributor'] }),
+    allowNull: true,
   },
   notificationTargetId: {
     type: DataTypes.INTEGER,
@@ -21,6 +26,25 @@ const UserNotificationEntity = {
   },
   content: {
     type: DataTypes.TEXT,
+  },
+  thumbnail: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+    get (): string {
+      const thumbnail = this.getDataValue('thumbnail') !== null
+        ? `${settings.imageStorageHost}/${this.getDataValue('thumbnail')}`
+        : null;
+      return thumbnail;
+    },
+    set (value: string) {
+      if (!value) return;
+      if (value.includes(settings.imageStorageHost)) {
+        const thumbnail = value.slice(settings.imageStorageHost.length + 1);
+        this.setDataValue('thumbnail', thumbnail);
+      } else {
+        this.setDataValue('thumbnail', value);
+      }
+    },
   },
   readAt: {
     type: DataTypes.DATE,

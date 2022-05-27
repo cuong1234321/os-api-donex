@@ -8,15 +8,18 @@ import MUserTypesModel from './mUserTypes';
 class UserNotificationsModel extends Model<UserNotificationsInterface> implements UserNotificationsInterface {
   public id: number;
   public userId: number;
+  public userType: string;
   public notificationTargetId: number;
   public type: string;
   public title: string;
   public content: string;
   public readAt: Date;
+  public thumbnail: string;
   public createdAt?: Date;
   public updatedAt?: Date;
 
   public static readonly TYPE_ENUM = { SYSTEM: 'system', PROMOTION: 'promotion', ORDER: 'order' }
+  public static readonly USER_TYPE_ENUM = { ADMIN: 'admin', USER: 'user', COLLABORATOR: 'collaborator', AGENCY: 'agency', DISTRIBUTOR: 'distributor' }
 
   static readonly hooks: Partial<ModelHooks<UserNotificationsModel>> = { }
 
@@ -50,6 +53,14 @@ class UserNotificationsModel extends Model<UserNotificationsInterface> implement
             ],
           },
         ],
+      };
+    },
+    byUserAble (userId, userType) {
+      return {
+        where: {
+          userId,
+          userType,
+        },
       };
     },
     withThumbnail () {

@@ -17,6 +17,10 @@ const swaggerDefinition = {
       description: 'Quản lý admin',
     },
     {
+      name: '[ADMIN] ADMIN NOTIFICATIONS',
+      description: 'Thông báo của tôi',
+    },
+    {
       name: '[ADMIN] BANNERS',
       description: 'Quản lý banners',
     },
