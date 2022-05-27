@@ -14,6 +14,7 @@ import HistoryEarnedPointRouter from './HistoryEarnedPoints';
 import MarketingNotificationsRouter from './MarketingNotifications';
 import NewsCategoryRouter from './NewsCategories';
 import NewsRouter from './News';
+import MoneyWalletChangeRouter from './MoneyWalletChanges';
 import OrderRouter from './Orders';
 import PopupRouter from './Popups';
 import ProductVariantRouter from './ProductVariants';
@@ -32,6 +33,7 @@ import SubOrderRouter from './SubOrders';
 import SellerLevelRouter from './SellerLevels';
 import SizeGuideRouter from './SizeGuides';
 import TermRouter from './Terms';
+import TopUpDepositRouter from './TopUpDeposits';
 import UserRouter from './Users';
 import UploadRouter from './Uploads';
 import VoucherApplicationRouter from './VoucherApplications';
@@ -40,6 +42,7 @@ import WarehouseReceiptRouter from './WarehouseReceipts';
 import WarehouseExportRouter from './WarehouseExports';
 import WarehouseTransferRouter from './warehouseTransfers';
 import WarehouseReportRouter from './WarehouseReports';
+import WithDrawalRequestRouter from './WithdrawalRequests';
 
 const router = Router();
 
@@ -57,6 +60,7 @@ router.use('/history_earned_points', adminPassport.authenticate('jwt', { session
 router.use('/notifications', adminPassport.authenticate('jwt', { session: false }), MarketingNotificationsRouter);
 router.use('/news_categories', adminPassport.authenticate('jwt', { session: false }), NewsCategoryRouter);
 router.use('/news', adminPassport.authenticate('jwt', { session: false }), NewsRouter);
+router.use('/money_wallet_changes', adminPassport.authenticate('jwt', { session: false }), MoneyWalletChangeRouter);
 router.use('/orders', adminPassport.authenticate('jwt', { session: false }), adminPassport.authenticate('jwt', { session: false }), OrderRouter);
 router.use('/sub_orders', adminPassport.authenticate('jwt', { session: false }), adminPassport.authenticate('jwt', { session: false }), SubOrderRouter);
 router.use('/popups', adminPassport.authenticate('jwt', { session: false }), PopupRouter);
@@ -75,6 +79,7 @@ router.use('/selections', SelectionRouter);
 router.use('/seller_levels', adminPassport.authenticate('jwt', { session: false }), SellerLevelRouter);
 router.use('/size_guides', adminPassport.authenticate('jwt', { session: false }), SizeGuideRouter);
 router.use('/terms', adminPassport.authenticate('jwt', { session: false }), TermRouter);
+router.use('/top_up_deposits', adminPassport.authenticate('jwt', { session: false }), TopUpDepositRouter);
 router.use('/users', adminPassport.authenticate('jwt', { session: false }), UserRouter);
 router.use('/uploads', adminPassport.authenticate('jwt', { session: false }), UploadRouter);
 router.use('/voucher_applications', adminPassport.authenticate('jwt', { session: false }), VoucherApplicationRouter);
@@ -84,5 +89,6 @@ router.use('/warehouse_exports', adminPassport.authenticate('jwt', { session: fa
 router.use('/warehouse_transfers', adminPassport.authenticate('jwt', { session: false }), WarehouseTransferRouter);
 router.use('/warehouse_reports', adminPassport.authenticate('jwt', { session: false }), WarehouseReportRouter);
 router.use('/warehouse_transfers', adminPassport.authenticate('jwt', { session: false }), WarehouseTransferRouter);
+router.use('/withdrawal_requests', adminPassport.authenticate('jwt', { session: false }), WithDrawalRequestRouter);
 
 export default router;

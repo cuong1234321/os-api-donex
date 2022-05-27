@@ -169,6 +169,10 @@ const swaggerDefinition = {
       description: 'Báo cáo tồn kho',
     },
     {
+      name: '[ADMIN] WITHDRAWAL REQUESTS',
+      description: 'Danh sách yêu cầu rút tiền',
+    },
+    {
       name: '[USER] ACCOUNTS',
       description: 'Quản lý tài khoản user',
     },
@@ -327,6 +331,10 @@ const swaggerDefinition = {
     {
       name: '[SELLER] SIZE GUIDES',
       description: 'size',
+    },
+    {
+      name: '[SELLER] WITHDRAWAL REQUESTS',
+      description: 'Danh sách yêu cầu rút tiền',
     },
   ],
   securityDefinitions: {

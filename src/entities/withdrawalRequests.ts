@@ -10,7 +10,7 @@ const WithdrawalRequestEntity = {
   ownerId: {
     type: DataTypes.STRING, allowNull: true,
   },
-  userBankId: {
+  ownerBankId: {
     type: DataTypes.STRING, allowNull: true,
   },
   amount: {
