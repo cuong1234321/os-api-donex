@@ -75,6 +75,32 @@ class SubOrderController {
       sendError(res, 500, error.message, error);
     }
   }
+
+  public async approveCancel (req: Request, res: Response) {
+    try {
+      const subOrder = await SubOrderModel.scope([
+        { method: ['byCancelStatus', SubOrderModel.CANCEL_STATUS.PENDING] },
+      ]).findByPk(req.params.subOrderId);
+      if (!subOrder) return sendError(res, 404, NoData);
+      await subOrder.update({ cancelStatus: SubOrderModel.CANCEL_STATUS.APPROVED, status: SubOrderModel.STATUS_ENUM.CANCEL }, { hooks: false, validate: false });
+      sendSuccess(res, { subOrder });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async rejectCancel (req: Request, res: Response) {
+    try {
+      const subOrder = await SubOrderModel.scope([
+        { method: ['byCancelStatus', SubOrderModel.CANCEL_STATUS.PENDING] },
+      ]).findByPk(req.params.subOrderId);
+      if (!subOrder) return sendError(res, 404, NoData);
+      await subOrder.update({ cancelStatus: SubOrderModel.CANCEL_STATUS.REJECTED, cancelRejectNote: req.body.cancelRejectNote }, { hooks: false, validate: false });
+      sendSuccess(res, { subOrder });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
 }
 
 export default new SubOrderController();

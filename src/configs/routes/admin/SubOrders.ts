@@ -107,4 +107,54 @@ router.patch('/:subOrderId', (req: Request, res: Response) => SubOrderController
  */
 router.get('/:subOrderId/bill', (req: Request, res: Response) => SubOrderController.showBill(req, res));
 
+/**
+ * @openapi
+ * /a/sub_orders/{subOrderId}/approve_cancel:
+ *   patch:
+ *     tags:
+ *      - "[ADMIN] SUB ORDERS"
+ *     summary: Xác nhận hủy hàng
+ *     parameters:
+ *      - in: "path"
+ *        name: "subOrderId"
+ *        type: "integer"
+ *     responses:
+ *       200:
+ *         description: "Success"
+ *       500:
+ *        description: Internal error
+ *     security:
+ *      - Bearer: []
+ */
+router.patch('/:subOrderId/approve_cancel', SubOrderController.approveCancel);
+
+/**
+  * @openapi
+  * /a/sub_orders/{subOrderId}/reject_cancel:
+  *   patch:
+  *     tags:
+  *      - "[ADMIN] SUB ORDERS"
+  *     summary: Từ chối hủy hàng
+  *     parameters:
+  *      - in: "path"
+  *        name: "subOrderId"
+  *        type: "integer"
+  *      - in: "body"
+  *        name: "body"
+  *        schema:
+  *          type: "object"
+  *          properties:
+  *            cancelRejectNote:
+  *              type: "string"
+  *              description: "Lý do từ chối"
+  *     responses:
+  *       200:
+  *         description: "Success"
+  *       500:
+  *        description: Internal error
+  *     security:
+  *      - Bearer: []
+  */
+router.patch('/:subOrderId/reject_cancel', SubOrderController.rejectCancel);
+
 export default router;

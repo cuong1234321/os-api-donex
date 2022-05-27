@@ -3,6 +3,7 @@ import settings from '@configs/settings';
 import { sendError, sendSuccess } from '@libs/response';
 import SubOrderModel from '@models/subOrders';
 import { Request, Response } from 'express';
+import dayjs from 'dayjs';
 
 class SubOrderController {
   public async show (req: Request, res: Response) {
@@ -38,6 +39,42 @@ class SubOrderController {
       ];
       const subOrders = await SubOrderModel.scope(scopes).findAndCountAll({ limit, offset, distinct: true, col: 'SubOrderModel.id' });
       sendSuccess(res, { subOrders: subOrders.rows, pagination: { total: subOrders.count, page, perPage: limit } });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async cancel (req: Request, res: Response) {
+    try {
+      const currentSeller = req.currentSeller;
+      const { cancelReason } = req.body;
+      const subOrder = await SubOrderModel.scope([
+        { method: ['byOrderAble', currentSeller.id, currentSeller.type] },
+        { method: ['byStatus', [SubOrderModel.STATUS_ENUM.PENDING, SubOrderModel.STATUS_ENUM.DRAFT, SubOrderModel.STATUS_ENUM.WATING_TO_TRANSFER]] },
+      ]).findByPk(req.params.subOrderId);
+      if (!subOrder) return sendError(res, 404, NoData);
+      if (subOrder.status === SubOrderModel.STATUS_ENUM.PENDING || subOrder.status === SubOrderModel.STATUS_ENUM.DRAFT) {
+        await subOrder.update({
+          status: SubOrderModel.STATUS_ENUM.CANCEL,
+          cancelStatus: SubOrderModel.CANCEL_STATUS.APPROVED,
+          cancelReason,
+          cancelRequestAt: dayjs(),
+          cancelableType: currentSeller.type,
+          cancelableId: currentSeller.id,
+        },
+        { validate: false, hooks: false },
+        );
+      } else {
+        await subOrder.update({
+          cancelStatus: SubOrderModel.CANCEL_STATUS.PENDING,
+          cancelReason,
+          cancelRequestAt: dayjs(),
+          cancelableType: currentSeller.type,
+          cancelableId: currentSeller.id,
+        },
+        { validate: false, hooks: false });
+      }
+      sendSuccess(res, subOrder);
     } catch (error) {
       sendError(res, 500, error.message, error);
     }

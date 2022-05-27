@@ -43,6 +43,12 @@ public voucherDiscount: number;
 public coinUsed: number;
 public coinDiscount: number;
 public isAlreadyRating: boolean;
+public cancelReason: string;
+public cancelRequestAt: Date;
+public cancelStatus: string;
+public cancelableType: string;
+public cancelableId: number;
+public cancelRejectNote: string;
 public createdAt?: Date;
 public updatedAt?: Date;
 public deletedAt?: Date;
@@ -50,7 +56,9 @@ public deletedAt?: Date;
 public warehouse?: WarehouseModel;
 public items?: OrderItemModel[];
 
-static readonly STATUS_ENUM = { DRAFT: 'draft', PENDING: 'pending', CANCEL: 'cancel', REJECT: 'reject' }
+static readonly STATUS_ENUM = { DRAFT: 'draft', PENDING: 'pending', WATING_TO_TRANSFER: 'waitingToTransfer', CANCEL: 'cancel', REJECT: 'reject' }
+static readonly CANCEL_STATUS = { PENDING: 'pending', APPROVED: 'approved', REJECTED: 'rejected' }
+static readonly CANCELABLE_TYPE_ENUM = { USER: 'user', COLLABORATOR: 'collaborator', AGENCY: 'agency', DISTRIBUTOR: 'distributor' };
 
 static readonly UPDATABLE_ON_DUPLICATE_PARAMETERS = ['id', 'warehouseId', 'weight', 'length', 'width', 'height', 'pickUpAt', 'shippingFeeMisa',
   'shippingFee', 'deposit', 'deliveryType', 'deliveryInfo', 'note', 'shippingType', 'shippingAttributeType', 'subTotal', 'total'];
@@ -572,6 +580,13 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
             },
           },
         ],
+      };
+    },
+    byCancelStatus (status) {
+      return {
+        where: {
+          cancelStatus: status,
+        },
       };
     },
   }

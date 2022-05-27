@@ -51,4 +51,35 @@ router.get('/purchase_report', (req: Request, res: Response) => SubOrderControll
  */
 router.get('/:subOrderId', (req: Request, res: Response) => SubOrderController.show(req, res));
 
+/**
+ * @openapi
+ * /s/sub_orders/{subOrderId}/cancel:
+ *   patch:
+ *     tags:
+ *      - "[SELLER] SUB ORDERS"
+ *     summary: huy sub order
+ *     parameters:
+ *      - in: path
+ *        name: "subOrderId"
+ *        description: ""
+ *        type: number
+ *      - in: "body"
+ *        name: "body"
+ *        description: "ly do huy don"
+ *        schema:
+ *          type: "object"
+ *          properties:
+ *            cancelReason:
+ *              type: "string"
+ *              description: "ly do huy don"
+ *     responses:
+ *       200:
+ *         description: "OK"
+ *       500:
+ *         description: "Internal error"
+ *     security:
+ *      - Bearer: []
+ */
+router.patch('/:subOrderId/cancel', SubOrderController.cancel);
+
 export default router;
