@@ -277,4 +277,69 @@ router.get('/:orderId/sub_orders/:subOrderId', (req: Request, res: Response) => 
  */
 router.post('/', (req: Request, res: Response) => OrderController.create(req, res));
 
+/**
+ * @openapi
+ * /s/orders/calculator_ranks:
+ *   post:
+ *     tags:
+ *      - "[SELLER] ORDERS"
+ *     summary: tinh chiet khau theo hang khach hang
+ *     parameters:
+ *      - in: "body"
+ *        name: "body"
+ *        description: "Thông tin order"
+ *        schema:
+ *          type: "object"
+ *          properties:
+ *            totalPrice:
+ *              type: "number"
+ *              description: "tong gia"
+ *     responses:
+ *       200:
+ *         description: "OK"
+ *       500:
+ *         description: "Internal error"
+ *     security:
+ *      - Bearer: []
+ */
+router.post('/calculator_ranks', (req: Request, res: Response) => OrderController.calculatorRankDiscount(req, res));
+
+/**
+  * @openapi
+  * /s/orders/calculator_vouchers:
+  *   post:
+  *     tags:
+  *      - "[SELLER] ORDERS"
+  *     summary: Tinh gia tri giam gia cho voucher
+  *     parameters:
+  *      - in: "body"
+  *        name: "body"
+  *        description: "Thông tin order"
+  *        schema:
+  *          type: "object"
+  *          properties:
+  *            appliedVoucherId:
+  *              type: "number"
+  *              description: "id voucher user"
+  *            totalPrice:
+  *              type: "number"
+  *              description: "tong gia"
+  *            paymentMethod:
+  *              type: "string"
+  *              description: "phuong thuc thanh toan"
+  *              enum:
+  *               - banking
+  *               - COD
+  *               - vnPay
+  *               - wallet
+  *     responses:
+  *       200:
+  *         description: "OK"
+  *       500:
+  *         description: "Internal error"
+  *     security:
+  *      - Bearer: []
+  */
+router.post('/calculator_vouchers', (req: Request, res: Response) => OrderController.calculatorVoucher(req, res));
+
 export default router;

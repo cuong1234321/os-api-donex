@@ -108,7 +108,7 @@ class CartDecorator {
   private static applyBasicRankUser (totalQuantity: number, totalPrice: number, basicConditions: any) {
     let rankDiscount = 0;
     if (basicConditions.length === 0) return rankDiscount;
-    const basicRankCondition = basicConditions.find((record: any) => record.orderAmountFrom < totalQuantity && (record.orderAmountTo || 999999999) > totalQuantity);
+    const basicRankCondition = basicConditions.find((record: any) => record.orderAmountFrom <= totalQuantity && (record.orderAmountTo || 999999999) >= totalQuantity);
     if (!basicRankCondition) return rankDiscount;
     rankDiscount = totalPrice * basicRankCondition.discountValue / 100;
     return rankDiscount;
@@ -125,7 +125,7 @@ class CartDecorator {
     if (vipRank.dateEarnDiscount.includes(dayjs().format('DD'))) {
       const vipConditions = await vipRank.getConditions();
       if (vipConditions.length === 0) return rankDiscount;
-      const vipRankCondition = vipConditions.find((record: any) => record.orderAmountFrom < totalQuantity && (record.orderAmountTo || 9999999) > totalQuantity);
+      const vipRankCondition = vipConditions.find((record: any) => record.orderAmountFrom <= totalQuantity && (record.orderAmountTo || 9999999) >= totalQuantity);
       if (!vipRankCondition) return rankDiscount;
       rankDiscount = totalPrice * vipRankCondition.discountValue / 100;
     } else {
