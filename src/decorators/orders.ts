@@ -1,10 +1,13 @@
 import OrderModel from '@models/orders';
 import ProductVariantModel from '@models/productVariants';
+import RankModel from '@models/ranks';
 import SaleCampaignModel from '@models/saleCampaigns';
 import SubOrderModel from '@models/subOrders';
 import SystemSettingModel from '@models/systemSetting';
+import UserModel from '@models/users';
 import VoucherConditionModel from '@models/voucherConditions';
 import WarehouseModel from '@models/warehouses';
+import dayjs from 'dayjs';
 import SaleCampaignProductDecorator from './saleCampaignProducts';
 
 class OrderDecorator {
@@ -98,6 +101,7 @@ class OrderDecorator {
       order.subTotal = order.subTotal + subOrder.subTotal;
     }
     order.total = total;
+    order = await this.applyRankDiscount(order, total, order.subTotal);
     return { order };
   }
 
@@ -149,6 +153,64 @@ class OrderDecorator {
       applicationDiscount = subtotal * (applicationCondition.discountValue / 100);
     };
     return applicationDiscount;
+  }
+
+  private static async applyRankDiscount (order: any, totalQuantity: number, totalPrice: number) {
+    order.rankDiscount = 0;
+    const user = await UserModel.findByPk(order.orderableId, { paranoid: false });
+    if (!user) return order;
+    const basicRank = (await RankModel.findOrCreate({
+      where: {
+        type: RankModel.TYPE_ENUM.BASIC,
+      },
+      defaults: { id: undefined, type: RankModel.TYPE_ENUM.BASIC },
+    }))[0];
+    const basicConditions = await basicRank.getConditions();
+    if (user.getDataValue('rank') === UserModel.RANK_ENUM.BASIC) {
+      order = this.applyBasicRankUser(order, totalQuantity, totalPrice, basicConditions);
+    } else if (user.getDataValue('rank') === UserModel.RANK_ENUM.VIP) {
+      order = await this.applyVipRankUser(order, totalQuantity, totalPrice, basicConditions);
+    }
+    return order;
+  }
+
+  private static applyBasicRankUser (order: any, totalQuantity: number, totalPrice: number, basicConditions: any) {
+    if (basicConditions.length === 0) return order;
+    const basicRankCondition = basicConditions.find((record: any) => record.orderAmountFrom < totalQuantity && (record.orderAmountTo || 999999999) > totalQuantity);
+    if (!basicRankCondition) return order;
+    const rankDiscount = totalPrice * basicRankCondition.discountValue / 100;
+    order.rankDiscount = rankDiscount;
+    if (order.subOrders) {
+      order.subOrders.forEach((subOrder: any) => {
+        subOrder.rankDiscount = subOrder.subTotal / totalPrice * rankDiscount;
+      });
+    }
+    return order;
+  }
+
+  private static async applyVipRankUser (order: any, totalQuantity: number, totalPrice: number, basicConditions: any) {
+    const vipRank = (await RankModel.findOrCreate({
+      where: {
+        type: RankModel.TYPE_ENUM.VIP,
+      },
+      defaults: { id: undefined, type: RankModel.TYPE_ENUM.VIP },
+    }))[0];
+    if (vipRank.dateEarnDiscount.includes(dayjs().format('DD'))) {
+      const vipConditions = await vipRank.getConditions();
+      if (vipConditions.length === 0) return order;
+      const vipRankCondition = vipConditions.find((record: any) => record.orderAmountFrom < totalQuantity && (record.orderAmountTo || 9999999) > totalQuantity);
+      if (!vipRankCondition) return order;
+      const rankDiscount = totalPrice * vipRankCondition.discountValue / 100;
+      order.rankDiscount = rankDiscount;
+      if (order.subOrders) {
+        order.subOrders.forEach((subOrder: any) => {
+          subOrder.rankDiscount = subOrder.subTotal / totalPrice * rankDiscount;
+        });
+      }
+    } else {
+      order = this.applyBasicRankUser(order, totalQuantity, totalPrice, basicConditions);
+    }
+    return order;
   }
 }
 
