@@ -1,8 +1,11 @@
+import RankModel from '@models/ranks';
 import SystemSettingModel from '@models/systemSetting';
+import UserModel from '@models/users';
 import VoucherConditionModel from '@models/voucherConditions';
+import dayjs from 'dayjs';
 
 class CartDecorator {
-  public static async formatCart (warehouses: any, promoApplication: any, coins: number) {
+  public static async formatCart (userId: any, warehouses: any, promoApplication: any, coins: number) {
     const systemSetting: any = (await SystemSettingModel.findOrCreate({
       where: { },
       defaults: { id: undefined },
@@ -11,6 +14,7 @@ class CartDecorator {
     let subTotal = 0;
     let total = 0;
     let coinDiscount = 0;
+    let totalPrice = 0;
     if (coins) {
       coinDiscount = coins ? (systemSetting.coinConversionLevel * coins) : 0;
     }
@@ -24,9 +28,11 @@ class CartDecorator {
         cartItem.setDataValue('subTotal', cartItem.getDataValue('variants').getDataValue('saleCampaignPrice') * cartItem.getDataValue('quantity'));
         cartItem.setDataValue('voucherDiscount', 0);
         cartSubTotal = cartSubTotal + cartItem.getDataValue('subTotal');
+        totalPrice = totalPrice + cartItem.getDataValue('subTotal');
         total = total + cartItem.get('quantity');
       }
     }
+    const rankDiscount = await this.applyRankDiscount(userId, total, totalPrice);
     const applicationDiscount: number = await this.calculatorOrderDiscount(promoApplication, cartSubTotal);
     for (const warehouse of warehouses) {
       for (const cartItem of warehouse.getDataValue('cartItems')) {
@@ -51,6 +57,7 @@ class CartDecorator {
       subTotal,
       total,
       cartSubTotal,
+      rankDiscount,
       coinDiscount: systemSetting.coinConversionLevel * coins,
     };
     return cart;
@@ -77,6 +84,54 @@ class CartDecorator {
       applicationDiscount = subtotal * (applicationCondition.discountValue / 100);
     };
     return applicationDiscount;
+  }
+
+  private static async applyRankDiscount (cartableId: any, totalQuantity: number, totalPrice: number) {
+    let rankDiscount = 0;
+    const user = await UserModel.findByPk(cartableId);
+    if (!user) return rankDiscount;
+    const basicRank = (await RankModel.findOrCreate({
+      where: {
+        type: RankModel.TYPE_ENUM.BASIC,
+      },
+      defaults: { id: undefined, type: RankModel.TYPE_ENUM.BASIC },
+    }))[0];
+    const basicConditions = await basicRank.getConditions();
+    if (user.getDataValue('rank') === UserModel.RANK_ENUM.BASIC) {
+      rankDiscount = this.applyBasicRankUser(totalQuantity, totalPrice, basicConditions);
+    } else if (user.getDataValue('rank') === UserModel.RANK_ENUM.VIP) {
+      rankDiscount = await this.applyVipRankUser(totalQuantity, totalPrice, basicConditions);
+    }
+    return rankDiscount;
+  }
+
+  private static applyBasicRankUser (totalQuantity: number, totalPrice: number, basicConditions: any) {
+    let rankDiscount = 0;
+    if (basicConditions.length === 0) return rankDiscount;
+    const basicRankCondition = basicConditions.find((record: any) => record.orderAmountFrom < totalQuantity && (record.orderAmountTo || 999999999) > totalQuantity);
+    if (!basicRankCondition) return rankDiscount;
+    rankDiscount = totalPrice * basicRankCondition.discountValue / 100;
+    return rankDiscount;
+  }
+
+  private static async applyVipRankUser (totalQuantity: number, totalPrice: number, basicConditions: any) {
+    let rankDiscount = 0;
+    const vipRank = (await RankModel.findOrCreate({
+      where: {
+        type: RankModel.TYPE_ENUM.VIP,
+      },
+      defaults: { id: undefined, type: RankModel.TYPE_ENUM.VIP },
+    }))[0];
+    if (vipRank.dateEarnDiscount.includes(dayjs().format('DD'))) {
+      const vipConditions = await vipRank.getConditions();
+      if (vipConditions.length === 0) return rankDiscount;
+      const vipRankCondition = vipConditions.find((record: any) => record.orderAmountFrom < totalQuantity && (record.orderAmountTo || 9999999) > totalQuantity);
+      if (!vipRankCondition) return rankDiscount;
+      rankDiscount = totalPrice * vipRankCondition.discountValue / 100;
+    } else {
+      rankDiscount = this.applyBasicRankUser(totalQuantity, totalPrice, basicConditions);
+    }
+    return rankDiscount;
   }
 }
 

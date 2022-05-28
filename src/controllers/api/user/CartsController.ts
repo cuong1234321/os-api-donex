@@ -49,14 +49,17 @@ class CartController {
       const saleCampaigns = await this.getSaleCampaigns('USER');
       cartItems = await SaleCampaignProductDecorator.calculatorVariantPrice(cartItems, saleCampaigns);
       const { warehouses }: any = await this.groupByWarehouse(cartItems);
-      const result = await CartDecorator.formatCart(warehouses, promoApplication, parseInt(coins as string));
+      const result = await CartDecorator.formatCart(currentUser?.id, warehouses, promoApplication, parseInt(coins as string));
       cart.setDataValue('warehouses', result.warehouses);
       cart.setDataValue('totalBill', result.cartSubTotal);
-      cart.setDataValue('totalDiscount', result.applicationDiscount + result.coinDiscount);
+      cart.setDataValue('totalDiscount', result.applicationDiscount + (result.coinDiscount || 0) + result.rankDiscount);
       cart.setDataValue('totalFee', totalFee);
       cart.setDataValue('totalTax', totalTax);
       cart.setDataValue('finalAmount', result.subTotal);
       cart.setDataValue('totalVariants', result.total);
+      cart.setDataValue('rankDiscount', result.rankDiscount);
+      cart.setDataValue('voucherDiscount', result.applicationDiscount);
+      cart.setDataValue('coinDiscount', result.coinDiscount || 0);
       sendSuccess(res, { cart });
     } catch (error) {
       sendError(res, 500, error.message, error);
