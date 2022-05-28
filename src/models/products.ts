@@ -529,6 +529,19 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
         },
       };
     },
+    withRatingSummary () {
+      return {
+        attributes: {
+          include: [
+            [Sequelize.cast(Sequelize.literal('(SELECT COUNT(*) FROM ratings WHERE ratings.status = "active" and productVariantId IN (SELECT id from product_variants WHERE productId = ProductModel.id) AND ROUND(point) = 1)'), 'SIGNED'), 'ratingOneStar'],
+            [Sequelize.cast(Sequelize.literal('(SELECT COUNT(*) FROM ratings WHERE ratings.status = "active" and productVariantId IN (SELECT id from product_variants WHERE productId = ProductModel.id) AND ROUND(point) = 2)'), 'SIGNED'), 'ratingTowStar'],
+            [Sequelize.cast(Sequelize.literal('(SELECT COUNT(*) FROM ratings WHERE ratings.status = "active" and productVariantId IN (SELECT id from product_variants WHERE productId = ProductModel.id) AND ROUND(point) = 3)'), 'SIGNED'), 'ratingThereStar'],
+            [Sequelize.cast(Sequelize.literal('(SELECT COUNT(*) FROM ratings WHERE ratings.status = "active" and productVariantId IN (SELECT id from product_variants WHERE productId = ProductModel.id) AND ROUND(point) = 4)'), 'SIGNED'), 'ratingFourStar'],
+            [Sequelize.cast(Sequelize.literal('(SELECT COUNT(*) FROM ratings WHERE ratings.status = "active" and productVariantId IN (SELECT id from product_variants WHERE productId = ProductModel.id) AND ROUND(point) = 5)'), 'SIGNED'), 'ratingFiveStar'],
+          ],
+        },
+      };
+    },
   }
 
   public getVariants: HasManyGetAssociationsMixin<ProductVariantModel>;

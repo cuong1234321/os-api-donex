@@ -108,7 +108,7 @@ class RatingModel extends Model<RatingInterface> implements RatingInterface {
     byPoint (point) {
       return {
         where: {
-          point: { [Op.gte]: point },
+          point: { [Op.eq]: point },
         },
       };
     },

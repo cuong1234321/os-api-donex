@@ -66,6 +66,7 @@ class ProductController {
         'withPriceRange',
         'isActive',
         'withAverageRating',
+        'withRatingSummary',
       ];
       if (currentUser) scopes.push({ method: ['isFavorite', currentUser.id] });
       let product: any = await ProductModel.scope(scopes).findOne();
