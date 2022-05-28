@@ -304,6 +304,10 @@ const swaggerDefinition = {
       name: '[SELLER] SELLER BANKS',
       description: 'Quản lý tài khoản ngân hàng của seller',
     },
+    {
+      name: '[SELLER] SELLER NOTIFICATIONS',
+      description: 'Thông báo của tôi',
+    },
   ],
   securityDefinitions: {
     Bearer: {
