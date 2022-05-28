@@ -70,6 +70,8 @@ class ProductController {
         'withCategories',
         'withProductType',
         'withGender',
+        'withRatingSummary',
+        'withAverageRating',
         { method: ['byStatus', ProductModel.STATUS_ENUM.ACTIVE] },
       ]).findOne();
       if (!product) {
