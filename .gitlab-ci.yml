@@ -11,8 +11,7 @@ build:
   script:
     - echo $IMAGE_TAG-$CI_COMMIT_SHORT_SHA
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - DOCKER_BUILDKIT=1 docker build -t $IMAGE_TAG -t $IMAGE_TAG-$CI_COMMIT_SHORT_SHA -f dockerfiles/Prod/Dockerfile .
-    - docker push $IMAGE_TAG-$CI_COMMIT_SHORT_SHA
+    - DOCKER_BUILDKIT=1 docker build -t $IMAGE_TAG -f dockerfiles/Prod/Dockerfile .
     - docker push $IMAGE_TAG
   only:
     - develop
@@ -21,7 +20,6 @@ build:
 deploy_develop:
   stage: deploy
   script:
-    - echo image_tag $IMAGE_TAG ci_commit $CI_COMMIT_SHORT_SHA
     - curl -XPOST $WWW_WEBHOOK
   environment:
     name: develop
