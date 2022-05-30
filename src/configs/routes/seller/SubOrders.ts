@@ -31,6 +31,32 @@ router.get('/purchase_report', (req: Request, res: Response) => SubOrderControll
 
 /**
  * @openapi
+ * /s/sub_orders/affiliate_report:
+ *   get:
+ *     tags:
+ *      - "[SELLER] SUB ORDERS"
+ *     summary: bao cao don affiliate
+ *     parameters:
+ *      - in: query
+ *        name: "fromDate"
+ *        description: ""
+ *        type: string
+ *      - in: query
+ *        name: "toDate"
+ *        description: ""
+ *        type: string
+ *     responses:
+ *       200:
+ *         description: "OK"
+ *       500:
+ *         description: "Internal error"
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/affiliate_report', (req: Request, res: Response) => SubOrderController.affiliateReport(req, res));
+
+/**
+ * @openapi
  * /s/sub_orders/{subOrderId}:
  *   get:
  *     tags:

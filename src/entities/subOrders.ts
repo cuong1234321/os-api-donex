@@ -127,6 +127,9 @@ const SubOrderEntity = {
   tax: {
     type: DataTypes.INTEGER, defaultValue: 0,
   },
+  affiliateDiscount: {
+    type: DataTypes.INTEGER, defaultValue: 0,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },

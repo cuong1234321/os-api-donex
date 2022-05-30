@@ -33,6 +33,7 @@ interface OrderInterface {
   status: string;
   rankDiscount: number;
   transportUnit: string;
+  referralCode: string;
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;
