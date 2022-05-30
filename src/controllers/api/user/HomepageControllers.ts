@@ -1,8 +1,10 @@
 import settings from '@configs/settings';
+import SaleCampaignProductDecorator from '@decorators/saleCampaignProducts';
 import { sendError, sendSuccess } from '@libs/response';
 import NewsModel from '@models/news';
 import ProductCategoryModel from '@models/productCategories';
 import ProductModel from '@models/products';
+import SaleCampaignModel from '@models/saleCampaigns';
 import { Request, Response } from 'express';
 
 class HomepageController {
@@ -27,27 +29,38 @@ class HomepageController {
       'withThumbnail',
       'isActive',
       'isFlashSale',
+      'withVariants',
     ];
     const scopeNew: any = [
       'withPrice',
       'withThumbnail',
       'isActive',
       'newest',
+      'withVariants',
     ];
     const scopeHighlight: any = [
       'withPrice',
       'withThumbnail',
       'isActive',
       'isHighlight',
+      'withVariants',
     ];
     if (currentUser) {
       scopeFlashSale.push({ method: ['isFavorite', currentUser.id] });
       scopeNew.push({ method: ['isFavorite', currentUser.id] });
       scopeHighlight.push({ method: ['isFavorite', currentUser.id] });
     }
-    const flashSaleProducts = await ProductModel.scope(scopeFlashSale).findAll({ limit: parseInt(settings.defaultPerPage) });
-    const newProducts = await ProductModel.scope(scopeNew).findAll({ limit: parseInt(settings.defaultPerPage) });
-    const highLightProducts = await ProductModel.scope(scopeHighlight).findAll({ limit: parseInt(settings.defaultPerPage) });
+    let flashSaleProducts = await ProductModel.scope(scopeFlashSale).findAll({ limit: parseInt(settings.defaultPerPage) });
+    let newProducts = await ProductModel.scope(scopeNew).findAll({ limit: parseInt(settings.defaultPerPage) });
+    let highLightProducts = await ProductModel.scope(scopeHighlight).findAll({ limit: parseInt(settings.defaultPerPage) });
+    const saleCampaigns = await SaleCampaignModel.scope([
+      'isAbleToUse',
+      'withProductVariant',
+      'isApplyToUser',
+    ]).findAll();
+    flashSaleProducts = await SaleCampaignProductDecorator.calculatorVariantPrice(flashSaleProducts, saleCampaigns);
+    newProducts = await SaleCampaignProductDecorator.calculatorVariantPrice(newProducts, saleCampaigns);
+    highLightProducts = await SaleCampaignProductDecorator.calculatorVariantPrice(highLightProducts, saleCampaigns);
     return { flashSaleProducts, newProducts, highLightProducts };
   }
 
