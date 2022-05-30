@@ -37,6 +37,15 @@ class WarehouseModel extends Model<WarehouseInterface> implements WarehouseInter
   public ward?: MWardModel;
   public district?: MDistrictModel;
   public ghnDistrictId?: number;
+  public totalBill?: number;
+  public totalFee?: number;
+  public totalTax?: number;
+  public coinDiscount?: number;
+  public voucherDiscount?: number;
+  public rankDiscount?: number;
+  public dailyDiscount?: number;
+  public totalDiscount?: number;
+  public finalAmount?: number;
 
   static readonly CREATABLE_PARAMETERS = ['name', 'type', 'description', 'code', 'wardId', 'districtId', 'provinceId', 'address', 'phoneNumber', 'warehouseManager']
   static readonly UPDATABLE_PARAMETERS = ['name', 'type', 'description', 'code', 'status', 'wardId', 'districtId', 'provinceId', 'address', 'phoneNumber', 'warehouseManager']
@@ -177,14 +186,17 @@ class WarehouseModel extends Model<WarehouseInterface> implements WarehouseInter
           {
             model: MProvinceModel,
             as: 'province',
+            attributes: { exclude: ['createdAt', 'updatedAt'] },
           },
           {
             model: MDistrictModel,
             as: 'district',
+            attributes: { exclude: ['createdAt', 'updatedAt'] },
           },
           {
             model: MWardModel,
             as: 'ward',
+            attributes: { exclude: ['createdAt', 'updatedAt'] },
           },
         ],
       };

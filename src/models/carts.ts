@@ -17,6 +17,15 @@ class CartModel extends Model<CartInterface> implements CartInterface {
   public finalAmount?: number;
   public totalVariants?: number;
 
+  public static readonly CREATABLE_PARAMETERS = [
+    'coins', 'voucherId', 'paymentMethod', 'transportUnit', 'districtId', 'provinceId', 'wardId',
+    {
+      cartItems: [
+        'warehouseId', 'productVariantIds',
+      ],
+    },
+  ]
+
   static readonly hooks: Partial<ModelHooks<CartModel>> = {
   }
 

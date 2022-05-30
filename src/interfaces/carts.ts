@@ -19,6 +19,7 @@ interface CartInterface {
   rankDiscount?: number;
   voucherDiscount?: number;
   coinDiscount?: number;
+  dailyDiscount?: number;
 };
 
 export default CartInterface;

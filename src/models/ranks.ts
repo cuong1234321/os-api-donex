@@ -61,6 +61,25 @@ class RankModel extends Model<RankInterface> implements RankInterface {
         },
       };
     },
+    byCondition (totalQuantity) {
+      return {
+        include: [{
+          model: RankConditionModel,
+          as: 'conditions',
+          where: { orderAmountTo: { [Op.lte]: totalQuantity } },
+        }],
+        order: [['conditions', 'orderAmountTo', 'DESC']],
+      };
+    },
+    byDateEarnDiscount (dateEarnDiscount) {
+      return {
+        where: {
+          [Op.or]: [
+            Sequelize.literal(`FIND_IN_SET('${dateEarnDiscount}', REPLACE(REPLACE(REPLACE(RankModel.dateEarnDiscount, '[', ''), ']', ''), '"', '')) <> 0`),
+          ],
+        },
+      };
+    },
   }
 
   public static initialize (sequelize: Sequelize) {
