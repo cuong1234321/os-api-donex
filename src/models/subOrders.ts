@@ -49,6 +49,7 @@ public cancelStatus: string;
 public cancelableType: string;
 public cancelableId: number;
 public cancelRejectNote: string;
+public tax: number;
 public createdAt?: Date;
 public updatedAt?: Date;
 public deletedAt?: Date;
@@ -482,7 +483,7 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
         attributes: {
           include: [
             [
-              Sequelize.literal('(SELECT (subTotal + shippingFee - deposit - rankDiscount) FROM sub_orders WHERE id = SubOrderModel.id)'),
+              Sequelize.literal('(SELECT (subTotal + shippingFee + tax - deposit - rankDiscount - voucherDiscount) FROM sub_orders WHERE id = SubOrderModel.id)'),
               'finalAmount',
             ],
           ],

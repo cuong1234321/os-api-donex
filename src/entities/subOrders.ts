@@ -124,6 +124,9 @@ const SubOrderEntity = {
   cancelRejectNote: {
     type: DataTypes.TEXT, allowNull: true,
   },
+  tax: {
+    type: DataTypes.INTEGER, defaultValue: 0,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },
