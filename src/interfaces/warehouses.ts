@@ -21,6 +21,11 @@ interface WarehouseInterface {
   cartItems?: CartItemInterface[];
   totalBill?: number;
   totalFee?: number;
+  totalTax?: number;
+  coinDiscount?: number;
+  voucherDiscount?: number;
+  rankDiscount?: number;
+  dailyDiscount?: number;
   totalDiscount?: number;
   finalAmount?: number;
   warehouseVariants?: WarehouseVariantInterface[];

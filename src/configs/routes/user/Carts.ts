@@ -6,44 +6,56 @@ const router = Router();
 /**
  * @openapi
  * /u/carts:
- *   get:
+ *   post:
  *     tags:
  *      - "[USER] CARTS"
  *     summary: Chi tiết giỏ hàng
  *     parameters:
- *      - in: "query"
- *        type: "number"
- *        name: "coins"
- *        description: "điểm thưởng"
- *      - in: "query"
- *        type: "number"
- *        name: "voucherId"
- *        description: "id voucher"
- *      - in: "query"
- *        type: "number"
- *        name: "wardId"
- *        description: "id ward"
- *      - in: "query"
- *        type: "number"
- *        name: "districtId"
- *        description: "id district"
- *      - in: "query"
- *        type: "number"
- *        name: "provinceId"
- *        description: "id province"
- *      - in: "query"
- *        type: "number"
- *        name: "address"
- *        description: "id province"
- *      - in: "query"
- *        type: "string"
- *        name: "paymentMethod"
- *        description: "Phương thức thanh toán"
- *        default: 'COD'
- *        enum:
- *          - COD
- *          - banking
- *          - vnPay
+ *      - in: "body"
+ *        name: "body"
+ *        description: "Thông tin product"
+ *        schema:
+ *          type: "object"
+ *          properties:
+ *            coins:
+ *              type: "number"
+ *              description: "Số lượng coin sử dụng"
+ *            voucherId:
+ *              type: "number"
+ *              description: "voucher của user"
+ *            districtId:
+ *              type: "number"
+ *              description: "Địa chỉ quận huyện"
+ *            provinceId:
+ *              type: "number"
+ *              description: "Địa chỉ thành phố"
+ *            wardId:
+ *              type: "number"
+ *              description: "Địa chỉ phường xã"
+ *            paymentMethod:
+ *              type: "string"
+ *              description: "Phương thức thanh toán"
+ *              enum:
+ *                - COD
+ *                - VnPay
+ *                - Banking
+ *            transportUnit:
+ *              type: "string"
+ *              description: "Phương thức vận chuyển"
+ *              enum:
+ *                - GHN
+ *                - VTP
+ *            cartItems:
+ *              type: "array"
+ *              items:
+ *                type: "object"
+ *                properties:
+ *                  warehouseId:
+ *                    type: "number"
+ *                    description: "id warehouse"
+ *                  productVariantIds:
+ *                    type: "string"
+ *                    description: "danh sách ngăn cách nhau bởi dấu phẩy"
  *     responses:
  *       200:
  *         description: Success.
@@ -52,7 +64,7 @@ const router = Router();
  *     security:
  *      - Bearer: []
  */
-router.get('/', (req: Request, res: Response) => CartController.show(req, res));
+router.post('/', (req: Request, res: Response) => CartController.showCart(req, res));
 
 /**
  * @openapi

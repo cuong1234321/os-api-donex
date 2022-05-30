@@ -46,6 +46,24 @@ class MWardModel extends Model<MWardInterface> implements MWardInterface {
         ],
       };
     },
+    byWardAddress (districtId, provinceId) {
+      return {
+        include: [
+          {
+            model: MDistrictModel,
+            as: 'district',
+            where: { id: districtId },
+            required: true,
+            include: [{
+              model: MProvinceModel,
+              as: 'province',
+              where: { id: provinceId },
+              required: true,
+            }],
+          },
+        ],
+      };
+    },
   }
 
   public static initialize (sequelize: Sequelize) {
