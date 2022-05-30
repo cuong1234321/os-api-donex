@@ -56,6 +56,10 @@ const router = Router();
  *         name: "rating"
  *         description: "rating"
  *         type: number
+ *       - in: "query"
+ *         name: "warehouseId"
+ *         description: "kho hàng"
+ *         type: number
  *       - in: query
  *         name: "price"
  *         description: "sap xep theo gia tien"
