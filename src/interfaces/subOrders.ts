@@ -40,6 +40,7 @@ interface SubOrderInterface {
   cancelableType: string;
   cancelableId: number;
   cancelRejectNote: string;
+  tax: number;
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;

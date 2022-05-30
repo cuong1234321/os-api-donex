@@ -1,3 +1,4 @@
+import settings from '@configs/settings';
 import OrderModel from '@models/orders';
 import ProductVariantModel from '@models/productVariants';
 import RankModel from '@models/ranks';
@@ -69,10 +70,12 @@ class OrderDecorator {
       }
       subOrder.weight = totalWeight;
       subOrder.subTotal = subTotal;
+      subOrder.tax = settings.defaultTax * subTotal / 100;
       subOrder.voucherDiscount = 0;
       OrderSubTotal = OrderSubTotal + subOrder.subTotal;
       total = total + subOrder.total;
     }
+    order = await this.applyRankDiscount(order, total, OrderSubTotal);
     const applicationDiscount: number = await this.calculatorOrderDiscount(promoApplication, OrderSubTotal);
     order.applicationDiscount = applicationDiscount;
     for (const subOrder of order.subOrders) {
@@ -101,7 +104,6 @@ class OrderDecorator {
       order.subTotal = order.subTotal + subOrder.subTotal;
     }
     order.total = total;
-    order = await this.applyRankDiscount(order, total, order.subTotal);
     return { order };
   }
 

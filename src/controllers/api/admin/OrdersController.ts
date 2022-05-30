@@ -66,6 +66,7 @@ class OrderController {
         subOrder.total = totalQuantity;
         subOrder.billId = billTemplate.id;
         subOrder.weight = totalWeight;
+        subOrder.tax = settings.defaultTax * totalPrice / 100;
         subTotal += totalPrice;
         total += totalQuantity;
         shippingFee += subOrder.shippingFee;
@@ -149,6 +150,7 @@ class OrderController {
         subOrder.subTotal = totalPrice;
         subOrder.total = totalQuantity;
         subOrder.weight = totalWeight;
+        subOrder.tax = settings.defaultTax * totalPrice / 100;
         subTotal += totalPrice;
         total += totalQuantity;
         shippingFee += subOrder.shippingFee;
@@ -244,6 +246,7 @@ class OrderController {
     } = req.query;
     const scopes: any = [
       'withOrders',
+      'withFinalAmount',
       { method: ['bySortOrder', sortBy, sortOrder] },
     ];
     if (code) scopes.push({ method: ['byCode', code] });
