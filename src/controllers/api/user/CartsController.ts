@@ -41,9 +41,6 @@ class CartController {
       const { warehouses, cartTotalBill, cartTotalFee, cartTotalTax, warehouseQuantity } = await this.groupByWarehouse(cartItems, ward, validCartItems);
       let cartSubTotal = cartTotalBill + cartTotalFee + cartTotalTax;
       const voucher = await this.validateVoucher(params, currentUser);
-      if (!(currentUser.coinReward > parseInt(params.coins)) || !voucher) {
-        return sendSuccess(res, { cart });
-      }
       const applicationDiscount = await this.calculatorOrderDiscount(voucher, cartSubTotal);
       let coinDiscount = params.coins ? (systemSetting.coinConversionLevel * params.coins) : 0;
       if (cartSubTotal < coinDiscount) {
