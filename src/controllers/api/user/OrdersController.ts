@@ -128,6 +128,7 @@ class OrderController {
         { method: ['byPayment', OrderModel.PAYMENT_METHOD.VNPAY] },
       ]).findByPk(req.params.orderId);
       if (!order) return sendError(res, 404, NoData);
+      order.total = order.subTotal;
       const paymentMethod = await order.getPaymentMethod();
       sendSuccess(res, { order, paymentMethod });
     } catch (error) {
