@@ -133,6 +133,10 @@ const swaggerDefinition = {
       description: 'Don vi Van Chuyen',
     },
     {
+      name: '[ADMIN] SIZE GUIDES',
+      description: 'Quản lý sizes',
+    },
+    {
       name: '[ADMIN] USERS',
       description: 'Quản lý user',
     },
@@ -257,6 +261,10 @@ const swaggerDefinition = {
       description: 'Don vi Van Chuyen',
     },
     {
+      name: '[USER] SIZE GUIDES',
+      description: 'size',
+    },
+    {
       name: '[USER] USERS',
       description: 'Thông tin user',
     },
@@ -315,6 +323,10 @@ const swaggerDefinition = {
     {
       name: '[SELLER] SELLER NOTIFICATIONS',
       description: 'Thông báo của tôi',
+    },
+    {
+      name: '[SELLER] SIZE GUIDES',
+      description: 'size',
     },
   ],
   securityDefinitions: {

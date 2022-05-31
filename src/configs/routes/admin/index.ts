@@ -30,6 +30,7 @@ import SaleCampaignRouter from './SaleCampaigns';
 import SystemSettingRouter from './SystemSetting';
 import SubOrderRouter from './SubOrders';
 import SellerLevelRouter from './SellerLevels';
+import SizeGuideRouter from './SizeGuides';
 import TermRouter from './Terms';
 import UserRouter from './Users';
 import UploadRouter from './Uploads';
@@ -72,6 +73,7 @@ router.use('/sale_campaigns', adminPassport.authenticate('jwt', { session: false
 router.use('/system_setting', adminPassport.authenticate('jwt', { session: false }), SystemSettingRouter);
 router.use('/selections', SelectionRouter);
 router.use('/seller_levels', adminPassport.authenticate('jwt', { session: false }), SellerLevelRouter);
+router.use('/size_guides', adminPassport.authenticate('jwt', { session: false }), SizeGuideRouter);
 router.use('/terms', adminPassport.authenticate('jwt', { session: false }), TermRouter);
 router.use('/users', adminPassport.authenticate('jwt', { session: false }), UserRouter);
 router.use('/uploads', adminPassport.authenticate('jwt', { session: false }), UploadRouter);
