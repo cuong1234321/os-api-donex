@@ -8,15 +8,23 @@ const RatingImageEntity = {
   ratingAbleId: {
     type: DataTypes.INTEGER, allowNull: false,
   },
-  image: {
+  source: {
     type: DataTypes.STRING(255),
     allowNull: true,
     get (): string {
-      const image = this.getDataValue('image') !== null
-        ? `${settings.imageStorageHost}/${this.getDataValue('image')}`
-        : null;
-      return image;
+      let source: any;
+      if (this.getDataValue('source') === null) { source = null; return source; }
+      if (this.getDataValue('type') === 'image') {
+        source = `${settings.imageStorageHost}/${this.getDataValue('source')}`;
+      } else if (this.getDataValue('type') === 'video') {
+        source = `${settings.videoStorageHost}/${this.getDataValue('source')}`;
+      }
+      return source;
     },
+  },
+  type: {
+    type: DataTypes.ENUM({ values: ['image', 'video'] }),
+    defaultValue: 'image',
   },
   createdAt: {
     type: DataTypes.DATE,
