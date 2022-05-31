@@ -41,6 +41,7 @@ interface SubOrderInterface {
   cancelableId: number;
   cancelRejectNote: string;
   tax: number;
+  affiliateDiscount: number;
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;

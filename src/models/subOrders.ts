@@ -50,6 +50,7 @@ public cancelableType: string;
 public cancelableId: number;
 public cancelRejectNote: string;
 public tax: number;
+public affiliateDiscount: number;
 public createdAt?: Date;
 public updatedAt?: Date;
 public deletedAt?: Date;
@@ -596,6 +597,15 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
           model: OrderModel,
           as: 'order',
           where: { transportUnit },
+        }],
+      };
+    },
+    byReferralCode (referralCode) {
+      return {
+        include: [{
+          model: OrderModel,
+          as: 'order',
+          where: { referralCode },
         }],
       };
     },

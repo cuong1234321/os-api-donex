@@ -1,4 +1,5 @@
 import settings from '@configs/settings';
+import CollaboratorModel from '@models/collaborators';
 import OrderModel from '@models/orders';
 import ProductVariantModel from '@models/productVariants';
 import RankModel from '@models/ranks';
@@ -104,6 +105,27 @@ class OrderDecorator {
       order.subTotal = order.subTotal + subOrder.subTotal;
     }
     order.total = total;
+    if (order.referralCode) {
+      const seller = await CollaboratorModel.scope([
+        { method: ['byReferral', order.referralCode] },
+      ]).findOne();
+      if (!seller) { return order; }
+      let affiliateDiscountPercent = 0;
+      switch (seller.type) {
+        case CollaboratorModel.TYPE_ENUM.DISTRIBUTOR:
+          affiliateDiscountPercent = systemSetting.distributorAffiliate;
+          break;
+        case CollaboratorModel.TYPE_ENUM.AGENCY:
+          affiliateDiscountPercent = systemSetting.agencyAffiliate;
+          break;
+        case CollaboratorModel.TYPE_ENUM.COLLABORATOR:
+          affiliateDiscountPercent = systemSetting.collaboratorAffiliate;
+          break;
+      }
+      order.subOrders.forEach((subOrder: any) => {
+        subOrder.affiliateDiscount = (subOrder.subTotal - subOrder.rankDiscount) * affiliateDiscountPercent / 100;
+      });
+    }
     return { order };
   }
 

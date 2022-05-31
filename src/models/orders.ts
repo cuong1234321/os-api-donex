@@ -51,6 +51,7 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
   public portalConfirmAt?: Date;
   public applicationDiscount?: number;
   public transportUnit: string;
+  public referralCode: string;
   public createdAt?: Date;
   public updatedAt?: Date;
   public deletedAt?: Date;
@@ -61,7 +62,7 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
   public ward?: MWardModel;
 
   static readonly USER_CREATABLE_PARAMETERS = ['paymentMethod', 'coinUsed', 'shippingFullName', 'shippingProvinceId',
-    'shippingDistrictId', 'shippingPhoneNumber', 'shippingWardId', 'shippingAddress', 'appliedVoucherId', 'note',
+    'shippingDistrictId', 'shippingPhoneNumber', 'shippingWardId', 'shippingAddress', 'appliedVoucherId', 'note', 'referralCode',
     {
       subOrders: [
         'warehouseId',

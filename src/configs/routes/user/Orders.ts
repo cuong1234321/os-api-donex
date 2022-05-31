@@ -71,6 +71,10 @@ const router = Router();
  *              description: "ghi chu tu khach hang"
  *              default: "string"
  *              require: false
+ *            referralCode:
+ *              type: "string"
+ *              description: "ma gioi thieu cua seller"
+ *              default: "string"
  *            subOrders:
  *              type: "array"
  *              items:
