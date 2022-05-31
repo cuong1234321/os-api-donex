@@ -4,7 +4,6 @@ import SubOrderModel from '@models/subOrders';
 import OrderModel from '@models/orders';
 import { NoData } from '@libs/errors';
 import RatingModel from '@models/ratings';
-import ImageUploaderService from '@services/imageUploader';
 import RatingImageModel from '@models/ratingImages';
 import ProductVariantModel from '@models/productVariants';
 import settings from '@configs/settings';
@@ -32,20 +31,18 @@ class RatingController {
     }
   }
 
-  public async uploadImage (req: Request, res: Response) {
+  public async update (req: Request, res: Response) {
     try {
       const { ratingId } = req.params;
       const rating = await RatingModel.scope([
         { method: ['byId', ratingId] },
       ]).findOne();
       if (!rating) { return sendError(res, 404, NoData); }
-      const files: any[] = req.files as any[];
-      const ratingImageAttributes: any = [];
-      for (const file of files) {
-        const image = await ImageUploaderService.singleUpload(file);
-        ratingImageAttributes.push({ ratingAbleId: ratingId, image });
+      const params = req.parameters.permit(RatingImageModel.CREATABLE_PARAMETERS).value();
+      for (const record of params.medias) {
+        record.ratingAbleId = rating.id;
       }
-      await RatingImageModel.bulkCreate(ratingImageAttributes);
+      await RatingImageModel.bulkCreate(params.medias);
       sendSuccess(res, { });
     } catch (error) {
       sendError(res, 500, error.message, error);

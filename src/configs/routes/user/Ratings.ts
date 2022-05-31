@@ -1,6 +1,5 @@
 import RatingsController from '@controllers/api/user/RatingsController';
 import { userPassport } from '@middlewares/passport';
-import { withoutSavingUploader } from '@middlewares/uploaders';
 import { Router } from 'express';
 
 const router = Router();
@@ -55,17 +54,30 @@ router.post('/:subOrderId/sub_orders/:productVariantId', userPassport.authentica
  *      - "[USER] RATING"
  *     summary: Tạo mới image
  *     parameters:
- *      - in: "path"
+ *      - in: path
  *        name: "ratingId"
- *        description: ""
- *        required: true
- *        type: "number"
- *      - in: "formData"
- *        name: "files"
- *        description: "File upload"
- *        required: false
- *        allowMultiple: true
- *        type: "file"
+ *        description: "ratingId"
+ *        type: "string"
+ *      - in: "body"
+ *        name: "body"
+ *        description: "noi dung"
+ *        schema:
+ *          type: "object"
+ *          properties:
+ *            medias:
+ *              type: "array"
+ *              items:
+ *                type: "object"
+ *                properties:
+ *                  source:
+ *                    type: "string"
+ *                    description: "source"
+ *                  type:
+ *                    type: "string"
+ *                    description: "dạng dữ liệu"
+ *                    enum:
+ *                      - image
+ *                      - video
  *     responses:
  *       200:
  *         description: Return data.
@@ -74,8 +86,7 @@ router.post('/:subOrderId/sub_orders/:productVariantId', userPassport.authentica
  *     security:
  *      - Bearer: []
  */
-router.patch('/:ratingId', userPassport.authenticate('jwt', { session: false }),
-  withoutSavingUploader.array('files'), RatingsController.uploadImage);
+router.patch('/:ratingId', userPassport.authenticate('jwt', { session: false }), RatingsController.update);
 
 /**
  * @openapi

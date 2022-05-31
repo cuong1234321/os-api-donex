@@ -1,7 +1,8 @@
 interface RatingImageInterface {
   id: number;
   ratingAbleId: number;
-  image: string;
+  source: string;
+  type: string;
   createdAt?: Date;
   updatedAt?: Date;
 };
