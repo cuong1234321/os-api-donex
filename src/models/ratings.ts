@@ -21,6 +21,8 @@ class RatingModel extends Model<RatingInterface> implements RatingInterface {
   public updatedAt?: Date;
   public deletedAt?: Date;
 
+  public user?: UserModel;
+
   public static readonly STATUS_ENUM = { DRAFT: 'draft', ACTIVE: 'active', INACTIVE: 'inactive' }
   public static readonly CREATABLE_ENUM = { USER: 'user' }
 
@@ -30,6 +32,21 @@ class RatingModel extends Model<RatingInterface> implements RatingInterface {
     async afterCreate (record: any) {
       const subOrder = await SubOrderModel.findByPk(record.subOrderId);
       await subOrder.update({ isAlreadyRating: true }, { validate: false });
+    },
+    async afterFind (records: any) {
+      if (!records) return;
+      if (Array.isArray(records)) {
+        for (const record of records) {
+          if (record.isAnonymous) {
+            record.setDataValue('user', {});
+          }
+        }
+      } else {
+        const record: any = records as RatingModel;
+        if (record.isAnonymous) {
+          record.setDataValue('user', {});
+        }
+      }
     },
   }
 
@@ -91,7 +108,6 @@ class RatingModel extends Model<RatingInterface> implements RatingInterface {
     },
     withUserInfo () {
       return {
-        where: { isAnonymous: false },
         include: [
           {
             model: UserModel,

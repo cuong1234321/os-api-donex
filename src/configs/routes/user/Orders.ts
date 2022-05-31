@@ -1,5 +1,6 @@
 import OrdersController from '@controllers/api/user/OrdersController';
 import { authGuest } from '@middlewares/auth';
+import { userPassport } from '@middlewares/passport';
 import { Router } from 'express';
 
 const router = Router();
@@ -241,5 +242,26 @@ router.post('/', authGuest, OrdersController.create);
  *      - Bearer: []
  */
 router.post('/view', authGuest, OrdersController.show);
+
+/**
+ * @openapi
+ * /u/orders/{orderId}/pay:
+ *   post:
+ *     tags:
+ *      - "[USER] ORDER"
+ *     summary: Thanh toán đơn hàng
+ *     parameters:
+ *      - in: "path"
+ *        name: "orderId"
+ *        description: "Id đơn hàng"
+ *     responses:
+ *       200:
+ *         description: "Success"
+ *       500:
+ *         description: "Internal error"
+ *     security:
+ *      - Bearer: []
+ */
+router.post('/:orderId/pay', userPassport.authenticate('jwt', { session: false }), OrdersController.createPayment);
 
 export default router;
