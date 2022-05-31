@@ -209,16 +209,10 @@ class CartController {
       let totalFee = 0;
       for (const warehouseCartItem of warehouseCartItems) {
         const warehouseValid = validCartItems.find((record: any) => record.warehouseId === warehouse.id);
-        if (!validCartItems.length) {
+        if (warehouseValid && warehouseValid.productVariantIds.includes(warehouseCartItem.productVariantId.toString())) {
           totalWeight = totalWeight + (warehouseCartItem.variants.getDataValue('productWeight') * warehouseCartItem.quantity);
           totalBill = totalBill + warehouseCartItem.variants.getDataValue('saleCampaignPrice');
           warehouseQuantity = warehouseQuantity + warehouseCartItem.quantity;
-        } else {
-          if (warehouseValid && warehouseValid.productVariantIds.includes(warehouseCartItem.productVariantId.toString())) {
-            totalWeight = totalWeight + (warehouseCartItem.variants.getDataValue('productWeight') * warehouseCartItem.quantity);
-            totalBill = totalBill + warehouseCartItem.variants.getDataValue('saleCampaignPrice');
-            warehouseQuantity = warehouseQuantity + warehouseCartItem.quantity;
-          }
         }
       }
       if (ward) {
