@@ -60,6 +60,10 @@ const router = Router();
  *         name: "warehouseId"
  *         description: "kho hàng"
  *         type: number
+ *       - in: "query"
+ *         name: "flashSale"
+ *         description: ""
+ *         type: boolean
  *       - in: query
  *         name: "price"
  *         description: "sap xep theo gia tien"

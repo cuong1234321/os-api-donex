@@ -16,6 +16,7 @@ import ProductVariantModel from './productVariants';
 import FavoriteProductModel from './favoriteProducts';
 import WarehouseModel from './warehouses';
 import WarehouseVariantModel from './warehouseVariants';
+import SubOrderModel from './subOrders';
 
 class ProductModel extends Model<ProductInterface> implements ProductInterface {
   public id: number;
@@ -538,6 +539,18 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
             [Sequelize.cast(Sequelize.literal('(SELECT COUNT(*) FROM ratings WHERE ratings.status = "active" and productVariantId IN (SELECT id from product_variants WHERE productId = ProductModel.id) AND ROUND(point) = 3)'), 'SIGNED'), 'ratingThereStar'],
             [Sequelize.cast(Sequelize.literal('(SELECT COUNT(*) FROM ratings WHERE ratings.status = "active" and productVariantId IN (SELECT id from product_variants WHERE productId = ProductModel.id) AND ROUND(point) = 4)'), 'SIGNED'), 'ratingFourStar'],
             [Sequelize.cast(Sequelize.literal('(SELECT COUNT(*) FROM ratings WHERE ratings.status = "active" and productVariantId IN (SELECT id from product_variants WHERE productId = ProductModel.id) AND ROUND(point) = 5)'), 'SIGNED'), 'ratingFiveStar'],
+          ],
+        },
+      };
+    },
+    withSellQuantity () {
+      return {
+        attributes: {
+          include: [
+            [Sequelize.cast(Sequelize.literal('(SELECT SUM(order_items.quantity) FROM order_items ' +
+            `INNER JOIN sub_orders ON sub_orders.id = order_items.subOrderId AND sub_orders.status = "${SubOrderModel.STATUS_ENUM.DELIVERED}" ` +
+            'WHERE order_items.productVariantId IN (SELECT product_variants.id FROM product_variants WHERE product_variants.productId = ProductModel.id))'), 'SIGNED'),
+            'sellQuantity'],
           ],
         },
       };

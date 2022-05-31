@@ -58,7 +58,7 @@ public deletedAt?: Date;
 public warehouse?: WarehouseModel;
 public items?: OrderItemModel[];
 
-static readonly STATUS_ENUM = { DRAFT: 'draft', PENDING: 'pending', WATING_TO_TRANSFER: 'waitingToTransfer', CANCEL: 'cancel', REJECT: 'reject' }
+static readonly STATUS_ENUM = { DRAFT: 'draft', PENDING: 'pending', WATING_TO_TRANSFER: 'waitingToTransfer', DELIVERED: 'delivered', CANCEL: 'cancel', REJECT: 'reject' }
 static readonly CANCEL_STATUS = { PENDING: 'pending', APPROVED: 'approved', REJECTED: 'rejected' }
 static readonly CANCELABLE_TYPE_ENUM = { USER: 'user', COLLABORATOR: 'collaborator', AGENCY: 'agency', DISTRIBUTOR: 'distributor' };
 
