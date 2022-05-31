@@ -211,7 +211,7 @@ class CartController {
         const warehouseValid = validCartItems.find((record: any) => record.warehouseId === warehouse.id);
         if (warehouseValid && warehouseValid.productVariantIds.includes(warehouseCartItem.productVariantId.toString())) {
           totalWeight = totalWeight + (warehouseCartItem.variants.getDataValue('productWeight') * warehouseCartItem.quantity);
-          totalBill = totalBill + warehouseCartItem.variants.getDataValue('saleCampaignPrice');
+          totalBill = totalBill + (warehouseCartItem.variants.getDataValue('saleCampaignPrice')) * warehouseCartItem.quantity;
           warehouseQuantity = warehouseQuantity + warehouseCartItem.quantity;
         }
       }

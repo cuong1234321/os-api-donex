@@ -18,7 +18,7 @@ const RatingEntity = {
     type: DataTypes.INTEGER, allowNull: false,
   },
   content: {
-    type: DataTypes.TEXT, allowNull: false,
+    type: DataTypes.TEXT, allowNull: true,
   },
   point: {
     type: DataTypes.INTEGER,
