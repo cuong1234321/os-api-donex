@@ -102,7 +102,7 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
 
   public static readonly ORDERABLE_TYPE = { USER: 'user', COLLABORATOR: 'collaborator', AGENCY: 'agency', DISTRIBUTOR: 'distributor' }
   public static readonly CREATABLE_TYPE = { USER: 'user', ADMIN: 'admin', COLLABORATOR: 'collaborator', AGENCY: 'agency', DISTRIBUTOR: 'distributor' }
-  public static readonly PAYMENT_METHOD = { BANKING: 'banking', COD: 'COD', VN_PAY: 'vnPay', WALLET: 'wallet' }
+  public static readonly PAYMENT_METHOD = { BANKING: 'banking', COD: 'COD', VNPAY: 'vnPay', WALLET: 'wallet' }
   public static readonly PROMOTION_TYPE = { SYSTEM_RANK_PROMOTION: 'systemRankPromotion', USER_VOUCHER: 'userVoucher' }
   public static readonly SALE_CHANNEL = {
     FACEBOOK: 'facebook',
@@ -307,6 +307,16 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
         where: { orderableId, orderableType },
       };
     },
+    byStatus (status) {
+      return {
+        where: status,
+      };
+    },
+    byPayment (paymentMethod) {
+      return {
+        where: { paymentMethod },
+      };
+    },
   }
 
   public async reloadWithDetail () {
@@ -502,6 +512,23 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
     const params = JSON.parse(JSON.stringify(responseParams));
     const result = params.vnp_TransactionStatus === '00' &&
           (await (new VnpayPaymentService(this.id, this.transactionId, this.total, VnpayPaymentService.TXN_REF_PREFIX.TOP_UP)).validSignature(params));
+    return result;
+  }
+
+  public async getPaymentMethod () {
+    let result: any;
+    let paymentMethodInstance: VnpayPaymentService;
+    let transactionId: string;
+    switch (this.paymentMethod) {
+      case OrderModel.PAYMENT_METHOD.VNPAY:
+        paymentMethodInstance = new VnpayPaymentService(this.id, this.transactionId, this.total, VnpayPaymentService.TXN_REF_PREFIX.ORDER, true);
+        transactionId = paymentMethodInstance.txnRef;
+        result = await paymentMethodInstance.makePayment();
+        break;
+      default:
+        break;
+    }
+    await this.update({ transactionId });
     return result;
   }
 

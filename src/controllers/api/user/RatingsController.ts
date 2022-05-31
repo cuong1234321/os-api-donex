@@ -76,7 +76,11 @@ class RatingController {
       ];
       if (point) { scopes.push({ method: ['byPoint', point] }); }
       const { rows, count } = await RatingModel.scope(scopes).findAndCountAll({ limit, offset });
-      return sendSuccess(res, { rows, pagination: { total: count, page, perPage: limit } });
+      const totalRatings = await RatingModel.scope([
+        { method: ['byProductVariantId', productVariantIds] },
+        { method: ['byStatus', RatingModel.STATUS_ENUM.ACTIVE] },
+      ]).count();
+      return sendSuccess(res, { rows, totalRatings, pagination: { total: count, page, perPage: limit } });
     } catch (error) {
       sendError(res, 500, error.message, error);
     }

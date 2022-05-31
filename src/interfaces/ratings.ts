@@ -1,3 +1,5 @@
+import UserInterface from './users';
+
 interface RatingInterface {
   id: number;
   creatableId: number;
@@ -12,6 +14,8 @@ interface RatingInterface {
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;
+
+  user?: UserInterface
 };
 
 export default RatingInterface;

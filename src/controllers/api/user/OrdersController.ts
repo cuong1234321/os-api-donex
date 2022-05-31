@@ -1,5 +1,5 @@
 import OrderDecorator from '@decorators/orders';
-import { voucherIsCannotApply } from '@libs/errors';
+import { NoData, voucherIsCannotApply } from '@libs/errors';
 import sequelize from '@initializers/sequelize';
 import { sendError, sendSuccess } from '@libs/response';
 import MDistrictModel from '@models/mDistricts';
@@ -115,6 +115,21 @@ class OrderController {
         subOrders: orderFormat.order.subOrders,
       };
       sendSuccess(res, { order });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async createPayment (req: Request, res: Response) {
+    try {
+      const order = await OrderModel.scope([
+        { method: ['byStatus', OrderModel.STATUS_ENUM.PENDING] },
+        { method: ['byOrderAble', req.currentUser.id, 'USER'] },
+        { method: ['byPayment', OrderModel.PAYMENT_METHOD.VNPAY] },
+      ]).findByPk(req.params.orderId);
+      if (!order) return sendError(res, 404, NoData);
+      const paymentMethod = await order.getPaymentMethod();
+      sendSuccess(res, { order, paymentMethod });
     } catch (error) {
       sendError(res, 500, error.message, error);
     }
