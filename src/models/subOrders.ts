@@ -671,6 +671,41 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
         },
       };
     },
+    totalListedPrice () {
+      return {
+        attributes: {
+          include: [
+            [
+              Sequelize.cast(Sequelize.literal('(SELECT SUM(listedPrice * quantity) FROM order_items WHERE subOrderId = SubOrderModel.id AND deletedAt IS NULL)'), 'SIGNED'), 'totalListedPrice',
+            ],
+          ],
+        },
+      };
+    },
+    totalSaleCampaignDiscount () {
+      return {
+        attributes: {
+          include: [
+            [
+              Sequelize.cast(Sequelize.literal('(SELECT SUM(saleCampaignDiscount * quantity) FROM order_items WHERE subOrderId = SubOrderModel.id AND deletedAt IS NULL)'), 'SIGNED'), 'totalSaleCampaignDiscount',
+            ],
+          ],
+        },
+      };
+    },
+    byOrderAbleType (orderableType) {
+      return {
+        include: [
+          {
+            model: OrderModel,
+            as: 'order',
+            where: {
+              orderableType: orderableType,
+            },
+          },
+        ],
+      };
+    },
   }
 
   public static initialize (sequelize: Sequelize) {
