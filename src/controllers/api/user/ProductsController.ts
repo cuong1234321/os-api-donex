@@ -13,7 +13,7 @@ class ProductController {
   public async index (req: Request, res: Response) {
     try {
       const currentUser = req.currentUser;
-      const { categoryIds, genderIds, productTypeIds, collectionIds, priceFrom, priceTo, createdAtOrder, price, freeWord, colorIds, sizeIds, rating, warehouseId } = req.query;
+      const { categoryIds, genderIds, productTypeIds, collectionIds, priceFrom, priceTo, createdAtOrder, price, freeWord, colorIds, sizeIds, rating, warehouseId, flashSale } = req.query;
       const page = req.query.page as string || '1';
       const limit = parseInt(req.query.size as string) || parseInt(Settings.defaultPerPage);
       const offset = (parseInt(page, 10) - 1) * limit;
@@ -23,6 +23,7 @@ class ProductController {
         'withThumbnail',
         'withVariants',
         'withAverageRating',
+        'withSellQuantity',
       ];
       if (categoryIds) {
         const listCategoryId = await ProductCategoryModel.getCategoryIdsByParentId((categoryIds as string).split(','));
@@ -40,6 +41,7 @@ class ProductController {
       if (createdAtOrder) orderConditions.push([Sequelize.literal('createdAt'), createdAtOrder]);
       if (rating) { scopes.push({ method: ['byRating', rating] }); }
       if (warehouseId) { scopes.push({ method: ['byWarehouseId', warehouseId] }); }
+      if (flashSale === 'true') { scopes.push('isFlashSale'); }
       scopes.push({ method: ['bySorting', orderConditions] });
       const { count, rows } = await ProductModel.scope(scopes).findAndCountAll({
         limit,
