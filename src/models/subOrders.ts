@@ -58,7 +58,7 @@ public deletedAt?: Date;
 public warehouse?: WarehouseModel;
 public items?: OrderItemModel[];
 
-static readonly STATUS_ENUM = { DRAFT: 'draft', PENDING: 'pending', WATING_TO_TRANSFER: 'waitingToTransfer', DELIVERED: 'delivered', CANCEL: 'cancel', REJECT: 'reject' }
+static readonly STATUS_ENUM = { DRAFT: 'draft', PENDING: 'pending', WAITING_TO_TRANSFER: 'waitingToTransfer', DELIVERY: 'delivery', WAITING_TO_PAY: 'waitingToPay', DELIVERED: 'delivered', FAIL: 'fail', RETURNED: 'returned', CANCEL: 'cancel', REJECT: 'reject', REFUND: 'refund' }
 static readonly CANCEL_STATUS = { PENDING: 'pending', APPROVED: 'approved', REJECTED: 'rejected' }
 static readonly CANCELABLE_TYPE_ENUM = { USER: 'user', COLLABORATOR: 'collaborator', AGENCY: 'agency', DISTRIBUTOR: 'distributor' };
 
@@ -75,8 +75,7 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
     record.deleteSubOrderDetails();
   },
   async beforeSave (record: any) {
-    if ((record._previousDataValues.status === OrderModel.STATUS_ENUM.DRAFT && record.status !== OrderModel.STATUS_ENUM.DRAFT) ||
-    (record.isNewRecord && record.status === SubOrderModel.STATUS_ENUM.PENDING)) {
+    if ([SubOrderModel.STATUS_ENUM.DRAFT, SubOrderModel.STATUS_ENUM.PENDING].includes(record._previousDataValues.status) && record.status === SubOrderModel.STATUS_ENUM.WAITING_TO_TRANSFER) {
       const getOrderDetail = await record.formatOrder(record);
       await Order.createGhnOrder(getOrderDetail);
     }

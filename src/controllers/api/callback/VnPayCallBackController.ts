@@ -18,7 +18,7 @@ class VnPayCallBackController {
             { method: ['byStatus', OrderModel.STATUS_ENUM.PENDING] },
             { method: ['byPayment', params.vnp_TxnRef] },
           ]).findOne();
-          orderValue = orderableInstance.total;
+          orderValue = orderableInstance.subTotal;
           paidAt = orderableInstance.paidAt;
           break;
         default:

@@ -50,7 +50,7 @@ class SubOrderController {
       const { cancelReason } = req.body;
       const subOrder = await SubOrderModel.scope([
         { method: ['byOrderAble', currentSeller.id, currentSeller.type] },
-        { method: ['byStatus', [SubOrderModel.STATUS_ENUM.PENDING, SubOrderModel.STATUS_ENUM.DRAFT, SubOrderModel.STATUS_ENUM.WATING_TO_TRANSFER]] },
+        { method: ['byStatus', [SubOrderModel.STATUS_ENUM.PENDING, SubOrderModel.STATUS_ENUM.DRAFT, SubOrderModel.STATUS_ENUM.WAITING_TO_TRANSFER]] },
       ]).findByPk(req.params.subOrderId);
       if (!subOrder) return sendError(res, 404, NoData);
       if (subOrder.status === SubOrderModel.STATUS_ENUM.PENDING || subOrder.status === SubOrderModel.STATUS_ENUM.DRAFT) {

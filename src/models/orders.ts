@@ -102,7 +102,9 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
 
   public static readonly ORDERABLE_TYPE = { USER: 'user', COLLABORATOR: 'collaborator', AGENCY: 'agency', DISTRIBUTOR: 'distributor' }
   public static readonly CREATABLE_TYPE = { USER: 'user', ADMIN: 'admin', COLLABORATOR: 'collaborator', AGENCY: 'agency', DISTRIBUTOR: 'distributor' }
+
   public static readonly PAYMENT_METHOD = { BANKING: 'banking', COD: 'COD', VNPAY: 'vnPay', WALLET: 'wallet' }
+
   public static readonly PROMOTION_TYPE = { SYSTEM_RANK_PROMOTION: 'systemRankPromotion', USER_VOUCHER: 'userVoucher' }
   public static readonly SALE_CHANNEL = {
     FACEBOOK: 'facebook',
@@ -119,11 +121,16 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
     VTP: 'vtp',
   }
 
-  public static readonly STATUS_ENUM = { DRAFT: 'draft', PENDING: 'pending', PAID: 'paid', COMPLETE: 'complete', CANCEL: 'cancel' }
+  public static readonly STATUS_ENUM = { DRAFT: 'draft', PENDING: 'pending', PAID: 'paid', DELIVERY: 'delivery', COMPLETE: 'complete', CANCEL: 'cancel', REFUND: 'refund' }
 
   static readonly hooks: Partial<ModelHooks<OrderModel>> = {
     async beforeCreate (record: OrderModel) {
       record.code = await this.generateOderCode();
+      if (record.isNewRecord && record.paymentMethod === OrderModel.PAYMENT_METHOD.COD) {
+        record.status = OrderModel.STATUS_ENUM.PENDING;
+      } else {
+        record.status = OrderModel.STATUS_ENUM.DRAFT;
+      }
     },
     async afterDestroy (record) {
       record.deleteOrderDetails();
@@ -133,6 +140,15 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
         await VoucherModel.update({ discount: record.applicationDiscount, activeAt: dayjs() }, { where: { id: record.appliedVoucherId } });
       }
       await record.subtractUserCoin();
+    },
+    async afterSave (record: any) {
+      if (record.paymentMethod === OrderModel.PAYMENT_METHOD.COD &&
+        (record._previousDataValues.status === OrderModel.STATUS_ENUM.DRAFT && record.status === OrderModel.STATUS_ENUM.DELIVERY)) {
+        await this.deliverySubOrder(record);
+      } else if (!record._previousDataValues.paidAt && record.paidAt) {
+        record.status = OrderModel.STATUS_ENUM.DELIVERY;
+        await this.deliverySubOrder(record);
+      }
     },
   }
 
@@ -550,6 +566,13 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
       'withProduct',
     ]).findAll();
     return { warehouses, productVariants };
+  }
+
+  private static async deliverySubOrder (record: any) {
+    const subOrders = record.getSubOrders();
+    for (const subOrder of subOrders) {
+      await subOrder.update({ status: SubOrderModel.STATUS_ENUM.WAITING_TO_TRANSFER });
+    }
   }
 
   public static initialize (sequelize: Sequelize) {
