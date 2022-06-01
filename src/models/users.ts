@@ -35,6 +35,7 @@ class UserModel extends Model<UserInterface> implements UserInterface {
   public avatar: string;
   public rank: string;
   public coinReward: number;
+  public alreadyFinishOrder: boolean;
   public createdAt?: Date;
   public updatedAt?: Date;
   public deletedAt?: Date;
@@ -49,6 +50,8 @@ class UserModel extends Model<UserInterface> implements UserInterface {
   public static readonly CREATABLE_COLLABORATOR_PARAMETERS = ['phoneNumber', 'fullName', 'email', 'provinceId', 'districtId', 'wardId', 'address', 'dateOfBirth',
     { collaborator: ['type', 'lat', 'long', 'title'] },
   ]
+
+  static readonly UPDATABLE_ON_DUPLICATE_PARAMETERS = ['id', 'coinReward']
 
   static readonly hooks: Partial<ModelHooks<UserModel>> = {
     beforeSave (record) {
@@ -189,6 +192,23 @@ class UserModel extends Model<UserInterface> implements UserInterface {
             ],
           ],
         },
+      };
+    },
+    byBirthDay () {
+      return {
+        where: {
+          id: { [Op.in]: Sequelize.literal('(SELECT id FROM users WHERE DATE_FORMAT(dateOfBirth, "%m-%d") = date_format(CURDATE(), "%m-%d"))') },
+        },
+      };
+    },
+    withAlreadyFinishOrder () {
+      return {
+        where: { alreadyFinishOrder: true },
+      };
+    },
+    withNotFinishAnyOrder () {
+      return {
+        where: { alreadyFinishOrder: false },
       };
     },
   }

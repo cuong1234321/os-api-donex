@@ -81,6 +81,9 @@ const UserEntity = {
   coinReward: {
     type: DataTypes.INTEGER, defaultValue: 0,
   },
+  alreadyFinishOrder: {
+    type: DataTypes.BOOLEAN, defaultValue: false,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },

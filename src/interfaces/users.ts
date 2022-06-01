@@ -24,6 +24,7 @@ interface UserInterface {
   avatar: string;
   rank: string;
   coinReward: number;
+  alreadyFinishOrder: boolean;
   createdAt?: Date,
   updatedAt?: Date,
   deletedAt?: Date,

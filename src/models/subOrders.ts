@@ -1,14 +1,18 @@
+import settings from '@configs/settings';
 import SubOrderEntity from '@entities/subOrders';
 import OrderItemInterface from '@interfaces/orderItems';
 import SubOrderInterface from '@interfaces/subOrders';
 import Order from '@repositories/models/orders';
 import dayjs from 'dayjs';
-import { HasManyGetAssociationsMixin, Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, Transaction, ValidationErrorItem } from 'sequelize';
+import { BelongsToGetAssociationMixin, HasManyGetAssociationsMixin, Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, Transaction, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import AdminModel from './admins';
+import CoinWalletChangeModel from './coinWalletChanges';
 import OrderItemModel from './orderItems';
 import OrderModel from './orders';
 import ProductVariantModel from './productVariants';
+import SystemSettingModel from './systemSetting';
+import UserModel from './users';
 import WarehouseModel from './warehouses';
 
 class SubOrderModel extends Model<SubOrderInterface> implements SubOrderInterface {
@@ -58,7 +62,7 @@ public deletedAt?: Date;
 public warehouse?: WarehouseModel;
 public items?: OrderItemModel[];
 
-static readonly STATUS_ENUM = { DRAFT: 'draft', PENDING: 'pending', WAITING_TO_TRANSFER: 'waitingToTransfer', DELIVERY: 'delivery', WAITING_TO_PAY: 'waitingToPay', DELIVERED: 'delivered', FAIL: 'fail', RETURNED: 'returned', CANCEL: 'cancel', REJECT: 'reject', REFUND: 'refund' }
+static readonly STATUS_ENUM = { DRAFT: 'draft', PENDING: 'pending', WAITING_TO_TRANSFER: 'waitingToTransfer', DELIVERY: 'delivery', WAITING_TO_PAY: 'waitingToPay', DELIVERED: 'delivered', FAIL: 'fail', RETURNED: 'returned', CANCEL: 'cancel', REJECT: 'reject', REFUND: 'refund', FINISH: 'finish' }
 static readonly CANCEL_STATUS = { PENDING: 'pending', APPROVED: 'approved', REJECTED: 'rejected' }
 static readonly CANCELABLE_TYPE_ENUM = { USER: 'user', COLLABORATOR: 'collaborator', AGENCY: 'agency', DISTRIBUTOR: 'distributor' };
 
@@ -79,6 +83,9 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
       const getOrderDetail = await record.formatOrder(record);
       await Order.createGhnOrder(getOrderDetail);
     }
+  },
+  async afterSave (record: any) {
+    await record.checkStatusSubOrder();
   },
 }
 
@@ -178,7 +185,38 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
     await OrderItemModel.destroy({ where: { subOrderId: this.id }, individualHooks: true });
   }
 
+  public async checkStatusSubOrder () {
+    const systemSetting: any = (await SystemSettingModel.findOrCreate({
+      where: { },
+      defaults: { id: undefined },
+    }))[0];
+    const order = await this.getOrder();
+    if (this.isNewRecord || !order.ownerId || !order.paidAt) return;
+    if (this.previous('status') !== SubOrderModel.STATUS_ENUM.REFUND && this.status === SubOrderModel.STATUS_ENUM.REFUND) {
+      const params: any = {
+        id: undefined,
+        userId: order.ownerId,
+        type: CoinWalletChangeModel.TYPE_ENUM.ADD,
+        mutableType: CoinWalletChangeModel.MUTABLE_TYPE.ORDER_REFUND,
+        mutableId: this.id,
+        amount: Math.round(this.subTotal / (systemSetting.coinConversionLevel || 1000)),
+      };
+      await CoinWalletChangeModel.create(params);
+    }
+    if (this.previous('status') !== SubOrderModel.STATUS_ENUM.FINISH && this.status === SubOrderModel.STATUS_ENUM.FINISH) {
+      const user = await UserModel.scope([
+        { method: ['byId', order.ownerId] },
+      ]).findOne();
+      if (user.alreadyFinishOrder) return;
+      await user.update({ alreadyFinishOrder: true });
+      if (this.subTotal > settings.minMoneyUpRank && this.subTotal < settings.maxMoneyUpRank) {
+        await user.update({ rank: UserModel.RANK_ENUM.VIP });
+      }
+    }
+  }
+
   public getItems: HasManyGetAssociationsMixin<OrderItemModel>
+  public getOrder: BelongsToGetAssociationMixin<OrderModel>
 
   static readonly scopes: ModelScopeOptions = {
     isNotDraft () {

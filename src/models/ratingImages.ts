@@ -20,7 +20,18 @@ public static readonly TYPE_ENUM = { IMAGE: 'image', VIDEO: 'video' }
 
   static readonly validations: ModelValidateOptions = { }
 
-  static readonly scopes: ModelScopeOptions = {}
+  static readonly scopes: ModelScopeOptions = {
+    byType (type) {
+      return { where: { type } };
+    },
+    byRatingId (ratingAbleId) {
+      return {
+        where: {
+          ratingAbleId,
+        },
+      };
+    },
+  }
 
   public static initialize (sequelize: Sequelize) {
     this.init(RatingImagesEntity, {

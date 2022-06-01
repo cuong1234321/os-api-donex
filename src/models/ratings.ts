@@ -1,7 +1,9 @@
+import settings from '@configs/settings';
 import RatingEntity from '@entities/ratings';
 import RatingInterface from '@interfaces/ratings';
 import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
+import CoinWalletChangeModel from './coinWalletChanges';
 import RatingImageModel from './ratingImages';
 import SubOrderModel from './subOrders';
 import UserModel from './users';
@@ -46,6 +48,24 @@ class RatingModel extends Model<RatingInterface> implements RatingInterface {
         if (record.isAnonymous) {
           record.setDataValue('user', {});
         }
+      }
+    },
+    async afterSave (record) {
+      if (record.previous('status') === RatingModel.STATUS_ENUM.DRAFT && record.status === RatingModel.STATUS_ENUM.ACTIVE) {
+        const ratingImages = await RatingImageModel.scope([
+          { method: ['byType', RatingImageModel.TYPE_ENUM.IMAGE] },
+          { method: ['byRatingId', record.id] },
+        ]).findAll();
+        if (!ratingImages.length || record.content.length < 20) return;
+        const params: any = {
+          id: undefined,
+          userId: record.creatableId,
+          type: CoinWalletChangeModel.TYPE_ENUM.ADD,
+          mutableType: CoinWalletChangeModel.MUTABLE_TYPE.RATING,
+          mutableId: this.id,
+          amount: settings.defaultRatingBonusPoint,
+        };
+        await CoinWalletChangeModel.create(params);
       }
     },
   }
