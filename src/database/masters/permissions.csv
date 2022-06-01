@@ -18,7 +18,7 @@ id,groupId,title,key
 17,3,Tạo Mới Mẫu Hóa Đơn Thanh Toán,create
 18,4,Thêm Mới Đơn Vị Đối Tác,"create,uploadMedia,uploadAvatar"
 19,4,Danh Sách Đơn Vị Đối Tác,index
-20,4,Chỉnh sửa Thông Tin Đơn Vị Đối Tác,"uploadPaperProof,update,active,inactive,uploadMedia,uploadAvatar,changePassword"
+20,4,Chỉnh sửa Thông Tin Đơn Vị Đối Tác,"uploadPaperProof,update,active,inactive,uploadMedia,uploadAvatar,changePassword,verify,reject"
 21,4,Xem Thông tin Đơn Vị Đối Tác,show
 22,4,Xóa Đơn Vị Đối Tác,delete
 23,4,Duyệt Đơn Vị Đối Tác,"active,inactive"
@@ -103,3 +103,13 @@ id,groupId,title,key
 102,23,Danh Sách Kho,index
 103,23,Chi Tiết Kho,show
 104,23,Xóa Kho,delete
+105,24,Danh sách tài khoản ngân hàng,index
+106,24,Tạo mới tài khoản ngân hàng,create
+107,24,Chỉnh sửa tài khoản ngân hàng,update
+108,24,Chi tiết tài khoản ngân hàng,show
+109,24,Xóa tài khoản ngân hàng,delete
+110,24,Tải lên mã QR code,uploadQRCode
+111,25,Xem chi tiết chính sách điều khoản,show
+112,25,Chỉnh sửa chính sách điều khoản,update
+113,26,Xem chi tiết cài đặt hệ thống,show
+114,26,Chỉnh sửa cài đặt hệ thống,update
