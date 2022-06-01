@@ -1,4 +1,5 @@
 import settings from '@configs/settings';
+import BillTemplateModel from '@models/billTemplates';
 import CollaboratorModel from '@models/collaborators';
 import OrderModel from '@models/orders';
 import ProductVariantModel from '@models/productVariants';
@@ -26,6 +27,17 @@ class OrderDecorator {
     if (order.coinUsed) {
       coinDiscount = order.coinUsed ? (systemSetting.coinConversionLevel * order.coinUsed) : 0;
     }
+    const billTemplate = (await BillTemplateModel.findOrCreate({
+      where: {
+        status: BillTemplateModel.STATUS_ENUM.ACTIVE,
+      },
+      defaults: {
+        id: undefined,
+        title: 'Hóa đơn thanh toán',
+        content: '',
+        status: BillTemplateModel.STATUS_ENUM.ACTIVE,
+      },
+    }))[0];
     for (const subOrder of order.subOrders) {
       const warehouse = warehouses.find((warehouse: any) => warehouse.id === subOrder.warehouseId);
       let totalWeight = 0;
@@ -39,6 +51,7 @@ class OrderDecorator {
       subOrder.warehouseId = warehouse.id;
       subOrder.warehouse = warehouse;
       subOrder.note = order.note;
+      subOrder.billId = billTemplate.id;
       for (const item of subOrder.items) {
         const productVariant = productVariants.find((productVariant: any) => productVariant.id === item.productVariantId);
         const productVariantInfo = {

@@ -304,6 +304,13 @@ router.get('/products', SelectionController.listProducts);
  *        name: "userId"
  *        description: "id khach hang"
  *        type: "number"
+ *      - in: query
+ *        name: "userType"
+ *        enum:
+ *         - user
+ *         - collaborator
+ *         - agency
+ *         - distributor
  *     responses:
  *       200:
  *         description: "success"

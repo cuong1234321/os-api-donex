@@ -3,6 +3,9 @@ const AddressBookEntity = {
   id: {
     type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false,
   },
+  userType: {
+    type: DataTypes.ENUM({ values: ['user', 'collaborator', 'agency', 'distributor'] }), defaultValue: 'user',
+  },
   userId: {
     type: DataTypes.INTEGER, allowNull: false,
   },
