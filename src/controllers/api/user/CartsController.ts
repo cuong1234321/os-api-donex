@@ -93,6 +93,7 @@ class CartController {
       cart.setDataValue('totalBill', cartTotalBill);
       cart.setDataValue('totalFee', cartTotalFee);
       cart.setDataValue('totalTax', cartTotalTax);
+      cart.setDataValue('totalItems', warehouseQuantity);
       sendSuccess(res, { cart });
     } catch (error) {
       sendError(res, 500, error.message, error);
