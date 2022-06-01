@@ -186,7 +186,7 @@ class SelectionController {
 
   public async listAddressBooks (req: Request, res: Response) {
     try {
-      const { userId } = req.query;
+      const { userId, userType } = req.query;
       const sortBy = req.query.sortBy || 'createdAt';
       const sortOrder = req.query.sortOrder || 'DESC';
       const scopes: any = [
@@ -194,6 +194,7 @@ class SelectionController {
         { method: ['bySorting', sortBy, sortOrder] },
       ];
       if (userId) scopes.push({ method: ['byUser', userId] });
+      if (userType) scopes.push({ method: ['byType', userType] });
       const addressBooks = await AddressBookModel.scope(scopes).findAll();
       sendSuccess(res, addressBooks);
     } catch (error) {

@@ -9,6 +9,7 @@ import MWardModel from './mWards';
 
 class AddressBookModel extends Model<AddressBookInterface> implements AddressBookInterface {
   public id: number;
+  public userType: string;
   public userId: number;
   public fullName: string;
   public phoneNumber: string;
@@ -22,6 +23,7 @@ class AddressBookModel extends Model<AddressBookInterface> implements AddressBoo
 
   static readonly CREATABLE_PARAMETERS = ['fullName', 'phoneNumber', 'address', 'provinceId', 'districtId', 'wardId', 'isDefault'];
   static readonly UPDATABLE_PARAMETERS = ['fullName', 'phoneNumber', 'address', 'provinceId', 'districtId', 'wardId', 'isDefault'];
+  static readonly USER_TYPE_ENUM = { USER: 'user', COLLABORATOR: 'collaborator', AGENCY: 'agency', DISTRIBUTOR: 'distributor' }
 
   static readonly hooks: Partial<ModelHooks<AddressBookModel>> = {
     async beforeSave (record) {
@@ -120,6 +122,21 @@ class AddressBookModel extends Model<AddressBookInterface> implements AddressBoo
             as: 'ward',
           },
         ],
+      };
+    },
+    byUserAble (userId, userType) {
+      return {
+        where: {
+          userId,
+          userType,
+        },
+      };
+    },
+    byType (userType) {
+      return {
+        where: {
+          userType,
+        },
       };
     },
   }

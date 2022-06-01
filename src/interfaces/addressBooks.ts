@@ -1,6 +1,7 @@
 
 interface AddressBookInterface {
   id: number,
+  userType: string,
   userId: number;
   fullName: string,
   phoneNumber: string,

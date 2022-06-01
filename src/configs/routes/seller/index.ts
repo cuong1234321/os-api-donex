@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { sellerPassport } from '@middlewares/passport';
+import AddressRouter from './AddressBooks';
 import BankAccountRouter from './BankAccounts';
 import PasswordRouter from './Passwords';
 import SessionsRouter from './Sessions';
@@ -12,6 +13,7 @@ import SellerNotificationRouter from './SellerNotifications';
 
 const router = Router();
 
+router.use('/address_books', sellerPassport.authenticate('jwt', { session: false }), AddressRouter);
 router.use('/bank_accounts', BankAccountRouter);
 router.use('/passwords', PasswordRouter);
 router.use('/sessions', SessionsRouter);
