@@ -38,7 +38,7 @@ class CartController {
       const saleCampaigns = await this.getSaleCampaigns();
       cartItems = await SaleCampaignProductDecorator.calculatorVariantPrice(cartItems, saleCampaigns);
       const ward = await this.validateAddress(params);
-      const { warehouses, cartTotalBill, cartTotalFee, cartTotalTax, warehouseQuantity } = await this.groupByWarehouse(cartItems, ward, validCartItems);
+      const { warehouses, cartTotalBill, cartTotalFee, cartTotalTax, warehouseQuantity, cartItemQuantity } = await this.groupByWarehouse(cartItems, ward, validCartItems);
       let cartSubTotal = cartTotalBill + cartTotalFee + cartTotalTax;
       const voucher = await this.validateVoucher(params, currentUser);
       const applicationDiscount = await this.calculatorOrderDiscount(voucher, cartSubTotal);
@@ -94,6 +94,7 @@ class CartController {
       cart.setDataValue('totalFee', cartTotalFee);
       cart.setDataValue('totalTax', cartTotalTax);
       cart.setDataValue('totalItems', warehouseQuantity);
+      cart.setDataValue('totalCartItems', cartItemQuantity);
       sendSuccess(res, { cart });
     } catch (error) {
       sendError(res, 500, error.message, error);
@@ -202,6 +203,7 @@ class CartController {
     let cartTotalFee = 0;
     let cartTotalTax = 0;
     let warehouseQuantity = 0;
+    let cartItemQuantity = 0;
     for (const warehouse of warehouses) {
       const warehouseCartItems = cartItems.filter((record: any) => record.warehouseId === warehouse.id);
       warehouse.setDataValue('cartItems', warehouseCartItems);
@@ -215,6 +217,7 @@ class CartController {
           totalBill = totalBill + (warehouseCartItem.variants.getDataValue('saleCampaignPrice')) * warehouseCartItem.quantity;
           warehouseQuantity = warehouseQuantity + warehouseCartItem.quantity;
         }
+        cartItemQuantity = cartItemQuantity + warehouseCartItem.quantity;
       }
       if (ward) {
         const feeParams = {
@@ -244,7 +247,7 @@ class CartController {
       warehouse.setDataValue('totalDiscount', 0);
       warehouse.setDataValue('finalAmount', finalAmount);
     }
-    return { warehouses, cartTotalBill, cartTotalFee, cartTotalTax, warehouseQuantity };
+    return { warehouses, cartTotalBill, cartTotalFee, cartTotalTax, warehouseQuantity, cartItemQuantity };
   }
 
   private async getSaleCampaigns () {
