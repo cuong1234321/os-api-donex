@@ -22,3 +22,6 @@ id,title,key
 21,Quản Lý Chuyển Kho,WarehouseTransfersController
 22,Quản Lý Báo cáo Kho,WarehouseReportsController
 23,Quản Lý Kho,WarehousesController
+24,Quản Lý tài khoản ngân hàng,BanksController
+25,Quản Lý chính sách và điều khoản,TermsController
+26,Quản Lý cài đặt hệ thống,SystemSettingsController
