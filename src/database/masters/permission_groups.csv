@@ -25,3 +25,5 @@ id,title,key
 24,Quản Lý tài khoản ngân hàng,BanksController
 25,Quản Lý chính sách và điều khoản,TermsController
 26,Quản Lý cài đặt hệ thống,SystemSettingsController
+27,Quản Lý phân quyền,RolesController
+28,Quản Lý nhóm quyền,PermissionGroupsController
