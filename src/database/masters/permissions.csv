@@ -113,3 +113,9 @@ id,groupId,title,key
 112,25,Chỉnh sửa chính sách điều khoản,update
 113,26,Xem chi tiết cài đặt hệ thống,show
 114,26,Chỉnh sửa cài đặt hệ thống,update
+115,27,Danh sách phân quyền,index
+116,27,Tạo Mới phân quyền,create
+117,27,Chi Tiết phân quyền,show
+118,27,Xóa phân quyền,delete
+119,27,Chỉnh sửa phân quyền,update
+120,28,Danh sách nhóm quyền,index
