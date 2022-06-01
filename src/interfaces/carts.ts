@@ -20,6 +20,7 @@ interface CartInterface {
   voucherDiscount?: number;
   coinDiscount?: number;
   dailyDiscount?: number;
+  totalCartItems?: number;
 };
 
 export default CartInterface;
