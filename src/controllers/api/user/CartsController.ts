@@ -16,6 +16,7 @@ import SystemSettingModel from '@models/systemSetting';
 import UserModel from '@models/users';
 import RankModel from '@models/ranks';
 import ProductVariantModel from '@models/productVariants';
+import OrderModel from '@models/orders';
 
 class CartController {
   public async showCart (req: Request, res: Response) {
@@ -345,7 +346,7 @@ class CartController {
     let isFreeShipping = false;
     cart.setDataValue('isFreeShipping', isFreeShipping);
     const { rankDiscountValue, valueDiscount }: any = await this.applyRankDiscount(currentUser, warehouseQuantity, (cartTotalBill + cartTotalTax));
-    if ((cartTotalBill + cartTotalTax) > settings.normalShippingDiscount || (valueDiscount < 20 && (cartTotalBill + cartTotalTax) > settings.rankShippingDiscount)) {
+    if (((cartTotalBill + cartTotalTax) > settings.normalShippingDiscount || (valueDiscount < 20 && (cartTotalBill + cartTotalTax) > settings.rankShippingDiscount)) && params.paymentMethod !== OrderModel.PAYMENT_METHOD.COD) {
       isFreeShipping = true;
       cartTotalFee = 0;
       cart.setDataValue('isFreeShipping', isFreeShipping);
