@@ -62,7 +62,26 @@ public deletedAt?: Date;
 public warehouse?: WarehouseModel;
 public items?: OrderItemModel[];
 
-static readonly STATUS_ENUM = { DRAFT: 'draft', PENDING: 'pending', WAITING_TO_TRANSFER: 'waitingToTransfer', DELIVERY: 'delivery', WAITING_TO_PAY: 'waitingToPay', DELIVERED: 'delivered', FAIL: 'fail', RETURNED: 'returned', CANCEL: 'cancel', REJECT: 'reject', REFUND: 'refund', FINISH: 'finish' }
+static readonly STATUS_ENUM = {
+  DRAFT: 'draft',
+  PENDING: 'pending',
+  WAITING_TO_TRANSFER: 'waitingToTransfer',
+  DELIVERY: 'delivery',
+  WAITING_TO_PAY: 'waitingToPay',
+  DELIVERED: 'delivered',
+  FAIL: 'fail',
+  RETURNED: 'returned',
+  CANCEL: 'cancel',
+  REJECT: 'reject',
+  REFUND: 'refund',
+  FINISH: 'finish',
+}
+
+static readonly DELIVERY_STATUS_ENUM = [
+  'delivery',
+  'waitingToPay',
+]
+
 static readonly CANCEL_STATUS = { PENDING: 'pending', APPROVED: 'approved', REJECTED: 'rejected' }
 static readonly CANCELABLE_TYPE_ENUM = { USER: 'user', COLLABORATOR: 'collaborator', AGENCY: 'agency', DISTRIBUTOR: 'distributor' };
 
@@ -644,6 +663,13 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
           as: 'order',
           where: { referralCode },
         }],
+      };
+    },
+    byDeliveryStatus () {
+      return {
+        where: {
+          status: { [Op.or]: [SubOrderModel.STATUS_ENUM.DELIVERY, SubOrderModel.STATUS_ENUM.WAITING_TO_PAY] },
+        },
       };
     },
   }

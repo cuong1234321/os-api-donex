@@ -39,4 +39,6 @@ export default {
   defaultRatingBonusPoint: 1,
   minMoneyUpRank: 500000,
   maxMoneyUpRank: 1000000,
+  normalShippingDiscount: 1000000,
+  rankShippingDiscount: 500000,
 };

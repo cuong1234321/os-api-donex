@@ -312,9 +312,9 @@ class CartController {
   }
 
   private async applyRankDiscount (user: any, totalQuantity: number, totalPrice: number) {
-    let rankDiscount = 0;
+    let rankDiscountValue = 0;
     let rank: any;
-    if (!user) { return rankDiscount; }
+    if (!user) { return rankDiscountValue; }
     if (user.rank === UserModel.RANK_ENUM.VIP) {
       rank = await RankModel.scope([
         { method: ['byType', UserModel.RANK_ENUM.VIP] },
@@ -333,15 +333,24 @@ class CartController {
       ]).findOne();
     }
     if (!rank) {
-      return rankDiscount;
+      return rankDiscountValue;
     }
-    rankDiscount = totalPrice * rank.conditions[0].discountValue / 100;
-    return rankDiscount;
+    const valueDiscount = rank.conditions[0].discountValue;
+    rankDiscountValue = totalPrice * (valueDiscount / 100);
+    return { rankDiscountValue, valueDiscount };
   }
 
   private async formatCartItem (warehouses: any, cartTotalBill: any, cartTotalFee: any, cartTotalTax: any, warehouseQuantity: any, cartItemQuantity: any, cart: any, currentUser: any, systemSetting: any, params: any) {
-    let cartSubTotal = cartTotalBill + cartTotalFee + cartTotalTax;
     const voucher = await this.validateVoucher(params, currentUser);
+    let isFreeShipping = false;
+    cart.setDataValue('isFreeShipping', isFreeShipping);
+    const { rankDiscountValue, valueDiscount }: any = await this.applyRankDiscount(currentUser, warehouseQuantity, (cartTotalBill + cartTotalTax));
+    if ((cartTotalBill + cartTotalTax) > settings.normalShippingDiscount || (valueDiscount < 20 && (cartTotalBill + cartTotalTax) > settings.rankShippingDiscount)) {
+      isFreeShipping = true;
+      cartTotalFee = 0;
+      cart.setDataValue('isFreeShipping', isFreeShipping);
+    }
+    let cartSubTotal = cartTotalBill + cartTotalFee + cartTotalTax;
     const applicationDiscount = await this.calculatorOrderDiscount(voucher, cartSubTotal);
     let coinDiscount = params.coins ? (systemSetting.coinConversionLevel * params.coins) : 0;
     if (cartSubTotal < coinDiscount) {
@@ -357,8 +366,15 @@ class CartController {
         cart.setDataValue('coinDiscount', coinDiscount);
         cart.setDataValue('finalAmount', 0);
         warehouse.setDataValue('coinDiscount', coinDiscount);
+        warehouse.setDataValue('freeDiscount', warehouse.getDataValue('totalFee'));
+        warehouse.setDataValue('totalFee', 0);
         warehouse.setDataValue('finalAmount', 0);
       } else {
+        if (isFreeShipping) {
+          warehouse.setDataValue('finalAmount', warehouse.getDataValue('finalAmount') - warehouse.getDataValue('totalFee'));
+          warehouse.setDataValue('freeDiscount', warehouse.getDataValue('totalFee'));
+          warehouse.setDataValue('totalFee', 0);
+        }
         const warehouseCoinDiscount = Math.round((warehouse.getDataValue('finalAmount') / cartSubTotal) * coinDiscount);
         warehouse.setDataValue('finalAmount', warehouse.getDataValue('finalAmount') - warehouseCoinDiscount);
         warehouse.setDataValue('coinDiscount', warehouseCoinDiscount);
@@ -380,7 +396,6 @@ class CartController {
     }
     cartSubTotal = cart.getDataValue('finalAmount');
     cart.setDataValue('finalAmount', 0);
-    const rankDiscountValue = await this.applyRankDiscount(currentUser, warehouseQuantity, cartSubTotal);
     for (const warehouse of warehouses) {
       const rankDiscount = rankDiscountValue ? Math.round((warehouse.getDataValue('finalAmount') / cartSubTotal) * rankDiscountValue) : 0;
       warehouse.setDataValue('rankDiscount', rankDiscount);
