@@ -35,7 +35,7 @@ router.use('/accounts', AccountsRouter);
 router.use('/authentication_otps', AuthenticationOtpsRouter);
 router.use('/banners', BannerRouter);
 router.use('/bank_accounts', BankAccountRouter);
-router.use('/carts', userPassport.authenticate('jwt', { session: false }), CartRouter);
+router.use('/carts', CartRouter);
 router.use('/collaborators', CollaboratorRouter);
 router.use('/coin_wallet_changes', userPassport.authenticate('jwt', { session: false }), CoinWalletChangeRouter);
 router.use('/favorite_products', userPassport.authenticate('jwt', { session: false }), FavoriteProductRouter);

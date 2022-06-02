@@ -229,6 +229,38 @@ class ProductVariantModel extends Model<ProductVariantInterface> implements Prod
         },
       };
     },
+    withVariantAttributes () {
+      return {
+        attributes: {
+          exclude: ['createdAt', 'updatedAt'],
+          include: [
+            [
+              Sequelize.literal('(SELECT name FROM products WHERE products.id = ProductVariantModel.productId)'),
+              'productName',
+            ],
+            [
+              Sequelize.literal('(SELECT weight FROM products WHERE products.id = ProductVariantModel.productId)'),
+              'productWeight',
+            ],
+            [
+              Sequelize.literal('(SELECT thumbnail FROM product_options WHERE product_options.thumbnail is not Null and product_options.id IN ' +
+               ' (SELECT optionId from product_variant_options WHERE product_variant_options.variantId = ProductVariantModel.id) limit 0,1 )'),
+              'thumbnail',
+            ],
+            [
+              Sequelize.literal('(SELECT id FROM product_options WHERE `key` = ' + ` "${ProductOptionModel.KEY_ENUM.COLOR}" AND id IN ` +
+               ' (SELECT optionId FROM product_variant_options WHERE product_variant_options.variantId = 99))'),
+              'optionColorId',
+            ],
+            [
+              Sequelize.literal('(SELECT id FROM product_options WHERE `key` = ' + ` "${ProductOptionModel.KEY_ENUM.SIZE}" AND id IN ` +
+               ' (SELECT optionId FROM product_variant_options WHERE product_variant_options.variantId = 99))'),
+              'optionSizeId',
+            ],
+          ],
+        },
+      };
+    },
   }
 
   public async deleteVariantOption () {
