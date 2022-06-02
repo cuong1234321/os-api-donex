@@ -188,52 +188,8 @@ router.post('/', authGuest, OrdersController.create);
  *              description: "địa chỉ mua hàng"
  *              default: "string"
  *              require: true
- *            subOrders:
- *              type: "array"
- *              items:
- *                type: "object"
- *                properties:
- *                  warehouseId:
- *                    type: "integer"
- *                    description: "id kho"
- *                    default: "null"
- *                    require: true
- *                  deliveryType:
- *                    type: "string"
- *                    description: "thong tin"
- *                    default: "null"
- *                    require: true
- *                  deliveryInfo:
- *                    type: "string"
- *                    description: "thong tin"
- *                    default: "null"
- *                    require: true
- *                  shippingType:
- *                    type: "string"
- *                    description: "thong tin"
- *                    default: "null"
- *                    require: true
- *                  shippingAttributeType:
- *                    type: "string"
- *                    description: "thong tin"
- *                    default: "null"
- *                    require: true
- *                  items:
- *                    type: "array"
- *                    items:
- *                      type: "object"
- *                      properties:
- *                        productVariantId:
- *                          type: "integer"
- *                          description: "id variant"
- *                          default: "null"
- *                          require: true
- *                        quantity:
- *                          type: "integer"
- *                          description: "Số lượng"
- *                          default: "null"
- *                          require: true
- *     responses:
+
+*     responses:
  *       200:
  *         description: "OK"
  *       500:

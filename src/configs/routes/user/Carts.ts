@@ -1,4 +1,6 @@
 import CartController from '@controllers/api/user/CartsController';
+import { authGuest } from '@middlewares/auth';
+import { userPassport } from '@middlewares/passport';
 import { Request, Response, Router } from 'express';
 
 const router = Router();
@@ -56,6 +58,9 @@ const router = Router();
  *                  productVariantIds:
  *                    type: "string"
  *                    description: "danh sách ngăn cách nhau bởi dấu phẩy"
+ *                  quantity:
+ *                    type: "number"
+ *                    description: "Số lượng sản phẩm"
  *     responses:
  *       200:
  *         description: Success.
@@ -64,7 +69,72 @@ const router = Router();
  *     security:
  *      - Bearer: []
  */
-router.post('/', (req: Request, res: Response) => CartController.showCart(req, res));
+router.post('/',  userPassport.authenticate('jwt', { session: false }),, (req: Request, res: Response) => CartController.showCart(req, res));
+
+/**
+ * @openapi
+ * /u/carts/cart_guest:
+ *   post:
+ *     tags:
+ *      - "[USER] CARTS"
+ *     summary: Chi tiết giỏ hàng guest
+ *     parameters:
+ *      - in: "body"
+ *        name: "body"
+ *        description: "Thông tin product"
+ *        schema:
+ *          type: "object"
+ *          properties:
+ *            districtId:
+ *              type: "number"
+ *              description: "Địa chỉ quận huyện"
+ *            provinceId:
+ *              type: "number"
+ *              description: "Địa chỉ thành phố"
+ *            wardId:
+ *              type: "number"
+ *              description: "Địa chỉ phường xã"
+ *            paymentMethod:
+ *              type: "string"
+ *              description: "Phương thức thanh toán"
+ *              enum:
+ *                - COD
+ *                - VnPay
+ *                - Banking
+ *            transportUnit:
+ *              type: "string"
+ *              description: "Phương thức vận chuyển"
+ *              enum:
+ *                - GHN
+ *                - VTP
+ *            cartItems:
+ *              type: "array"
+ *              items:
+ *                type: "object"
+ *                properties:
+ *                  warehouseId:
+ *                    type: "number"
+ *                    description: "id warehouse"
+ *                  items:
+ *                    type: "array"
+ *                    items:
+ *                      type: "object"
+ *                      properties:
+ *                        productVariantId:
+ *                          type: "number"
+ *                          description: "id variant"
+ *                        quantity:
+ *                          type: "number"
+ *                          description: "quantity"
+ *     responses:
+ *       200:
+ *         description: Success.
+ *       500:
+ *         description: Internal error.
+ *     security:
+ *      - Bearer: []
+ */
+router.post('/cart_guest', (req: Request, res: Response) => CartController.cartGuest(req, res));
 
 /**
  * @openapi
@@ -81,7 +151,7 @@ router.post('/', (req: Request, res: Response) => CartController.showCart(req, r
  *     security:
  *      - Bearer: []
  */
-router.get('/info', (req: Request, res: Response) => CartController.info(req, res));
+router.get('/info', userPassport.authenticate('jwt', { session: false }), (req: Request, res: Response) => CartController.info(req, res));
 
 /**
  * @openapi
@@ -113,7 +183,7 @@ router.get('/info', (req: Request, res: Response) => CartController.info(req, re
  *     security:
  *      - Bearer: []
  */
-router.put('/', CartController.update);
+router.put('/', userPassport.authenticate('jwt', { session: false }), CartController.update);
 
 /**
  * @openapi
@@ -139,7 +209,7 @@ router.put('/', CartController.update);
  *     security:
  *      - Bearer: []
  */
-router.delete('/:productVariantId/warehouse/:warehouseId', CartController.delete);
+router.delete('/:productVariantId/warehouse/:warehouseId', userPassport.authenticate('jwt', { session: false }), CartController.delete);
 
 /**
  * @openapi
@@ -157,6 +227,6 @@ router.delete('/:productVariantId/warehouse/:warehouseId', CartController.delete
  *      - Bearer: []
  */
 
-router.delete('/', CartController.empty);
+router.delete('/', userPassport.authenticate('jwt', { session: false }), CartController.empty);
 
 export default router;

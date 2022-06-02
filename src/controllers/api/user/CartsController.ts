@@ -15,6 +15,7 @@ import VoucherConditionModel from '@models/voucherConditions';
 import SystemSettingModel from '@models/systemSetting';
 import UserModel from '@models/users';
 import RankModel from '@models/ranks';
+import ProductVariantModel from '@models/productVariants';
 
 class CartController {
   public async showCart (req: Request, res: Response) {
@@ -26,7 +27,7 @@ class CartController {
       const params = req.parameters.permit(CartModel.CREATABLE_PARAMETERS).value();
       const validCartItems = params.cartItems ? params.cartItems.map((record: any) => { return { warehouseId: record.warehouseId, productVariantIds: record.productVariantIds.split(',') }; }) : [];
       const { currentUser } = req;
-      const cart = (await CartModel.findOrCreate({
+      let cart = (await CartModel.findOrCreate({
         where: { userId: req.currentUser.id },
         defaults: { id: undefined, userId: req.currentUser.id },
       }))[0];
@@ -39,62 +40,46 @@ class CartController {
       cartItems = await SaleCampaignProductDecorator.calculatorVariantPrice(cartItems, saleCampaigns);
       const ward = await this.validateAddress(params);
       const { warehouses, cartTotalBill, cartTotalFee, cartTotalTax, warehouseQuantity, cartItemQuantity } = await this.groupByWarehouse(cartItems, ward, validCartItems);
-      let cartSubTotal = cartTotalBill + cartTotalFee + cartTotalTax;
-      const voucher = await this.validateVoucher(params, currentUser);
-      const applicationDiscount = await this.calculatorOrderDiscount(voucher, cartSubTotal);
-      let coinDiscount = params.coins ? (systemSetting.coinConversionLevel * params.coins) : 0;
-      if (cartSubTotal < coinDiscount) {
-        coinDiscount = cartSubTotal;
+      cart = await this.formatCartItem(warehouses, cartTotalBill, cartTotalFee, cartTotalTax, warehouseQuantity, cartItemQuantity, cart, currentUser, systemSetting, params);
+      sendSuccess(res, { cart });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async cartGuest (req: Request, res: Response) {
+    try {
+      const systemSetting: any = (await SystemSettingModel.findOrCreate({
+        where: { },
+        defaults: { id: undefined },
+      }))[0];
+      const params = req.parameters.permit(CartModel.CREATABLE_GUEST_PARAMETERS).value();
+      if (!params.cartItems) {
+        return sendSuccess(res, { });
       }
-      cart.setDataValue('coinDiscount', coinDiscount);
-      cart.setDataValue('finalAmount', 0);
-      cart.setDataValue('voucherDiscount', 0);
-      cart.setDataValue('totalDiscount', 0);
-      cart.setDataValue('rankDiscount', 0);
-      for (const warehouse of warehouses) {
-        if ((warehouse.totalBill + warehouse.totalFee + warehouse.totalTax) >= cartSubTotal) {
-          cart.setDataValue('coinDiscount', coinDiscount);
-          cart.setDataValue('finalAmount', 0);
-          warehouse.setDataValue('coinDiscount', coinDiscount);
-          warehouse.setDataValue('finalAmount', 0);
-        } else {
-          const warehouseCoinDiscount = Math.round((warehouse.getDataValue('finalAmount') / cartSubTotal) * coinDiscount);
-          warehouse.setDataValue('finalAmount', warehouse.getDataValue('finalAmount') - warehouseCoinDiscount);
-          warehouse.setDataValue('coinDiscount', warehouseCoinDiscount);
-          warehouse.setDataValue('totalDiscount', warehouse.getDataValue('totalDiscount') + warehouseCoinDiscount);
-          cart.setDataValue('finalAmount', cart.getDataValue('finalAmount') + warehouse.getDataValue('finalAmount'));
-          cart.setDataValue('totalDiscount', cart.getDataValue('totalDiscount') + warehouse.getDataValue('coinDiscount'));
+      const cartItems: any = [];
+      const productVariantIds = params.cartItems.map((record: any) => { return record.items.map((item: any) => item.productVariantId); });
+      const validCartItems = params.cartItems ? params.cartItems.map((record: any) => { return { warehouseId: record.warehouseId, productVariantIds: record.items.map((item: any) => item.productVariantId.toString()) }; }) : [];
+      const productVariants = await ProductVariantModel.scope([
+        { method: ['byId', productVariantIds.flat(Infinity)] },
+        'withVariantAttributes',
+      ]).findAll();
+      for (const cartItem of params.cartItems) {
+        for (const item of cartItem.items) {
+          const variant = productVariants.find((variant: any) => variant.id === item.productVariantId);
+          if (!variant) break;
+          cartItems.push({
+            productVariantId: variant.id,
+            quantity: item.quantity,
+            warehouseId: cartItem.warehouseId,
+            variants: variant,
+          });
         }
       }
-      cartSubTotal = cart.getDataValue('finalAmount');
-      cart.setDataValue('finalAmount', 0);
-      for (const warehouse of warehouses) {
-        const voucherDiscount = applicationDiscount ? Math.round((warehouse.getDataValue('finalAmount') / cartSubTotal) * applicationDiscount) : 0;
-        warehouse.setDataValue('voucherDiscount', voucherDiscount);
-        warehouse.setDataValue('finalAmount', warehouse.getDataValue('finalAmount') - voucherDiscount);
-        warehouse.setDataValue('totalDiscount', warehouse.getDataValue('totalDiscount') + voucherDiscount);
-        cart.setDataValue('finalAmount', cart.getDataValue('finalAmount') + warehouse.getDataValue('finalAmount'));
-        cart.setDataValue('voucherDiscount', cart.getDataValue('voucherDiscount') + warehouse.getDataValue('voucherDiscount'));
-        cart.setDataValue('totalDiscount', cart.getDataValue('totalDiscount') + warehouse.getDataValue('voucherDiscount'));
-      }
-      cartSubTotal = cart.getDataValue('finalAmount');
-      cart.setDataValue('finalAmount', 0);
-      const rankDiscountValue = await this.applyRankDiscount(currentUser, warehouseQuantity, cartSubTotal);
-      for (const warehouse of warehouses) {
-        const rankDiscount = rankDiscountValue ? Math.round((warehouse.getDataValue('finalAmount') / cartSubTotal) * rankDiscountValue) : 0;
-        warehouse.setDataValue('rankDiscount', rankDiscount);
-        warehouse.setDataValue('finalAmount', warehouse.getDataValue('finalAmount') - rankDiscount);
-        warehouse.setDataValue('totalDiscount', warehouse.getDataValue('totalDiscount') + rankDiscount);
-        cart.setDataValue('finalAmount', cart.getDataValue('finalAmount') + warehouse.getDataValue('finalAmount'));
-        cart.setDataValue('rankDiscount', cart.getDataValue('rankDiscount') + warehouse.getDataValue('rankDiscount'));
-        cart.setDataValue('totalDiscount', cart.getDataValue('totalDiscount') + warehouse.getDataValue('rankDiscount'));
-      }
-      cart.setDataValue('warehouses', warehouses);
-      cart.setDataValue('totalBill', cartTotalBill);
-      cart.setDataValue('totalFee', cartTotalFee);
-      cart.setDataValue('totalTax', cartTotalTax);
-      cart.setDataValue('totalItems', warehouseQuantity);
-      cart.setDataValue('totalCartItems', cartItemQuantity);
+      await this.guestVariantOptions(cartItems);
+      const ward = await this.validateAddress(params);
+      const { warehouses, cartTotalBill, cartTotalFee, cartTotalTax, warehouseQuantity, cartItemQuantity } = await this.groupByWarehouse(cartItems, ward, validCartItems);
+      const cart = await this.formatGuestCartItem(warehouses, cartTotalBill, cartTotalFee, cartTotalTax, warehouseQuantity, cartItemQuantity, systemSetting, params);
       sendSuccess(res, { cart });
     } catch (error) {
       sendError(res, 500, error.message, error);
@@ -194,6 +179,26 @@ class CartController {
     }
   }
 
+  private async guestVariantOptions (cartItems: any) {
+    for (const item of cartItems) {
+      item.variantOptions = [];
+      const variantOptionColors = await ProductVariantOptionModel.scope([
+        { method: ['byOptionId', item.variants.getDataValue('optionColorId')] },
+      ]).findAll();
+      const warehouseVariants = await WarehouseVariantModel.scope([
+        { method: ['byProduct', item.variants.get('productId')] },
+        { method: ['byWarehouseId', item.warehouseId] },
+      ]).findAll({ attributes: ['variantId'] });
+      const variantOptionColorIds = variantOptionColors.map((record: any) => record.variantId);
+      const warehouseVariantIds = [...new Set(warehouseVariants.map((record: any) => record.variantId))];
+      const variantOptions = await ProductVariantOptionModel.scope([
+        { method: ['byVariantId', warehouseVariantIds.filter((obj) => variantOptionColorIds.indexOf(obj) !== -1)] },
+        'withProductOption',
+      ]).findAll({ attributes: ['variantId', 'optionId'] });
+      item.variantOptions = variantOptions;
+    }
+  }
+
   private async groupByWarehouse (cartItems: any, ward: any, validCartItems: any) {
     const warehouses = await WarehouseModel.scope([
       { method: ['byId', [...new Set(cartItems.map((record: any) => record.warehouseId))]] },
@@ -214,7 +219,7 @@ class CartController {
         const warehouseValid = validCartItems.find((record: any) => record.warehouseId === warehouse.id);
         if (warehouseValid && warehouseValid.productVariantIds.includes(warehouseCartItem.productVariantId.toString())) {
           totalWeight = totalWeight + (warehouseCartItem.variants.getDataValue('productWeight') * warehouseCartItem.quantity);
-          totalBill = totalBill + (warehouseCartItem.variants.getDataValue('saleCampaignPrice')) * warehouseCartItem.quantity;
+          totalBill = totalBill + (warehouseCartItem.variants.getDataValue('saleCampaignPrice') || warehouseCartItem.variants.getDataValue('sellPrice')) * warehouseCartItem.quantity;
           warehouseQuantity = warehouseQuantity + warehouseCartItem.quantity;
         }
         cartItemQuantity = cartItemQuantity + warehouseCartItem.quantity;
@@ -272,6 +277,7 @@ class CartController {
 
   private async validateVoucher (params: any, user: any) {
     if (!params.voucherId) return false;
+    if (!user) return false;
     const voucher = await VoucherModel.scope([
       { method: ['byRecipient', user.id] },
       { method: ['byId', params.voucherId] },
@@ -308,6 +314,7 @@ class CartController {
   private async applyRankDiscount (user: any, totalQuantity: number, totalPrice: number) {
     let rankDiscount = 0;
     let rank: any;
+    if (!user) { return rankDiscount; }
     if (user.rank === UserModel.RANK_ENUM.VIP) {
       rank = await RankModel.scope([
         { method: ['byType', UserModel.RANK_ENUM.VIP] },
@@ -330,6 +337,126 @@ class CartController {
     }
     rankDiscount = totalPrice * rank.conditions[0].discountValue / 100;
     return rankDiscount;
+  }
+
+  private async formatCartItem (warehouses: any, cartTotalBill: any, cartTotalFee: any, cartTotalTax: any, warehouseQuantity: any, cartItemQuantity: any, cart: any, currentUser: any, systemSetting: any, params: any) {
+    let cartSubTotal = cartTotalBill + cartTotalFee + cartTotalTax;
+    const voucher = await this.validateVoucher(params, currentUser);
+    const applicationDiscount = await this.calculatorOrderDiscount(voucher, cartSubTotal);
+    let coinDiscount = params.coins ? (systemSetting.coinConversionLevel * params.coins) : 0;
+    if (cartSubTotal < coinDiscount) {
+      coinDiscount = cartSubTotal;
+    }
+    cart.setDataValue('coinDiscount', coinDiscount);
+    cart.setDataValue('finalAmount', 0);
+    cart.setDataValue('voucherDiscount', 0);
+    cart.setDataValue('totalDiscount', 0);
+    cart.setDataValue('rankDiscount', 0);
+    for (const warehouse of warehouses) {
+      if ((warehouse.totalBill + warehouse.totalFee + warehouse.totalTax) >= cartSubTotal) {
+        cart.setDataValue('coinDiscount', coinDiscount);
+        cart.setDataValue('finalAmount', 0);
+        warehouse.setDataValue('coinDiscount', coinDiscount);
+        warehouse.setDataValue('finalAmount', 0);
+      } else {
+        const warehouseCoinDiscount = Math.round((warehouse.getDataValue('finalAmount') / cartSubTotal) * coinDiscount);
+        warehouse.setDataValue('finalAmount', warehouse.getDataValue('finalAmount') - warehouseCoinDiscount);
+        warehouse.setDataValue('coinDiscount', warehouseCoinDiscount);
+        warehouse.setDataValue('totalDiscount', warehouse.getDataValue('totalDiscount') + warehouseCoinDiscount);
+        cart.setDataValue('finalAmount', cart.getDataValue('finalAmount') + warehouse.getDataValue('finalAmount'));
+        cart.setDataValue('totalDiscount', cart.getDataValue('totalDiscount') + warehouse.getDataValue('coinDiscount'));
+      }
+    }
+    cartSubTotal = cart.getDataValue('finalAmount');
+    cart.setDataValue('finalAmount', 0);
+    for (const warehouse of warehouses) {
+      const voucherDiscount = applicationDiscount ? Math.round((warehouse.getDataValue('finalAmount') / cartSubTotal) * applicationDiscount) : 0;
+      warehouse.setDataValue('voucherDiscount', voucherDiscount);
+      warehouse.setDataValue('finalAmount', warehouse.getDataValue('finalAmount') - voucherDiscount);
+      warehouse.setDataValue('totalDiscount', warehouse.getDataValue('totalDiscount') + voucherDiscount);
+      cart.setDataValue('finalAmount', cart.getDataValue('finalAmount') + warehouse.getDataValue('finalAmount'));
+      cart.setDataValue('voucherDiscount', cart.getDataValue('voucherDiscount') + warehouse.getDataValue('voucherDiscount'));
+      cart.setDataValue('totalDiscount', cart.getDataValue('totalDiscount') + warehouse.getDataValue('voucherDiscount'));
+    }
+    cartSubTotal = cart.getDataValue('finalAmount');
+    cart.setDataValue('finalAmount', 0);
+    const rankDiscountValue = await this.applyRankDiscount(currentUser, warehouseQuantity, cartSubTotal);
+    for (const warehouse of warehouses) {
+      const rankDiscount = rankDiscountValue ? Math.round((warehouse.getDataValue('finalAmount') / cartSubTotal) * rankDiscountValue) : 0;
+      warehouse.setDataValue('rankDiscount', rankDiscount);
+      warehouse.setDataValue('finalAmount', warehouse.getDataValue('finalAmount') - rankDiscount);
+      warehouse.setDataValue('totalDiscount', warehouse.getDataValue('totalDiscount') + rankDiscount);
+      cart.setDataValue('finalAmount', cart.getDataValue('finalAmount') + warehouse.getDataValue('finalAmount'));
+      cart.setDataValue('rankDiscount', cart.getDataValue('rankDiscount') + warehouse.getDataValue('rankDiscount'));
+      cart.setDataValue('totalDiscount', cart.getDataValue('totalDiscount') + warehouse.getDataValue('rankDiscount'));
+    }
+    cart.setDataValue('warehouses', warehouses);
+    cart.setDataValue('totalBill', cartTotalBill);
+    cart.setDataValue('totalFee', cartTotalFee);
+    cart.setDataValue('totalTax', cartTotalTax);
+    cart.setDataValue('totalItems', warehouseQuantity);
+    cart.setDataValue('totalCartItems', cartItemQuantity);
+    return cart;
+  }
+
+  private async formatGuestCartItem (warehouses: any, cartTotalBill: any, cartTotalFee: any, cartTotalTax: any, warehouseQuantity: any, cartItemQuantity: any, systemSetting: any, params: any) {
+    const cart: any = {};
+    let cartSubTotal = cartTotalBill + cartTotalFee + cartTotalTax;
+    const applicationDiscount = 0;
+    let coinDiscount = 0;
+    if (cartSubTotal < coinDiscount) {
+      coinDiscount = cartSubTotal;
+    }
+    cart.coinDiscount = coinDiscount;
+    cart.finalAmount = 0;
+    cart.voucherDiscount = 0;
+    cart.totalDiscount = 0;
+    cart.rankDiscount = 0;
+    for (const warehouse of warehouses) {
+      if ((warehouse.totalBill + warehouse.totalFee + warehouse.totalTax) >= cartSubTotal) {
+        cart.coinDiscount = coinDiscount;
+        cart.finalAmount = 0;
+        warehouse.setDataValue('coinDiscount', coinDiscount);
+        warehouse.setDataValue('finalAmount', 0);
+      } else {
+        const warehouseCoinDiscount = Math.round((warehouse.getDataValue('finalAmount') / cartSubTotal) * coinDiscount);
+        warehouse.setDataValue('finalAmount', warehouse.getDataValue('finalAmount') - warehouseCoinDiscount);
+        warehouse.setDataValue('coinDiscount', warehouseCoinDiscount);
+        warehouse.setDataValue('totalDiscount', warehouse.getDataValue('totalDiscount') + warehouseCoinDiscount);
+        cart.finalAmount = cart.finalAmount + warehouse.getDataValue('finalAmount');
+        cart.totalDiscount = cart.totalDiscount + warehouse.getDataValue('coinDiscount');
+      }
+    }
+    cartSubTotal = cart.finalAmount;
+    cart.finalAmount = 0;
+    for (const warehouse of warehouses) {
+      const voucherDiscount = applicationDiscount ? Math.round((warehouse.getDataValue('finalAmount') / cartSubTotal) * applicationDiscount) : 0;
+      warehouse.setDataValue('voucherDiscount', voucherDiscount);
+      warehouse.setDataValue('finalAmount', warehouse.getDataValue('finalAmount') - voucherDiscount);
+      warehouse.setDataValue('totalDiscount', warehouse.getDataValue('totalDiscount') + voucherDiscount);
+      cart.finalAmount = cart.finalAmount + warehouse.getDataValue('finalAmount');
+      cart.voucherDiscount = cart.voucherDiscount + warehouse.getDataValue('voucherDiscount');
+      cart.totalDiscount = cart.totalDiscount + warehouse.getDataValue('voucherDiscount');
+    }
+    cartSubTotal = cart.finalAmount;
+    cart.finalAmount = 0;
+    const rankDiscountValue = 0;
+    for (const warehouse of warehouses) {
+      const rankDiscount = rankDiscountValue ? Math.round((warehouse.getDataValue('finalAmount') / cartSubTotal) * rankDiscountValue) : 0;
+      warehouse.setDataValue('rankDiscount', rankDiscount);
+      warehouse.setDataValue('finalAmount', warehouse.getDataValue('finalAmount') - rankDiscount);
+      warehouse.setDataValue('totalDiscount', warehouse.getDataValue('totalDiscount') + rankDiscount);
+      cart.finalAmount = cart.finalAmount + warehouse.getDataValue('finalAmount');
+      cart.rankDiscount = cart.rankDiscount + warehouse.getDataValue('rankDiscount');
+      cart.totalDiscount = cart.totalDiscount + warehouse.getDataValue('rankDiscount');
+    }
+    cart.warehouses = warehouses;
+    cart.totalBill = cartTotalBill;
+    cart.totalFee = cartTotalFee;
+    cart.totalTax = cartTotalTax;
+    cart.totalItems = warehouseQuantity;
+    cart.totalCartItems = cartItemQuantity;
+    return cart;
   }
 }
 
