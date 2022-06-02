@@ -24,6 +24,7 @@ class RatingController {
         creatableType: RatingModel.CREATABLE_ENUM.USER,
         subOrderId: req.params.subOrderId,
         productVariantId: req.params.productVariantId,
+        status: RatingModel.STATUS_ENUM.ACTIVE,
       });
       sendSuccess(res, { rating });
     } catch (error) {
