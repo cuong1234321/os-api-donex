@@ -1,5 +1,4 @@
 import CartController from '@controllers/api/user/CartsController';
-import { authGuest } from '@middlewares/auth';
 import { userPassport } from '@middlewares/passport';
 import { Request, Response, Router } from 'express';
 
@@ -69,7 +68,7 @@ const router = Router();
  *     security:
  *      - Bearer: []
  */
-router.post('/',  userPassport.authenticate('jwt', { session: false }),, (req: Request, res: Response) => CartController.showCart(req, res));
+router.post('/', userPassport.authenticate('jwt', { session: false }), (req: Request, res: Response) => CartController.showCart(req, res));
 
 /**
  * @openapi
