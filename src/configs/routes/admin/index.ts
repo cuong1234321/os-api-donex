@@ -46,7 +46,7 @@ router.use('/admin_notifications', adminPassport.authenticate('jwt', { session: 
 router.use('/accounts', adminPassport.authenticate('jwt', { session: false }), adminPassport.authenticate('jwt', { session: false }), AccountsRouter);
 router.use('/banners', adminPassport.authenticate('jwt', { session: false }), BannerRouter);
 router.use('/bill_templates', adminPassport.authenticate('jwt', { session: false }), BillTemplateRouter);
-router.use('/banks', adminPassport.authenticate('jwt', { session: false }), BankRoute);
+router.use('/banks', BankRoute);
 router.use('/bank_accounts', adminPassport.authenticate('jwt', { session: false }), BankAccountRoute);
 router.use('/collaborators', adminPassport.authenticate('jwt', { session: false }), adminPassport.authenticate('jwt', { session: false }), CollaboratorsRouter);
 router.use('/fees', adminPassport.authenticate('jwt', { session: false }), FeeRouter);
