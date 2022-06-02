@@ -1,5 +1,6 @@
 import BillTemplateController from '@controllers/api/admin/BillTemplatesController';
 import { Router } from 'express';
+import Authorization from '@middlewares/authorization';
 
 const router = Router();
 
@@ -18,7 +19,7 @@ const router = Router();
  *     security:
  *      - Bearer: []
  */
-router.get('/', BillTemplateController.show);
+router.get('/', Authorization.permit(BillTemplateController.constructor.name, 'show'), BillTemplateController.show);
 
 /**
  * @openapi
@@ -46,6 +47,6 @@ router.get('/', BillTemplateController.show);
  *     security:
  *      - Bearer: []
  */
-router.post('/', BillTemplateController.create);
+router.post('/', Authorization.permit(BillTemplateController.constructor.name, 'create'), BillTemplateController.create);
 
 export default router;

@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import BannerController from '@controllers/api/admin/BannersController';
+import Authorization from '@middlewares/authorization';
 
 const router = Router();
 
@@ -55,7 +56,7 @@ const router = Router();
  *     security:
  *      - Bearer: []
  */
-router.get('/:type', BannerController.index);
+router.get('/:type', Authorization.permit(BannerController.constructor.name, 'index'), BannerController.index);
 
 /**
   * @openapi
@@ -78,7 +79,7 @@ router.get('/:type', BannerController.index);
   *     security:
   *      - Bearer: []
   */
-router.get('/:bannerId/show/', BannerController.show);
+router.get('/:bannerId/show/', Authorization.permit(BannerController.constructor.name, 'show'), BannerController.show);
 
 /**
  * @openapi
@@ -134,7 +135,7 @@ router.get('/:bannerId/show/', BannerController.show);
  *     security:
  *      - Bearer: []
  */
-router.post('/', BannerController.create);
+router.post('/', Authorization.permit(BannerController.constructor.name, 'create'), BannerController.create);
 
 /**
  * @openapi
@@ -186,7 +187,7 @@ router.post('/', BannerController.create);
  *     security:
  *      - Bearer: []
  */
-router.patch('/:bannerId', BannerController.update);
+router.patch('/:bannerId', Authorization.permit(BannerController.constructor.name, 'update'), BannerController.update);
 
 /**
  * @openapi
@@ -247,7 +248,7 @@ router.patch('/:bannerId', BannerController.update);
  *     security:
  *      - Bearer: []
  */
-router.patch('/:type/:position/reorder/', BannerController.reorder);
+router.patch('/:type/:position/reorder/', Authorization.permit(BannerController.constructor.name, 'reorder'), BannerController.reorder);
 
 /**
  * @openapi
@@ -270,6 +271,6 @@ router.patch('/:type/:position/reorder/', BannerController.reorder);
  *     security:
  *      - Bearer: []
  */
-router.delete('/:bannerId', BannerController.delete);
+router.delete('/:bannerId', Authorization.permit(BannerController.constructor.name, 'delete'), BannerController.delete);
 
 export default router;

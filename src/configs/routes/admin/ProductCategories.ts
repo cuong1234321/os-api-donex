@@ -1,5 +1,6 @@
 import ProductCategoryController from '@controllers/api/admin/ProductCategoriesController';
 import { withoutSavingUploader } from '@middlewares/uploaders';
+import Authorization from '@middlewares/authorization';
 import { Router } from 'express';
 
 const router = Router();
@@ -36,7 +37,7 @@ const router = Router();
  *     security:
  *      - Bearer: []
  */
-router.post('/', ProductCategoryController.create);
+router.post('/', Authorization.permit(ProductCategoryController.constructor.name, 'create,uploadThumbnail'), ProductCategoryController.create);
 
 /**
  * @openapi
@@ -62,7 +63,7 @@ router.post('/', ProductCategoryController.create);
  *     security:
  *      - Bearer: []
  */
-router.get('/',
+router.get('/', Authorization.permit(ProductCategoryController.constructor.name, 'index'),
   ProductCategoryController.index);
 
 /**
@@ -84,7 +85,7 @@ router.get('/',
  *     security:
  *      - Bearer: []
  */
-router.get('/:productCategoryId', ProductCategoryController.show);
+router.get('/:productCategoryId', Authorization.permit(ProductCategoryController.constructor.name, 'show'), ProductCategoryController.show);
 
 /**
  * @openapi
@@ -115,7 +116,7 @@ router.get('/:productCategoryId', ProductCategoryController.show);
  *     security:
  *      - Bearer: []
  */
-router.patch('/:productCategoryId/upload_thumbnail',
+router.patch('/:productCategoryId/upload_thumbnail', Authorization.permit(ProductCategoryController.constructor.name, ['update,uploadThumbnail', 'create,uploadThumbnail']),
   withoutSavingUploader.single('thumbnail'), ProductCategoryController.uploadThumbnail);
 
 /**
@@ -151,7 +152,7 @@ router.patch('/:productCategoryId/upload_thumbnail',
 *     security:
 *      - Bearer: []
 */
-router.patch('/:productCategoryId', ProductCategoryController.update);
+router.patch('/:productCategoryId', Authorization.permit(ProductCategoryController.constructor.name, 'update,uploadThumbnail'), ProductCategoryController.update);
 
 /**
 * @openapi
@@ -172,6 +173,6 @@ router.patch('/:productCategoryId', ProductCategoryController.update);
 *     security:
 *      - Bearer: []
 */
-router.delete('/:productCategoryId', ProductCategoryController.delete);
+router.delete('/:productCategoryId', Authorization.permit(ProductCategoryController.constructor.name, 'delete'), ProductCategoryController.delete);
 
 export default router;

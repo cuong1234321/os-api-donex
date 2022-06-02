@@ -1,5 +1,6 @@
 import WarehouseExportController from '@controllers/api/admin/WarehouseExportsController';
 import { Router } from 'express';
+import Authorization from '@middlewares/authorization';
 
 const router = Router();
 /**
@@ -43,7 +44,7 @@ const router = Router();
  *     security:
  *      - Bearer: []
  */
-router.get('/', WarehouseExportController.index);
+router.get('/', Authorization.permit(WarehouseExportController.constructor.name, 'index'), WarehouseExportController.index);
 
 /**
  * @openapi
@@ -67,7 +68,7 @@ router.get('/', WarehouseExportController.index);
  *     security:
  *      - Bearer: []
  */
-router.get('/:warehouseExportId', WarehouseExportController.show);
+router.get('/:warehouseExportId', Authorization.permit(WarehouseExportController.constructor.name, 'show'), WarehouseExportController.show);
 
 /**
  * @openapi
@@ -91,7 +92,7 @@ router.get('/:warehouseExportId', WarehouseExportController.show);
  *     security:
  *      - Bearer: []
  */
-router.get('/:warehouseExportId/download', WarehouseExportController.download);
+router.get('/:warehouseExportId/download', Authorization.permit(WarehouseExportController.constructor.name, 'index'), WarehouseExportController.download);
 
 /**
  * @openapi
@@ -159,7 +160,7 @@ router.get('/:warehouseExportId/download', WarehouseExportController.download);
  *     security:
  *      - Bearer: []
  */
-router.post('/', WarehouseExportController.create);
+router.post('/', Authorization.permit(WarehouseExportController.constructor.name, 'create'), WarehouseExportController.create);
 
 /**
  * @openapi
@@ -232,6 +233,6 @@ router.post('/', WarehouseExportController.create);
  *     security:
  *      - Bearer: []
  */
-router.patch('/:warehouseExportId', WarehouseExportController.update);
+router.patch('/:warehouseExportId', Authorization.permit(WarehouseExportController.constructor.name, 'update'), WarehouseExportController.update);
 
 export default router;

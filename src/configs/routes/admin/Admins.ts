@@ -1,7 +1,8 @@
 import { Router } from 'express';
-import AdminController from '@controllers/api/admin/AdminsController';
+import AdminsController from '@controllers/api/admin/AdminsController';
 import { withoutSavingUploader } from '@middlewares/uploaders';
 import { adminPassport } from '@middlewares/passport';
+import Authorization from '@middlewares/authorization';
 
 const router = Router();
 
@@ -58,7 +59,7 @@ const router = Router();
  *     security:
  *      - Bearer: []
  */
-router.get('/', AdminController.index);
+router.get('/', Authorization.permit(AdminsController.constructor.name, 'index'), AdminsController.index);
 
 /**
  * @openapi
@@ -75,7 +76,7 @@ router.get('/', AdminController.index);
  *     security:
  *      - Bearer: []
  */
-router.get('/admins_template', AdminController.downloadAdminTemplate);
+router.get('/admins_template', AdminsController.downloadAdminTemplate);
 
 /**
  * @openapi
@@ -92,7 +93,7 @@ router.get('/admins_template', AdminController.downloadAdminTemplate);
  *     security:
  *      - Bearer: []
  */
-router.get('/download', AdminController.download);
+router.get('/download', AdminsController.download);
 
 /**
  * @openapi
@@ -116,7 +117,7 @@ router.get('/download', AdminController.download);
  *     security:
  *      - Bearer: []
  */
-router.get('/:adminId', AdminController.show);
+router.get('/:adminId', Authorization.permit(AdminsController.constructor.name, 'show'), AdminsController.show);
 
 /**
  * @openapi
@@ -159,7 +160,7 @@ router.get('/:adminId', AdminController.show);
  *     security:
  *      - Bearer: []
  */
-router.post('/', AdminController.create);
+router.post('/', Authorization.permit(AdminsController.constructor.name, 'create'), AdminsController.create);
 
 /**
  * @openapi
@@ -187,7 +188,7 @@ router.post('/', AdminController.create);
  *     security:
  *      - Bearer: []
  */
-router.post('/upload', adminPassport.authenticate('jwt', { session: false }), withoutSavingUploader.single('file'), AdminController.uploadAdmins);
+router.post('/upload', adminPassport.authenticate('jwt', { session: false }), withoutSavingUploader.single('file'), AdminsController.uploadAdmins);
 
 /**
  * @openapi
@@ -231,7 +232,7 @@ router.post('/upload', adminPassport.authenticate('jwt', { session: false }), wi
  *     security:
  *      - Bearer: []
  */
-router.patch('/:adminId', AdminController.update);
+router.patch('/:adminId', Authorization.permit(AdminsController.constructor.name, 'update'), AdminsController.update);
 
 /**
  * @openapi
@@ -254,7 +255,7 @@ router.patch('/:adminId', AdminController.update);
  *     security:
  *      - Bearer: []
  */
-router.patch('/:adminId/active', AdminController.active);
+router.patch('/:adminId/active', Authorization.permit(AdminsController.constructor.name, 'active'), AdminsController.active);
 
 /**
   * @openapi
@@ -277,7 +278,7 @@ router.patch('/:adminId/active', AdminController.active);
   *     security:
   *      - Bearer: []
   */
-router.patch('/:adminId/inactive', AdminController.inActive);
+router.patch('/:adminId/inactive', Authorization.permit(AdminsController.constructor.name, 'inActive'), AdminsController.inActive);
 
 /**
  * @openapi
@@ -307,7 +308,7 @@ router.patch('/:adminId/inactive', AdminController.inActive);
  *     security:
  *      - Bearer: []
  */
-router.patch('/:adminId/change_password', AdminController.changePassword);
+router.patch('/:adminId/change_password', Authorization.permit(AdminsController.constructor.name, 'changePassword'), AdminsController.changePassword);
 
 /**
  * @openapi
@@ -340,9 +341,9 @@ router.patch('/:adminId/change_password', AdminController.changePassword);
  *     security:
  *      - Bearer: []
  */
-router.patch('/:adminId/avatar',
+router.patch('/:adminId/avatar', Authorization.permit(AdminsController.constructor.name, 'uploadAvatar'),
   withoutSavingUploader.single('avatar'),
-  AdminController.uploadAvatar);
+  AdminsController.uploadAvatar);
 
 /**
  * @openapi
@@ -363,6 +364,6 @@ router.patch('/:adminId/avatar',
  *     security:
  *      - Bearer: []
  */
-router.delete('/:adminId', AdminController.delete);
+router.delete('/:adminId', Authorization.permit(AdminsController.constructor.name, 'delete'), AdminsController.delete);
 
 export default router;

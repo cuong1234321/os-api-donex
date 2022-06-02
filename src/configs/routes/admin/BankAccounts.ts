@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { withoutSavingUploader } from '@middlewares/uploaders';
 import BankAccountsController from '@controllers/api/admin/BankAccountsController';
+import Authorization from '@middlewares/authorization';
 
 const router = Router();
 
@@ -36,7 +37,7 @@ const router = Router();
  *     security:
  *      - Bearer: []
  */
-router.get('/', BankAccountsController.index);
+router.get('/', Authorization.permit(BankAccountsController.constructor.name, 'index'), BankAccountsController.index);
 
 /**
  * @openapi
@@ -75,7 +76,7 @@ router.get('/', BankAccountsController.index);
  *     security:
  *      - Bearer: []
  */
-router.post('/', BankAccountsController.create);
+router.post('/', Authorization.permit(BankAccountsController.constructor.name, 'create'), BankAccountsController.create);
 
 /**
  * @openapi
@@ -118,7 +119,7 @@ router.post('/', BankAccountsController.create);
  *     security:
  *      - Bearer: []
  */
-router.patch('/:bankAccountId', BankAccountsController.update);
+router.patch('/:bankAccountId', Authorization.permit(BankAccountsController.constructor.name, 'update'), BankAccountsController.update);
 
 /**
  * @openapi
@@ -140,7 +141,7 @@ router.patch('/:bankAccountId', BankAccountsController.update);
  *     security:
  *      - Bearer: []
  */
-router.get('/:bankAccountId', BankAccountsController.show);
+router.get('/:bankAccountId', Authorization.permit(BankAccountsController.constructor.name, 'show'), BankAccountsController.show);
 
 /**
  * @openapi
@@ -162,7 +163,7 @@ router.get('/:bankAccountId', BankAccountsController.show);
  *     security:
  *      - Bearer: []
  */
-router.delete('/:bankAccountId', BankAccountsController.delete);
+router.delete('/:bankAccountId', Authorization.permit(BankAccountsController.constructor.name, 'delete'), BankAccountsController.delete);
 
 /**
  * @openapi
@@ -193,6 +194,8 @@ router.delete('/:bankAccountId', BankAccountsController.delete);
  *     security:
  *      - Bearer: []
  */
-router.patch('/:bankAccountId/upload_qr_ode', withoutSavingUploader.single('qrCode'), BankAccountsController.uploadImageQRCode);
+router.patch('/:bankAccountId/upload_qr_ode',
+  Authorization.permit(BankAccountsController.constructor.name, 'uploadQRCode'),
+  withoutSavingUploader.single('qrCode'), BankAccountsController.uploadImageQRCode);
 
 export default router;

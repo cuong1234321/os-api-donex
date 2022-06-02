@@ -1,6 +1,7 @@
 import VoucherApplicationController from '@controllers/api/admin/VoucherApplicationsController';
 import { withoutSavingUploader } from '@middlewares/uploaders';
 import { Router } from 'express';
+import Authorization from '@middlewares/authorization';
 
 const router = Router();
 
@@ -53,7 +54,7 @@ const router = Router();
  *     security:
  *      - Bearer: []
  */
-router.get('/', VoucherApplicationController.index);
+router.get('/', Authorization.permit(VoucherApplicationController.constructor.name, 'index'), VoucherApplicationController.index);
 
 /**
  * @openapi
@@ -74,7 +75,7 @@ router.get('/', VoucherApplicationController.index);
  *     security:
  *      - Bearer: []
  */
-router.get('/:voucherApplicationId', VoucherApplicationController.show);
+router.get('/:voucherApplicationId', Authorization.permit(VoucherApplicationController.constructor.name, 'show'), VoucherApplicationController.show);
 
 /**
  * @openapi
@@ -162,7 +163,7 @@ router.get('/:voucherApplicationId', VoucherApplicationController.show);
  *     security:
  *      - Bearer: []
  */
-router.post('/', VoucherApplicationController.create);
+router.post('/', Authorization.permit(VoucherApplicationController.constructor.name, 'create,uploadThumbnail'), VoucherApplicationController.create);
 
 /**
  * @openapi
@@ -253,7 +254,7 @@ router.post('/', VoucherApplicationController.create);
  *     security:
  *      - Bearer: []
  */
-router.patch('/:voucherApplicationId', VoucherApplicationController.update);
+router.patch('/:voucherApplicationId', Authorization.permit(VoucherApplicationController.constructor.name, 'update,active,inactive'), VoucherApplicationController.update);
 
 /**
  * @openapi
@@ -274,7 +275,7 @@ router.patch('/:voucherApplicationId', VoucherApplicationController.update);
  *     security:
  *      - Bearer: []
  */
-router.delete('/:voucherApplicationId', VoucherApplicationController.delete);
+router.delete('/:voucherApplicationId', Authorization.permit(VoucherApplicationController.constructor.name, 'delete'), VoucherApplicationController.delete);
 
 /**
  * @openapi
@@ -305,7 +306,7 @@ router.delete('/:voucherApplicationId', VoucherApplicationController.delete);
  *     security:
  *      - Bearer: []
  */
-router.patch('/:voucherApplicationId/upload_icon',
+router.patch('/:voucherApplicationId/upload_icon', Authorization.permit(VoucherApplicationController.constructor.name, 'create,uploadThumbnail'),
   withoutSavingUploader.single('file'), VoucherApplicationController.uploadThumbnail);
 
 /**
@@ -327,7 +328,8 @@ router.patch('/:voucherApplicationId/upload_icon',
  *     security:
  *      - Bearer: []
  */
-router.patch('/:voucherApplicationId/active', VoucherApplicationController.active);
+router.patch('/:voucherApplicationId/active', Authorization.permit(VoucherApplicationController.constructor.name, 'update,active,inactive'),
+  VoucherApplicationController.active);
 
 /**
  * @openapi
@@ -348,6 +350,7 @@ router.patch('/:voucherApplicationId/active', VoucherApplicationController.activ
  *     security:
  *      - Bearer: []
  */
-router.patch('/:voucherApplicationId/inactive', VoucherApplicationController.inactive);
+router.patch('/:voucherApplicationId/inactive', Authorization.permit(VoucherApplicationController.constructor.name, 'update,active,inactive'),
+  VoucherApplicationController.inactive);
 
 export default router;

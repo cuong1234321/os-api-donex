@@ -1,6 +1,7 @@
 import ProductController from '@controllers/api/admin/ProductsController';
 import { productZipUploader, withoutSavingUploader } from '@middlewares/uploaders';
 import { Request, Response, Router } from 'express';
+import Authorization from '@middlewares/authorization';
 
 const router = Router();
 
@@ -98,7 +99,7 @@ const router = Router();
  *     security:
  *      - Bearer: []
  */
-router.get('/', (req: Request, res: Response) => ProductController.index(req, res));
+router.get('/', Authorization.permit(ProductController.constructor.name, 'index'), (req: Request, res: Response) => ProductController.index(req, res));
 
 /**
  * @openapi
@@ -157,7 +158,7 @@ router.get('/product_template', ProductController.downloadProductTemplate);
  *     security:
  *      - Bearer: []
  */
-router.get('/:productId', ProductController.show);
+router.get('/:productId', Authorization.permit(ProductController.constructor.name, 'show'), ProductController.show);
 
 /**
  * @openapi
@@ -291,7 +292,7 @@ router.get('/:productId', ProductController.show);
  *     security:
  *      - Bearer: []
  */
-router.post('/', ProductController.create);
+router.post('/', Authorization.permit(ProductController.constructor.name, 'create,uploadMedia,uploadOptionMedia'), ProductController.create);
 
 /**
  * @openapi
@@ -319,7 +320,7 @@ router.post('/', ProductController.create);
  *     security:
  *      - Bearer: []
  */
-router.post('/upload', productZipUploader.single('file'), ProductController.uploadProducts);
+router.post('/upload', Authorization.permit(ProductController.constructor.name, 'create,uploadMedia,uploadOptionMedia'), productZipUploader.single('file'), ProductController.uploadProducts);
 
 /**
  * @openapi
@@ -352,7 +353,7 @@ router.post('/upload', productZipUploader.single('file'), ProductController.uplo
  *     security:
  *      - Bearer: []
  */
-router.post('/:productId/upload_medias', withoutSavingUploader.any(), ProductController.uploadMedia);
+router.post('/:productId/upload_medias', Authorization.permit(ProductController.constructor.name, 'create,uploadMedia,uploadOptionMedia'), withoutSavingUploader.any(), ProductController.uploadMedia);
 
 /**
   * @openapi
@@ -387,6 +388,7 @@ router.post('/:productId/upload_medias', withoutSavingUploader.any(), ProductCon
   *      - Bearer: []
   */
 router.post('/:productId/upload_option_medias',
+  Authorization.permit(ProductController.constructor.name, 'create,uploadMedia,uploadOptionMedia'),
   withoutSavingUploader.any(), ProductController.uploadOptionMedia);
 
 /**
@@ -411,7 +413,7 @@ router.post('/:productId/upload_option_medias',
  *     security:
  *      - Bearer: []
  */
-router.patch('/:productId/active', ProductController.active);
+router.patch('/:productId/active', Authorization.permit(ProductController.constructor.name, 'update,uploadMedia,uploadOptionMedia,active,inactive'), ProductController.active);
 
 /**
  * @openapi
@@ -435,7 +437,7 @@ router.patch('/:productId/active', ProductController.active);
  *     security:
  *      - Bearer: []
  */
-router.patch('/:productId/inactive', ProductController.inActive);
+router.patch('/:productId/inactive', Authorization.permit(ProductController.constructor.name, 'update,uploadMedia,uploadOptionMedia,active,inactive'), ProductController.inActive);
 
 /**
  * @openapi
@@ -459,7 +461,7 @@ router.patch('/:productId/inactive', ProductController.inActive);
  *     security:
  *      - Bearer: []
  */
-router.delete('/:productId', ProductController.delete);
+router.delete('/:productId', Authorization.permit(ProductController.constructor.name, 'delete'), ProductController.delete);
 
 /**
  * @openapi
@@ -600,7 +602,6 @@ router.delete('/:productId', ProductController.delete);
  *                  isThumbnail:
  *                    type: "boolean"
  *                    description: "Thumbnail"
-
  *     responses:
  *       200:
  *         description: Return data.
@@ -611,6 +612,6 @@ router.delete('/:productId', ProductController.delete);
  *     security:
  *      - Bearer: []
  */
-router.patch('/:productId', ProductController.update);
+router.patch('/:productId', Authorization.permit(ProductController.constructor.name, 'update,uploadMedia,uploadOptionMedia,active,inactive'), ProductController.update);
 
 export default router;

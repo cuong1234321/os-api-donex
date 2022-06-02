@@ -1,5 +1,6 @@
 import RanksController from '@controllers/api/admin/RanksController';
 import { Router } from 'express';
+import Authorization from '@middlewares/authorization';
 
 const router = Router();
 
@@ -26,7 +27,7 @@ const router = Router();
  *     security:
  *      - Bearer: []
  */
-router.get('/:type', RanksController.show);
+router.get('/:type', Authorization.permit(RanksController.constructor.name, 'show'), RanksController.show);
 
 /**
  * @openapi
@@ -99,6 +100,6 @@ router.get('/:type', RanksController.show);
  *     security:
  *      - Bearer: []
  */
-router.patch('/:type', RanksController.update);
+router.patch('/:type', Authorization.permit(RanksController.constructor.name, 'update'), RanksController.update);
 
 export default router;

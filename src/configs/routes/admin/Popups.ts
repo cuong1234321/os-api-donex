@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import PopupController from '@controllers/api/admin/PopupsController';
 import { withoutSavingUploader } from '@middlewares/uploaders';
+import Authorization from '@middlewares/authorization';
 
 const router = Router();
 
@@ -38,7 +39,7 @@ const router = Router();
  *     security:
  *      - Bearer: []
  */
-router.get('/', PopupController.index);
+router.get('/', Authorization.permit(PopupController.constructor.name, 'index'), PopupController.index);
 
 /**
  * @openapi
@@ -60,7 +61,7 @@ router.get('/', PopupController.index);
  *     security:
  *      - Bearer: []
  */
-router.get('/:popupId', PopupController.show);
+router.get('/:popupId', Authorization.permit(PopupController.constructor.name, 'show'), PopupController.show);
 
 /**
  * @openapi
@@ -94,7 +95,7 @@ router.get('/:popupId', PopupController.show);
  *     security:
  *      - Bearer: []
  */
-router.post('/', PopupController.create);
+router.post('/', Authorization.permit(PopupController.constructor.name, 'create,uploadImage'), PopupController.create);
 
 /**
  * @openapi
@@ -134,7 +135,7 @@ router.post('/', PopupController.create);
  *     security:
  *      - Bearer: []
  */
-router.patch('/:popupId', PopupController.update);
+router.patch('/:popupId', Authorization.permit(PopupController.constructor.name, 'update,uploadImage'), PopupController.update);
 
 /**
  * @openapi
@@ -167,7 +168,7 @@ router.patch('/:popupId', PopupController.update);
  *     security:
  *      - Bearer: []
  */
-router.patch('/:popupId/image',
+router.patch('/:popupId/image', Authorization.permit(PopupController.constructor.name, 'update,uploadImage'),
   withoutSavingUploader.single('image'),
   PopupController.uploadImage);
 
@@ -191,6 +192,6 @@ router.patch('/:popupId/image',
  *     security:
  *      - Bearer: []
  */
-router.delete('/:popupId', PopupController.delete);
+router.delete('/:popupId', Authorization.permit(PopupController.constructor.name, 'delete'), PopupController.delete);
 
 export default router;

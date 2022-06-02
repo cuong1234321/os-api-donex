@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import WarehouseReportController from '@controllers/api/admin/WarehouseReportsController';
+import Authorization from '@middlewares/authorization';
 
 const router = Router();
 
@@ -47,6 +48,6 @@ const router = Router();
  *     security:
  *      - Bearer: []
  */
-router.get('/', WarehouseReportController.index);
+router.get('/', Authorization.permit(WarehouseReportController.constructor.name, 'index'), WarehouseReportController.index);
 
 export default router;

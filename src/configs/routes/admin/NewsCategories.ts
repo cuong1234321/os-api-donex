@@ -1,6 +1,6 @@
 import NewsCategoryController from '@controllers/api/admin/NewsCategoriesController';
 import { Router } from 'express';
-
+import Authorization from '@middlewares/authorization';
 const router = Router();
 
 /**
@@ -23,7 +23,7 @@ const router = Router();
  *     security:
  *      - Bearer: []
  */
-router.get('/', NewsCategoryController.index);
+router.get('/', Authorization.permit(NewsCategoryController.constructor.name, 'index'), NewsCategoryController.index);
 
 /**
  * @openapi
@@ -48,7 +48,7 @@ router.get('/', NewsCategoryController.index);
  *     security:
  *      - Bearer: []
  */
-router.get('/:newsCategoryId', NewsCategoryController.show);
+router.get('/:newsCategoryId', Authorization.permit(NewsCategoryController.constructor.name, 'show'), NewsCategoryController.show);
 
 /**
  * @openapi
@@ -79,7 +79,7 @@ router.get('/:newsCategoryId', NewsCategoryController.show);
  *      - Bearer: []
  */
 
-router.post('/', NewsCategoryController.create);
+router.post('/', Authorization.permit(NewsCategoryController.constructor.name, 'create'), NewsCategoryController.create);
 
 /**
  * @openapi
@@ -114,7 +114,7 @@ router.post('/', NewsCategoryController.create);
  *     security:
  *      - Bearer: []
  */
-router.patch('/:newsCategoryId', NewsCategoryController.update);
+router.patch('/:newsCategoryId', Authorization.permit(NewsCategoryController.constructor.name, 'update'), NewsCategoryController.update);
 
 /**
  * @openapi
@@ -139,6 +139,6 @@ router.patch('/:newsCategoryId', NewsCategoryController.update);
  *     security:
  *      - Bearer: []
  */
-router.delete('/:newsCategoryId', NewsCategoryController.delete);
+router.delete('/:newsCategoryId', Authorization.permit(NewsCategoryController.constructor.name, 'delete'), NewsCategoryController.delete);
 
 export default router;

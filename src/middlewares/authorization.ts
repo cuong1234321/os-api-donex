@@ -5,7 +5,6 @@ import PermissionModel from '@models/permissions';
 import PermissionGroupModel from '@models/permissionGroups';
 import { sendError } from '@libs/response';
 import { Unauthorized } from '@libs/errors';
-import _ from 'lodash';
 
 class Authorization {
   static readonly CONTROLLER_PATTERN = 'Controller';
@@ -36,12 +35,12 @@ class Authorization {
       let isAuthorized: boolean = false;
       if (Array.isArray(action)) {
         for (const singleAction of action) {
-          if (await enforcer.enforce(req.currentAdmin.roleId.toString(), _.snakeCase(controller.replace(Authorization.CONTROLLER_PATTERN, '')), singleAction)) {
+          if (await enforcer.enforce(req.currentAdmin.roleId.toString(), controller, singleAction)) {
             isAuthorized = true;
           }
         }
       } else {
-        if (await enforcer.enforce(req.currentAdmin.roleId.toString(), _.snakeCase(controller.replace(Authorization.CONTROLLER_PATTERN, '')), action)) {
+        if (await enforcer.enforce(req.currentAdmin.roleId.toString(), controller, action)) {
           isAuthorized = true;
         }
       }
