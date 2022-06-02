@@ -126,7 +126,8 @@ class OrderController {
         { method: ['byStatus', OrderModel.STATUS_ENUM.PENDING] },
         { method: ['byOrderAble', req.currentUser.id, 'USER'] },
         { method: ['byPayment', OrderModel.PAYMENT_METHOD.VNPAY] },
-      ]).findByPk(req.params.orderId);
+        { method: ['byId', req.params.orderId] },
+      ]).findOne();
       if (!order) return sendError(res, 404, NoData);
       order.total = order.subTotal;
       const paymentMethod = await order.getPaymentMethod();

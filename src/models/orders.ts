@@ -328,7 +328,12 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
         where: status,
       };
     },
-    byPayment (transactionId) {
+    byPayment (paymentMethod) {
+      return {
+        where: { paymentMethod },
+      };
+    },
+    byTransactionId (transactionId) {
       return {
         where: { transactionId },
       };
