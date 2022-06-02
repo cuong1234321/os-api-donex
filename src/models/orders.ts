@@ -144,10 +144,10 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
     async afterSave (record: any) {
       if (record.paymentMethod === OrderModel.PAYMENT_METHOD.COD &&
         (record._previousDataValues.status === OrderModel.STATUS_ENUM.DRAFT && record.status === OrderModel.STATUS_ENUM.DELIVERY)) {
-        await this.deliverySubOrder(record);
+        // await this.deliverySubOrder(record);
       } else if (!record._previousDataValues.paidAt && record.paidAt) {
         record.status = OrderModel.STATUS_ENUM.DELIVERY;
-        await this.deliverySubOrder(record);
+        // await this.deliverySubOrder(record);
       }
     },
   }

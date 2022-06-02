@@ -188,15 +188,14 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
         {
           name: orderItem?.variant?.name || 'sản phẩm',
           code: orderItem?.variant?.skuCode || '',
-          quantity: orderItem.quantity,
-          price: orderItem.sellingPrice,
+          quantity: orderItem?.quantity,
+          price: orderItem?.sellingPrice,
           length: orderItem.variant?.product.length || 10,
           width: orderItem.variant?.product.width || 10,
           height: orderItem.variant?.product.height || 10,
         },
       );
     }
-    console.log(params.Items);
     return params;
   }
 
