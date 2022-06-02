@@ -19,6 +19,14 @@ const router = Router();
  *        enum:
  *          - ghn
  *          - vtp
+ *      - in: query
+ *        name: "status"
+ *        description: ""
+ *        type: "string"
+ *      - in: query
+ *        name: "freeWord"
+ *        description: ""
+ *        type: "string"
  *     responses:
  *       200:
  *         description: Return data.

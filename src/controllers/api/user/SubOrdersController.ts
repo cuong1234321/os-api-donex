@@ -22,7 +22,11 @@ class SubOrderController {
         'withItem',
       ];
       if (status) {
-        scopes.push({ method: ['byStatus', status] });
+        if (SubOrderModel.DELIVERY_STATUS_ENUM.includes(status as string)) {
+          scopes.push({ method: ['byDeliveryStatus', status] });
+        } else {
+          scopes.push({ method: ['byStatus', status] });
+        }
       }
       if (transportUnit) scopes.push({ method: ['byTransportUnit', transportUnit] });
       const { count, rows } = await SubOrderModel.scope(scopes).findAndCountAll({ limit, offset });
