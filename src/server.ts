@@ -13,6 +13,7 @@ import Settings from '@configs/settings';
 import swaggerUi from 'swagger-ui-express';
 import cron from 'node-cron';
 import VoucherApplicationsAction from '@jobs/VoucherApplicationsAction';
+import birthdayActions from '@jobs/BirthdayActions';
 import swaggerDocument from './swagger/doc';
 
 const port = process.env.PORT || 3000;
@@ -41,6 +42,15 @@ app.use('/api', routes);
 cron.schedule('0,10,20,30,40,50 * * * *', async () => {
   try {
     await VoucherApplicationsAction.SendVoucher();
+  } catch (error) {
+    console.log(error.message);
+  }
+});
+
+cron.schedule('0,10,20,30,40,50 * * * *', async () => {
+  try {
+    await birthdayActions.donexBirthDay();
+    await birthdayActions.userBirthDay();
   } catch (error) {
     console.log(error.message);
   }

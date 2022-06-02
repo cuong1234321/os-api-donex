@@ -36,4 +36,7 @@ export default {
   branchName: 'f651fce0-e8f8-499d-b5f6-86fbafa15cea',
   vnPayDefaultFee: 1650,
   vnPayDefaultFeePercent: 1.1,
+  defaultRatingBonusPoint: 1,
+  minMoneyUpRank: 500000,
+  maxMoneyUpRank: 1000000,
 };
