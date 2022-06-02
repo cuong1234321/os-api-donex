@@ -186,13 +186,13 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
     for (const orderItem of orderItems) {
       params.items.push(
         {
-          name: orderItem.variant.name,
-          code: orderItem.variant.skuCode,
+          name: orderItem?.variant?.name || "sản phẩm",
+          code: orderItem?.variant?.skuCode ||``,
           quantity: orderItem.quantity,
           price: orderItem.sellingPrice,
-          length: orderItem.variant.product.length,
-          width: orderItem.variant.product.width,
-          height: orderItem.variant.product.height,
+          length: orderItem.variant?.product.length || 10,
+          width: orderItem.variant?.product.width || 10,
+          height: orderItem.variant?.product.height || 10,
         },
       );
     }
