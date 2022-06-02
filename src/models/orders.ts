@@ -328,9 +328,9 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
         where: status,
       };
     },
-    byPayment (paymentMethod) {
+    byPayment (transactionId) {
       return {
-        where: { paymentMethod },
+        where: { transactionId },
       };
     },
   }
@@ -512,7 +512,7 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
   public async validSignature (responseParams?: any) {
     let result: boolean = false;
     const params = JSON.parse(JSON.stringify(responseParams));
-    result = await (new VnpayPaymentService(this.id, this.transactionId, this.total, VnpayPaymentService.TXN_REF_PREFIX.TOP_UP)).validSignature(params);
+    result = await (new VnpayPaymentService(this.id, this.transactionId, this.subTotal, VnpayPaymentService.TXN_REF_PREFIX.ORDER)).validSignature(params);
     return result;
   }
 
