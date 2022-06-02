@@ -16,7 +16,7 @@ class VnPayCallBackController {
         case VnpayPaymentService.TXN_REF_PREFIX.ORDER:
           orderableInstance = await OrderModel.scope([
             { method: ['byStatus', OrderModel.STATUS_ENUM.PENDING] },
-            { method: ['byPayment', params.vnp_TxnRef] },
+            { method: ['byTransactionId', params.vnp_TxnRef] },
           ]).findOne();
           orderValue = orderableInstance.subTotal;
           paidAt = orderableInstance.paidAt;
@@ -48,7 +48,7 @@ class VnPayCallBackController {
         case VnpayPaymentService.TXN_REF_PREFIX.ORDER:
           orderableInstance = await OrderModel.scope([
             { method: ['byStatus', OrderModel.STATUS_ENUM.PENDING] },
-            { method: ['byPayment', params.vnp_TxnRef] },
+            { method: ['byTransactionId', params.vnp_TxnRef] },
           ]).findOne();
           break;
         default:
