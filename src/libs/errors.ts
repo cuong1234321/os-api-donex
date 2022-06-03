@@ -106,3 +106,8 @@ export const voucherIsCannotApply = {
   code: 310,
   message: 'Your voucher is cannot apply to this order',
 };
+
+export const AddressIsNotValid = {
+  code: 320,
+  message: 'Your shipping address is not valid',
+};
