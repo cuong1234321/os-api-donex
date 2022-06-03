@@ -52,7 +52,7 @@ router.use('/banks', BankRoute);
 router.use('/bank_accounts', adminPassport.authenticate('jwt', { session: false }), BankAccountRoute);
 router.use('/collaborators', adminPassport.authenticate('jwt', { session: false }), adminPassport.authenticate('jwt', { session: false }), CollaboratorsRouter);
 router.use('/dashboard', adminPassport.authenticate('jwt', { session: false }), DashboardRouter);
-router.use('/fees', adminPassport.authenticate('jwt', { session: false }), FeeRouter);
+router.use('/fees', FeeRouter);
 router.use('/history_earned_points', adminPassport.authenticate('jwt', { session: false }), HistoryEarnedPointRouter);
 router.use('/notifications', adminPassport.authenticate('jwt', { session: false }), MarketingNotificationsRouter);
 router.use('/news_categories', adminPassport.authenticate('jwt', { session: false }), NewsCategoryRouter);
