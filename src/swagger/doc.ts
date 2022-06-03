@@ -41,6 +41,10 @@ const swaggerDefinition = {
       description: 'Quản lý CTV/DL/NPP',
     },
     {
+      name: '[ADMIN] DASHBOARD',
+      description: 'Quản lý dashboard',
+    },
+    {
       name: '[ADMIN] FEE',
       description: 'tinh gia van chuyen',
     },
