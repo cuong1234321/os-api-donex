@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { sellerPassport } from '@middlewares/passport';
 import AddressRouter from './AddressBooks';
 import BankAccountRouter from './BankAccounts';
+import FeeRouter from './Fees';
 import PasswordRouter from './Passwords';
 import SessionsRouter from './Sessions';
 import ProductRouter from './Products';
@@ -16,6 +17,7 @@ const router = Router();
 
 router.use('/address_books', sellerPassport.authenticate('jwt', { session: false }), AddressRouter);
 router.use('/bank_accounts', BankAccountRouter);
+router.use('/fees', FeeRouter);
 router.use('/passwords', PasswordRouter);
 router.use('/sessions', SessionsRouter);
 router.use('/products', sellerPassport.authenticate('jwt', { session: false }), ProductRouter);
