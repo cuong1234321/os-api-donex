@@ -139,10 +139,21 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
     async afterSave (record: any) {
       if (record.paymentMethod === OrderModel.PAYMENT_METHOD.COD &&
         (record._previousDataValues.status === OrderModel.STATUS_ENUM.DRAFT && record.status === OrderModel.STATUS_ENUM.DELIVERY)) {
-        // await this.deliverySubOrder(record);
+        console.log(record);
+        const subOrders = await SubOrderModel.scope([
+          { method: ['byOrderId', record.id] },
+        ]).findAll();
+        for (const subOrder of subOrders) {
+          await subOrder.update({ status: SubOrderModel.STATUS_ENUM.WAITING_TO_TRANSFER }, { validate: false });
+        }
       } else if (!record._previousDataValues.paidAt && record.paidAt) {
         record.status = OrderModel.STATUS_ENUM.DELIVERY;
-        // await this.deliverySubOrder(record);
+        const subOrders = await SubOrderModel.scope([
+          { method: ['byOrderId', record.id] },
+        ]).findAll();
+        for (const subOrder of subOrders) {
+          await subOrder.update({ status: SubOrderModel.STATUS_ENUM.WAITING_TO_TRANSFER }, { validate: false });
+        }
       }
     },
   }
@@ -571,13 +582,6 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
       'withProduct',
     ]).findAll();
     return { warehouses, productVariants };
-  }
-
-  private static async deliverySubOrder (record: any) {
-    const subOrders = record.getSubOrders();
-    for (const subOrder of subOrders) {
-      await subOrder.update({ status: SubOrderModel.STATUS_ENUM.WAITING_TO_TRANSFER });
-    }
   }
 
   public static initialize (sequelize: Sequelize) {

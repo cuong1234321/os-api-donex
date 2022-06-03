@@ -99,8 +99,8 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
   },
   async beforeSave (record: any) {
     if ([SubOrderModel.STATUS_ENUM.DRAFT, SubOrderModel.STATUS_ENUM.PENDING].includes(record._previousDataValues.status) && record.status === SubOrderModel.STATUS_ENUM.WAITING_TO_TRANSFER) {
-      // const getOrderDetail = await record.formatOrder(record);
-      // await Order.createGhnOrder(getOrderDetail);
+      const getOrderDetail = await record.formatOrder(record);
+      await Order.createGhnOrder(getOrderDetail);
     }
   },
   async afterSave (record: any) {
