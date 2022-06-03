@@ -44,6 +44,26 @@ class Order {
       return null;
     }
   }
+
+  public static async getDeliveryPartner (data: any) {
+    try {
+      const requestConfigs: AxiosRequestConfig = {
+        method: 'POST',
+        url: `${process.env.GHN_ENPOINT}/shiip/public-api/v2/shipping-order/detail-by-client-code`,
+        headers: {
+          Token: process.env.GHN_TOKEN_API,
+        },
+        data: {
+          client_order_code: data.code,
+        },
+      };
+      const result = await axios(requestConfigs);
+      return result.data;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
 }
 
 export default Order;

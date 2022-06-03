@@ -1,6 +1,5 @@
 import OrdersController from '@controllers/api/user/OrdersController';
 import { authGuest } from '@middlewares/auth';
-import { userPassport } from '@middlewares/passport';
 import { Request, Response, Router } from 'express';
 
 const router = Router();
@@ -150,6 +149,6 @@ router.post('/', authGuest, (req: Request, res: Response) => OrdersController.cr
  *     security:
  *      - Bearer: []
  */
-router.post('/:orderId/pay', userPassport.authenticate('jwt', { session: false }), OrdersController.createPayment);
+router.post('/:orderId/pay', authGuest, OrdersController.createPayment);
 
 export default router;
