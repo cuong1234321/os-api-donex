@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import NewsController from '@controllers/api/admin/NewsController';
 import { withoutSavingUploader } from '@middlewares/uploaders';
+import Authorization from '@middlewares/authorization';
 
 const router = Router();
 
@@ -36,7 +37,7 @@ const router = Router();
  *     security:
  *      - Bearer: []
  */
-router.get('/', NewsController.index);
+router.get('/', Authorization.permit(NewsController.constructor.name, 'index'), NewsController.index);
 
 /**
  * @openapi
@@ -71,7 +72,7 @@ router.get('/', NewsController.index);
  *     security:
  *      - Bearer: []
  */
-router.post('/', NewsController.create);
+router.post('/', Authorization.permit(NewsController.constructor.name, 'create,uploadThumbnail'), NewsController.create);
 
 /**
  * @openapi
@@ -110,7 +111,7 @@ router.post('/', NewsController.create);
  *     security:
  *      - Bearer: []
  */
-router.patch('/:newsId', NewsController.update);
+router.patch('/:newsId', Authorization.permit(NewsController.constructor.name, 'update,uploadThumbnail,active,inactive'), NewsController.update);
 
 /**
  * @openapi
@@ -141,7 +142,8 @@ router.patch('/:newsId', NewsController.update);
  *     security:
  *      - Bearer: []
  */
-router.patch('/:newsId/upload_thumbnail', withoutSavingUploader.single('thumbnail'), NewsController.uploadThumbnail);
+router.patch('/:newsId/upload_thumbnail', Authorization.permit(NewsController.constructor.name, 'update,uploadThumbnail,active,inactive'),
+  withoutSavingUploader.single('thumbnail'), NewsController.uploadThumbnail);
 
 /**
  * @openapi
@@ -165,7 +167,7 @@ router.patch('/:newsId/upload_thumbnail', withoutSavingUploader.single('thumbnai
  *     security:
  *      - Bearer: []
  */
-router.get('/:newsId', NewsController.show);
+router.get('/:newsId', Authorization.permit(NewsController.constructor.name, 'show'), NewsController.show);
 
 /**
  * @openapi
@@ -189,7 +191,7 @@ router.get('/:newsId', NewsController.show);
  *     security:
  *      - Bearer: []
  */
-router.patch('/:newsId/active', NewsController.active);
+router.patch('/:newsId/active', Authorization.permit(NewsController.constructor.name, 'update,uploadThumbnail,active,inactive'), NewsController.active);
 
 /**
  * @openapi
@@ -213,7 +215,7 @@ router.patch('/:newsId/active', NewsController.active);
  *     security:
  *      - Bearer: []
  */
-router.patch('/:newsId/inactive', NewsController.inactive);
+router.patch('/:newsId/inactive', Authorization.permit(NewsController.constructor.name, 'update,uploadThumbnail,active,inactive'), NewsController.inactive);
 
 /**
  * @openapi
@@ -237,6 +239,6 @@ router.patch('/:newsId/inactive', NewsController.inactive);
  *     security:
  *      - Bearer: []
  */
-router.delete('/:newsId', NewsController.delete);
+router.delete('/:newsId', Authorization.permit(NewsController.constructor.name, 'delete'), NewsController.delete);
 
 export default router;

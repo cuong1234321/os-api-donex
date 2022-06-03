@@ -1,5 +1,6 @@
 import OrdersController from '@controllers/api/admin/OrdersController';
 import { Request, Response, Router } from 'express';
+import Authorization from '@middlewares/authorization';
 
 const router = Router();
 
@@ -114,7 +115,7 @@ const router = Router();
  *     security:
  *      - Bearer: []
  */
-router.get('/', (req: Request, res: Response) => OrdersController.index(req, res));
+router.get('/', Authorization.permit(OrdersController.constructor.name, 'index'), (req: Request, res: Response) => OrdersController.index(req, res));
 
 /**
  * @openapi
@@ -131,7 +132,7 @@ router.get('/', (req: Request, res: Response) => OrdersController.index(req, res
  *     security:
  *      - Bearer: []
  */
-router.get('/download', (req: Request, res: Response) => OrdersController.download(req, res));
+router.get('/download', Authorization.permit(OrdersController.constructor.name, 'download'), (req: Request, res: Response) => OrdersController.download(req, res));
 
 /**
  * @openapi
@@ -153,7 +154,7 @@ router.get('/download', (req: Request, res: Response) => OrdersController.downlo
  *     security:
  *      - Bearer: []
  */
-router.get('/:orderId', (req: Request, res: Response) => OrdersController.show(req, res));
+router.get('/:orderId', Authorization.permit(OrdersController.constructor.name, 'show'), (req: Request, res: Response) => OrdersController.show(req, res));
 
 /**
  * @openapi
@@ -302,7 +303,7 @@ router.get('/:orderId', (req: Request, res: Response) => OrdersController.show(r
  *     security:
  *      - Bearer: []
  */
-router.post('/', (req: Request, res: Response) => OrdersController.create(req, res));
+router.post('/', Authorization.permit(OrdersController.constructor.name, 'create'), (req: Request, res: Response) => OrdersController.create(req, res));
 
 /**
  * @openapi
@@ -550,7 +551,7 @@ router.post('/calculator_vouchers', (req: Request, res: Response) => OrdersContr
  *     security:
  *      - Bearer: []
  */
-router.patch('/:orderId', (req: Request, res: Response) => OrdersController.update(req, res));
+router.patch('/:orderId', Authorization.permit(OrdersController.constructor.name, 'update'), (req: Request, res: Response) => OrdersController.update(req, res));
 
 /**
  * @openapi
@@ -575,6 +576,6 @@ router.patch('/:orderId', (req: Request, res: Response) => OrdersController.upda
  *     security:
  *      - Bearer: []
  */
-router.delete('/:orderId', OrdersController.delete);
+router.delete('/:orderId', Authorization.permit(OrdersController.constructor.name, 'delete'), OrdersController.delete);
 
 export default router;

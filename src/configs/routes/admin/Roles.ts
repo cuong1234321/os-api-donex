@@ -1,5 +1,6 @@
 import RolesController from '@controllers/api/admin/RolesController';
 import { Router } from 'express';
+import Authorization from '@middlewares/authorization';
 
 const router = Router();
 
@@ -23,7 +24,7 @@ const router = Router();
  *     security:
  *      - Bearer: []
  */
-router.get('/', RolesController.index);
+router.get('/', Authorization.permit(RolesController.constructor.name, 'index'), RolesController.index);
 
 /**
  * @openapi
@@ -49,7 +50,7 @@ router.get('/', RolesController.index);
  *     security:
  *      - Bearer: []
  */
-router.get('/:roleId', RolesController.show);
+router.get('/:roleId', Authorization.permit(RolesController.constructor.name, 'show'), RolesController.show);
 
 /**
  * @openapi
@@ -71,7 +72,7 @@ router.get('/:roleId', RolesController.show);
  *     security:
  *      - Bearer: []
  */
-router.delete('/:roleId', RolesController.delete);
+router.delete('/:roleId', Authorization.permit(RolesController.constructor.name, 'delete'), RolesController.delete);
 
 /**
  * @openapi
@@ -114,7 +115,7 @@ router.delete('/:roleId', RolesController.delete);
  *     security:
  *      - Bearer: []
  */
-router.patch('/:roleId', RolesController.update);
+router.patch('/:roleId', Authorization.permit(RolesController.constructor.name, 'update'), RolesController.update);
 
 /**
  * @openapi
@@ -153,6 +154,6 @@ router.patch('/:roleId', RolesController.update);
  *     security:
  *      - Bearer: []
  */
-router.post('/', RolesController.create);
+router.post('/', Authorization.permit(RolesController.constructor.name, 'create'), RolesController.create);
 
 export default router;

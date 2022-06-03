@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import SellerLevelsController from '@controllers/api/admin/SellerLevelsController';
+import Authorization from '@middlewares/authorization';
 
 const router = Router();
 
@@ -37,7 +38,7 @@ const router = Router();
  *     security:
  *      - Bearer: []
  */
-router.get('/', SellerLevelsController.index);
+router.get('/', Authorization.permit(SellerLevelsController.constructor.name, 'index'), SellerLevelsController.index);
 
 /**
  * @openapi
@@ -57,7 +58,7 @@ router.get('/', SellerLevelsController.index);
  *     security:
  *      - Bearer: []
  */
-router.get('/:levelId', SellerLevelsController.show);
+router.get('/:levelId', Authorization.permit(SellerLevelsController.constructor.name, 'show'), SellerLevelsController.show);
 
 /**
  * @openapi
@@ -100,7 +101,7 @@ router.get('/:levelId', SellerLevelsController.show);
  *     security:
  *      - Bearer: []
  */
-router.post('/', SellerLevelsController.create);
+router.post('/', Authorization.permit(SellerLevelsController.constructor.name, 'create'), SellerLevelsController.create);
 
 /**
  * @openapi
@@ -138,7 +139,7 @@ router.post('/', SellerLevelsController.create);
  *     security:
  *      - Bearer: []
  */
-router.patch('/:levelId', SellerLevelsController.update);
+router.patch('/:levelId', Authorization.permit(SellerLevelsController.constructor.name, 'update'), SellerLevelsController.update);
 
 /**
  * @openapi
@@ -158,6 +159,6 @@ router.patch('/:levelId', SellerLevelsController.update);
  *     security:
  *      - Bearer: []
  */
-router.delete('/:levelId', SellerLevelsController.delete);
+router.delete('/:levelId', Authorization.permit(SellerLevelsController.constructor.name, 'delete'), SellerLevelsController.delete);
 
 export default router;

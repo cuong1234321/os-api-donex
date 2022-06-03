@@ -1,6 +1,7 @@
 import UserController from '@controllers/api/admin/UsersController';
 import { withoutSavingUploader } from '@middlewares/uploaders';
 import { Router } from 'express';
+import Authorization from '@middlewares/authorization';
 
 const router = Router();
 
@@ -57,7 +58,7 @@ const router = Router();
  *     security:
  *      - Bearer: []
  */
-router.get('/', UserController.index);
+router.get('/', Authorization.permit(UserController.constructor.name, 'index'), UserController.index);
 
 /**
  * @openapi
@@ -81,7 +82,7 @@ router.get('/', UserController.index);
  *     security:
  *      - Bearer: []
  */
-router.get('/:userId', UserController.show);
+router.get('/:userId', Authorization.permit(UserController.constructor.name, 'show'), UserController.show);
 
 /**
   * @openapi
@@ -124,7 +125,7 @@ router.get('/:userId', UserController.show);
   *     security:
   *      - Bearer: []
   */
-router.post('/', UserController.create);
+router.post('/', Authorization.permit(UserController.constructor.name, 'create,uploadAvatar'), UserController.create);
 
 /**
  * @openapi
@@ -173,7 +174,7 @@ router.post('/', UserController.create);
  *     security:
  *      - Bearer: []
  */
-router.patch('/:userId', UserController.update);
+router.patch('/:userId', Authorization.permit(UserController.constructor.name, 'update,active,inactive,uploadAvatar,changePassword'), UserController.update);
 
 /**
  * @openapi
@@ -203,7 +204,7 @@ router.patch('/:userId', UserController.update);
  *     security:
  *      - Bearer: []
  */
-router.patch('/:userId/change_password', UserController.changePassword);
+router.patch('/:userId/change_password', Authorization.permit(UserController.constructor.name, 'update,active,inactive,uploadAvatar,changePassword'), UserController.changePassword);
 
 /**
   * @openapi
@@ -225,7 +226,7 @@ router.patch('/:userId/change_password', UserController.changePassword);
   *     security:
   *      - Bearer: []
   */
-router.patch('/:userId/active', UserController.active);
+router.patch('/:userId/active', Authorization.permit(UserController.constructor.name, 'update,active,inactive,uploadAvatar,changePassword'), UserController.active);
 
 /**
   * @openapi
@@ -247,7 +248,7 @@ router.patch('/:userId/active', UserController.active);
   *     security:
   *      - Bearer: []
   */
-router.patch('/:userId/inactive', UserController.inactive);
+router.patch('/:userId/inactive', Authorization.permit(UserController.constructor.name, 'update,active,inactive,uploadAvatar,changePassword'), UserController.inactive);
 
 /**
   * @openapi
@@ -278,7 +279,7 @@ router.patch('/:userId/inactive', UserController.inactive);
   *     security:
   *      - Bearer: []
   */
-router.patch('/:userId/upload_avatar',
+router.patch('/:userId/upload_avatar', Authorization.permit(UserController.constructor.name, 'update,active,inactive,uploadAvatar,changePassword'),
   withoutSavingUploader.single('avatar'), UserController.uploadAvatar);
 
 /**
@@ -301,6 +302,6 @@ router.patch('/:userId/upload_avatar',
   *     security:
   *      - Bearer: []
   */
-router.delete('/:userId', UserController.delete);
+router.delete('/:userId', Authorization.permit(UserController.constructor.name, 'delete'), UserController.delete);
 
 export default router;

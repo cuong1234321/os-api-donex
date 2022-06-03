@@ -1,5 +1,6 @@
 import TermsController from '@controllers/api/admin/TermsController';
 import { Router } from 'express';
+import Authorization from '@middlewares/authorization';
 
 const router = Router();
 
@@ -33,7 +34,7 @@ const router = Router();
  *     security:
  *      - Bearer: []
  */
-router.get('/:type', TermsController.show);
+router.get('/:type', Authorization.permit(TermsController.constructor.name, 'show'), TermsController.show);
 
 /**
  * @openapi
@@ -75,6 +76,6 @@ router.get('/:type', TermsController.show);
  *     security:
  *      - Bearer: []
  */
-router.post('/:type', TermsController.update);
+router.post('/:type', Authorization.permit(TermsController.constructor.name, 'update'), TermsController.update);
 
 export default router;

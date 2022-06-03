@@ -1,29 +1,29 @@
 id,title,key
-1,Quản Lý Thông Tin Tài Khoản,AdminsController
-2,Quản Lý Banner,BannersController
-3,Quản Lý Mẫu Hóa Đơn Thanh Toán,BillTemplatesController
-4,Quản Lý Đơn Vị Đối Tác,CollaboratorsController
-5,Quản Lý Thông Báo Marketing,MarketingNotificationsController
-6,Quản Lý Danh Mục Tin Tức,NewsCategoriesController
+1,Quản Lý Thông Tin Tài Khoản,AdminController
+2,Quản Lý Banner,BannerController
+3,Quản Lý Mẫu Hóa Đơn Thanh Toán,BillTemplateController
+4,Quản Lý Đơn Vị Đối Tác,CollaboratorController
+5,Quản Lý Thông Báo Marketing,MarketingNotificationController
+6,Quản Lý Danh Mục Tin Tức,NewsCategoryController
 7,Quản Lý TIn Tức,NewsController
-8,Quản Lý Đơn Hàng,OrdersController
-9,Quản Lý PopUp Quảng Cáo,PopupsController
-10,Quản Lý Danh Mục Sản Phẩm,ProductCategoriesController
-11,Quản Lý Sản Phẩm,ProductsController
-12,Quản Lý Hạng Đối Tác,RanksController
-13,Quản Lý Bảng Giá,SaleCampaignsController
-14,Quản Lý Cài Đặt Hệ Thống,SystemSettingsController
-15,Quản Lý Cấp Bậc Đối Tác,SellerLevelsController
-16,Quản Lý Chính Sách Và Bảo Mật,TermsController
-17,Quản Lý Người dùng,UsersController
-18,Quản Lý Voucher Khuyến Mãi,VoucherApplicationsController
-19,Quản Lý Xuất kho,WarehouseExportsController
-20,Quản Lý Nhập kho,WarehouseReceiptsController
-21,Quản Lý Chuyển Kho,WarehouseTransfersController
-22,Quản Lý Báo cáo Kho,WarehouseReportsController
-23,Quản Lý Kho,WarehousesController
-24,Quản Lý tài khoản ngân hàng,BanksController
-25,Quản Lý chính sách và điều khoản,TermsController
-26,Quản Lý cài đặt hệ thống,SystemSettingsController
-27,Quản Lý phân quyền,RolesController
+8,Quản Lý Đơn Hàng,OrderController
+9,Quản Lý PopUp Quảng Cáo,PopupController
+10,Quản Lý Danh Mục Sản Phẩm,ProductCategoryController
+11,Quản Lý Sản Phẩm,ProductController
+12,Quản Lý Hạng Đối Tác,RankController
+13,Quản Lý Bảng Giá,SaleCampaignController
+14,Quản Lý Cài Đặt Hệ Thống,SystemSettingController
+15,Quản Lý Cấp Bậc Đối Tác,SellerLevelController
+16,Quản Lý Chính Sách Và Bảo Mật,TermController
+17,Quản Lý Người dùng,UserController
+18,Quản Lý Voucher Khuyến Mãi,VoucherApplicationController
+19,Quản Lý Xuất kho,WarehouseExportController
+20,Quản Lý Nhập kho,WarehouseReceiptController
+21,Quản Lý Chuyển Kho,WarehouseTransferController
+22,Quản Lý Báo cáo Kho,WarehouseReportController
+23,Quản Lý Kho,WarehouseController
+24,Quản Lý tài khoản ngân hàng,BankAccountController
+25,Quản Lý chính sách và điều khoản,TermController
+26,Quản Lý cài đặt hệ thống,SystemSettingController
+27,Quản Lý phân quyền,RoleController
 28,Quản Lý nhóm quyền,PermissionGroupsController

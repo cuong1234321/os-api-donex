@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import MarketingNotificationController from '@controllers/api/admin/MarketingNotificationsController';
 import { withoutSavingUploader } from '@middlewares/uploaders';
+import Authorization from '@middlewares/authorization';
 
 const router = Router();
 
@@ -47,7 +48,7 @@ const router = Router();
  *     security:
  *      - Bearer: []
  */
-router.get('/', MarketingNotificationController.index);
+router.get('/', Authorization.permit(MarketingNotificationController.constructor.name, 'index'), MarketingNotificationController.index);
 
 /**
  * @openapi
@@ -71,7 +72,7 @@ router.get('/', MarketingNotificationController.index);
  *     security:
  *      - Bearer: []
  */
-router.get('/:notificationId', MarketingNotificationController.show);
+router.get('/:notificationId', Authorization.permit(MarketingNotificationController.constructor.name, 'show'), MarketingNotificationController.show);
 
 /**
  * @openapi
@@ -124,7 +125,7 @@ router.get('/:notificationId', MarketingNotificationController.show);
  *     security:
  *      - Bearer: []
  */
-router.post('/', MarketingNotificationController.create);
+router.post('/', Authorization.permit(MarketingNotificationController.constructor.name, 'create,uploadThumbnail'), MarketingNotificationController.create);
 
 /**
  * @openapi
@@ -176,7 +177,7 @@ router.post('/', MarketingNotificationController.create);
  *     security:
  *      - Bearer: []
  */
-router.patch('/:notificationId', MarketingNotificationController.update);
+router.patch('/:notificationId', Authorization.permit(MarketingNotificationController.constructor.name, 'update,uploadThumbnail'), MarketingNotificationController.update);
 
 /**
  * @openapi
@@ -207,7 +208,7 @@ router.patch('/:notificationId', MarketingNotificationController.update);
  *     security:
  *      - Bearer: []
  */
-router.patch('/:notificationId/upload_thumbnail',
+router.patch('/:notificationId/upload_thumbnail', Authorization.permit(MarketingNotificationController.constructor.name, 'update,uploadThumbnail'),
   withoutSavingUploader.single('thumbnail'), MarketingNotificationController.uploadThumbnail);
 
 /**
@@ -230,7 +231,7 @@ router.patch('/:notificationId/upload_thumbnail',
  *     security:
  *      - Bearer: []
  */
-router.patch('/:notificationId/send_now', MarketingNotificationController.sendNow);
+router.patch('/:notificationId/send_now', Authorization.permit(MarketingNotificationController.constructor.name, 'sendNow'), MarketingNotificationController.sendNow);
 
 /**
  * @openapi
@@ -252,6 +253,6 @@ router.patch('/:notificationId/send_now', MarketingNotificationController.sendNo
  *     security:
  *      - Bearer: []
  */
-router.delete('/:notificationId', MarketingNotificationController.delete);
+router.delete('/:notificationId', Authorization.permit(MarketingNotificationController.constructor.name, 'delete'), MarketingNotificationController.delete);
 
 export default router;

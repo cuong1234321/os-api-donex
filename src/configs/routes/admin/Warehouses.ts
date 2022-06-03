@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import WarehouseController from '@controllers/api/admin/WarehousesController';
+import Authorization from '@middlewares/authorization';
 
 const router = Router();
 
@@ -48,7 +49,7 @@ const router = Router();
  *     security:
  *      - Bearer: []
  */
-router.get('/', WarehouseController.index);
+router.get('/', Authorization.permit(WarehouseController.constructor.name, 'index'), WarehouseController.index);
 
 /**
  * @openapi
@@ -72,7 +73,7 @@ router.get('/', WarehouseController.index);
  *     security:
  *      - Bearer: []
  */
-router.get('/:warehouseId', WarehouseController.show);
+router.get('/:warehouseId', Authorization.permit(WarehouseController.constructor.name, 'show'), WarehouseController.show);
 
 /**
  * @openapi
@@ -126,7 +127,7 @@ router.get('/:warehouseId', WarehouseController.show);
  *     security:
  *      - Bearer: []
  */
-router.post('/', WarehouseController.create);
+router.post('/', Authorization.permit(WarehouseController.constructor.name, 'create'), WarehouseController.create);
 
 /**
  * @openapi
@@ -190,7 +191,7 @@ router.post('/', WarehouseController.create);
  *     security:
  *      - Bearer: []
  */
-router.patch('/:warehouseId', WarehouseController.update);
+router.patch('/:warehouseId', Authorization.permit(WarehouseController.constructor.name, 'update'), WarehouseController.update);
 
 /**
  * @openapi
@@ -214,6 +215,6 @@ router.patch('/:warehouseId', WarehouseController.update);
  *     security:
  *      - Bearer: []
  */
-router.delete('/:warehouseId', WarehouseController.delete);
+router.delete('/:warehouseId', Authorization.permit(WarehouseController.constructor.name, 'delete'), WarehouseController.delete);
 
 export default router;

@@ -1,4 +1,5 @@
 import SaleCampaignsController from '@controllers/api/admin/SaleCampaignsController';
+import Authorization from '@middlewares/authorization';
 import { Router } from 'express';
 
 const router = Router();
@@ -90,7 +91,7 @@ const router = Router();
  *     security:
  *      - Bearer: []
  */
-router.post('/', SaleCampaignsController.create);
+router.post('/', Authorization.permit(SaleCampaignsController.constructor.name, 'create'), SaleCampaignsController.create);
 
 /**
  * @openapi
@@ -180,7 +181,7 @@ router.post('/', SaleCampaignsController.create);
  *     security:
  *      - Bearer: []
  */
-router.patch('/:saleCampaignId', SaleCampaignsController.update);
+router.patch('/:saleCampaignId', Authorization.permit(SaleCampaignsController.constructor.name, 'update,inactive,active'), SaleCampaignsController.update);
 
 /**
  * @openapi
@@ -203,7 +204,7 @@ router.patch('/:saleCampaignId', SaleCampaignsController.update);
  *      - Bearer: []
  */
 
-router.patch('/:saleCampaignId/active', SaleCampaignsController.active);
+router.patch('/:saleCampaignId/active', Authorization.permit(SaleCampaignsController.constructor.name, 'update,inactive,active'), SaleCampaignsController.active);
 
 /**
  * @openapi
@@ -226,7 +227,7 @@ router.patch('/:saleCampaignId/active', SaleCampaignsController.active);
  *      - Bearer: []
  */
 
-router.get('/:saleCampaignId', SaleCampaignsController.show);
+router.get('/:saleCampaignId', Authorization.permit(SaleCampaignsController.constructor.name, 'show'), SaleCampaignsController.show);
 
 /**
  * @openapi
@@ -249,7 +250,7 @@ router.get('/:saleCampaignId', SaleCampaignsController.show);
  *      - Bearer: []
  */
 
-router.patch('/:saleCampaignId/inactive', SaleCampaignsController.inactive);
+router.patch('/:saleCampaignId/inactive', Authorization.permit(SaleCampaignsController.constructor.name, 'update,inactive,active'), SaleCampaignsController.inactive);
 
 /**
  * @openapi
@@ -272,7 +273,7 @@ router.patch('/:saleCampaignId/inactive', SaleCampaignsController.inactive);
  *      - Bearer: []
  */
 
-router.delete('/:saleCampaignId', SaleCampaignsController.delete);
+router.delete('/:saleCampaignId', Authorization.permit(SaleCampaignsController.constructor.name, 'delete'), SaleCampaignsController.delete);
 
 /**
  * @openapi
@@ -316,7 +317,7 @@ router.delete('/:saleCampaignId', SaleCampaignsController.delete);
  *     security:
  *      - Bearer: []
  */
-router.get('/',
+router.get('/', Authorization.permit(SaleCampaignsController.constructor.name, 'index'),
   SaleCampaignsController.index);
 
 export default router;

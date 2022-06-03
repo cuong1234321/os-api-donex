@@ -1,5 +1,6 @@
 import SystemSettingsController from '@controllers/api/admin/SystemSettingsController';
 import { Router } from 'express';
+import Authorization from '@middlewares/authorization';
 
 const router = Router();
 
@@ -24,7 +25,7 @@ const router = Router();
  *      - Bearer: []
  */
 
-router.get('/', SystemSettingsController.show);
+router.get('/', Authorization.permit(SystemSettingsController.constructor.name, 'show'), SystemSettingsController.show);
 
 /**
  * @openapi
@@ -88,6 +89,6 @@ router.get('/', SystemSettingsController.show);
  *      - Bearer: []
  */
 
-router.patch('/', SystemSettingsController.update);
+router.patch('/', Authorization.permit(SystemSettingsController.constructor.name, 'update'), SystemSettingsController.update);
 
 export default router;

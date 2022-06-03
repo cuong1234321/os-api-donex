@@ -1,5 +1,6 @@
 import WarehouseReceiptController from '@controllers/api/admin/WarehouseReceiptsController';
 import { Router } from 'express';
+import Authorization from '@middlewares/authorization';
 
 const router = Router();
 
@@ -45,7 +46,7 @@ const router = Router();
  *     security:
  *      - Bearer: []
  */
-router.get('/', WarehouseReceiptController.index);
+router.get('/', Authorization.permit(WarehouseReceiptController.constructor.name, 'index'), WarehouseReceiptController.index);
 
 /**
  * @openapi
@@ -69,7 +70,7 @@ router.get('/', WarehouseReceiptController.index);
  *     security:
  *      - Bearer: []
  */
-router.get('/:warehouseReceiptId', WarehouseReceiptController.show);
+router.get('/:warehouseReceiptId', Authorization.permit(WarehouseReceiptController.constructor.name, 'show'), WarehouseReceiptController.show);
 
 /**
  * @openapi
@@ -93,7 +94,7 @@ router.get('/:warehouseReceiptId', WarehouseReceiptController.show);
  *     security:
  *      - Bearer: []
  */
-router.get('/:warehouseReceiptId/download', WarehouseReceiptController.download);
+router.get('/:warehouseReceiptId/download', Authorization.permit(WarehouseReceiptController.constructor.name, 'index'), WarehouseReceiptController.download);
 
 /**
  * @openapi
@@ -162,7 +163,7 @@ router.get('/:warehouseReceiptId/download', WarehouseReceiptController.download)
  *     security:
  *      - Bearer: []
  */
-router.post('/', WarehouseReceiptController.create);
+router.post('/', Authorization.permit(WarehouseReceiptController.constructor.name, 'create'), WarehouseReceiptController.create);
 
 /**
  * @openapi
@@ -236,6 +237,6 @@ router.post('/', WarehouseReceiptController.create);
  *     security:
  *      - Bearer: []
  */
-router.patch('/:warehouseReceiptId', WarehouseReceiptController.update);
+router.patch('/:warehouseReceiptId', Authorization.permit(WarehouseReceiptController.constructor.name, 'update'), WarehouseReceiptController.update);
 
 export default router;

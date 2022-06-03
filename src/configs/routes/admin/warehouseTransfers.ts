@@ -1,5 +1,6 @@
 import WarehouseTransferController from '@controllers/api/admin/WarehouseTransfersController';
 import { Router } from 'express';
+import Authorization from '@middlewares/authorization';
 
 const router = Router();
 
@@ -46,7 +47,7 @@ const router = Router();
  *     security:
  *      - Bearer: []
  */
-router.get('/', WarehouseTransferController.index);
+router.get('/', Authorization.permit(WarehouseTransferController.constructor.name, 'index'), WarehouseTransferController.index);
 
 /**
  * @openapi
@@ -71,7 +72,7 @@ router.get('/', WarehouseTransferController.index);
  *     security:
  *      - Bearer: []
  */
-router.get('/:warehouseTransferId', WarehouseTransferController.show);
+router.get('/:warehouseTransferId', Authorization.permit(WarehouseTransferController.constructor.name, 'show'), WarehouseTransferController.show);
 
 /**
  * @openapi
@@ -95,7 +96,7 @@ router.get('/:warehouseTransferId', WarehouseTransferController.show);
  *     security:
  *      - Bearer: []
  */
-router.get('/:warehouseTransferId/download', WarehouseTransferController.download);
+router.get('/:warehouseTransferId/download', Authorization.permit(WarehouseTransferController.constructor.name, 'index'), WarehouseTransferController.download);
 
 /**
  * @openapi
@@ -147,7 +148,7 @@ router.get('/:warehouseTransferId/download', WarehouseTransferController.downloa
  *     security:
  *      - Bearer: []
  */
-router.post('/', WarehouseTransferController.create);
+router.post('/', Authorization.permit(WarehouseTransferController.constructor.name, 'create'), WarehouseTransferController.create);
 
 /**
  * @openapi
@@ -205,7 +206,7 @@ router.post('/', WarehouseTransferController.create);
  *     security:
  *      - Bearer: []
  */
-router.patch('/:warehouseTransferId', WarehouseTransferController.update);
+router.patch('/:warehouseTransferId', Authorization.permit(WarehouseTransferController.constructor.name, 'update'), WarehouseTransferController.update);
 
 /**
   * @openapi
@@ -238,6 +239,6 @@ router.patch('/:warehouseTransferId', WarehouseTransferController.update);
   *     security:
   *      - Bearer: []
   */
-router.patch('/:warehouseTransferId/change_status', WarehouseTransferController.changeStatus);
+router.patch('/:warehouseTransferId/change_status', Authorization.permit(WarehouseTransferController.constructor.name, 'update'), WarehouseTransferController.changeStatus);
 
 export default router;

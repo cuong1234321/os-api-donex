@@ -1,6 +1,7 @@
 import CollaboratorsController from '@controllers/api/admin/CollaboratorsController';
 import { withoutSavingUploader } from '@middlewares/uploaders';
 import { Router } from 'express';
+import Authorization from '@middlewares/authorization';
 
 const router = Router();
 
@@ -51,7 +52,7 @@ const router = Router();
  *     security:
  *      - Bearer: []
  */
-router.get('/', CollaboratorsController.index);
+router.get('/', Authorization.permit(CollaboratorsController.constructor.name, 'index'), CollaboratorsController.index);
 
 /**
  * @openapi
@@ -139,7 +140,7 @@ router.get('/', CollaboratorsController.index);
  *     security:
  *      - Bearer: []
  */
-router.post('/', CollaboratorsController.create);
+router.post('/', Authorization.permit(CollaboratorsController.constructor.name, 'create,uploadMedia,uploadAvatar'), CollaboratorsController.create);
 
 /**
  * @openapi
@@ -177,7 +178,7 @@ router.post('/', CollaboratorsController.create);
  *     security:
  *      - Bearer: []
  */
-router.post('/:collaboratorId/upload_paper_proof',
+router.post('/:collaboratorId/upload_paper_proof', Authorization.permit(CollaboratorsController.constructor.name, 'uploadPaperProof,update,active,inactive,uploadMedia,uploadAvatar,changePassword,verify,reject'),
   withoutSavingUploader.any(), CollaboratorsController.uploadPaperProof);
 
 /**
@@ -270,7 +271,8 @@ router.post('/:collaboratorId/upload_paper_proof',
  *     security:
  *      - Bearer: []
  */
-router.patch('/:collaboratorId', CollaboratorsController.update);
+router.patch('/:collaboratorId', Authorization.permit(CollaboratorsController.constructor.name, 'uploadPaperProof,update,active,inactive,uploadMedia,uploadAvatar,changePassword,verify,reject'),
+  CollaboratorsController.update);
 
 /**
  * @openapi
@@ -292,7 +294,8 @@ router.patch('/:collaboratorId', CollaboratorsController.update);
  *     security:
  *      - Bearer: []
  */
-router.patch('/:collaboratorId/active', CollaboratorsController.active);
+router.patch('/:collaboratorId/active', Authorization.permit(CollaboratorsController.constructor.name, 'uploadPaperProof,update,active,inactive,uploadMedia,uploadAvatar,changePassword,verify,reject'),
+  CollaboratorsController.active);
 
 /**
  * @openapi
@@ -314,7 +317,8 @@ router.patch('/:collaboratorId/active', CollaboratorsController.active);
  *     security:
  *      - Bearer: []
  */
-router.patch('/:collaboratorId/inactive', CollaboratorsController.inactive);
+router.patch('/:collaboratorId/inactive', Authorization.permit(CollaboratorsController.constructor.name, 'uploadPaperProof,update,active,inactive,uploadMedia,uploadAvatar,changePassword,verify,reject'),
+  CollaboratorsController.inactive);
 
 /**
  * @openapi
@@ -336,7 +340,8 @@ router.patch('/:collaboratorId/inactive', CollaboratorsController.inactive);
  *     security:
  *      - Bearer: []
  */
-router.get('/:collaboratorId', CollaboratorsController.show);
+router.get('/:collaboratorId', Authorization.permit(CollaboratorsController.constructor.name, 'show'),
+  CollaboratorsController.show);
 
 /**
  * @openapi
@@ -358,7 +363,8 @@ router.get('/:collaboratorId', CollaboratorsController.show);
  *     security:
  *      - Bearer: []
  */
-router.delete('/:collaboratorId', CollaboratorsController.delete);
+router.delete('/:collaboratorId', Authorization.permit(CollaboratorsController.constructor.name, 'delete'),
+  CollaboratorsController.delete);
 
 /**
  * @openapi
@@ -392,7 +398,8 @@ router.delete('/:collaboratorId', CollaboratorsController.delete);
  *     security:
  *      - Bearer: []
  */
-router.patch('/:collaboratorId/verify', CollaboratorsController.verify);
+router.patch('/:collaboratorId/verify', Authorization.permit(CollaboratorsController.constructor.name, 'uploadPaperProof,update,active,inactive,uploadMedia,uploadAvatar,changePassword,verify,reject'),
+  CollaboratorsController.verify);
 
 /**
   * @openapi
@@ -422,7 +429,8 @@ router.patch('/:collaboratorId/verify', CollaboratorsController.verify);
   *     security:
   *      - Bearer: []
   */
-router.patch('/:collaboratorId/reject', CollaboratorsController.reject);
+router.patch('/:collaboratorId/reject', Authorization.permit(CollaboratorsController.constructor.name, 'uploadPaperProof,update,active,inactive,uploadMedia,uploadAvatar,changePassword,verify,reject'),
+  CollaboratorsController.reject);
 
 /**
  * @openapi
@@ -455,7 +463,8 @@ router.patch('/:collaboratorId/reject', CollaboratorsController.reject);
  *     security:
  *      - Bearer: []
  */
-router.post('/:collaboratorId/upload_medias', withoutSavingUploader.any(), CollaboratorsController.uploadMedia);
+router.post('/:collaboratorId/upload_medias', Authorization.permit(CollaboratorsController.constructor.name, 'create,uploadMedia,uploadAvatar'),
+  withoutSavingUploader.any(), CollaboratorsController.uploadMedia);
 
 /**
  * @openapi
@@ -485,7 +494,8 @@ router.post('/:collaboratorId/upload_medias', withoutSavingUploader.any(), Colla
  *     security:
  *      - Bearer: []
  */
-router.patch('/:collaboratorId/change_password', CollaboratorsController.changePassword);
+router.patch('/:collaboratorId/change_password', Authorization.permit(CollaboratorsController.constructor.name, 'uploadPaperProof,update,active,inactive,uploadMedia,uploadAvatar,changePassword,verify,reject'),
+  CollaboratorsController.changePassword);
 
 /**
   * @openapi
@@ -516,7 +526,7 @@ router.patch('/:collaboratorId/change_password', CollaboratorsController.changeP
   *     security:
   *      - Bearer: []
   */
-router.patch('/:collaboratorId/upload_avatar',
+router.patch('/:collaboratorId/upload_avatar', Authorization.permit(CollaboratorsController.constructor.name, 'create,uploadMedia,uploadAvatar'),
   withoutSavingUploader.single('avatar'), CollaboratorsController.uploadAvatar);
 
 export default router;

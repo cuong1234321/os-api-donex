@@ -69,7 +69,7 @@ router.use('/ranks', adminPassport.authenticate('jwt', { session: false }), Rank
 router.use('/roles', adminPassport.authenticate('jwt', { session: false }), RoleRouter);
 router.use('/sessions', SessionsRouter);
 router.use('/sale_campaigns', adminPassport.authenticate('jwt', { session: false }), SaleCampaignRouter);
-router.use('/system_setting', SystemSettingRouter);
+router.use('/system_setting', adminPassport.authenticate('jwt', { session: false }), SystemSettingRouter);
 router.use('/selections', SelectionRouter);
 router.use('/seller_levels', adminPassport.authenticate('jwt', { session: false }), SellerLevelRouter);
 router.use('/terms', adminPassport.authenticate('jwt', { session: false }), TermRouter);
