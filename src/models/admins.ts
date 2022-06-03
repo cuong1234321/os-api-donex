@@ -205,6 +205,120 @@ class AdminModel extends Model<AdminInterface> implements AdminInterface {
         ],
       };
     },
+    bySorting (sortBy, sortOrder) {
+      return {
+        order: [[Sequelize.literal(sortBy), sortOrder]],
+      };
+    },
+    withOrderQuantity (from, to) {
+      const conditions = (from && to) ? `AND sub_orders.createdAt BETWEEN "${from}" AND "${to}"` : '';
+      return {
+        attributes: {
+          include: [
+            [
+              Sequelize.cast(Sequelize.literal('(SELECT COUNT(*) FROM sub_orders INNER JOIN orders ON orders.id = sub_orders.orderId ' +
+              'AND creatableType = "admin" WHERE sub_orders.deletedAt IS NULL AND sub_orders.status = "delivered" AND creatableId = AdminModel.id ' +
+              `${conditions})`), 'SIGNED'),
+              'orderQuantity',
+            ],
+          ],
+        },
+      };
+    },
+    withProductQuantity (from, to) {
+      const conditions = (from && to) ? `AND sub_orders.createdAt BETWEEN "${from}" AND "${to}"` : '';
+      return {
+        attributes: {
+          include: [
+            [
+              Sequelize.cast(Sequelize.literal('(SELECT SUM(sub_orders.total) FROM sub_orders INNER JOIN orders ON orders.id = sub_orders.orderId AND ' +
+              'creatableType = "admin" WHERE sub_orders.deletedAt IS NULL AND sub_orders.status = "delivered" AND creatableId = AdminModel.id' +
+              `${conditions})`), 'SIGNED'),
+              'productQuantity',
+            ],
+          ],
+        },
+      };
+    },
+    withTotalListedPrice (from, to) {
+      const conditions = (from && to) ? `AND sub_orders.createdAt BETWEEN "${from}" AND "${to}"` : '';
+      return {
+        attributes: {
+          include: [
+            [
+              Sequelize.cast(Sequelize.literal('(SELECT SUM(listedPrice * quantity) FROM order_items WHERE order_items.deletedAt IS NULL AND ' +
+              'order_items.subOrderId IN (SELECT id FROM sub_orders WHERE sub_orders.deletedAt IS NULL AND sub_orders.status = "delivered" ' +
+              `${conditions} AND ` +
+              'sub_orders.orderId IN (SELECT orders.id FROM orders WHERE orders.creatableType = "admin" AND orders.creatableId = AdminModel.id)))'), 'SIGNED'),
+              'totalListedPrice',
+            ],
+          ],
+        },
+      };
+    },
+    withTotalDiscount (from, to) {
+      const conditions = (from && to) ? `AND sub_orders.createdAt BETWEEN "${from}" AND "${to}"` : '';
+      return {
+        attributes: {
+          include: [
+            [
+              Sequelize.cast(Sequelize.literal('(SELECT SUM(order_items.saleCampaignDiscount * order_items.quantity) + SUM(sub_orders.coinDiscount + sub_orders.voucherDiscount + sub_orders.rankDiscount) FROM order_items ' +
+              'INNER JOIN sub_orders ON sub_orders.id = order_items.subOrderId AND sub_orders.status = "delivered" AND sub_orders.deletedAt IS NUll ' +
+              `${conditions} WHERE order_items.deletedAt IS NULL AND ` +
+              'sub_orders.orderId IN (SELECT id FROM orders WHERE orders.creatableType = "admin" AND creatableId = AdminModel.id))'), 'SIGNED'),
+              'totalDiscount',
+            ],
+          ],
+        },
+      };
+    },
+    byOrderQuantity (fromValue, toValue, fromDate, toDate) {
+      const conditions = (fromDate && toDate) ? `AND sub_orders.createdAt BETWEEN "${fromDate}" AND "${toDate}"` : '';
+      return {
+        where: {
+          [Op.and]: [
+            Sequelize.where(Sequelize.cast(Sequelize.literal('(SELECT COUNT(*) FROM sub_orders INNER JOIN orders ON orders.id = sub_orders.orderId ' +
+            'AND creatableType = "admin" WHERE sub_orders.deletedAt IS NULL AND sub_orders.status = "delivered" AND creatableId = AdminModel.id ' +
+            `${conditions})`), 'SIGNED'),
+            {
+              [Op.between]: [fromValue, toValue],
+            }),
+          ],
+        },
+      };
+    },
+    byTotalListedPrice (fromValue, toValue, fromDate, toDate) {
+      const conditions = (fromDate && toDate) ? `AND sub_orders.createdAt BETWEEN "${fromDate}" AND "${toDate}"` : '';
+      return {
+        where: {
+          [Op.and]: [
+            Sequelize.where(Sequelize.cast(Sequelize.literal('(SELECT SUM(listedPrice * quantity) FROM order_items WHERE order_items.deletedAt IS NULL AND ' +
+            'order_items.subOrderId IN (SELECT id FROM sub_orders WHERE sub_orders.deletedAt IS NULL AND sub_orders.status = "delivered" ' +
+            `${conditions} AND ` +
+            'sub_orders.orderId IN (SELECT orders.id FROM orders WHERE orders.creatableType = "admin" AND orders.creatableId = AdminModel.id)))'), 'SIGNED'),
+            {
+              [Op.between]: [fromValue, toValue],
+            }),
+          ],
+        },
+      };
+    },
+    byTotalDiscount (fromValue, toValue, fromDate, toDate) {
+      const conditions = (fromDate && toDate) ? `AND sub_orders.createdAt BETWEEN "${fromDate}" AND "${toDate}"` : '';
+      return {
+        where: {
+          [Op.and]: [
+            Sequelize.where(Sequelize.cast(Sequelize.literal('(SELECT SUM(order_items.saleCampaignDiscount * order_items.quantity) + SUM(sub_orders.coinDiscount + sub_orders.voucherDiscount + sub_orders.rankDiscount) FROM order_items ' +
+            'INNER JOIN sub_orders ON sub_orders.id = order_items.subOrderId AND sub_orders.status = "delivered" AND sub_orders.deletedAt IS NUll ' +
+            `${conditions} WHERE order_items.deletedAt IS NULL AND ` +
+            'sub_orders.orderId IN (SELECT id FROM orders WHERE orders.creatableType = "admin" AND creatableId = AdminModel.id))'), 'SIGNED'),
+            {
+              [Op.between]: [fromValue, toValue],
+            }),
+          ],
+        },
+      };
+    },
   }
 
   public setWarehouses: BelongsToManySetAssociationsMixin<WarehouseModel, number>;
