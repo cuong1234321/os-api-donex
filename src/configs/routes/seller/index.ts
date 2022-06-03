@@ -10,6 +10,7 @@ import OrderRouter from './Orders';
 import SubOrderRouter from './SubOrders';
 import SellerBankRouter from './SellerBanks';
 import SellerNotificationRouter from './SellerNotifications';
+import SizeGuideRouter from './SizeGuides';
 
 const router = Router();
 
@@ -21,6 +22,7 @@ router.use('/products', sellerPassport.authenticate('jwt', { session: false }), 
 router.use('/sellers', sellerPassport.authenticate('jwt', { session: false }), SellerRouter);
 router.use('/orders', sellerPassport.authenticate('jwt', { session: false }), OrderRouter);
 router.use('/sub_orders', sellerPassport.authenticate('jwt', { session: false }), SubOrderRouter);
+router.use('/size_guides', SizeGuideRouter);
 router.use('/seller_banks', sellerPassport.authenticate('jwt', { session: false }), SellerBankRouter);
 router.use('/seller_notifications', sellerPassport.authenticate('jwt', { session: false }), SellerNotificationRouter);
 
