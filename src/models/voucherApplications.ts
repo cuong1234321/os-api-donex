@@ -69,8 +69,8 @@ class VoucherApplicationModel extends Model<VoucherApplicationInterface> impleme
       }
     },
     async validateApplicationTime () {
-      if (!this.isNewRecord &&
-      dayjs(this.appliedAt).format() < dayjs().format()) {
+      if ((!this.isNewRecord &&
+      dayjs(this.appliedAt).format() < dayjs().format()) && !this.getDataValue('deletedAt')) {
         throw new ValidationErrorItem('Không thể thay đổi thông tin khi chương trình đã hoạt động', 'validatePromoTime', 'appliedAt', this.appliedAt);
       }
     },
