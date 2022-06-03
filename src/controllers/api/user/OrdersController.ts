@@ -9,6 +9,8 @@ import VoucherModel from '@models/vouchers';
 import SubOrderModel from '@models/subOrders';
 import { Request, Response } from 'express';
 import { Transaction } from 'sequelize/types';
+import CartModel from '@models/carts';
+import CartItemModel from '@models/cartItems';
 
 class OrderController {
   public async create (req: Request, res: Response) {
@@ -62,6 +64,18 @@ class OrderController {
         });
         return order;
       });
+      if (currentUser) {
+        const cart = await CartModel.scope([
+          { method: ['byUser', currentUser.id] },
+        ]).findOne();
+        const warehouseIds = [];
+        const productVariantIds = [];
+        for (const item of params.subOrders) {
+          warehouseIds.push(item.warehouseId);
+          productVariantIds.push(item.items.map((record: any) => record.productVariantId));
+        }
+        await CartItemModel.destroy({ where: { cartId: cart.id, warehouseId: warehouseIds, productVariantId: productVariantIds.flat(Infinity) } });
+      }
       sendSuccess(res, { order: result });
     } catch (error) {
       sendError(res, 500, error.message, error);
