@@ -30,7 +30,7 @@ class VnpayPaymentService {
 
   constructor (orderableId: number, transactionId: string, amount: number, prefix: string, isNewOrder = false) {
     this.txnRef = isNewOrder ? `${prefix}_${dayjs().format('YYMMDDhhmmss')}_${orderableId}` : transactionId;
-    this.amount = Math.round((amount + (amount * (settings.vnPayDefaultFeePercent / 100)) + settings.vnPayDefaultFee) * 100);
+    this.amount = Math.ceil(amount + (amount * (settings.vnPayDefaultFeePercent / 100)) + settings.vnPayDefaultFee) * 100;
     this.createDate = dayjs().format('YYYYMMDDhhmmss');
     this.vnpayParams = {
       vnp_Amount: this.amount,
