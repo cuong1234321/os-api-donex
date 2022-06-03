@@ -75,6 +75,7 @@ class OrderController {
         { method: ['byOrderAble', req.currentUser.id, 'USER'] },
         { method: ['byPayment', OrderModel.PAYMENT_METHOD.VNPAY] },
         { method: ['byId', req.params.orderId] },
+        'isNotPaid',
       ]).findOne();
       if (!order) return sendError(res, 404, NoData);
       order.total = order.subTotal;

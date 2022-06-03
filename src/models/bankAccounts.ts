@@ -17,7 +17,7 @@ class BankAccountModel extends Model<BankAccountInterface> implements BankAccoun
 
   public static readonly STATUS_ENUM = { ACTIVE: 'active', INACTIVE: 'inactive' }
   public static readonly CREATABLE_PARAMETERS = ['bankId', 'bankAccount', 'bankOwner', 'qrCode', 'status']
-  public static readonly UPDATABLE_PARAMETERS = ['bankId', 'bankOwner', 'qrCode', 'status']
+  public static readonly UPDATABLE_PARAMETERS = ['bankId', 'bankOwner', 'qrCode', 'status', 'bankAccount']
 
   static readonly hooks: Partial<ModelHooks<BankAccountModel>> = {
   }

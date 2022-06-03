@@ -3,6 +3,7 @@ import { NoData } from '@libs/errors';
 import { sendError, sendSuccess } from '@libs/response';
 import OrderModel from '@models/orders';
 import SubOrderModel from '@models/subOrders';
+import Order from '@repositories/models/orders';
 import { Request, Response } from 'express';
 
 class SubOrderController {
@@ -59,8 +60,19 @@ class SubOrderController {
     }
   }
 
-  public async update (req: Request, res: Response) {
-
+  public async getOrderPlatform (req: Request, res: Response) {
+    try {
+      const { currentUser } = req;
+      const subOrder = await SubOrderModel.scope([
+        { method: ['byId', req.params.subOrderId] },
+        { method: ['byUser', currentUser.id] },
+      ]).findOne();
+      if (!subOrder) return sendError(res, 404, NoData);
+      const orderPlatform = await Order.getDeliveryPartner(subOrder);
+      sendSuccess(res, { orderPlatform });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
   }
 }
 
