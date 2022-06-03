@@ -30,6 +30,7 @@ class HomepageController {
       'isActive',
       'isFlashSale',
       'withVariants',
+      'withSellQuantity',
     ];
     const scopeNew: any = [
       'withPrice',
@@ -37,6 +38,7 @@ class HomepageController {
       'isActive',
       'newest',
       'withVariants',
+      'withSellQuantity',
     ];
     const scopeHighlight: any = [
       'withPrice',
@@ -44,6 +46,7 @@ class HomepageController {
       'isActive',
       'isHighlight',
       'withVariants',
+      'withSellQuantity',
     ];
     if (currentUser) {
       scopeFlashSale.push({ method: ['isFavorite', currentUser.id] });
