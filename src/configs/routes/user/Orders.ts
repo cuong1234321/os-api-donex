@@ -1,7 +1,7 @@
 import OrdersController from '@controllers/api/user/OrdersController';
 import { authGuest } from '@middlewares/auth';
 import { userPassport } from '@middlewares/passport';
-import { Router } from 'express';
+import { Request, Response, Router } from 'express';
 
 const router = Router();
 
@@ -129,75 +129,7 @@ const router = Router();
  *     security:
  *      - Bearer: []
  */
-router.post('/', authGuest, OrdersController.create);
-
-/**
- * @openapi
- * /u/orders/view:
- *   post:
- *     tags:
- *      - "[USER] ORDER"
- *     summary: Tạo order
- *     parameters:
- *      - in: "body"
- *        name: "body"
- *        description: "Thông tin order"
- *        schema:
- *          type: "object"
- *          properties:
- *            paymentMethod:
- *              type: "string"
- *              description: "Phương thức thanh toán"
- *              default: 'COD'
- *              enum:
- *                - COD
- *                - banking
- *                - vnPay
- *            coinUsed:
- *              type: "integer"
- *              description: "xu sử dụng"
- *              default: "null"
- *              require: true
- *            shippingFullName:
- *              type: "string"
- *              description: "Tên người mua hàng"
- *              default: "string"
- *              require: true
- *            shippingPhoneNumber:
- *              type: "string"
- *              description: "sdt"
- *              default: "null"
- *              require: true
- *            shippingProvinceId:
- *              type: "integer"
- *              description: "địa chỉ mua hàng"
- *              default: "null"
- *              require: true
- *            shippingDistrictId:
- *              type: "integer"
- *              description: "địa chỉ mua hàng"
- *              default: "null"
- *              require: true
- *            shippingWardId:
- *              type: "integer"
- *              description: "địa chỉ mua hàng"
- *              default: "null"
- *              require: true
- *            shippingAddress:
- *              type: "string"
- *              description: "địa chỉ mua hàng"
- *              default: "string"
- *              require: true
-
-*     responses:
- *       200:
- *         description: "OK"
- *       500:
- *         description: "Internal error"
- *     security:
- *      - Bearer: []
- */
-router.post('/view', authGuest, OrdersController.show);
+router.post('/', authGuest, (req: Request, res: Response) => OrdersController.create(req, res));
 
 /**
  * @openapi

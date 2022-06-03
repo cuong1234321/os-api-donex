@@ -104,7 +104,7 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
     }
   },
   async afterSave (record: any) {
-    await record.checkStatusSubOrder();
+    if (!this.isNewRecord) { await record.checkStatusSubOrder(); }
   },
 }
 
@@ -209,7 +209,7 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
       defaults: { id: undefined },
     }))[0];
     const order = await this.getOrder();
-    if (this.isNewRecord || !order.ownerId || !order.paidAt) return;
+    if (this.isNewRecord || !order?.ownerId || !order.paidAt) return;
     if (this.previous('status') !== SubOrderModel.STATUS_ENUM.REFUND && this.status === SubOrderModel.STATUS_ENUM.REFUND) {
       const params: any = {
         id: undefined,

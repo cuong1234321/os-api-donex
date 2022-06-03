@@ -126,11 +126,6 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
   static readonly hooks: Partial<ModelHooks<OrderModel>> = {
     async beforeCreate (record: OrderModel) {
       record.code = await this.generateOderCode();
-      if (record.isNewRecord && record.paymentMethod === OrderModel.PAYMENT_METHOD.COD) {
-        record.status = OrderModel.STATUS_ENUM.PENDING;
-      } else {
-        record.status = OrderModel.STATUS_ENUM.DRAFT;
-      }
     },
     async afterDestroy (record) {
       record.deleteOrderDetails();
@@ -139,7 +134,7 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
       if (record.appliedVoucherId) {
         await VoucherModel.update({ discount: record.applicationDiscount, activeAt: dayjs() }, { where: { id: record.appliedVoucherId } });
       }
-      await record.subtractUserCoin();
+      // await record.subtractUserCoin();
     },
     async afterSave (record: any) {
       if (record.paymentMethod === OrderModel.PAYMENT_METHOD.COD &&
