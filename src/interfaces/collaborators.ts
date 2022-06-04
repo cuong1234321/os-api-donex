@@ -35,6 +35,7 @@ interface CollaboratorInterface {
   createdAt?: Date,
   updatedAt?: Date,
   deletedAt?: Date,
+  linkAffiliate?: string,
 };
 
 export default CollaboratorInterface;
