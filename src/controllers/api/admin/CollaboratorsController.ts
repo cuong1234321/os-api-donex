@@ -147,6 +147,7 @@ class CollaboratorController {
         'withCurrentRank',
       ]).findByPk(collaboratorId);
       if (!collaborator) return sendError(res, 404, NoData);
+      collaborator.setDataValue('linkAffiliate', process.env.CLIENT_HOST + `/affiliate?referralCode=${collaborator.referralCode}`);
       sendSuccess(res, { collaborator });
     } catch (error) {
       sendError(res, 500, error.message, error);
