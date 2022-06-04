@@ -106,7 +106,7 @@ class RoleModel extends Model<RoleInterface> implements RoleInterface {
         attributes: {
           include: [
             [
-              Sequelize.cast(Sequelize.literal('(SELECT COUNT(*) from admins where admins.roleId = RoleModel.id)'), 'SIGNED'),
+              Sequelize.cast(Sequelize.literal('(SELECT COUNT(*) from admins where admins.roleId = RoleModel.id AND deletedAt IS NULL)'), 'SIGNED'),
               'totalUsers',
             ],
           ],
