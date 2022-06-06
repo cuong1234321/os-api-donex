@@ -59,19 +59,23 @@ class SubOrderController {
   public async showBill (req: Request, res: Response) {
     try {
       const { subOrderId } = req.params;
-      const subOrder = await SubOrderModel.scope([
-        { method: ['byId', subOrderId] },
+      const subOrders = await SubOrderModel.scope([
+        { method: ['byId', (subOrderId as string).split(',')] },
         'withItems',
         'withOrders',
-      ]).findOne();
-      if (!subOrder) { return sendError(res, 404, NoData); }
-      const order = subOrder.getDataValue('order');
-      const bill = await BillTemplateModel.findByPk(subOrder.billId);
-      const formatBill = BillTemplateModel.formatDataBill(order, subOrder);
-      const template = handlebars.compile(bill.content);
-      const htmlToSend = template(formatBill);
-      bill.setDataValue('content', htmlToSend);
-      sendSuccess(res, { subOrder, bill });
+      ]).findAll();
+      if (subOrders.length === 0) { return sendError(res, 404, NoData); }
+      const bills = await BillTemplateModel.findAll();
+      subOrders.forEach(subOrder => {
+        const order = subOrder.getDataValue('order');
+        const bill = bills.find((record: any) => record.getDataValue('id') === subOrder.billId);
+        const formatBill = BillTemplateModel.formatDataBill(order, subOrder);
+        const template = handlebars.compile(bill.content);
+        const htmlToSend = template(formatBill);
+        bill.setDataValue('content', htmlToSend);
+        subOrder.setDataValue('bill', bill);
+      });
+      sendSuccess(res, { subOrders });
     } catch (error) {
       sendError(res, 500, error.message, error);
     }

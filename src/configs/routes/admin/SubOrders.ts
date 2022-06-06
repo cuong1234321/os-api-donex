@@ -104,7 +104,7 @@ router.patch('/:subOrderId', (req: Request, res: Response) => SubOrderController
  *      - in: path
  *        name: "subOrderId"
  *        description: ""
- *        type: number
+ *        type: string
  *     responses:
  *       200:
  *         description: "OK"
