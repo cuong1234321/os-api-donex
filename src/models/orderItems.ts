@@ -46,6 +46,11 @@ class OrderItemModel extends Model<OrderItemInterface> implements OrderItemInter
         ],
       };
     },
+    bySubOrder (subOrderId) {
+      return {
+        where: { subOrderId },
+      };
+    },
   }
 
   public static initialize (sequelize: Sequelize) {

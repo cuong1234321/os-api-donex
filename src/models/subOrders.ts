@@ -165,9 +165,11 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
   public async formatOrder (subOrder: any) {
     const order = await OrderModel.scope([
       'withAddress',
+      { method: ['byId', subOrder.orderId] },
     ]).findOne();
     const orderItems = await OrderItemModel.scope([
       'withProductVariant',
+      { method: ['bySubOrder', subOrder.id] },
     ]).findAll();
     const params: any = {
       clientCode: subOrder.code,
