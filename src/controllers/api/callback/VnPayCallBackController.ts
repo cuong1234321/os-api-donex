@@ -16,19 +16,17 @@ class VnPayCallBackController {
       switch (params.vnp_TxnRef.split('_')[0]) {
         case VnpayPaymentService.TXN_REF_PREFIX.ORDER:
           orderableInstance = await OrderModel.scope([
-            { method: ['byStatus', OrderModel.STATUS_ENUM.PENDING] },
             { method: ['byPayment', params.vnp_TxnRef] },
           ]).findOne();
-          orderValue = orderableInstance.subTotal;
-          paidAt = orderableInstance.paidAt;
+          orderValue = orderableInstance?.subTotal;
+          paidAt = orderableInstance?.paidAt;
           break;
         default:
           orderableInstance = await TopUpDepositModel.scope([
-            { method: ['byStatus', TopUpDepositModel.STATUS_ENUM.PENDING] },
             { method: ['byPayment', params.vnp_TxnRef] },
           ]).findOne();
-          orderValue = orderableInstance.amount;
-          paidAt = orderableInstance.portalConfirmAt;
+          orderValue = orderableInstance?.amount;
+          paidAt = orderableInstance?.portalConfirmAt;
           break;
       }
       if (!orderableInstance) return res.status(200).json({ Message: 'Order Not Found', RspCode: '01' });
