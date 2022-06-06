@@ -121,7 +121,7 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
     VTP: 'vtp',
   }
 
-  public static readonly STATUS_ENUM = { DRAFT: 'draft', PENDING: 'pending', PAID: 'paid', DELIVERY: 'delivery', COMPLETE: 'complete', CANCEL: 'cancel', REFUND: 'refund' }
+  public static readonly STATUS_ENUM = { DRAFT: 'draft', PENDING: 'pending', PAID: 'paid', DELIVERY: 'delivery', COMPLETE: 'complete', CANCEL: 'cancel', REFUND: 'refund', FAIL: 'fail' }
 
   static readonly hooks: Partial<ModelHooks<OrderModel>> = {
     async beforeCreate (record: OrderModel) {
@@ -347,6 +347,11 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
     isNotPaid () {
       return {
         where: { paidAt: null },
+      };
+    },
+    isNotFail () {
+      return {
+        where: { status: { [Op.ne]: OrderModel.STATUS_ENUM.FAIL } },
       };
     },
   }

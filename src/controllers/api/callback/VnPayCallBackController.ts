@@ -16,7 +16,8 @@ class VnPayCallBackController {
       switch (params.vnp_TxnRef.split('_')[0]) {
         case VnpayPaymentService.TXN_REF_PREFIX.ORDER:
           orderableInstance = await OrderModel.scope([
-            { method: ['byPayment', params.vnp_TxnRef] },
+            { method: ['byTransactionId', params.vnp_TxnRef] },
+            'isNotFail',
           ]).findOne();
           orderValue = orderableInstance?.subTotal;
           paidAt = orderableInstance?.paidAt;
@@ -24,6 +25,7 @@ class VnPayCallBackController {
         default:
           orderableInstance = await TopUpDepositModel.scope([
             { method: ['byPayment', params.vnp_TxnRef] },
+            'isNotFail',
           ]).findOne();
           orderValue = orderableInstance?.amount;
           paidAt = orderableInstance?.portalConfirmAt;
@@ -39,6 +41,14 @@ class VnPayCallBackController {
         }
         if (orderableInstance.constructor.name === TopUpDepositModel.name) {
           await (orderableInstance as TopUpDepositModel).update({ status: TopUpDepositModel.STATUS_ENUM.COMPLETE, portalConfirmAt: dayjs() });
+        }
+      }
+      if (params.vnp_TransactionStatus === '99') {
+        if (orderableInstance.constructor.name === OrderModel.name) {
+          await (orderableInstance as OrderModel).update({ status: OrderModel.STATUS_ENUM.FAIL });
+        }
+        if (orderableInstance.constructor.name === TopUpDepositModel.name) {
+          await (orderableInstance as TopUpDepositModel).update({ status: TopUpDepositModel.STATUS_ENUM.FAIL });
         }
       }
       res.status(200).json({ Message: 'Confirm Success', RspCode: '00' });
