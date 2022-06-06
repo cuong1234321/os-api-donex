@@ -2,7 +2,7 @@ interface WithdrawalRequestInterface {
   id: number;
   code: string;
   ownerId: number;
-  userBankId: number;
+  ownerBankId: number;
   amount: number;
   status: string;
   approvalNote: string;

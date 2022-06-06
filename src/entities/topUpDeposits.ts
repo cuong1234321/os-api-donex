@@ -11,7 +11,7 @@ const TopUpDepositEntity = {
     type: DataTypes.INTEGER, allowNull: false,
   },
   creatableType: {
-    type: DataTypes.ENUM({ values: ['admin', 'user'] }), defaultValue: 'user',
+    type: DataTypes.ENUM({ values: ['admin', 'seller'] }), defaultValue: 'seller',
   },
   type: {
     type: DataTypes.ENUM({ values: ['vnPay', 'banking'] }), defaultValue: 'vnPay',
