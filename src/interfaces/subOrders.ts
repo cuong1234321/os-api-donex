@@ -1,3 +1,4 @@
+import BillTemplateInterface from './billTemplates';
 import OrderItemInterface from './orderItems';
 import OrderInterface from './orders';
 import WarehouseInterface from './warehouses';
@@ -49,6 +50,7 @@ interface SubOrderInterface {
   items?: OrderItemInterface[];
   order?: OrderInterface;
   warehouse?: WarehouseInterface;
+  bill?: BillTemplateInterface;
 };
 
 export default SubOrderInterface;
