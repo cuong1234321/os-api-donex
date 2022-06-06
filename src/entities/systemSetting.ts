@@ -73,6 +73,9 @@ const SystemSettingEntity = {
   companyCode: {
     type: DataTypes.STRING(255), allowNull: true,
   },
+  tawktoScriptUrl: {
+    type: DataTypes.STRING(255), allowNull: true,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },
