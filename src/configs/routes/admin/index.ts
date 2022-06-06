@@ -11,6 +11,7 @@ import CollaboratorsRouter from './Collaborators';
 import DashboardRouter from './Dashboards';
 import FeeRouter from './Fees';
 import HistoryEarnedPointRouter from './HistoryEarnedPoints';
+import IncomeReportRouter from './IncomeReports';
 import MarketingNotificationsRouter from './MarketingNotifications';
 import NewsCategoryRouter from './NewsCategories';
 import NewsRouter from './News';
@@ -57,6 +58,7 @@ router.use('/collaborators', adminPassport.authenticate('jwt', { session: false 
 router.use('/dashboard', adminPassport.authenticate('jwt', { session: false }), DashboardRouter);
 router.use('/fees', FeeRouter);
 router.use('/history_earned_points', adminPassport.authenticate('jwt', { session: false }), HistoryEarnedPointRouter);
+router.use('/incomes', adminPassport.authenticate('jwt', { session: false }), IncomeReportRouter);
 router.use('/notifications', adminPassport.authenticate('jwt', { session: false }), MarketingNotificationsRouter);
 router.use('/news_categories', adminPassport.authenticate('jwt', { session: false }), NewsCategoryRouter);
 router.use('/news', adminPassport.authenticate('jwt', { session: false }), NewsRouter);

@@ -322,6 +322,95 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
         where: { referralCode },
       };
     },
+    bySorting (sortBy, sortOrder) {
+      return {
+        order: [[Sequelize.literal(sortBy), sortOrder]],
+      };
+    },
+    withTotalListedPrice (from, to) {
+      from = !from ? dayjs('2000').startOf('year').format() : dayjs(from).startOf('day').format();
+      to = !to ? dayjs('3000').startOf('year').format() : dayjs(to).endOf('day').format();
+      return {
+        attributes: {
+          include: [
+            [
+              Sequelize.cast(Sequelize.literal('(SELECT SUM(listedPrice * quantity) FROM order_items WHERE order_items.deletedAt IS NULL AND ' +
+              'order_items.subOrderId IN (SELECT id FROM sub_orders WHERE sub_orders.deletedAt IS NULL AND sub_orders.status = "delivered" AND ' +
+              `sub_orders.createdAt BETWEEN "${from}" AND "${to}" AND ` +
+              'sub_orders.orderId IN (SELECT orders.id FROM orders WHERE orders.orderableType <> "user" AND orders.orderableId = CollaboratorModel.id)))'), 'SIGNED'),
+              'totalListedPrice',
+            ],
+          ],
+        },
+      };
+    },
+    withTotalDiscount (from, to) {
+      from = !from ? dayjs('2000').startOf('year').format() : dayjs(from).startOf('day').format();
+      to = !to ? dayjs('3000').startOf('year').format() : dayjs(to).endOf('day').format();
+      return {
+        attributes: {
+          include: [
+            [
+              Sequelize.cast(Sequelize.literal('(SELECT SUM(order_items.saleCampaignDiscount * order_items.quantity) + SUM(sub_orders.coinDiscount + sub_orders.voucherDiscount + sub_orders.rankDiscount) FROM order_items ' +
+              'INNER JOIN sub_orders ON sub_orders.id = order_items.subOrderId AND sub_orders.status = "delivered" AND sub_orders.deletedAt IS NUll AND ' +
+              `sub_orders.createdAt BETWEEN "${from}" AND "${to}" AND ` +
+              'sub_orders.orderId IN (SELECT id FROM orders WHERE orders.orderableType <> "user" AND orderableId = CollaboratorModel.id))'), 'SIGNED'),
+              'totalDiscount',
+            ],
+          ],
+        },
+      };
+    },
+    byOrderQuantity (fromValue, toValue, fromDate, toDate) {
+      fromDate = !fromDate ? dayjs('2000').startOf('year').format() : dayjs(fromDate).startOf('day').format();
+      toDate = !toDate ? dayjs('3000').startOf('year').format() : dayjs(toDate).endOf('day').format();
+      return {
+        where: {
+          [Op.and]: [
+            Sequelize.where(Sequelize.cast(Sequelize.literal('(SELECT COUNT(*) FROM sub_orders INNER JOIN orders ON orders.id = sub_orders.orderId ' +
+            'AND orderableType <> "user" AND orderableId = CollaboratorModel.id WHERE sub_orders.deletedAt IS NULL AND sub_orders.status = "delivered" ' +
+            `AND sub_orders.createdAt BETWEEN "${fromDate}" AND "${toDate}")`), 'SIGNED'),
+            {
+              [Op.between]: [fromValue, toValue],
+            }),
+          ],
+        },
+      };
+    },
+    byTotalListedPrice (fromValue, toValue, fromDate, toDate) {
+      fromDate = !fromDate ? dayjs('2000').startOf('year').format() : dayjs(fromDate).startOf('day').format();
+      toDate = !toDate ? dayjs('3000').startOf('year').format() : dayjs(toDate).endOf('day').format();
+      return {
+        where: {
+          [Op.and]: [
+            Sequelize.where(Sequelize.cast(Sequelize.literal('(SELECT SUM(listedPrice * quantity) FROM order_items WHERE order_items.deletedAt IS NULL AND ' +
+            'order_items.subOrderId IN (SELECT id FROM sub_orders WHERE sub_orders.deletedAt IS NULL AND sub_orders.status = "delivered" AND ' +
+            `sub_orders.createdAt BETWEEN "${fromDate}" AND "${toDate}" AND ` +
+            'sub_orders.orderId IN (SELECT orders.id FROM orders WHERE orders.orderableType <> "user" AND orders.orderableId = CollaboratorModel.id)))'), 'SIGNED'),
+            {
+              [Op.between]: [fromValue, toValue],
+            }),
+          ],
+        },
+      };
+    },
+    byTotalDiscount (fromValue, toValue, fromDate, toDate) {
+      fromDate = !fromDate ? dayjs('2000').startOf('year').format() : dayjs(fromDate).startOf('day').format();
+      toDate = !toDate ? dayjs('3000').startOf('year').format() : dayjs(toDate).endOf('day').format();
+      return {
+        where: {
+          [Op.and]: [
+            Sequelize.where(Sequelize.cast(Sequelize.literal('(SELECT SUM(order_items.saleCampaignDiscount * order_items.quantity) + SUM(sub_orders.coinDiscount + sub_orders.voucherDiscount + sub_orders.rankDiscount) FROM order_items ' +
+            'INNER JOIN sub_orders ON sub_orders.id = order_items.subOrderId AND sub_orders.status = "delivered" AND sub_orders.deletedAt IS NUll AND ' +
+            `sub_orders.createdAt BETWEEN "${fromDate}" AND "${toDate}" AND ` +
+            'sub_orders.orderId IN (SELECT id FROM orders WHERE orders.orderableType <> "user" AND orderableId = CollaboratorModel.id))'), 'SIGNED'),
+            {
+              [Op.between]: [fromValue, toValue],
+            }),
+          ],
+        },
+      };
+    },
   }
 
   public async validPassword (password: string) {
