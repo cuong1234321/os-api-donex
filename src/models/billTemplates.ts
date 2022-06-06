@@ -42,6 +42,7 @@ class BillTemplateModel extends Model<BillTemplateInterface> implements BillTemp
       orderChannel: order.saleChannel,
       salerName: order.createAbleName,
       cashierName: '',
+      table: '{{table}}',
     };
     return billKeys;
   }

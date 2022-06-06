@@ -10,3 +10,4 @@ id,title,key
 9,"@Đơn_hàng_Kênh_bán_hàng","{{orderChannel}}"
 10,"@Nhân_viên_bán_Họ_và_tên","{{salerName}}"
 11,"@Nhân_viên_thu_ngân_Họ_và_tên","{{cashierName}}"
+12,"@Bảng_sản_phẩm","{{table}}"
