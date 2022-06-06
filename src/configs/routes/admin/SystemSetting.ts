@@ -80,6 +80,9 @@ router.get('/', Authorization.permit(SystemSettingsController.constructor.name, 
  *            iosAppLink:
  *              type: "string"
  *              description: "iosAppLink"
+ *            tawktoScriptUrl:
+ *              type: "string"
+ *              description: "tawktoScriptUrl"
  *     responses:
  *       200:
  *         description: Success

@@ -23,6 +23,7 @@ interface SystemSettingInterface {
   environment?: string;
   accessToken?: string;
   companyCode?: string;
+  tawktoScriptUrl?: string;
   createdAt?: Date;
   updatedAt?: Date;
 };
