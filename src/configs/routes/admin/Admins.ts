@@ -152,6 +152,15 @@ router.get('/:adminId', Authorization.permit(AdminsController.constructor.name, 
  *              default: "2000/01/01"
  *            note:
  *              type: "string"
+ *            sellerWarehouses:
+ *              type: "array"
+ *              items:
+ *                type: "object"
+ *                properties:
+ *                  warehouseId:
+ *                    type: "integer"
+ *                    description: "id kho"
+ *                    default: "null"
  *     responses:
  *       200:
  *         description: Return data.
@@ -224,6 +233,15 @@ router.post('/upload', adminPassport.authenticate('jwt', { session: false }), wi
  *              default: "2000/01/01"
  *            note:
  *              type: "string"
+ *            sellerWarehouses:
+ *              type: "array"
+ *              items:
+ *                type: "object"
+ *                properties:
+ *                  warehouseId:
+ *                    type: "integer"
+ *                    description: "id kho"
+ *                    default: "null"
  *     responses:
  *       200:
  *         description: Return data.

@@ -4,11 +4,13 @@ import WarehouseInterface from '@interfaces/warehouses';
 import WarehouseVariantInterface from '@interfaces/warehouseVariants';
 import { HasManyGetAssociationsMixin, Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
+import AdminModel from './admins';
 import MDistrictModel from './mDistricts';
 import MProvinceModel from './mProvinces';
 import MWardModel from './mWards';
 import ProductModel from './products';
 import ProductVariantModel from './productVariants';
+import SellerWarehouseModel from './sellerWarehouses';
 import WarehouseVariantModel from './warehouseVariants';
 
 class WarehouseModel extends Model<WarehouseInterface> implements WarehouseInterface {
@@ -242,6 +244,8 @@ class WarehouseModel extends Model<WarehouseInterface> implements WarehouseInter
     this.belongsTo(MProvinceModel, { as: 'province', foreignKey: 'provinceId' });
     this.belongsTo(MDistrictModel, { as: 'district', foreignKey: 'districtId' });
     this.belongsTo(MWardModel, { as: 'ward', foreignKey: 'wardId' });
+    this.hasMany(SellerWarehouseModel, { as: 'sellerWarehouses', foreignKey: 'warehouseId', onDelete: 'CASCADE', hooks: true });
+    this.belongsToMany(AdminModel, { through: SellerWarehouseModel, as: 'admins', foreignKey: 'warehouseId' });
   }
 }
 
