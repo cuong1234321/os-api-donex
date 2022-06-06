@@ -28,6 +28,7 @@ class TopUpDepositModel extends Model<TopUpDepositInterface> implements TopUpDep
   static readonly STATUS_ENUM = {
     PENDING: 'pending',
     COMPLETE: 'complete',
+    FAIL: 'fail',
   };
 
   static readonly ADMIN_CREATABLE_PARAMETERS = ['ownerId', 'type', 'status', 'amount', 'note']
@@ -164,6 +165,11 @@ class TopUpDepositModel extends Model<TopUpDepositInterface> implements TopUpDep
       if (to) Object.assign(createdAtCondition, { [Op.lte]: dayjs(to as string).endOf('day').format() });
       return {
         where: { createdAt: createdAtCondition },
+      };
+    },
+    isNotFail () {
+      return {
+        where: { status: { [Op.ne]: TopUpDepositModel.STATUS_ENUM.FAIL } },
       };
     },
   }
