@@ -9,7 +9,7 @@ import { Request, Response } from 'express';
 import AdminImporterService from '@services/adminImporter';
 import dayjs from 'dayjs';
 import XlsxService from '@services/xlsx';
-import SellerWarehouseModel from '@models/sellerWarehouses';
+import AdminWarehouseModel from '@models/adminWarehouses';
 import sequelize from '@initializers/sequelize';
 
 class AdminController {
@@ -51,8 +51,8 @@ class AdminController {
         const result = await AdminModel.create(params, {
           include: [
             {
-              model: SellerWarehouseModel,
-              as: 'sellerWarehouses',
+              model: AdminWarehouseModel,
+              as: 'adminWarehouses',
             },
           ],
           transaction,
@@ -85,7 +85,7 @@ class AdminController {
       const params = req.parameters.permit(AdminModel.UPDATABLE_PARAMETERS).value();
       await sequelize.transaction(async (transaction: Transaction) => {
         await admin.update(params, { transaction });
-        await admin.updateWarehouses(params.sellerWarehouses, transaction);
+        await admin.updateWarehouses(params.adminWarehouses, transaction);
       });
       sendSuccess(res, admin);
     } catch (error) {
