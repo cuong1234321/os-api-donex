@@ -1,4 +1,4 @@
-interface SellerWarehouseInterface {
+interface AdminWarehouseInterface {
   id: number;
   adminId: number;
   warehouseId: number;
@@ -6,4 +6,4 @@ interface SellerWarehouseInterface {
   updatedAt?: Date,
 };
 
-export default SellerWarehouseInterface;
+export default AdminWarehouseInterface;

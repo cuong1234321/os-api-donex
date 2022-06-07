@@ -11,7 +11,7 @@ import randomString from 'randomstring';
 import RoleModel from './roles';
 import PermissionModel from './permissions';
 import PermissionGroupModel from './permissionGroups';
-import SellerWarehouseModel from './sellerWarehouses';
+import AdminWarehouseModel from './adminWarehouses';
 import WarehouseModel from './warehouses';
 
 class AdminModel extends Model<AdminInterface> implements AdminInterface {
@@ -36,10 +36,10 @@ class AdminModel extends Model<AdminInterface> implements AdminInterface {
   public deletedAt?: Date;
 
   static readonly CREATABLE_PARAMETERS = ['fullName', 'username', 'phoneNumber', 'gender', 'email', 'dateOfBirth', 'note', 'roleId',
-    { sellerWarehouses: ['warehouseId'] }]
+    { adminWarehouses: ['warehouseId'] }]
 
   static readonly UPDATABLE_PARAMETERS = ['fullName', 'phoneNumber', 'gender', 'email', 'dateOfBirth', 'note', 'roleId',
-    { sellerWarehouses: ['warehouseId'] }]
+    { adminWarehouses: ['warehouseId'] }]
 
   static readonly ADMIN_UPDATABLE_PARAMETERS = ['fullName', 'username', 'avatar', 'phoneNumber', 'gender', 'email', 'dateOfBirth']
   static readonly GENDER_VN_ENUM = { MALE: 'nam', FEMALE: 'nữ', OTHER: 'khác' }
@@ -208,7 +208,7 @@ class AdminModel extends Model<AdminInterface> implements AdminInterface {
   }
 
   public setWarehouses: BelongsToManySetAssociationsMixin<WarehouseModel, number>;
-  public getSellerWarehouses: HasManyGetAssociationsMixin<SellerWarehouseModel>;
+  public getAdminWarehouses: HasManyGetAssociationsMixin<AdminWarehouseModel>;
 
   public async validPassword (password: string) {
     try {
@@ -251,8 +251,8 @@ class AdminModel extends Model<AdminInterface> implements AdminInterface {
 
   public async updateWarehouses (attributes: any[], transaction?: Transaction) {
     if (!attributes || !attributes.length) return;
-    const sellerWarehouses = await WarehouseModel.scope([{ method: ['byId', attributes.map(attribute => attribute.warehouseId)] }]).findAll();
-    await this.setWarehouses(sellerWarehouses, { transaction });
+    const adminWarehouses = await WarehouseModel.scope([{ method: ['byId', attributes.map(attribute => attribute.warehouseId)] }]).findAll();
+    await this.setWarehouses(adminWarehouses, { transaction });
   }
 
   public static initialize (sequelize: Sequelize) {
@@ -268,8 +268,8 @@ class AdminModel extends Model<AdminInterface> implements AdminInterface {
 
   public static associate () {
     this.belongsTo(RoleModel, { as: 'role', foreignKey: 'roleId' });
-    this.hasMany(SellerWarehouseModel, { as: 'sellerWarehouses', foreignKey: 'adminId' });
-    this.belongsToMany(WarehouseModel, { through: SellerWarehouseModel, as: 'warehouses', foreignKey: 'adminId' });
+    this.hasMany(AdminWarehouseModel, { as: 'adminWarehouses', foreignKey: 'adminId' });
+    this.belongsToMany(WarehouseModel, { through: AdminWarehouseModel, as: 'warehouses', foreignKey: 'adminId' });
   }
 }
 

@@ -1,6 +1,6 @@
 import { DataTypes } from 'sequelize';
 
-const SellerWarehouseEntity = {
+const AdminWarehouseEntity = {
   id: {
     type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false,
   },
@@ -18,4 +18,4 @@ const SellerWarehouseEntity = {
   },
 };
 
-export default SellerWarehouseEntity;
+export default AdminWarehouseEntity;
