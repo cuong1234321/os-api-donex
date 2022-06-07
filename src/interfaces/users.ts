@@ -25,6 +25,8 @@ interface UserInterface {
   rank: string;
   coinReward: number;
   alreadyFinishOrder: boolean;
+  isBlackList: boolean;
+  lastOrderFinishedAt: Date;
   createdAt?: Date,
   updatedAt?: Date,
   deletedAt?: Date,
