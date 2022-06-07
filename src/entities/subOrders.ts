@@ -130,6 +130,9 @@ const SubOrderEntity = {
   affiliateDiscount: {
     type: DataTypes.INTEGER, defaultValue: 0,
   },
+  expectedDeliveryTime: {
+    type: DataTypes.DATE,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },

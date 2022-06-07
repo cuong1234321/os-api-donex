@@ -55,6 +55,7 @@ public cancelableId: number;
 public cancelRejectNote: string;
 public tax: number;
 public affiliateDiscount: number;
+public expectedDeliveryTime: Date;
 public createdAt?: Date;
 public updatedAt?: Date;
 public deletedAt?: Date;
@@ -100,7 +101,8 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
   async beforeSave (record: any) {
     if ([SubOrderModel.STATUS_ENUM.DRAFT, SubOrderModel.STATUS_ENUM.PENDING].includes(record._previousDataValues.status) && record.status === SubOrderModel.STATUS_ENUM.WAITING_TO_TRANSFER) {
       const getOrderDetail = await record.formatOrder(record);
-      await Order.createGhnOrder(getOrderDetail);
+      const ghnOrder: any = await Order.createGhnOrder(getOrderDetail);
+      await record.update({ orderPartnerCode: ghnOrder?.orderCode, expectedDeliveryTime: ghnOrder?.expectedDeliveryTime });
     }
   },
   async afterSave (record: any) {

@@ -43,6 +43,7 @@ interface SubOrderInterface {
   cancelRejectNote: string;
   tax: number;
   affiliateDiscount: number;
+  expectedDeliveryTime: Date;
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;
