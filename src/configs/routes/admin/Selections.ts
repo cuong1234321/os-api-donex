@@ -169,6 +169,13 @@ router.get('/news_categories', SelectionController.newsCategorySelections);
  *     tags:
  *      - "[ADMIN] SELECTION"
  *     summary: danh sach khach hang
+ *     parameters:
+ *      - in: "query"
+ *        name: "status"
+ *        description: ""
+ *        enum:
+ *         - active
+ *         - inactive
  *     responses:
  *       200:
  *         description: "Upload success"
@@ -198,6 +205,14 @@ router.get('/users', SelectionController.userSelections);
  *        name: collaboratorId
  *        description: ""
  *        type: number
+ *      - in: "query"
+ *        name: "status"
+ *        description: ""
+ *        enum:
+ *         - pending
+ *         - active
+ *         - inactive
+ *         - rejected
  *     responses:
  *       200:
  *         description: "Upload success"

@@ -108,7 +108,10 @@ class SelectionController {
 
   public async userSelections (req: Request, res: Response) {
     try {
-      const users = await UserModel.findAll({ attributes: ['id', 'fullName', 'username'] });
+      const { status } = req.query;
+      const scopes: any = [];
+      if (status) scopes.push({ method: ['byStatus', status] });
+      const users = await UserModel.scope(scopes).findAll({ attributes: ['id', 'fullName', 'username', 'status'] });
       sendSuccess(res, users);
     } catch (error) {
       sendError(res, 500, error.message, error);
@@ -117,11 +120,12 @@ class SelectionController {
 
   public async collaboratorSelections (req: Request, res: Response) {
     try {
-      const { type, collaboratorId } = req.query;
+      const { type, collaboratorId, status } = req.query;
       const scopes: any = ['withAddressInfo'];
       if (type) {
         scopes.push({ method: ['byType', type] });
       }
+      if (status) scopes.push({ method: ['byStatus', status] });
       if (collaboratorId) scopes.push({ method: ['byId', collaboratorId] });
       const collaborators = await CollaboratorModel.scope(scopes).findAll({ attributes: ['id', 'fullName', 'address', 'phoneNumber', 'type', 'username', 'provinceId', 'districtId', 'wardId'] });
       sendSuccess(res, collaborators);

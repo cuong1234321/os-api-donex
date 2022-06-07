@@ -83,6 +83,16 @@ static readonly DELIVERY_STATUS_ENUM = [
   'waitingToPay',
 ]
 
+static readonly SALE_CHANNEL_KEY: any = {
+  facebook: 'FB',
+  lazada: 'LA',
+  shopee: 'SP',
+  tiki: 'TK',
+  wholesale: 'SI',
+  retail: 'LE',
+  other: 'KK',
+}
+
 static readonly CANCEL_STATUS = { PENDING: 'pending', APPROVED: 'approved', REJECTED: 'rejected' }
 static readonly CANCELABLE_TYPE_ENUM = { USER: 'user', COLLABORATOR: 'collaborator', AGENCY: 'agency', DISTRIBUTOR: 'distributor' };
 
@@ -92,8 +102,9 @@ static readonly UPDATABLE_ON_DUPLICATE_PARAMETERS = ['id', 'warehouseId', 'weigh
 static readonly UPDATABLE_PARAMETERS = ['status'];
 
 static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
-  async beforeCreate (record: SubOrderModel) {
-    record.code = await this.generateOderCode();
+  async afterCreate (record, options) {
+    const order = await OrderModel.findByPk(record.orderId, { transaction: options.transaction });
+    await record.update({ code: `${SubOrderModel.SALE_CHANNEL_KEY[order.saleChannel]}${dayjs().format('YYMMDD')}${record.id}` }, { transaction: options.transaction });
   },
   async afterDestroy (record) {
     record.deleteSubOrderDetails();

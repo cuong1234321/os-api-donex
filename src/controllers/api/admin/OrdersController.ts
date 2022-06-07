@@ -196,14 +196,17 @@ class OrderController {
 
   public async download (req: Request, res: Response) {
     try {
+      const { subOrderIds } = req.query;
       const time = dayjs().format('DD-MM-YY-hh:mm:ss');
       const fileName = `Bao-cao-danh-sach-don-hang-${time}.xlsx`;
       const sortBy = req.query.sortBy || 'createdAt';
       const sortOrder = req.query.sortOrder || 'DESC';
       const scopes: any = [
         'withOrders',
+        'withFinalAmount',
         { method: ['bySortOrder', sortBy, sortOrder] },
       ];
+      if (subOrderIds) scopes.push({ method: ['byId', (subOrderIds as string).split(',')] });
       const subOrders = await SubOrderModel.scope(scopes).findAll();
       const buffer: any = await XlsxService.downloadListOrders(subOrders);
       res.writeHead(200, [

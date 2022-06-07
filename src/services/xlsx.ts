@@ -11,7 +11,18 @@ class XlsxService {
     dayjs.extend(utc);
     dayjs.extend(timezone);
     const PAYMENT_METHOD_STATUS_MAPPING: any = { pending: 'Chưa thanh toán', complete: 'Đã thanh toán' };
-    const SHIPPING_STATUS_MAPPING: any = { draft: 'Lưu tạm', pending: 'Chờ duyệt' };
+    const SHIPPING_STATUS_MAPPING: any = {
+      draft: 'Lưu tạm',
+      pending: 'Chờ duyệt',
+      waitingToTransfer: 'Chờ lấy hàng',
+      delivery: 'Đang giao hàng',
+      waitingToPay: 'Chờ thanh toán',
+      delivered: 'Đã giao hàng',
+      fail: 'Giao hàng thất bại',
+      cancel: 'Hủy đơn',
+      reject: 'Từ chối',
+      refund: 'Đơn hàng trả lại',
+    };
     const SALE_CHANNEL_MAPPING: any = { facebook: 'Facebook', lazada: 'Lazada', shopee: 'Shopee', tiki: 'Tiki', wholesale: 'Bán sỉ', retail: 'Bán lẻ', other: 'Kênh khác' };
     const PAYMENT_METHOD_MAPPING: any = { banking: 'banking', COD: 'COD', vnPay: 'vnPay', wallet: 'Ví' };
     const rows = subOrders.map((subOrder, index: any) => {
