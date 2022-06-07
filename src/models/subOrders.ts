@@ -106,7 +106,8 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
       ]).findOne();
       const getOrderDetail = await record.formatOrder(record, order);
       const ghnOrder: any = await Order.createGhnOrder(getOrderDetail);
-      await record.update({ orderPartnerCode: ghnOrder?.orderCode, expectedDeliveryTime: ghnOrder?.expectedDeliveryTime });
+      record.orderPartnerCode = ghnOrder?.orderCode;
+      record.expectedDeliveryTime = ghnOrder?.expectedDeliveryTime;
       if (order.creatableType === OrderModel.CREATABLE_TYPE.USER) {
         const user = await UserModel.scope([
           { method: ['byId', order.ownerId] },
