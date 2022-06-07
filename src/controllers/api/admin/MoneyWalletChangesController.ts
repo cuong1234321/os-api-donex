@@ -36,7 +36,12 @@ class ProductBookmarkController {
           ],
         },
       });
-      sendSuccess(res, { moneyWalletChanges, pagination: { total: count.length, page, perPage: limit } });
+      const histories: any = [];
+      rows.forEach((row: any) => {
+        const historyByDay = moneyWalletChanges.filter((record: any) => dayjs(record.createdAt).format('YYYYMMDD') === dayjs(row.createdAt).format('YYYYMMDD'));
+        histories.push(historyByDay);
+      });
+      sendSuccess(res, { moneyWalletChanges: histories, pagination: { total: count.length, page, perPage: limit } });
     } catch (error) {
       sendError(res, 500, error.message, error);
     }
