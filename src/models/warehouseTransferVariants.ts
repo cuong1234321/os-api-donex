@@ -28,6 +28,9 @@ class WarehouseTransferVariantModel extends Model<WarehouseTransferVariantInterf
         await warehouseVariant.update({ quantity: warehouseVariant.quantity + (record.previous('quantity') || 0) - (record.quantity || 0) }, { transaction: options.transaction });
       }
     },
+    beforeCreate (record) {
+      record.totalPrice = record.quantity * record.price;
+    },
   }
 
   static readonly validations: ModelValidateOptions = {

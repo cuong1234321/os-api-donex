@@ -37,6 +37,9 @@ class WarehouseExportVariantModel extends Model<WarehouseExportVariantInterface>
       ]).findOne();
       await warehouseVariant.update({ quantity: warehouseVariant.quantity + record.quantity });
     },
+    beforeCreate (record) {
+      record.totalPrice = record.quantity * record.price;
+    },
   }
 
   static readonly validations: ModelValidateOptions = {
