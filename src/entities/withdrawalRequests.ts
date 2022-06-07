@@ -22,6 +22,9 @@ const WithdrawalRequestEntity = {
   approvalNote: {
     type: DataTypes.TEXT, allowNull: true,
   },
+  requestNote: {
+    type: DataTypes.TEXT, allowNull: true,
+  },
   createdAt: {
     type: DataTypes.DATE, field: 'created_at',
   },

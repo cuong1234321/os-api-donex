@@ -213,6 +213,20 @@ class UserModel extends Model<UserInterface> implements UserInterface {
         where: { alreadyFinishOrder: false },
       };
     },
+    lastOrderOutOfDate () {
+      return {
+        where: {
+          id: { [Op.in]: Sequelize.literal(`(SELECT id FROM users WHERE DATE_ADD(lastOrderFinishedAt, INTERVAL ${settings.orderOutOfDate} DAY) <  CURDATE())`) },
+        },
+      };
+    },
+    isNotBlackList () {
+      return {
+        where: {
+          isBlackList: false,
+        },
+      };
+    },
   }
 
   public async validPassword (password: string) {

@@ -14,7 +14,7 @@ const CoinWalletChangeEntity = {
     type: DataTypes.STRING(30), allowNull: false,
   },
   mutableId: {
-    type: DataTypes.INTEGER, allowNull: false,
+    type: DataTypes.INTEGER, allowNull: true,
   },
   amount: {
     type: DataTypes.INTEGER, allowNull: false,

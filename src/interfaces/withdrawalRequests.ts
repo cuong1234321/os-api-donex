@@ -6,6 +6,7 @@ interface WithdrawalRequestInterface {
   amount: number;
   status: string;
   approvalNote: string;
+  requestNote: string;
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;
