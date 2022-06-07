@@ -84,6 +84,12 @@ const UserEntity = {
   alreadyFinishOrder: {
     type: DataTypes.BOOLEAN, defaultValue: false,
   },
+  lastOrderFinishedAt: {
+    type: DataTypes.DATE,
+  },
+  isBlackList: {
+    type: DataTypes.BOOLEAN, defaultValue: false,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },

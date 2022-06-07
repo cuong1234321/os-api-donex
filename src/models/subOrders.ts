@@ -100,9 +100,19 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
   },
   async beforeSave (record: any) {
     if ([SubOrderModel.STATUS_ENUM.DRAFT, SubOrderModel.STATUS_ENUM.PENDING].includes(record._previousDataValues.status) && record.status === SubOrderModel.STATUS_ENUM.WAITING_TO_TRANSFER) {
-      const getOrderDetail = await record.formatOrder(record);
+      const order = await OrderModel.scope([
+        'withAddress',
+        { method: ['byId', record.orderId] },
+      ]).findOne();
+      const getOrderDetail = await record.formatOrder(record, order);
       const ghnOrder: any = await Order.createGhnOrder(getOrderDetail);
       await record.update({ orderPartnerCode: ghnOrder?.orderCode, expectedDeliveryTime: ghnOrder?.expectedDeliveryTime });
+      if (order.creatableType === OrderModel.CREATABLE_TYPE.USER) {
+        const user = await UserModel.scope([
+          { method: ['byId', order.ownerId] },
+        ]).findOne();
+        user.update({ lastOrderFinishedAt: dayjs() });
+      }
     }
   },
   async afterSave (record: any) {
@@ -164,11 +174,7 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
     });
   }
 
-  public async formatOrder (subOrder: any) {
-    const order = await OrderModel.scope([
-      'withAddress',
-      { method: ['byId', subOrder.orderId] },
-    ]).findOne();
+  public async formatOrder (subOrder: any, order: any) {
     const orderItems = await OrderItemModel.scope([
       'withProductVariant',
       { method: ['bySubOrder', subOrder.id] },

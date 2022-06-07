@@ -36,6 +36,8 @@ class UserModel extends Model<UserInterface> implements UserInterface {
   public rank: string;
   public coinReward: number;
   public alreadyFinishOrder: boolean;
+  public isBlackList: boolean;
+  public lastOrderFinishedAt: Date;
   public createdAt?: Date;
   public updatedAt?: Date;
   public deletedAt?: Date;
