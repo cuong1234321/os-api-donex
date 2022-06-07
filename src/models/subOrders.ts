@@ -708,6 +708,13 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
         ],
       };
     },
+    byWarehouse (warehouseId) {
+      return {
+        where: {
+          warehouseId,
+        },
+      };
+    },
   }
 
   public static initialize (sequelize: Sequelize) {

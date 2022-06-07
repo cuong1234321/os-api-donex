@@ -240,6 +240,8 @@ class OrderController {
   private async listProductQueryBuilder (req: any) {
     const sortBy = req.query.sortBy || 'createdAt';
     const sortOrder = req.query.sortOrder || 'DESC';
+    const { currentAdmin } = req;
+    const sellerWarehouses = await currentAdmin.getSellerWarehouses();
     const {
       code, paymentStatus, createAbleName, status, saleChannel, shippingName,
       subTotal, finalAmount, pickUpAt, phoneNumber, createdAt, shippingFee, shippingType, shippingCode, orderPartnerCode, paymentMethod, shippingFeeMisa,
@@ -247,6 +249,7 @@ class OrderController {
     const scopes: any = [
       'withOrders',
       'withFinalAmount',
+      { method: ['byWarehouse', sellerWarehouses.map((record: any) => record.warehouseId)] },
       { method: ['bySortOrder', sortBy, sortOrder] },
     ];
     if (code) scopes.push({ method: ['byCode', code] });

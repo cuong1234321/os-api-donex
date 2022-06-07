@@ -1,6 +1,6 @@
 import AdminEntity from '@entities/admins';
 import AdminInterface from '@interfaces/admins';
-import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, ValidationErrorItem } from 'sequelize';
+import { BelongsToManySetAssociationsMixin, Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, ValidationErrorItem, Transaction, HasManyGetAssociationsMixin } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
@@ -11,6 +11,8 @@ import randomString from 'randomstring';
 import RoleModel from './roles';
 import PermissionModel from './permissions';
 import PermissionGroupModel from './permissionGroups';
+import SellerWarehouseModel from './sellerWarehouses';
+import WarehouseModel from './warehouses';
 
 class AdminModel extends Model<AdminInterface> implements AdminInterface {
   public id: number;
@@ -33,8 +35,12 @@ class AdminModel extends Model<AdminInterface> implements AdminInterface {
   public updatedAt?: Date;
   public deletedAt?: Date;
 
-  static readonly CREATABLE_PARAMETERS = ['fullName', 'username', 'phoneNumber', 'gender', 'email', 'dateOfBirth', 'note', 'roleId']
-  static readonly UPDATABLE_PARAMETERS = ['fullName', 'phoneNumber', 'gender', 'email', 'dateOfBirth', 'note', 'roleId']
+  static readonly CREATABLE_PARAMETERS = ['fullName', 'username', 'phoneNumber', 'gender', 'email', 'dateOfBirth', 'note', 'roleId',
+    { sellerWarehouses: ['warehouseId'] }]
+
+  static readonly UPDATABLE_PARAMETERS = ['fullName', 'phoneNumber', 'gender', 'email', 'dateOfBirth', 'note', 'roleId',
+    { sellerWarehouses: ['warehouseId'] }]
+
   static readonly ADMIN_UPDATABLE_PARAMETERS = ['fullName', 'username', 'avatar', 'phoneNumber', 'gender', 'email', 'dateOfBirth']
   static readonly GENDER_VN_ENUM = { MALE: 'nam', FEMALE: 'nữ', OTHER: 'khác' }
   static readonly GENDER_ENUM = { MALE: 'male', FEMALE: 'female', OTHER: 'other' }
@@ -189,7 +195,20 @@ class AdminModel extends Model<AdminInterface> implements AdminInterface {
         },
       };
     },
+    withWarehouses () {
+      return {
+        include: [
+          {
+            model: WarehouseModel,
+            as: 'warehouses',
+          },
+        ],
+      };
+    },
   }
+
+  public setWarehouses: BelongsToManySetAssociationsMixin<WarehouseModel, number>;
+  public getSellerWarehouses: HasManyGetAssociationsMixin<SellerWarehouseModel>;
 
   public async validPassword (password: string) {
     try {
@@ -230,6 +249,12 @@ class AdminModel extends Model<AdminInterface> implements AdminInterface {
     );
   }
 
+  public async updateWarehouses (attributes: any[], transaction?: Transaction) {
+    if (!attributes || !attributes.length) return;
+    const sellerWarehouses = await WarehouseModel.scope([{ method: ['byId', attributes.map(attribute => attribute.warehouseId)] }]).findAll();
+    await this.setWarehouses(sellerWarehouses, { transaction });
+  }
+
   public static initialize (sequelize: Sequelize) {
     this.init(AdminEntity, {
       hooks: AdminModel.hooks,
@@ -243,6 +268,8 @@ class AdminModel extends Model<AdminInterface> implements AdminInterface {
 
   public static associate () {
     this.belongsTo(RoleModel, { as: 'role', foreignKey: 'roleId' });
+    this.hasMany(SellerWarehouseModel, { as: 'sellerWarehouses', foreignKey: 'adminId' });
+    this.belongsToMany(WarehouseModel, { through: SellerWarehouseModel, as: 'warehouses', foreignKey: 'adminId' });
   }
 }
 

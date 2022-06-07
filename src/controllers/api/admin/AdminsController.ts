@@ -4,11 +4,13 @@ import { sendError, sendSuccess } from '@libs/response';
 import AdminModel from '@models/admins';
 import ImageUploaderService from '@services/imageUploader';
 import MailerService from '@services/mailer';
-import { Sequelize } from 'sequelize';
+import { Sequelize, Transaction } from 'sequelize';
 import { Request, Response } from 'express';
 import AdminImporterService from '@services/adminImporter';
 import dayjs from 'dayjs';
 import XlsxService from '@services/xlsx';
+import SellerWarehouseModel from '@models/sellerWarehouses';
+import sequelize from '@initializers/sequelize';
 
 class AdminController {
   public async index (req: Request, res: Response) {
@@ -33,7 +35,7 @@ class AdminController {
 
   public async show (req: Request, res: Response) {
     try {
-      const admin = await AdminModel.scope(['withRole']).findByPk(req.params.adminId);
+      const admin = await AdminModel.scope(['withRole', 'withWarehouses']).findByPk(req.params.adminId);
       if (!admin) { return sendError(res, 404, NoData); }
       sendSuccess(res, admin);
     } catch (error) {
@@ -45,7 +47,18 @@ class AdminController {
     try {
       const params = req.parameters.permit(AdminModel.CREATABLE_PARAMETERS).value();
       params.password = settings.passwordAdminDefault;
-      const admin = await AdminModel.create(params);
+      const admin = await sequelize.transaction(async (transaction: Transaction) => {
+        const result = await AdminModel.create(params, {
+          include: [
+            {
+              model: SellerWarehouseModel,
+              as: 'sellerWarehouses',
+            },
+          ],
+          transaction,
+        });
+        return result;
+      });
       MailerService.createAdmin(admin, settings.passwordAdminDefault);
       sendSuccess(res, admin);
     } catch (error) {
@@ -70,7 +83,10 @@ class AdminController {
       const admin = await AdminModel.findByPk(req.params.adminId);
       if (!admin) { return sendError(res, 404, NoData); }
       const params = req.parameters.permit(AdminModel.UPDATABLE_PARAMETERS).value();
-      await admin.update(params);
+      await sequelize.transaction(async (transaction: Transaction) => {
+        await admin.update(params, { transaction });
+        await admin.updateWarehouses(params.sellerWarehouses, transaction);
+      });
       sendSuccess(res, admin);
     } catch (error) {
       sendError(res, 500, error.message, error);
