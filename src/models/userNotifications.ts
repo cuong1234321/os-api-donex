@@ -9,7 +9,7 @@ class UserNotificationsModel extends Model<UserNotificationsInterface> implement
   public id: number;
   public userId: number;
   public userType: string;
-  public notificationTargetId: number;
+  public notificationTargetId?: number;
   public type: string;
   public title: string;
   public content: string;

@@ -81,5 +81,18 @@ class SendNotification {
     };
     await UserNotificationModel.create(userNotifications);
   }
+
+  public static async deleteCoinReward (recipients: any, userType: any) {
+    const userNotifications = recipients.map((user: any) => {
+      return {
+        userId: user.id,
+        userType,
+        type: UserNotificationModel.TYPE_ENUM.PROMOTION,
+        title: 'Thông báo trừ điểm thưởng do không hoạt động',
+        content: 'Tổng số điểm đạt được của bạn đã được hệ thống Donex loại bỏ do không có hoạt động trong 365 ngày.',
+      };
+    });
+    await UserNotificationModel.bulkCreate(userNotifications);
+  }
 }
 export default SendNotification;

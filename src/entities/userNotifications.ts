@@ -15,7 +15,7 @@ const UserNotificationEntity = {
   },
   notificationTargetId: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: true,
   },
   type: {
     type: DataTypes.ENUM({ values: ['order', 'promotion', 'system'] }),
