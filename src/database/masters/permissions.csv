@@ -119,3 +119,12 @@ id,groupId,title,key
 118,27,Xóa phân quyền,delete
 119,27,Chỉnh sửa phân quyền,update
 120,28,Danh sách nhóm quyền,index
+121,29,Danh sách hướng dẫn chọn size,index
+122,29,Tạo mới hướng dẫn chọn size,create
+123,29,Xóa hướng dẫn chọn size,delete
+124,29,Chỉnh sửa hướng dẫn chọn size,update
+125,30,Danh sách nạp rút tiền,index
+126,30,Tạo mới nạp rút tiền,create
+127,30,Chi tiết nạp rút tiền,show
+128,30,Xóa nạp rút tiền,delete
+129,30,Chỉnh sửa nạp rút tiền,update
