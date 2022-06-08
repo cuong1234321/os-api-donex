@@ -51,6 +51,9 @@ router.get('/', WithdrawalRequestController.index);
  *            amount:
  *              type: "integer"
  *              description: "Số tiền"
+ *            requestNote:
+ *              type: "integer"
+ *              description: "ghi chus"
  *     responses:
  *       200:
  *         description: Success.

@@ -16,11 +16,12 @@ class WithdrawalRequestModel extends Model<WithdrawalRequestInterface> implement
   public amount: number;
   public status: string;
   public approvalNote: string;
+  public requestNote: string;
   public createdAt?: Date;
   public updatedAt?: Date;
   public deletedAt?: Date;
 
-  static readonly CREATABLE_PARAMETERS = ['ownerBankId', 'amount']
+  static readonly CREATABLE_PARAMETERS = ['ownerBankId', 'amount', 'requestNote']
 
   static readonly STATUS_ENUM = { PENDING: 'pending', APPROVED: 'approved', REJECTED: 'rejected' }
   static readonly MINIMUM_WITHDRAWAL_AMOUNT = 50000

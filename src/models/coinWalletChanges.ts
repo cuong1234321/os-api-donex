@@ -25,6 +25,7 @@ class CoinWalletChangeModel extends Model<CoinWalletChangeInterface> implements 
     DONEX_BIRTH_DAY: 'donexBirthDay',
     ORDER_REFUND: 'orderRefund',
     RATING: 'rating',
+    ORDER_OUT_OF_DATE: 'orderOutOfDate',
   }
 
   static readonly hooks: Partial<ModelHooks<CoinWalletChangeModel>> = {
@@ -34,7 +35,11 @@ class CoinWalletChangeModel extends Model<CoinWalletChangeInterface> implements 
     async afterBulkCreate (records: any) {
       const userIds = records.map((record: any) => record.userId);
       const users = await UserModel.scope([{ method: ['byId', userIds] }]).findAll();
-      const userParams: any = users.map((user: any) => { return { id: user.id, coinReward: user.coinReward + 50 }; });
+      const userParams: any = [];
+      for (const record of records) {
+        const user = users.find((user: any) => user.id === record.userId);
+        userParams.push({ id: user.id, coinReward: user.coinReward + record.amount });
+      }
       await UserModel.bulkCreate(userParams, {
         updateOnDuplicate: UserModel.UPDATABLE_ON_DUPLICATE_PARAMETERS as (keyof UserInterface)[],
         individualHooks: true,

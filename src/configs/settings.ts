@@ -41,4 +41,5 @@ export default {
   maxMoneyUpRank: 1000000,
   normalShippingDiscount: 1000000,
   rankShippingDiscount: 500000,
+  orderOutOfDate: 363,
 };

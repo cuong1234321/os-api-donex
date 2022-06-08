@@ -14,6 +14,7 @@ import swaggerUi from 'swagger-ui-express';
 import cron from 'node-cron';
 import VoucherApplicationsAction from '@jobs/VoucherApplicationsAction';
 import birthdayActions from '@jobs/BirthdayActions';
+import resetCoinActions from '@jobs/resetCoinActions';
 import swaggerDocument from './swagger/doc';
 
 const port = process.env.PORT || 3000;
@@ -51,6 +52,7 @@ cron.schedule('0,10,20,30,40,50 * * * *', async () => {
   try {
     await birthdayActions.donexBirthDay();
     await birthdayActions.userBirthDay();
+    await resetCoinActions.latOrderOutOfDate();
   } catch (error) {
     console.log(error.message);
   }
