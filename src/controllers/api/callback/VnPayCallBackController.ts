@@ -7,6 +7,7 @@ import dayjs from 'dayjs';
 import { Request, Response } from 'express';
 
 class VnPayCallBackController {
+  static readonly ORDERABLE_TYPE = { ORDER: 'order', TOP_UP_DEPOSIT: 'topUpDeposit' }
   public async paymentConfirmCallback (req: Request, res: Response) {
     try {
       const params = req.parameters.permit(VnpayPaymentService.QUERYABLE_PARAMETERS).value();
@@ -61,18 +62,23 @@ class VnPayCallBackController {
   public async paymentConfirmRedirect (req: Request, res: Response) {
     try {
       const params = req.parameters.permit(VnpayPaymentService.QUERYABLE_PARAMETERS).value();
-      let orderableInstance: OrderModel;
+      let orderableInstance: TopUpDepositModel | OrderModel;
+      let orderableType: string;
       switch (params.vnp_TxnRef.split('_')[0]) {
         case VnpayPaymentService.TXN_REF_PREFIX.ORDER:
+          orderableType = VnPayCallBackController.ORDERABLE_TYPE.ORDER;
           orderableInstance = await OrderModel.scope([
-            { method: ['byStatus', OrderModel.STATUS_ENUM.PENDING] },
             { method: ['byTransactionId', params.vnp_TxnRef] },
           ]).findOne();
           break;
         default:
+          orderableType = VnPayCallBackController.ORDERABLE_TYPE.TOP_UP_DEPOSIT;
+          orderableInstance = await TopUpDepositModel.scope([
+            { method: ['byPayment', params.vnp_TxnRef] },
+          ]).findOne();
           break;
       }
-      sendSuccess(res, { orderableInstance });
+      sendSuccess(res, { orderableInstance, orderableType });
     } catch (error) {
       sendError(res, 500, error.message, error);
     }
