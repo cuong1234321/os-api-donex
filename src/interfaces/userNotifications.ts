@@ -2,7 +2,7 @@ interface UserNotificationInterface {
   id: number;
   userId: number;
   userType: string;
-  notificationTargetId: number;
+  notificationTargetId?: number;
   type: string;
   title: string;
   content: string;

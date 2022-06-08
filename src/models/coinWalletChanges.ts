@@ -1,6 +1,7 @@
 import CoinWalletChangeEntity from '@entities/coinWalletChanges';
 import CoinWalletChangeInterface from '@interfaces/coinWalletChanges';
 import UserInterface from '@interfaces/users';
+import SendNotification from '@services/notification';
 import dayjs from 'dayjs';
 import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
@@ -48,6 +49,7 @@ class CoinWalletChangeModel extends Model<CoinWalletChangeInterface> implements 
         updateOnDuplicate: UserModel.UPDATABLE_ON_DUPLICATE_PARAMETERS as (keyof UserInterface)[],
         individualHooks: true,
       });
+      await SendNotification.deleteCoinReward(users, 'user');
     },
   }
 

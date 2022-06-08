@@ -227,6 +227,23 @@ class UserModel extends Model<UserInterface> implements UserInterface {
         },
       };
     },
+    byCoinReward (coinReward) {
+      return {
+        where: {
+          coinReward,
+        },
+      };
+    },
+    byMoreThanCoinReward (coinReward) {
+      return {
+        where: {
+          coinReward: {
+            [Op.gt]:
+          coinReward,
+          },
+        },
+      };
+    },
   }
 
   public async validPassword (password: string) {

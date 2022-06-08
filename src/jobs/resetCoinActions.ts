@@ -5,6 +5,7 @@ class ResetCoinAction {
   public async latOrderOutOfDate () {
     const users = await UserModel.scope([
       'lastOrderOutOfDate', 'isNotBlackList',
+      { method: ['byMoreThanCoinReward', 0] },
     ]).findAll();
     const coinWalletChangeParams = [];
     if (users.length === 0) { return; }
@@ -15,7 +16,7 @@ class ResetCoinAction {
         type: CoinWalletChangeModel.TYPE_ENUM.SUBTRACT,
         mutableType: CoinWalletChangeModel.MUTABLE_TYPE.ORDER_OUT_OF_DATE,
         mutableId: null,
-        amount: user.coinReward,
+        amount: 0 - user.coinReward,
       });
     }
     await CoinWalletChangeModel.bulkCreate(coinWalletChangeParams);
