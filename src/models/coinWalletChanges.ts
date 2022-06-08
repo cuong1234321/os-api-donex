@@ -38,7 +38,11 @@ class CoinWalletChangeModel extends Model<CoinWalletChangeInterface> implements 
       const userParams: any = [];
       for (const record of records) {
         const user = users.find((user: any) => user.id === record.userId);
-        userParams.push({ id: user.id, coinReward: user.coinReward + record.amount });
+        if (record.mutableType === CoinWalletChangeModel.MUTABLE_TYPE.ORDER_OUT_OF_DATE) {
+          userParams.push({ id: user.id, coinReward: user.coinReward + record.amount, isBlackList: true });
+        } else {
+          userParams.push({ id: user.id, coinReward: user.coinReward + record.amount });
+        }
       }
       await UserModel.bulkCreate(userParams, {
         updateOnDuplicate: UserModel.UPDATABLE_ON_DUPLICATE_PARAMETERS as (keyof UserInterface)[],
