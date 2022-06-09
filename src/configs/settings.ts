@@ -28,7 +28,7 @@ export default {
   },
   passwordAdminDefault: 'Aa@123456',
   defaultUserPassword: 'Aa@123456',
-  defaultTax: 8,
+  defaultTax: 0,
   defaultValueConvertCoin: 0.5,
   warehouseTransferCode: 'CK',
   warehouseReceiptCode: 'NK',

@@ -33,7 +33,7 @@ class BillTemplateModel extends Model<BillTemplateInterface> implements BillTemp
     const billKeys = {
       buyerName: (order.shippingFullName).split(' ').pop(),
       buyerFullname: order.shippingFullName,
-      buyerAddress: `${order.address}, ${order.wardName}, ${order.districtName}, ${order.provinceName}`,
+      buyerAddress: `${order.shippingAddress}, ${order.wardName}, ${order.districtName}, ${order.provinceName}`,
       buyerPhone: order.shippingPhoneNumber,
       orderCode: subOrder.code,
       orderDate: dayjs(subOrder.createdAt).tz('Asia/Ho_Chi_Minh').format('DD-MM-YYYY HH:mm'),

@@ -18,6 +18,10 @@ const router = Router();
  *        description: "page"
  *        type: "number"
  *      - in: query
+ *        name: "size"
+ *        description: "size"
+ *        type: "number"
+ *      - in: query
  *        name: "code"
  *        description: "ma don"
  *        type: "string"
@@ -124,6 +128,9 @@ router.get('/', Authorization.permit(OrdersController.constructor.name, 'index')
  *     tags:
  *      - "[ADMIN] ORDERS"
  *     summary: download orders
+ *     parameters:
+ *      - in: query
+ *        name: "subOrderIds"
  *     responses:
  *       200:
  *         description: "OK"
