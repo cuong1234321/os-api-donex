@@ -8,6 +8,7 @@ import ProductModel from './products';
 import ProductVariantModel from './productVariants';
 import WarehouseExportVariantModel from './warehouseExportVariants';
 import WarehouseModel from './warehouses';
+import WarehouseVariantModel from './warehouseVariants';
 
 class WarehouseExportModel extends Model<WarehouseExportInterface> implements WarehouseExportInterface {
   public id: number;
@@ -19,6 +20,7 @@ class WarehouseExportModel extends Model<WarehouseExportInterface> implements Wa
   public orderId: number;
   public deliverer: string;
   public note: string;
+  public status: string;
   public createdAt?: Date;
   public updatedAt?: Date;
   public deletedAt?: Date;
@@ -31,7 +33,27 @@ class WarehouseExportModel extends Model<WarehouseExportInterface> implements Wa
     { warehouseExportVariants: ['id', 'warehouseId', 'variantId', 'quantity', 'price', 'totalPrice'] },
   ]
 
-  static readonly hooks: Partial<ModelHooks<WarehouseExportModel>> = {}
+  static readonly TYPE_ENUM = { SELL: 'sell', OTHERS: 'others' }
+
+  static readonly STATUS_ENUM = { PENDING: 'pending', WAITING_TO_TRANSFER: 'waitingToTransfer', COMPLETE: 'complete', CANCEL: 'cancel' }
+
+  static readonly hooks: Partial<ModelHooks<WarehouseExportModel>> = {
+    async afterUpdate (record) {
+      if (record.previous('status') !== record.status && record.status === WarehouseExportModel.STATUS_ENUM.CANCEL) {
+        const warehouseExportVariants = await WarehouseExportVariantModel.scope([{ method: ['byWarehouseExport', record.id] }]).findAll();
+        const warehouseVariants = await WarehouseVariantModel.scope([
+          { method: ['byWarehouseId', warehouseExportVariants.map((record) => record.warehouseId)] },
+          { method: ['byProductVariant', warehouseExportVariants.map((record) => record.variantId)] },
+        ]).findAll();
+        for (const warehouseExportVariant of warehouseExportVariants) {
+          const warehouseVariant = warehouseVariants.find((record) => record.warehouseId === warehouseExportVariant.warehouseId && record.variantId === warehouseExportVariant.variantId);
+          if (warehouseVariant) {
+            await warehouseVariant.update({ quantity: warehouseVariant.quantity + warehouseExportVariant.quantity }, { hooks: false });
+          }
+        }
+      }
+    },
+  }
 
   static readonly validations: ModelValidateOptions = {}
 
@@ -113,6 +135,13 @@ class WarehouseExportModel extends Model<WarehouseExportInterface> implements Wa
     bySorting (sortBy, sortOrder) {
       return {
         order: [[Sequelize.literal(sortBy), sortOrder]],
+      };
+    },
+    byOrderId (orderId) {
+      return {
+        where: {
+          orderId,
+        },
       };
     },
   }

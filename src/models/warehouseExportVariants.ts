@@ -66,7 +66,15 @@ class WarehouseExportVariantModel extends Model<WarehouseExportVariantInterface>
     },
   }
 
-  static readonly scopes: ModelScopeOptions = {}
+  static readonly scopes: ModelScopeOptions = {
+    byWarehouseExport (warehouseExportId) {
+      return {
+        where: {
+          warehouseExportId,
+        },
+      };
+    },
+  }
 
   public static initialize (sequelize: Sequelize) {
     this.init(WarehouseExportVariantEntity, {

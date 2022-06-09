@@ -235,4 +235,36 @@ router.post('/', Authorization.permit(WarehouseExportController.constructor.name
  */
 router.patch('/:warehouseExportId', Authorization.permit(WarehouseExportController.constructor.name, 'update'), WarehouseExportController.update);
 
+/**
+ * @openapi
+ * /a/warehouse_exports/{warehouseExportId}/update_status:
+ *   patch:
+ *     tags:
+ *      - "[ADMIN] WAREHOUSE EXPORTS"
+ *     summary: Sua trang thai phieu xuat
+ *     parameters:
+ *      - in: "path"
+ *        name: "warehouseExportId"
+ *      - in: "body"
+ *        name: "body"
+ *        description: "Thong tin phieu xuat"
+ *        schema:
+ *          type: "object"
+ *          properties:
+ *            status:
+ *              type: "string"
+ *              enum:
+ *               - waitingToTransfer
+ *               - complete
+ *               - cancel
+ *     responses:
+ *       200:
+ *         description: Return data.
+ *       500:
+ *         description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.patch('/:warehouseExportId/update_status', Authorization.permit(WarehouseExportController.constructor.name, 'update'), WarehouseExportController.updateStatus);
+
 export default router;

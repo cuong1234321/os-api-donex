@@ -28,6 +28,10 @@ const WarehouseExportEntity = {
   note: {
     type: DataTypes.TEXT, allowNull: true,
   },
+  status: {
+    type: DataTypes.ENUM({ values: ['pending', 'waitingToTransfer', 'complete', 'cancel'] }),
+    defaultValue: 'pending',
+  },
   createdAt: {
     type: DataTypes.DATE,
   },

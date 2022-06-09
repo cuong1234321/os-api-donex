@@ -112,6 +112,19 @@ class WarehouseExportController {
       sendError(res, 500, error.message, error);
     }
   }
+
+  public async updateStatus (req: Request, res: Response) {
+    try {
+      const { warehouseExportId } = req.params;
+      const status = req.body.status;
+      const warehouseExport = await WarehouseExportModel.findByPk(warehouseExportId);
+      if (!warehouseExport) { return sendError(res, 404, NoData); }
+      await warehouseExport.update({ status });
+      sendSuccess(res, warehouseExport);
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
 }
 
 export default new WarehouseExportController();
