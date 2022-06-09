@@ -97,6 +97,10 @@ const swaggerDefinition = {
       description: 'Quản lý thời gian giao hàng của giao hàng nhanh',
     },
     {
+      name: '[ADMIN] PRINT PARTNER ORDER',
+      description: 'Xuất báo cáo hóa đơn',
+    },
+    {
       name: '[ADMIN] RANK',
       description: 'Quản lý rank',
     },
