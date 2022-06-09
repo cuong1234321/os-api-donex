@@ -338,7 +338,7 @@ class OrderController {
 
   private applyBasicRankUser (order: any, totalQuantity: number, totalPrice: number, basicConditions: any) {
     if (basicConditions.length === 0) return order;
-    const basicRankCondition = basicConditions.find((record: any) => record.orderAmountFrom < totalQuantity && (record.orderAmountTo || 999999999) > totalQuantity);
+    const basicRankCondition = basicConditions.find((record: any) => record.orderAmountFrom <= totalQuantity && (record.orderAmountTo || 999999999) >= totalQuantity);
     if (!basicRankCondition) return order;
     const rankDiscount = totalPrice * basicRankCondition.discountValue / 100;
     order.rankDiscount = rankDiscount;
@@ -360,7 +360,7 @@ class OrderController {
     if (vipRank.dateEarnDiscount.includes(dayjs().format('DD'))) {
       const vipConditions = await vipRank.getConditions();
       if (vipConditions.length === 0) return order;
-      const vipRankCondition = vipConditions.find((record: any) => record.orderAmountFrom < totalQuantity && (record.orderAmountTo || 9999999) > totalQuantity);
+      const vipRankCondition = vipConditions.find((record: any) => record.orderAmountFrom <= totalQuantity && (record.orderAmountTo || 9999999) >= totalQuantity);
       if (!vipRankCondition) return order;
       const rankDiscount = totalPrice * vipRankCondition.discountValue / 100;
       order.rankDiscount = rankDiscount;
