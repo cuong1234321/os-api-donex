@@ -1,4 +1,5 @@
 import WithdrawalRequestController from '@controllers/api/admin/WithdrawalRequestsController';
+import Authorization from '@middlewares/authorization';
 import { Router } from 'express';
 
 const router = Router({ mergeParams: true });
@@ -45,7 +46,9 @@ const router = Router({ mergeParams: true });
  *     security:
  *      - Bearer: []
  */
-router.get('/', WithdrawalRequestController.index);
+router.get('/',
+  Authorization.permit(WithdrawalRequestController.constructor.name, 'index'),
+  WithdrawalRequestController.index);
 
 /**
  * @openapi
@@ -66,7 +69,9 @@ router.get('/', WithdrawalRequestController.index);
  *     security:
  *      - Bearer: []
  */
-router.get('/:requestId', WithdrawalRequestController.show);
+router.get('/:requestId',
+  Authorization.permit(WithdrawalRequestController.constructor.name, 'show'),
+  WithdrawalRequestController.show);
 
 /**
  * @openapi
@@ -95,7 +100,9 @@ router.get('/:requestId', WithdrawalRequestController.show);
  *     security:
  *      - Bearer: []
  */
-router.patch('/:requestId/approve', WithdrawalRequestController.approve);
+router.patch('/:requestId/approve',
+  Authorization.permit(WithdrawalRequestController.constructor.name, 'approve'),
+  WithdrawalRequestController.approve);
 
 /**
  * @openapi
@@ -124,6 +131,8 @@ router.patch('/:requestId/approve', WithdrawalRequestController.approve);
  *     security:
  *      - Bearer: []
  */
-router.patch('/:requestId/reject', WithdrawalRequestController.reject);
+router.patch('/:requestId/reject',
+  Authorization.permit(WithdrawalRequestController.constructor.name, 'reject'),
+  WithdrawalRequestController.reject);
 
 export default router;
