@@ -125,6 +125,32 @@ class WarehouseExportController {
       sendError(res, 500, error.message, error);
     }
   }
+
+  public async downloadList (req: Request, res: Response) {
+    try {
+      const time = dayjs().format('DD-MM-YY-hh:mm:ss');
+      const fileName = `Bao-cao-danh-sach-xuat-kho-${time}.xlsx`;
+      const sortBy = req.query.sortBy || 'createdAt';
+      const sortOrder = req.query.sortOrder || 'DESC';
+      const { warehouseExportIds } = req.query;
+      const scopes: any = [
+        { method: ['bySorting', sortBy, sortOrder] },
+        'withExportAbleName',
+        'withAdminName',
+        'withTotalPrice',
+      ];
+      if (warehouseExportIds) scopes.push({ method: ['byId', (warehouseExportIds as string).split(',')] });
+      const warehouseExports = await WarehouseExportModel.scope(scopes).findAll();
+      const buffer: any = await XlsxService.downloadListWarehouseExports(warehouseExports);
+      res.writeHead(200, [
+        ['Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+        ['Content-Disposition', 'attachment; filename=' + `${fileName}`],
+      ]);
+      res.end(Buffer.from(buffer, 'base64'));
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
 }
 
 export default new WarehouseExportController();

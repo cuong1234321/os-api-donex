@@ -110,6 +110,30 @@ class WarehouseReceiptController {
       sendError(res, 500, error.message, error);
     }
   }
+
+  public async downloadList (req: Request, res: Response) {
+    try {
+      const time = dayjs().format('DD-MM-YY-hh:mm:ss');
+      const fileName = `Bao-cao-danh-sach-nhap-kho-${time}.xlsx`;
+      const { warehouseReceiptIds } = req.query;
+      const scopes: any = [
+        'newest',
+        'withImportAbleName',
+        'withAdminName',
+        'withTotalPrice',
+      ];
+      if (warehouseReceiptIds) scopes.push({ method: ['byId', (warehouseReceiptIds as string).split(',')] });
+      const warehouseReceipts = await WarehouseReceiptModel.scope(scopes).findAll();
+      const buffer: any = await XlsxService.downloadListWarehouseReceipts(warehouseReceipts);
+      res.writeHead(200, [
+        ['Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+        ['Content-Disposition', 'attachment; filename=' + `${fileName}`],
+      ]);
+      res.end(Buffer.from(buffer, 'base64'));
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
 }
 
 export default new WarehouseReceiptController();
