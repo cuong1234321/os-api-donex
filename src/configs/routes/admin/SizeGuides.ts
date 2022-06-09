@@ -1,4 +1,5 @@
 import SizeGuidesController from '@controllers/api/admin/SizeGuidesController';
+import Authorization from '@middlewares/authorization';
 import { Router } from 'express';
 
 const router = Router();
@@ -18,7 +19,7 @@ const router = Router();
  *     security:
  *      - Bearer: []
  */
-router.get('/', SizeGuidesController.index);
+router.get('/', Authorization.permit(SizeGuidesController.constructor.name, 'index'), SizeGuidesController.index);
 
 /**
  * @openapi
@@ -40,7 +41,7 @@ router.get('/', SizeGuidesController.index);
  *     security:
  *      - Bearer: []
  */
-router.delete('/:sizeGuideId', SizeGuidesController.delete);
+router.delete('/:sizeGuideId', Authorization.permit(SizeGuidesController.constructor.name, 'delete'), SizeGuidesController.delete);
 
 /**
  * @openapi
@@ -82,7 +83,7 @@ router.delete('/:sizeGuideId', SizeGuidesController.delete);
  *     security:
  *      - Bearer: []
  */
-router.post('/', SizeGuidesController.create);
+router.post('/', Authorization.permit(SizeGuidesController.constructor.name, 'create'), SizeGuidesController.create);
 
 /**
  * @openapi
@@ -120,6 +121,6 @@ router.post('/', SizeGuidesController.create);
  *     security:
  *      - Bearer: []
  */
-router.patch('/:sizeGuideId', SizeGuidesController.update);
+router.patch('/:sizeGuideId', Authorization.permit(SizeGuidesController.constructor.name, 'update'), SizeGuidesController.update);
 
 export default router;

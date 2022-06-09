@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { sendError, sendSuccess } from '@libs/response';
 import SizeGuideModel from '@models/sizeGuides';
 
-class SystemSettingController {
+class SizeGuideController {
   public async index (req: Request, res: Response) {
     try {
       const kidSizes = await SizeGuideModel.scope([
@@ -52,4 +52,4 @@ class SystemSettingController {
   }
 }
 
-export default new SystemSettingController();
+export default new SizeGuideController();

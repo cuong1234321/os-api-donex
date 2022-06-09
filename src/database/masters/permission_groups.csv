@@ -27,3 +27,5 @@ id,title,key
 26,Quản Lý cài đặt hệ thống,SystemSettingController
 27,Quản Lý phân quyền,RoleController
 28,Quản Lý nhóm quyền,PermissionGroupsController
+29,Quản lý hướng dẫn chọn size,SizeGuideController
+30,Quản lý nạp rút tiền,TopUpDepositController

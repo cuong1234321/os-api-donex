@@ -1,4 +1,5 @@
 import TopUpDepositsController from '@controllers/api/admin/TopUpDepositsController';
+import Authorization from '@middlewares/authorization';
 import { Router } from 'express';
 
 const router = Router();
@@ -59,7 +60,7 @@ const router = Router();
  *     security:
  *      - Bearer: []
  */
-router.get('/',
+router.get('/', Authorization.permit(TopUpDepositsController.constructor.name, 'index'),
   TopUpDepositsController.index);
 
 /**
@@ -81,7 +82,7 @@ router.get('/',
  *     security:
  *      - Bearer: []
  */
-router.get('/:topUpDepositId', TopUpDepositsController.show);
+router.get('/:topUpDepositId', Authorization.permit(TopUpDepositsController.constructor.name, 'show'), TopUpDepositsController.show);
 
 /**
  * @openapi
@@ -127,7 +128,7 @@ router.get('/:topUpDepositId', TopUpDepositsController.show);
  *     security:
  *      - Bearer: []
  */
-router.post('/', TopUpDepositsController.create);
+router.post('/', Authorization.permit(TopUpDepositsController.constructor.name, 'create'), TopUpDepositsController.create);
 
 /**
  * @openapi
@@ -176,7 +177,7 @@ router.post('/', TopUpDepositsController.create);
  *     security:
  *      - Bearer: []
  */
-router.patch('/:topUpDepositId', TopUpDepositsController.update);
+router.patch('/:topUpDepositId', Authorization.permit(TopUpDepositsController.constructor.name, 'update'), TopUpDepositsController.update);
 
 /**
  * @openapi
@@ -197,6 +198,6 @@ router.patch('/:topUpDepositId', TopUpDepositsController.update);
  *     security:
  *      - Bearer: []
  */
-router.delete('/:topUpDepositId', TopUpDepositsController.delete);
+router.delete('/:topUpDepositId', Authorization.permit(TopUpDepositsController.constructor.name, 'delete'), TopUpDepositsController.delete);
 
 export default router;
