@@ -99,7 +99,7 @@ class WarehouseVariantModel extends Model<WarehouseVariantInterface> implements 
               'totalQuantityImport',
             ],
             [
-              Sequelize.cast(Sequelize.literal('(SELECT SUM(warehouse_export_variants.quantity) FROM warehouse_export_variants INNER JOIN warehouse_exports ON warehouse_exports.id = warehouse_export_variants.warehouseExportId ' +
+              Sequelize.cast(Sequelize.literal('(SELECT SUM(warehouse_export_variants.quantity) FROM warehouse_export_variants INNER JOIN warehouse_exports ON warehouse_exports.id = warehouse_export_variants.warehouseExportId AND warehouse_exports.status <> "cancel" ' +
               'WHERE warehouse_export_variants.variantId = WarehouseVariantModel.variantId AND warehouse_export_variants.warehouseId = WarehouseVariantModel.warehouseId ' +
               `AND warehouse_exports.exportDate BETWEEN "${from}" AND "${to}" AND warehouse_export_variants.deletedAt IS NULL)`), 'SIGNED'),
               'totalQuantityExport',

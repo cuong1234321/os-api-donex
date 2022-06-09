@@ -9,6 +9,7 @@ interface WarehouseExportInterface {
   orderId: number,
   deliverer: string,
   note: string,
+  status: string,
   createdAt?: Date,
   updatedAt?: Date,
   deletedAt?: Date,

@@ -6,6 +6,7 @@ import Order from '@repositories/models/orders';
 import dayjs from 'dayjs';
 import { BelongsToGetAssociationMixin, HasManyGetAssociationsMixin, Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, Transaction, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
+import sequelize from '@initializers/sequelize';
 import AdminModel from './admins';
 import CoinWalletChangeModel from './coinWalletChanges';
 import OrderItemModel from './orderItems';
@@ -13,6 +14,8 @@ import OrderModel from './orders';
 import ProductVariantModel from './productVariants';
 import SystemSettingModel from './systemSetting';
 import UserModel from './users';
+import WarehouseExportModel from './warehouseExports';
+import WarehouseExportVariantModel from './warehouseExportVariants';
 import WarehouseModel from './warehouses';
 
 class SubOrderModel extends Model<SubOrderInterface> implements SubOrderInterface {
@@ -129,6 +132,15 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
   },
   async afterSave (record: any) {
     if (!this.isNewRecord) { await record.checkStatusSubOrder(); }
+    if ((record.isNewRecord && record.status === SubOrderModel.STATUS_ENUM.PENDING) ||
+      (record.previous('status') === SubOrderModel.STATUS_ENUM.DRAFT && ![SubOrderModel.STATUS_ENUM.REJECT, SubOrderModel.STATUS_ENUM.CANCEL].includes(record.status))
+    ) {
+      await SubOrderModel.createWarehouseExport(record);
+    }
+    if (record.previous('status') === SubOrderModel.STATUS_ENUM.PENDING && [SubOrderModel.STATUS_ENUM.REJECT, SubOrderModel.STATUS_ENUM.CANCEL].includes(record.status)) {
+      const warehouseExport = await WarehouseExportModel.scope([{ method: ['byOrderId', record.id] }]).findOne();
+      await warehouseExport.update({ status: WarehouseExportModel.STATUS_ENUM.CANCEL });
+    }
   },
 }
 
@@ -218,6 +230,44 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
         },
       );
     }
+    return params;
+  }
+
+  public static async createWarehouseExport (subOrder: any) {
+    const order = await OrderModel.scope([
+      { method: ['byId', subOrder.orderId] },
+    ]).findOne();
+    const warehouseExportParams = SubOrderModel.formatWarehouseExport(subOrder, await subOrder.getItems(), order);
+    await sequelize.transaction(async (transaction: Transaction) => {
+      const warehouseExport = await WarehouseExportModel.create(warehouseExportParams, {
+        include: [
+          { model: WarehouseExportVariantModel, as: 'warehouseExportVariants' },
+        ],
+        transaction,
+      });
+      return warehouseExport;
+    });
+  }
+
+  public static formatWarehouseExport (subOrder: any, orderItems: any, order: any) {
+    const EXPORTABLE_MAPPING: any = { user: 'customer', agency: 'agency', distributor: 'distributor', collaborator: 'collaborator' };
+    const params: any = {
+      type: WarehouseExportModel.TYPE_ENUM.SELL,
+      exportAbleType: EXPORTABLE_MAPPING[order.orderableType],
+      exportAble: order.orderableId,
+      exportDate: dayjs().format('YYYY/MM/DD'),
+      orderId: subOrder.id,
+      deliverer: subOrder.shippingType,
+      warehouseExportVariants: [],
+    };
+    params.warehouseExportVariants = (orderItems).map((item: any) => {
+      return {
+        warehouseId: subOrder.warehouseId,
+        variantId: item.productVariantId,
+        quantity: item.quantity,
+        price: item.sellingPrice,
+      };
+    });
     return params;
   }
 
