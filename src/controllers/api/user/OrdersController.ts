@@ -32,24 +32,14 @@ class OrderController {
       }
       const ward = await this.validateAddress(params);
       if (!ward) { return sendError(res, 403, AddressIsNotValid); }
-      if (!currentUser) {
-        orderParams = {
-          ...params,
-          ownerId: 1,
-          orderableType: OrderModel.ORDERABLE_TYPE.USER,
-          creatableType: OrderModel.CREATABLE_TYPE.ADMIN,
-          status: params.paymentMethod === OrderModel.PAYMENT_METHOD.COD ? OrderModel.STATUS_ENUM.DRAFT : OrderModel.STATUS_ENUM.PENDING,
-        };
-      } else {
-        orderParams = {
-          ...params,
-          orderableType: OrderModel.ORDERABLE_TYPE.USER,
-          orderableId: currentUser.id,
-          ownerId: currentUser.id,
-          creatableType: OrderModel.CREATABLE_TYPE.USER,
-          status: params.paymentMethod === OrderModel.PAYMENT_METHOD.COD ? OrderModel.STATUS_ENUM.DRAFT : OrderModel.STATUS_ENUM.PENDING,
-        };
-      }
+      orderParams = {
+        ...params,
+        orderableType: OrderModel.ORDERABLE_TYPE.USER,
+        orderableId: currentUser?.id,
+        ownerId: currentUser?.id,
+        creatableType: currentUser ? OrderModel.CREATABLE_TYPE.USER : OrderModel.CREATABLE_TYPE.ADMIN,
+        status: OrderModel.STATUS_ENUM.PENDING,
+      };
       const orderFormat: any = await OrderDecorator.formatOrder(orderParams, voucher, ward, currentUser);
       const result = await sequelize.transaction(async (transaction: Transaction) => {
         const order = await OrderModel.create(orderFormat, {
