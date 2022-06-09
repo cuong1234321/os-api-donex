@@ -137,17 +137,7 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
       await record.subtractUserCoin();
     },
     async afterSave (record: any) {
-      if (record.paymentMethod === OrderModel.PAYMENT_METHOD.COD &&
-        (record._previousDataValues.status === OrderModel.STATUS_ENUM.DRAFT && record.status === OrderModel.STATUS_ENUM.DELIVERY)) {
-        console.log(record);
-        const subOrders = await SubOrderModel.scope([
-          { method: ['byOrderId', record.id] },
-        ]).findAll();
-        for (const subOrder of subOrders) {
-          await subOrder.update({ status: SubOrderModel.STATUS_ENUM.WAITING_TO_TRANSFER }, { validate: false });
-        }
-      } else if (!record._previousDataValues.paidAt && record.paidAt) {
-        record.status = OrderModel.STATUS_ENUM.DELIVERY;
+      if (record._previousDataValues.status === OrderModel.STATUS_ENUM.DRAFT && record.status === OrderModel.STATUS_ENUM.DELIVERY) {
         const subOrders = await SubOrderModel.scope([
           { method: ['byOrderId', record.id] },
         ]).findAll();

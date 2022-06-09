@@ -100,15 +100,15 @@ class OrderDecorator {
         orderItems.push({
           productVariantId: variant.id,
           quantity: item.quantity,
-          sellingPrice: variant.getDataValue('saleCampaignPrice'),
+          sellingPrice: (variant.getDataValue('saleCampaignPrice') || variant.sellPrice),
           listedPrice: variant.sellPrice,
-          saleCampaignDiscount: variant.sellPrice - variant.getDataValue('saleCampaignPrice'),
+          saleCampaignDiscount: variant.sellPrice - (variant.getDataValue('saleCampaignPrice') || 0),
           saleCampaignId: variant.getDataValue('saleCampaignId'),
         });
         weight = weight + (variant.product.getDataValue('weight') * parseInt(item.quantity));
         total = total + parseInt(item.quantity);
-        subOrderTotalBill = subOrderTotalBill + (variant.getDataValue('saleCampaignPrice') * parseInt(item.quantity));
-        subOrderFinalAmount = subOrderFinalAmount + (variant.getDataValue('saleCampaignPrice') * parseInt(item.quantity));
+        subOrderTotalBill = subOrderTotalBill + ((variant.getDataValue('saleCampaignPrice') || variant.sellPrice) * parseInt(item.quantity));
+        subOrderFinalAmount = subOrderFinalAmount + ((variant.getDataValue('saleCampaignPrice') || variant.sellPrice) * parseInt(item.quantity));
       }
       subOrder.items = orderItems;
       subOrder.weight = weight;
