@@ -24,6 +24,7 @@ import ProductRouter from './Products';
 import PasswordRouter from './Passwords';
 import PermissionGroupRouter from './PermissionGroups';
 import PickShiftRouter from './PickShifts';
+import PrintPartnerOrderRouter from './printPartnerOrders';
 import RankRouter from './Ranks';
 import RoleRouter from './Roles';
 import SessionsRouter from './Sessions';
@@ -72,6 +73,7 @@ router.use('/products', adminPassport.authenticate('jwt', { session: false }), P
 router.use('/passwords', PasswordRouter);
 router.use('/permission_groups', adminPassport.authenticate('jwt', { session: false }), PermissionGroupRouter);
 router.use('/pick_shifts', adminPassport.authenticate('jwt', { session: false }), PickShiftRouter);
+router.use('/print_partner_orders', adminPassport.authenticate('jwt', { session: false }), PrintPartnerOrderRouter);
 router.use('/ranks', adminPassport.authenticate('jwt', { session: false }), RankRouter);
 router.use('/roles', adminPassport.authenticate('jwt', { session: false }), RoleRouter);
 router.use('/sessions', SessionsRouter);

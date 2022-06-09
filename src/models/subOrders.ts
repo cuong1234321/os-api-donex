@@ -735,6 +735,11 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
         },
       };
     },
+    withPartnerCode () {
+      return {
+        where: { orderPartnerCode: { [Op.ne]: null } },
+      };
+    },
   }
 
   public static initialize (sequelize: Sequelize) {
