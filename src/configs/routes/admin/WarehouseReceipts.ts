@@ -50,6 +50,30 @@ router.get('/', Authorization.permit(WarehouseReceiptController.constructor.name
 
 /**
  * @openapi
+ * /a/warehouse_receipts/download:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] WAREHOUSE RECEIPTS"
+ *     summary: Tai xuong danh sach phieu nhap
+ *     description: Tai xuong danh sach phieu nhap
+ *     parameters:
+ *      - in: query
+ *        name: "warehouseReceiptIds"
+ *        type: "string"
+ *     responses:
+ *       200:
+ *         description: "Upload success"
+ *       404:
+ *         description: Không tìm thấy dữ liệu
+ *       500:
+ *        description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/download', Authorization.permit(WarehouseReceiptController.constructor.name, 'index'), WarehouseReceiptController.downloadList);
+
+/**
+ * @openapi
  * /a/warehouse_receipts/{warehouseReceiptId}:
  *   get:
  *     tags:

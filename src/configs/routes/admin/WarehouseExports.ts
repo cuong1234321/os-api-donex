@@ -48,6 +48,30 @@ router.get('/', Authorization.permit(WarehouseExportController.constructor.name,
 
 /**
  * @openapi
+ * /a/warehouse_exports/download:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] WAREHOUSE EXPORTS"
+ *     summary: Tai xuong danh sach phieu xuat
+ *     description: tai xuong danh sach phieu xuat
+ *     parameters:
+ *      - in: query
+ *        name: "warehouseExportIds"
+ *        type: "string"
+ *     responses:
+ *       200:
+ *         description: "Upload success"
+ *       404:
+ *         description: Không tìm thấy dữ liệu
+ *       500:
+ *        description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/download', Authorization.permit(WarehouseExportController.constructor.name, 'index'), WarehouseExportController.downloadList);
+
+/**
+ * @openapi
  * /a/warehouse_exports/{warehouseExportId}:
  *   get:
  *     tags:
