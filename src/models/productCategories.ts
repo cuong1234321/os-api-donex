@@ -12,6 +12,7 @@ class ProductCategoryModel extends Model<ProductCategoryInterface> implements Pr
   public slug: string;
   public thumbnail: string;
   public type: string;
+  public misaId?: string;
   public createdAt?: Date;
   public updatedAt?: Date;
   public deletedAt?: Date;
