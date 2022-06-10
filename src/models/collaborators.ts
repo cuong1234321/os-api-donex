@@ -353,8 +353,8 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
             [
               Sequelize.cast(Sequelize.literal('(SELECT SUM(order_items.saleCampaignDiscount * order_items.quantity) + SUM(sub_orders.coinDiscount + sub_orders.voucherDiscount + sub_orders.rankDiscount) FROM order_items ' +
               'INNER JOIN sub_orders ON sub_orders.id = order_items.subOrderId AND sub_orders.status = "delivered" AND sub_orders.deletedAt IS NUll AND ' +
-              `sub_orders.createdAt BETWEEN "${from}" AND "${to}" AND ` +
-              'sub_orders.orderId IN (SELECT id FROM orders WHERE orders.orderableType <> "user" AND orderableId = CollaboratorModel.id))'), 'SIGNED'),
+              `sub_orders.createdAt BETWEEN "${from}" AND "${to}" ` +
+              'WHERE order_items.deletedAt IS NULL AND sub_orders.orderId IN (SELECT orders.id FROM orders WHERE orders.orderableType <> "user" AND orders.deletedAt IS NULL AND orders.orderableId = `CollaboratorModel`.id))'), 'SIGNED'),
               'totalDiscount',
             ],
           ],
@@ -402,8 +402,8 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
           [Op.and]: [
             Sequelize.where(Sequelize.cast(Sequelize.literal('(SELECT SUM(order_items.saleCampaignDiscount * order_items.quantity) + SUM(sub_orders.coinDiscount + sub_orders.voucherDiscount + sub_orders.rankDiscount) FROM order_items ' +
             'INNER JOIN sub_orders ON sub_orders.id = order_items.subOrderId AND sub_orders.status = "delivered" AND sub_orders.deletedAt IS NUll AND ' +
-            `sub_orders.createdAt BETWEEN "${fromDate}" AND "${toDate}" AND ` +
-            'sub_orders.orderId IN (SELECT id FROM orders WHERE orders.orderableType <> "user" AND orderableId = CollaboratorModel.id))'), 'SIGNED'),
+            `sub_orders.createdAt BETWEEN "${fromDate}" AND "${toDate}" ` +
+            'WHERE order_items.deletedAt IS NULL AND sub_orders.orderId IN (SELECT orders.id FROM orders WHERE orders.orderableType <> "user" AND orders.deletedAt IS NULL AND orders.orderableId = `CollaboratorModel`.id))'), 'SIGNED'),
             {
               [Op.between]: [fromValue, toValue],
             }),
