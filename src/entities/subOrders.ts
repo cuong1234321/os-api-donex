@@ -133,6 +133,22 @@ const SubOrderEntity = {
   expectedDeliveryTime: {
     type: DataTypes.DATE,
   },
+  otherDiscounts: {
+    type: DataTypes.TEXT,
+    defaultValue: '[]',
+    get (): (number)[] {
+      return this.getDataValue('otherDiscounts') ? JSON.parse(this.getDataValue('otherDiscounts')) : null;
+    },
+    set (value: (string)[]) {
+      if (!value) return;
+      const otherDiscounts = JSON.stringify(value);
+      this.setDataValue('otherDiscounts', otherDiscounts);
+    },
+  },
+  totalOtherDiscount: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },

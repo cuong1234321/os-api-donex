@@ -44,6 +44,8 @@ interface SubOrderInterface {
   tax: number;
   affiliateDiscount: number;
   expectedDeliveryTime: Date;
+  otherDiscounts: string[];
+  totalOtherDiscount: number;
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;

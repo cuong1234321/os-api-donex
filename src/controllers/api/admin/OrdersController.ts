@@ -20,6 +20,7 @@ import ShippingPartner from '@repositories/models/shippingPartners';
 import SlugGeneration from '@libs/slugGeneration';
 import VoucherConditionModel from '@models/voucherConditions';
 import VoucherModel from '@models/vouchers';
+import _ from 'lodash';
 
 class OrderController {
   public async show (req: Request, res: Response) {
@@ -70,6 +71,7 @@ class OrderController {
         subTotal += totalPrice;
         total += totalQuantity;
         shippingFee += subOrder.shippingFee;
+        subOrder.totalOtherDiscount = _.sumBy(subOrder.otherDiscounts, (record: any) => record.value);
       }
       params = await this.applyRankDiscount(params, total, subTotal);
       params.paymentMethod = OrderModel.PAYMENT_METHOD.COD;

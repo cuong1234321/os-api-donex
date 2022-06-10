@@ -302,6 +302,17 @@ router.get('/:orderId', Authorization.permit(OrdersController.constructor.name, 
  *                          description: "Số lượng"
  *                          default: "null"
  *                          require: true
+ *                  otherDiscounts:
+ *                    type: "array"
+ *                    items:
+ *                      type: "object"
+ *                      properties:
+ *                        key:
+ *                          type: "string"
+ *                          description: "ten giam gia"
+ *                        value:
+ *                          type: "integer"
+ *                          description: "gia tri"
  *     responses:
  *       200:
  *         description: "OK"
