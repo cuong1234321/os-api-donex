@@ -254,6 +254,7 @@ class OrderController {
     const scopes: any = [
       'withOrders',
       'withFinalAmount',
+      'withWarehouseExportId',
       { method: ['byWarehouse', adminWarehouses.map((record: any) => record.warehouseId)] },
       { method: ['bySortOrder', sortBy, sortOrder] },
     ];

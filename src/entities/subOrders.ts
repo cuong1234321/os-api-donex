@@ -149,6 +149,10 @@ const SubOrderEntity = {
     type: DataTypes.INTEGER,
     defaultValue: 0,
   },
+  adminConfirmId: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },

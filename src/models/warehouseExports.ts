@@ -1,7 +1,7 @@
 import WarehouseExportEntity from '@entities/warehouseExports';
 import WarehouseExportInterface from '@interfaces/warehouseExports';
 import dayjs from 'dayjs';
-import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, Transaction } from 'sequelize';
+import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, Transaction, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import ProductOptionModel from './productOptions';
 import ProductModel from './products';
@@ -55,7 +55,16 @@ class WarehouseExportModel extends Model<WarehouseExportInterface> implements Wa
     },
   }
 
-  static readonly validations: ModelValidateOptions = {}
+  static readonly validations: ModelValidateOptions = {
+    async uniqueOrderId () {
+      if (this.orderId) {
+        const existedRecord = await WarehouseExportModel.scope([{ method: ['byOrderId', this.orderId] }]).findOne();
+        if (existedRecord && existedRecord.id !== this.id) {
+          throw new ValidationErrorItem('Đơn hàng này đã được tạo phiếu xuất kho.', 'uniqueOrderId', 'orderId', this.orderId);
+        }
+      }
+    },
+  }
 
   static readonly scopes: ModelScopeOptions = {
     byDate (from, to) {

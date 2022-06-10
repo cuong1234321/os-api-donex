@@ -61,6 +61,7 @@ public affiliateDiscount: number;
 public expectedDeliveryTime: Date;
 public otherDiscounts: string[];
 public totalOtherDiscount: number;
+public adminConfirmId: number;
 public createdAt?: Date;
 public updatedAt?: Date;
 public deletedAt?: Date;
@@ -109,7 +110,8 @@ static readonly UPDATABLE_PARAMETERS = ['status'];
 static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
   async afterCreate (record, options) {
     const order = await OrderModel.findByPk(record.orderId, { transaction: options.transaction });
-    await record.update({ code: `${SubOrderModel.SALE_CHANNEL_KEY[order.saleChannel]}${dayjs().format('YYMMDD')}${record.id}` }, { transaction: options.transaction });
+    const totalOrder = await SubOrderModel.scope([{ method: ['byDate', dayjs().format('YYYY/MM/DD'), dayjs().format('YYYY/MM/DD')] }]).count();
+    await record.update({ code: `${SubOrderModel.SALE_CHANNEL_KEY[order.saleChannel]}${dayjs().format('YYMMDD')}${String(totalOrder + 1).padStart(4, '0')}` }, { transaction: options.transaction });
   },
   async afterDestroy (record) {
     record.deleteSubOrderDetails();
@@ -790,6 +792,18 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
     withPartnerCode () {
       return {
         where: { orderPartnerCode: { [Op.ne]: null } },
+      };
+    },
+    withWarehouseExportId () {
+      return {
+        attributes: {
+          include: [
+            [
+              Sequelize.literal('(SELECT id FROM warehouse_exports WHERE orderId = SubOrderModel.id LIMIT 1)'),
+              'warehouseExportId',
+            ],
+          ],
+        },
       };
     },
   }

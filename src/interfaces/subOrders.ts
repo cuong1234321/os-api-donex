@@ -46,6 +46,7 @@ interface SubOrderInterface {
   expectedDeliveryTime: Date;
   otherDiscounts: string[];
   totalOtherDiscount: number;
+  adminConfirmId: number;
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;

@@ -1,6 +1,7 @@
 import { NoData } from '@libs/errors';
 import { sendError, sendSuccess } from '@libs/response';
 import BillTemplateModel from '@models/billTemplates';
+import OrderModel from '@models/orders';
 import SubOrderModel from '@models/subOrders';
 import SendNotification from '@services/notification';
 import { Request, Response } from 'express';
@@ -44,6 +45,7 @@ class SubOrderController {
 
   public async update (req: Request, res: Response) {
     try {
+      const { currentAdmin } = req;
       const { subOrderId } = req.params;
       const params = req.parameters.permit(SubOrderModel.UPDATABLE_PARAMETERS).value();
       const subOrder = await SubOrderModel.scope([
@@ -51,6 +53,10 @@ class SubOrderController {
       ]).findOne();
       if (!subOrder) { return sendError(res, 404, NoData); }
       const order = await subOrder.getOrder();
+      const previousStatus = subOrder.status;
+      if (previousStatus === SubOrderModel.STATUS_ENUM.PENDING && subOrder.status === SubOrderModel.STATUS_ENUM.WAITING_TO_TRANSFER) {
+        params.adminConfirmId = currentAdmin.id;
+      }
       SendNotification.changStatusOrder(params.status, order.orderableType, subOrder.code, order.orderableId);
       await subOrder.update(params, { validate: false });
       sendSuccess(res, subOrder);
