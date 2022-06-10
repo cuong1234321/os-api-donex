@@ -109,7 +109,7 @@ id,groupId,title,key
 108,24,Chi tiết tài khoản ngân hàng,show
 109,24,Xóa tài khoản ngân hàng,delete
 110,24,Tải lên mã QR code,uploadQRCode
-111,25,Xem chi tiết chính sách điều khoản,show
+111,25,Danh sách chính sách và điều khoản,index
 112,25,Chỉnh sửa chính sách điều khoản,update
 113,26,Xem chi tiết cài đặt hệ thống,show
 114,26,Chỉnh sửa cài đặt hệ thống,update
@@ -132,3 +132,5 @@ id,groupId,title,key
 131,31,Chi tiết rút tiền,show
 132,31,Từ Chối Yêu Cầu Rút Tiền,approve
 133,31,Duyệt Yêu Cầu Rút Tiền,reject
+134,25,Xóa chính sách điều khoản,delete
+135,25,Tạo mới chính sách và điều khoản,create

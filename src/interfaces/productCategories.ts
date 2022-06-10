@@ -6,6 +6,7 @@ interface ProductCategoryInterface {
   slug: string;
   thumbnail: string;
   type: string;
+  misaId?: string;
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;

@@ -3,18 +3,12 @@ import TermsModel from '@models/terms';
 import { Request, Response } from 'express';
 
 class TermController {
-  public async show (req: Request, res: Response) {
+  public async index (req: Request, res: Response) {
     try {
       const { type } = req.params;
-      const terms = (await TermsModel.findOrCreate({
-        where: { type },
-        defaults: {
-          id: undefined,
-          type,
-          title: '',
-          content: '',
-        },
-      }))[0];
+      const scopes: any = [];
+      if (type) { scopes.push({ method: ['byType', type] }); }
+      const terms = await TermsModel.scope(scopes).findAll();
       sendSuccess(res, terms);
     } catch (error) {
       sendError(res, 500, error.message, error);

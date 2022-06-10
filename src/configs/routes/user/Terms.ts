@@ -9,7 +9,7 @@ const router = Router();
  *   get:
  *     tags:
  *      - "[USER] TERMS"
- *     summary: xem hướng dẫn săn điểm thưởng
+ *     summary: Danh sách
  *     parameters:
  *      - in: path
  *        name: "type"
@@ -33,6 +33,6 @@ const router = Router();
  *     security:
  *      - Bearer: []
  */
-router.get('/:type', TermsController.show);
+router.get('/:type', TermsController.index);
 
 export default router;
