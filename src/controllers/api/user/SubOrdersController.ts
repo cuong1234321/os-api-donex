@@ -32,7 +32,8 @@ class SubOrderController {
       if (transportUnit) scopes.push({ method: ['byTransportUnit', transportUnit] });
       const { count, rows } = await SubOrderModel.scope(scopes).findAndCountAll({ limit, offset });
       const subOrders = await OrderModel.formatOrder(rows);
-      sendSuccess(res, { rows: subOrders, pagination: { total: count, page, perPage: limit } });
+      const statisticalOrder = await this.statistical(currentUser);
+      sendSuccess(res, { rows: subOrders, statisticalOrder, pagination: { total: count, page, perPage: limit } });
     } catch (error) {
       sendError(res, 500, error.message, error);
     }
@@ -73,6 +74,62 @@ class SubOrderController {
     } catch (error) {
       sendError(res, 500, error.message, error);
     }
+  }
+
+  private async statistical (currentUser: any) {
+    const totalOrder = await SubOrderModel.scope([
+      { method: ['byOrderAble', currentUser.id, OrderModel.ORDERABLE_TYPE.USER] },
+      'isNotDraft',
+    ]).count();
+    const totalPending = await SubOrderModel.scope([
+      { method: ['byOrderAble', currentUser.id, OrderModel.ORDERABLE_TYPE.USER] },
+      { method: ['byStatus', SubOrderModel.STATUS_ENUM.PENDING] },
+    ]).count();
+    const totalWaitingToTransfer = await SubOrderModel.scope([
+      { method: ['byOrderAble', currentUser.id, OrderModel.ORDERABLE_TYPE.USER] },
+      { method: ['byStatus', SubOrderModel.STATUS_ENUM.WAITING_TO_TRANSFER] },
+    ]).count();
+    const totalDelivery = await SubOrderModel.scope([
+      { method: ['byOrderAble', currentUser.id, OrderModel.ORDERABLE_TYPE.USER] },
+      { method: ['byStatus', SubOrderModel.STATUS_ENUM.DELIVERY] },
+    ]).count();
+    const totalDelivered = await SubOrderModel.scope([
+      { method: ['byOrderAble', currentUser.id, OrderModel.ORDERABLE_TYPE.USER] },
+      { method: ['byStatus', [SubOrderModel.STATUS_ENUM.DELIVERED, SubOrderModel.STATUS_ENUM.WAITING_TO_PAY]] },
+    ]).count();
+    const totalCancel = await SubOrderModel.scope([
+      { method: ['byOrderAble', currentUser.id, OrderModel.ORDERABLE_TYPE.USER] },
+      { method: ['byStatus', SubOrderModel.STATUS_ENUM.CANCEL] },
+    ]).count();
+    const totalReturn = await SubOrderModel.scope([
+      { method: ['byOrderAble', currentUser.id, OrderModel.ORDERABLE_TYPE.USER] },
+      { method: ['byStatus', SubOrderModel.STATUS_ENUM.RETURNED] },
+    ]).count();
+    const totalFail = await SubOrderModel.scope([
+      { method: ['byOrderAble', currentUser.id, OrderModel.ORDERABLE_TYPE.USER] },
+      { method: ['byStatus', SubOrderModel.STATUS_ENUM.FAIL] },
+    ]).count();
+    const totalReject = await SubOrderModel.scope([
+      { method: ['byOrderAble', currentUser.id, OrderModel.ORDERABLE_TYPE.USER] },
+      { method: ['byStatus', SubOrderModel.STATUS_ENUM.REJECT] },
+    ]).count();
+    const totalRefund = await SubOrderModel.scope([
+      { method: ['byOrderAble', currentUser.id, OrderModel.ORDERABLE_TYPE.USER] },
+      { method: ['byStatus', SubOrderModel.STATUS_ENUM.REFUND] },
+    ]).count();
+    const statisticalOrder = {
+      totalOrder,
+      totalPending,
+      totalWaitingToTransfer,
+      totalDelivery,
+      totalDelivered,
+      totalCancel,
+      totalReturn,
+      totalFail,
+      totalReject,
+      totalRefund,
+    };
+    return statisticalOrder;
   }
 }
 

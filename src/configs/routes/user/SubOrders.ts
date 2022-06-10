@@ -1,5 +1,5 @@
 import SubOrdersController from '@controllers/api/user/SubOrdersController';
-import { Router } from 'express';
+import { Request, Response, Router } from 'express';
 
 const router = Router();
 
@@ -37,7 +37,7 @@ const router = Router();
  *     security:
  *      - Bearer: []
  */
-router.get('/', SubOrdersController.index);
+router.get('/', (req: Request, res: Response) => SubOrdersController.index(req, res));
 
 /**
  * @openapi

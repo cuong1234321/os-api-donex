@@ -12,10 +12,13 @@ class UserNotificationController {
       const page = parseInt(req.query.page as string || '1', 10);
       const limit = parseInt(req.query.size as string || Settings.defaultPerPage, 10);
       const offset = (page - 1) * limit;
-      const { rows, count } = await UserNotificationModel.scope([
+      const { type } = req.query;
+      const scopes: any = [
         { method: ['byUserAble', currentUser.id, UserNotificationModel.USER_TYPE_ENUM.USER] },
         'newest',
-      ]).findAndCountAll({ limit, offset });
+      ];
+      if (type) scopes.push({ method: ['byType', type] });
+      const { rows, count } = await UserNotificationModel.scope(scopes).findAndCountAll({ limit, offset });
       const notifications = await UserNotificationModel.scope([
         'withoutRead',
         { method: ['byUserAble', currentUser.id, UserNotificationModel.USER_TYPE_ENUM.USER] },

@@ -89,6 +89,11 @@ class UserNotificationsModel extends Model<UserNotificationsInterface> implement
         },
       };
     },
+    byType (type) {
+      return {
+        where: { type },
+      };
+    },
   }
 
   public static initialize (sequelize: Sequelize) {
