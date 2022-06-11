@@ -3,6 +3,7 @@ import { sendError, sendSuccess } from '@libs/response';
 import UserModel from '@models/users';
 import { Request, Response } from 'express';
 import settings from '@configs/settings';
+import RankModel from '@models/ranks';
 
 class SessionController {
   public async create (req: Request, res: Response) {
@@ -28,6 +29,19 @@ class SessionController {
         'addressInfo',
       ]).findOne();
       if (!user) sendError(res, 404, NoData);
+      let userRank = null;
+      if (user.rank === 'Basic') {
+        userRank = await RankModel.scope([
+          { method: ['byType', UserModel.RANK_ENUM.BASIC] },
+          'withRankCondition',
+        ]).findOne();
+      } else if (user.rank === 'Vip') {
+        userRank = await RankModel.scope([
+          { method: ['byType', UserModel.RANK_ENUM.VIP] },
+          'withRankCondition',
+        ]).findOne();
+      }
+      user.setDataValue('userRank', userRank);
       sendSuccess(res, { user });
     } catch (error) {
       sendError(res, 500, error.message, error);

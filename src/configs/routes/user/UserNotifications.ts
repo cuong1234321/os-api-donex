@@ -14,6 +14,12 @@ const router = Router();
  *        name: page
  *      - in: query
  *        name: size
+ *      - in: query
+ *        name: type
+ *        enum:
+ *          - system
+ *          - promotion
+ *          - order
  *     responses:
  *       200:
  *         description: Return data.

@@ -18,6 +18,7 @@ import SaleCampaignProductDecorator from '@decorators/saleCampaignProducts';
 import AddressBookModel from '@models/addressBooks';
 import VoucherApplicationModel from '@models/voucherApplications';
 import SellerLevelModel from '@models/sellerLevels';
+import RankModel from '@models/ranks';
 
 class SelectionController {
   public async productCategories (req: Request, res: Response) {
@@ -257,6 +258,18 @@ class SelectionController {
       if (sellerType) scopes.push({ method: ['byType', sellerType] });
       const levels = await SellerLevelModel.scope(scopes).findAll();
       sendSuccess(res, levels);
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async listRanks (req: Request, res: Response) {
+    try {
+      const { type } = req.query;
+      const scopes: any = ['withRankCondition'];
+      if (type) scopes.push({ method: ['byType', type] });
+      const ranks = await RankModel.scope(scopes).findAll();
+      sendSuccess(res, ranks);
     } catch (error) {
       sendError(res, 500, error.message, error);
     }

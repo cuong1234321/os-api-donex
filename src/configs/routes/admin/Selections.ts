@@ -426,4 +426,28 @@ router.get('/vouchers', SelectionController.listVoucherApplications);
  */
 router.get('/levels', SelectionController.listSellerLevels);
 
+/**
+ * @openapi
+ * /a/selections/ranks:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] SELECTION"
+ *     summary: danh sach hang khach hang
+ *     parameters:
+ *      - in: query
+ *        name: "type"
+ *        type: "string"
+ *        enum:
+ *         - basic
+ *         - vip
+ *     responses:
+ *       200:
+ *         description: "success"
+ *       500:
+ *         description: "failed"
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/ranks', SelectionController.listRanks);
+
 export default router;
