@@ -59,6 +59,8 @@ public cancelRejectNote: string;
 public tax: number;
 public affiliateDiscount: number;
 public expectedDeliveryTime: Date;
+public otherDiscounts: string[];
+public totalOtherDiscount: number;
 public createdAt?: Date;
 public updatedAt?: Date;
 public deletedAt?: Date;
@@ -568,7 +570,7 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
       return {
         where: {
           [Op.and]: [
-            Sequelize.where(Sequelize.literal('(SELECT (subTotal + shippingFee - deposit - rankDiscount) FROM sub_orders WHERE id = SubOrderModel.id)'), {
+            Sequelize.where(Sequelize.literal('(SELECT (subTotal + shippingFee - deposit - rankDiscount - voucherDiscount - totalOtherDiscount) FROM sub_orders WHERE id = SubOrderModel.id)'), {
               [Op.between]: [value, value],
             }),
           ],
@@ -579,7 +581,7 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
       return {
         where: {
           [Op.and]: [
-            Sequelize.where(Sequelize.literal('(SELECT (subTotal + shippingFee - deposit - rankDiscount) FROM sub_orders WHERE id = SubOrderModel.id)'), {
+            Sequelize.where(Sequelize.literal('(SELECT (subTotal + shippingFee - deposit - rankDiscount - voucherDiscount - totalOtherDiscount) FROM sub_orders WHERE id = SubOrderModel.id)'), {
               [Op.lte]: value,
             }),
           ],
@@ -590,7 +592,7 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
       return {
         where: {
           [Op.and]: [
-            Sequelize.where(Sequelize.literal('(SELECT (subTotal + shippingFee - deposit - rankDiscount) FROM sub_orders WHERE id = SubOrderModel.id)'), {
+            Sequelize.where(Sequelize.literal('(SELECT (subTotal + shippingFee - deposit - rankDiscount - voucherDiscount - totalOtherDiscount) FROM sub_orders WHERE id = SubOrderModel.id)'), {
               [Op.gte]: value,
             }),
           ],
@@ -611,7 +613,7 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
         attributes: {
           include: [
             [
-              Sequelize.literal('(SELECT (subTotal + shippingFee + tax - deposit - rankDiscount - voucherDiscount) FROM sub_orders WHERE id = SubOrderModel.id)'),
+              Sequelize.literal('(SELECT (subTotal + shippingFee + tax - deposit - rankDiscount - voucherDiscount - totalOtherDiscount) FROM sub_orders WHERE id = SubOrderModel.id)'),
               'finalAmount',
             ],
           ],
