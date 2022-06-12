@@ -44,6 +44,7 @@ class SubOrderController {
       const { currentUser } = req;
       const subOrder = await SubOrderModel.scope([
         { method: ['byId', req.params.subOrderId] },
+        'withShippings',
         'withItem',
       ]).findOne();
       if (!subOrder) return sendError(res, 404, NoData);

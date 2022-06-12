@@ -17,6 +17,8 @@ import UserModel from './users';
 import WarehouseExportModel from './warehouseExports';
 import WarehouseExportVariantModel from './warehouseExportVariants';
 import WarehouseModel from './warehouses';
+import SubOrderShippingModel from './subOrderShippings';
+import WarehouseReceiptModel from './warehouseReceipts';
 
 class SubOrderModel extends Model<SubOrderInterface> implements SubOrderInterface {
 public id: number;
@@ -99,6 +101,8 @@ static readonly SALE_CHANNEL_KEY: any = {
   other: 'KK',
 }
 
+static readonly CANCEL_CASE = [SubOrderModel.STATUS_ENUM.DRAFT, SubOrderModel.STATUS_ENUM.PENDING, SubOrderModel.STATUS_ENUM.WAITING_TO_TRANSFER]
+
 static readonly CANCEL_STATUS = { PENDING: 'pending', APPROVED: 'approved', REJECTED: 'rejected' }
 static readonly CANCELABLE_TYPE_ENUM = { USER: 'user', COLLABORATOR: 'collaborator', AGENCY: 'agency', DISTRIBUTOR: 'distributor' };
 
@@ -116,13 +120,14 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
   async afterDestroy (record) {
     record.deleteSubOrderDetails();
   },
-  async beforeSave (record: any) {
-    if ([SubOrderModel.STATUS_ENUM.DRAFT, SubOrderModel.STATUS_ENUM.PENDING].includes(record._previousDataValues.status) && record.status === SubOrderModel.STATUS_ENUM.WAITING_TO_TRANSFER) {
+  async beforeSave (record: SubOrderModel) {
+    if ([SubOrderModel.STATUS_ENUM.DRAFT, SubOrderModel.STATUS_ENUM.PENDING].includes(record.previous('status')) && record.status === SubOrderModel.STATUS_ENUM.WAITING_TO_TRANSFER) {
       const order = await OrderModel.scope([
         'withAddress',
         { method: ['byId', record.orderId] },
       ]).findOne();
-      const getOrderDetail = await record.formatOrder(record, order);
+      const warehouse = await record.getWarehouse();
+      const getOrderDetail = await record.formatOrder(record, order, warehouse);
       const ghnOrder: any = await Order.createGhnOrder(getOrderDetail);
       record.orderPartnerCode = ghnOrder?.orderCode;
       record.expectedDeliveryTime = ghnOrder?.expectedDeliveryTime;
@@ -136,15 +141,6 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
   },
   async afterSave (record: any) {
     if (!this.isNewRecord) { await record.checkStatusSubOrder(); }
-    if ((record.isNewRecord && record.status === SubOrderModel.STATUS_ENUM.PENDING) ||
-      (record.previous('status') === SubOrderModel.STATUS_ENUM.DRAFT && ![SubOrderModel.STATUS_ENUM.REJECT, SubOrderModel.STATUS_ENUM.CANCEL].includes(record.status))
-    ) {
-      await SubOrderModel.createWarehouseExport(record);
-    }
-    if (record.previous('status') === SubOrderModel.STATUS_ENUM.PENDING && [SubOrderModel.STATUS_ENUM.REJECT, SubOrderModel.STATUS_ENUM.CANCEL].includes(record.status)) {
-      const warehouseExport = await WarehouseExportModel.scope([{ method: ['byOrderId', record.id] }]).findOne();
-      await warehouseExport.update({ status: WarehouseExportModel.STATUS_ENUM.CANCEL });
-    }
   },
 }
 
@@ -172,6 +168,11 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
     async validateShippingFee () {
       if (this.shippingFee < 0) {
         throw new ValidationErrorItem('Phí giao hàng không được nhỏ hơn 0', 'validateShippingFee', 'shippingFee', this.shippingFee);
+      }
+    },
+    async validateDelivery () {
+      if (!SubOrderModel.CANCEL_CASE.includes(this.previous('status')) && this.status === SubOrderModel.STATUS_ENUM.CANCEL) {
+        throw new ValidationErrorItem('Đơn hàng đang vận chuyển, không thể hủy', 'validateDelivery', 'status', this.status);
       }
     },
   }
@@ -202,7 +203,7 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
     });
   }
 
-  public async formatOrder (subOrder: any, order: any) {
+  private async formatOrder (subOrder: any, order: any, warehouse: any) {
     const orderItems = await OrderItemModel.scope([
       'withProductVariant',
       { method: ['bySubOrder', subOrder.id] },
@@ -218,8 +219,13 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
       length: subOrder.length,
       height: subOrder.height,
       width: subOrder.width,
-      codAmount: subOrder.subTotal,
+      codAmount: order.paidAt ? 0 : subOrder.subTotal,
       items: [],
+      paymentTypeId: subOrder.shippingFee ? 2 : 1,
+      insuranceValue: subOrder.subTotal > settings.maxInsuranceValue ? settings.maxInsuranceValue : subOrder.subTotal,
+      pick_shift: subOrder.shippingAttributeType,
+      serviceTypeId: subOrder.shippingType,
+      returnPhone: warehouse.phoneNumber,
     };
     for (const orderItem of orderItems) {
       params.items.push(
@@ -243,13 +249,12 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
     ]).findOne();
     const warehouseExportParams = SubOrderModel.formatWarehouseExport(subOrder, await subOrder.getItems(), order);
     await sequelize.transaction(async (transaction: Transaction) => {
-      const warehouseExport = await WarehouseExportModel.create(warehouseExportParams, {
+      await WarehouseExportModel.create(warehouseExportParams, {
         include: [
           { model: WarehouseExportVariantModel, as: 'warehouseExportVariants' },
         ],
         transaction,
       });
-      return warehouseExport;
     });
   }
 
@@ -263,6 +268,7 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
       orderId: subOrder.id,
       deliverer: subOrder.shippingType,
       warehouseExportVariants: [],
+      adminId: subOrder.adminConfirmId,
     };
     params.warehouseExportVariants = (orderItems).map((item: any) => {
       return {
@@ -270,6 +276,44 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
         variantId: item.productVariantId,
         quantity: item.quantity,
         price: item.sellingPrice,
+      };
+    });
+    return params;
+  }
+
+  public static async createWarehouseImport (subOrder: any) {
+    const order = await OrderModel.scope([
+      { method: ['byId', subOrder.orderId] },
+    ]).findOne();
+    const warehouseImportParams = SubOrderModel.formatWarehouseImport(subOrder, await subOrder.getItems(), order);
+    await sequelize.transaction(async (transaction: Transaction) => {
+      await WarehouseExportModel.create(warehouseImportParams, {
+        include: [
+          { model: WarehouseExportVariantModel, as: 'warehouseReceiptVariants' },
+        ],
+        transaction,
+      });
+    });
+  }
+
+  public static formatWarehouseImport (subOrder: any, orderItems: any, order: any) {
+    const params: any = {
+      type: WarehouseExportModel.TYPE_ENUM.SELL,
+      importAbleType: WarehouseReceiptModel.IMPORTABLE_TYPE.ORDER,
+      importAble: subOrder.adminConfirmId,
+      importDate: dayjs().format('YYYY/MM/DD'),
+      orderId: subOrder.id,
+      deliverer: subOrder.shippingType,
+      warehouseReceiptVariants: [],
+      adminId: subOrder.adminConfirmId,
+    };
+    params.warehouseReceiptVariants = (orderItems).map((item: any) => {
+      return {
+        warehouseId: subOrder.warehouseId,
+        variantId: item.productVariantId,
+        quantity: item.quantity,
+        price: item.sellingPrice,
+        totalPrice: (item.quantity || 0) * (item.sellingPrice || 0),
       };
     });
     return params;
@@ -307,10 +351,24 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
         await user.update({ rank: UserModel.RANK_ENUM.VIP });
       }
     }
+    if ((this.isNewRecord && this.status === SubOrderModel.STATUS_ENUM.PENDING) ||
+    (this.previous('status') === SubOrderModel.STATUS_ENUM.DRAFT && ![SubOrderModel.STATUS_ENUM.REJECT, SubOrderModel.STATUS_ENUM.CANCEL].includes(this.status))
+    ) {
+      await SubOrderModel.createWarehouseExport(this);
+    }
+    if (this.previous('status') === SubOrderModel.STATUS_ENUM.PENDING && [SubOrderModel.STATUS_ENUM.REJECT, SubOrderModel.STATUS_ENUM.CANCEL].includes(this.status)) {
+      const warehouseExport = await WarehouseExportModel.scope([{ method: ['byOrderId', this.id] }]).findOne();
+      await warehouseExport.update({ status: WarehouseExportModel.STATUS_ENUM.CANCEL });
+    }
+    if (SubOrderModel.CANCEL_CASE.includes(this.previous('status')) && this.status === SubOrderModel.STATUS_ENUM.CANCEL) {
+      await Order.cancelOrder(this);
+      await SubOrderModel.createWarehouseImport(this);
+    }
   }
 
   public getItems: HasManyGetAssociationsMixin<OrderItemModel>
   public getOrder: BelongsToGetAssociationMixin<OrderModel>
+  public getWarehouse: BelongsToGetAssociationMixin<WarehouseModel>
 
   static readonly scopes: ModelScopeOptions = {
     isNotDraft () {
@@ -806,6 +864,13 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
         },
       };
     },
+    withShippings () {
+      return {
+        include: [
+          { model: SubOrderShippingModel, as: 'shippings' },
+        ],
+      };
+    },
   }
 
   public static initialize (sequelize: Sequelize) {
@@ -823,6 +888,7 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
     this.hasMany(OrderItemModel, { as: 'items', foreignKey: 'subOrderId' });
     this.belongsTo(OrderModel, { as: 'order', foreignKey: 'orderId' });
     this.belongsTo(WarehouseModel, { as: 'warehouse', foreignKey: 'warehouseId' });
+    this.hasMany(SubOrderShippingModel, { as: 'shippings', foreignKey: 'subOrderId' });
   }
 }
 

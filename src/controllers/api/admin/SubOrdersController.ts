@@ -1,7 +1,6 @@
 import { NoData } from '@libs/errors';
 import { sendError, sendSuccess } from '@libs/response';
 import BillTemplateModel from '@models/billTemplates';
-import OrderModel from '@models/orders';
 import SubOrderModel from '@models/subOrders';
 import SendNotification from '@services/notification';
 import { Request, Response } from 'express';
@@ -35,6 +34,7 @@ class SubOrderController {
         { method: ['byId', subOrderId] },
         'withItems',
         'withOrderInfo',
+        'withShippings',
       ]).findOne();
       if (!subOrder) { return sendError(res, 404, NoData); }
       sendSuccess(res, subOrder);

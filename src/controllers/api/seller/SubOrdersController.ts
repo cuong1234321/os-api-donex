@@ -15,6 +15,7 @@ class SubOrderController {
         { method: ['byId', subOrderId] },
         { method: ['byOrderAble', currentSeller.id, currentSeller.type] },
         'withItems',
+        'withShippings',
       ]).findOne();
       if (!subOrder) { return sendError(res, 404, NoData); }
       sendSuccess(res, subOrder);

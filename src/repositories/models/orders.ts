@@ -22,13 +22,15 @@ class Order {
           length: data.length,
           height: data.height,
           width: data.width,
-          service_type_id: 2,
+          service_type_id: data.serviceTypeId || 2,
           client_order_code: data.clientCode,
-          payment_type_id: data.payment_type_id || 1,
+          payment_type_id: data.paymentTypeId || 1,
           required_note: data.requireNode || Order.REQUIRE_NOTE_ENUM.KHONG_CHO_XEM_HANG,
-          pick_shift: data.pickShift || [1],
+          pick_shift: [data.pickShift] || [2],
           cod_amount: data.codAmount,
           items: data.items,
+          insurance_value: data.insuranceValue,
+          return_phone: data.returnPhone,
         },
       };
       const result = await axios(requestConfigs);
@@ -49,12 +51,52 @@ class Order {
     try {
       const requestConfigs: AxiosRequestConfig = {
         method: 'POST',
-        url: `${process.env.GHN_ENPOINT}/shiip/public-api/v2/shipping-order/detail-by-client-code`,
+        url: `${process.env.GHN_ENPOINT}/shipping-order/detail-by-client-code`,
         headers: {
           Token: process.env.GHN_TOKEN_API,
         },
         data: {
           client_order_code: data.code,
+        },
+      };
+      const result = await axios(requestConfigs);
+      return result.data;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
+
+  public static async cancelOrder (data: any) {
+    try {
+      const requestConfigs: AxiosRequestConfig = {
+        method: 'POST',
+        url: `${process.env.GHN_ENPOINT}/switch-status/cancel`,
+        headers: {
+          Token: process.env.GHN_TOKEN_API,
+        },
+        data: {
+          order_codes: data.orderPartnerCode,
+        },
+      };
+      const result = await axios(requestConfigs);
+      return result.data;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
+
+  public static async returnOrder (data: any) {
+    try {
+      const requestConfigs: AxiosRequestConfig = {
+        method: 'POST',
+        url: `${process.env.GHN_ENPOINT}/switch-status/return`,
+        headers: {
+          Token: process.env.GHN_TOKEN_API,
+        },
+        data: {
+          order_codes: data.orderPartnerCode,
         },
       };
       const result = await axios(requestConfigs);
