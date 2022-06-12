@@ -31,6 +31,8 @@ class WarehouseReceiptModel extends Model<WarehouseReceiptInterface> implements 
     { warehouseReceiptVariants: ['id', 'warehouseId', 'variantId', 'quantity', 'price', 'totalPrice'] },
   ]
 
+  static readonly IMPORTABLE_TYPE: any = { ORDER: 'order' };
+
   static readonly hooks: Partial<ModelHooks<WarehouseReceiptModel>> = {}
 
   static readonly validations: ModelValidateOptions = {

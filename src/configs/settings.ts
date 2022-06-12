@@ -42,4 +42,5 @@ export default {
   normalShippingDiscount: 1000000,
   rankShippingDiscount: 500000,
   orderOutOfDate: 363,
+  maxInsuranceValue: 5000000,
 };

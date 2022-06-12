@@ -20,7 +20,7 @@ const TopUpDepositEntity = {
     type: DataTypes.STRING(255), allowNull: true,
   },
   status: {
-    type: DataTypes.ENUM({ values: ['pending', 'complete'] }), defaultValue: 'pending',
+    type: DataTypes.ENUM({ values: ['pending', 'complete', 'fail'] }), defaultValue: 'pending',
   },
   amount: {
     type: DataTypes.INTEGER, allowNull: false,
