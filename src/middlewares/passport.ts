@@ -70,6 +70,8 @@ const sellerStrategy = new Strategy(sellerOptions, async (req: Request, payload:
   try {
     const seller = await CollaboratorModel.scope([
       { method: ['byStatus', CollaboratorModel.STATUS_ENUM.ACTIVE] },
+      'withDefaultRank',
+      'withCurrentRank',
     ]).findByPk(payload.id);
     if (seller) {
       req.currentSeller = seller;

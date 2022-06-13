@@ -34,13 +34,16 @@ class WarehouseExportController {
     try {
       const { warehouseExportId } = req.params;
       const scopes: any = [
-        { method: ['byId', warehouseExportId] },
+        { method: ['byId', (warehouseExportId as string).split(',')] },
         'withExportAbleName',
         'withTotalPrice',
         'withTotalQuantity',
       ];
-      const warehouseExport = await WarehouseExportModel.scope(scopes).findOne();
-      await warehouseExport.reloadWithDetail();
+      const warehouseExport = await WarehouseExportModel.scope(scopes).findAll();
+      if (warehouseExport.length === 0) { return sendError(res, 404, NoData); }
+      for (const record of warehouseExport) {
+        await record.reloadWithDetail();
+      }
       if (!warehouseExport) { return sendError(res, 404, NoData); }
       sendSuccess(res, warehouseExport);
     } catch (error) {

@@ -34,14 +34,17 @@ class WarehouseReceiptController {
     try {
       const { warehouseReceiptId } = req.params;
       const scopes: any = [
-        { method: ['byId', warehouseReceiptId] },
+        { method: ['byId', (warehouseReceiptId as string).split(',')] },
         'withImportAbleName',
         'withTotalPrice',
         'withTotalQuantity',
       ];
-      const warehouseReceipt = await WarehouseReceiptModel.scope(scopes).findOne();
+      const warehouseReceipt = await WarehouseReceiptModel.scope(scopes).findAll();
+      if (warehouseReceipt.length === 0) { return sendError(res, 404, NoData); }
       if (!warehouseReceipt) { return sendError(res, 404, NoData); }
-      await warehouseReceipt.reloadWithDetail();
+      for (const record of warehouseReceipt) {
+        await record.reloadWithDetail();
+      }
       sendSuccess(res, warehouseReceipt);
     } catch (error) {
       sendError(res, 500, error.message, error);

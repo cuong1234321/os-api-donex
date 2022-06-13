@@ -81,7 +81,7 @@ router.get('/download', Authorization.permit(WarehouseExportController.construct
  *     parameters:
  *      - in: path
  *        name: "warehouseExportId"
- *        type: "number"
+ *        type: "string"
  *     responses:
  *       200:
  *         description: "Upload success"

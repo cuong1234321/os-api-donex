@@ -64,6 +64,10 @@ const router = Router();
  *         name: "flashSale"
  *         description: ""
  *         type: boolean
+ *       - in: "query"
+ *         name: "highLight"
+ *         description: ""
+ *         type: boolean
  *       - in: query
  *         name: "price"
  *         description: "sap xep theo gia tien"
