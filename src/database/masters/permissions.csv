@@ -134,3 +134,8 @@ id,groupId,title,key
 133,31,Duyệt Yêu Cầu Rút Tiền,reject
 134,25,Xóa chính sách điều khoản,delete
 135,25,Tạo mới chính sách và điều khoản,create
+136,32,Quản lý Look Book thêm,create
+137,32,Quản lý Look Book sửa,update
+138,32,Quản lý Look Book xóa,delete
+139,32,Quản lý Look Book xem,show
+140,32,Quản lý Look Book danh sách,index

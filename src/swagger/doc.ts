@@ -65,6 +65,10 @@ const swaggerDefinition = {
       description: 'Quản lý Danh mục tin tức',
     },
     {
+      name: '[ADMIN] LOOK BOOKS',
+      description: 'Quản lý Look Book',
+    },
+    {
       name: '[ADMIN] ORDERS',
       description: 'Quản lý đơn hàng',
     },
@@ -229,6 +233,10 @@ const swaggerDefinition = {
       description: 'Danh mục tin tức',
     },
     {
+      name: '[USER] LOOK BOOKS',
+      description: 'Quản lý Look Book',
+    },
+    {
       name: '[USER] ORDER',
       description: 'Quản lý đơn hàng',
     },
@@ -307,6 +315,10 @@ const swaggerDefinition = {
     {
       name: '[SELLER] BANK ACCOUNT',
       description: 'Danh sách tài khoản ngân hàng',
+    },
+    {
+      name: '[SELLER] LOOK BOOKS',
+      description: 'Quản lý Look Book',
     },
     {
       name: '[SELLER] SUB ORDERS',
