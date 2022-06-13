@@ -137,13 +137,18 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
       }
       await record.subtractUserCoin();
     },
-    async afterSave (record: any) {
-      if (record._previousDataValues.status === OrderModel.STATUS_ENUM.DRAFT && record.status === OrderModel.STATUS_ENUM.DELIVERY) {
-        const subOrders = await SubOrderModel.scope([
-          { method: ['byOrderId', record.id] },
-        ]).findAll();
+    async afterSave (record) {
+      const subOrders = await SubOrderModel.scope([
+        { method: ['byOrderId', record.id] },
+      ]).findAll();
+      if (record.previous('status') === OrderModel.STATUS_ENUM.DRAFT && record.status === OrderModel.STATUS_ENUM.DELIVERY) {
         for (const subOrder of subOrders) {
           await subOrder.update({ status: SubOrderModel.STATUS_ENUM.WAITING_TO_TRANSFER }, { validate: false });
+        }
+      }
+      if (record.previous('status') !== record.status && record.status === OrderModel.STATUS_ENUM.PAID) {
+        for (const subOrder of subOrders) {
+          await subOrder.update({ paymentStatus: SubOrderModel.PAYMENT_STATUS.PAID }, { validate: false });
         }
       }
     },
@@ -343,6 +348,15 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
     isNotFail () {
       return {
         where: { status: { [Op.ne]: OrderModel.STATUS_ENUM.FAIL } },
+      };
+    },
+    totalSubOrder () {
+      return {
+        attributes: {
+          include: [
+            [Sequelize.cast(Sequelize.literal('(SELECT COUNT(*) FROM sub_orders WHERE orderId = OrderModel.id)'), 'SIGNED'), 'totalSubOrder'],
+          ],
+        },
       };
     },
   }
