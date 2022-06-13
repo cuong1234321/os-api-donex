@@ -2,6 +2,7 @@ import settings from '@configs/settings';
 import sequelize from '@initializers/sequelize';
 import { NoData } from '@libs/errors';
 import { sendError, sendSuccess } from '@libs/response';
+import LookBookMediaModel from '@models/lookBookMeidas';
 import LookBookModel from '@models/lookBooks';
 import { Request, Response } from 'express';
 import { Transaction } from 'sequelize/types';
@@ -10,8 +11,17 @@ class LookBookController {
   public async create (req: Request, res: Response) {
     try {
       const params = req.parameters.permit(LookBookModel.CREATABLE_PARAMETERS).value();
-      const lookBook = await LookBookModel.create(params);
-      sendSuccess(res, { lookBook });
+      const lookBook = await sequelize.transaction(async (transaction: Transaction) => {
+        const record = await LookBookModel.create(params, {
+          include: [
+            { model: LookBookModel, as: 'children' },
+            { model: LookBookMediaModel, as: 'medias' },
+          ],
+          transaction,
+        });
+        return record;
+      });
+      sendSuccess(res, lookBook);
     } catch (error) {
       sendError(res, 500, error.message, error);
     }
