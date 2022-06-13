@@ -30,9 +30,9 @@ class LookBookModel extends Model<LookBookInterface> implements LookBookInterfac
   static readonly UPDATABLE_ON_DUPLICATE_PARAMETERS: ['id', 'title', 'description', 'thumbnail']
 
   static readonly hooks: Partial<ModelHooks<LookBookModel>> = {
-    async afterSave (record: any) {
-      if (record.dataValues.title !== record._previousDataValues.title) {
-        await record.update({ slug: `${SlugGeneration.execute(record.title)}-${record.id}` }, { hooks: false });
+    async afterSave (record: any, options) {
+      if (record.dataValues.title !== record._previousDataValues.title && !record.parentId) {
+        await record.update({ slug: `${SlugGeneration.execute(record.title)}-${record.id}` }, { transaction: options.transaction, hooks: false });
       }
     },
   }
