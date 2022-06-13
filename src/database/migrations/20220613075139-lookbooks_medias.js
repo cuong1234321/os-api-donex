@@ -2,7 +2,7 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    return queryInterface.createTable('look_books', {
+    return queryInterface.createTable('look_book_medias', {
       id: {
         type: Sequelize.INTEGER, allowNull: false, autoIncrement: true, primaryKey: true,
       },
@@ -24,6 +24,6 @@ module.exports = {
   },
 
   down: async (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('look_books');
+    return queryInterface.dropTable('look_book_medias');
   },
 };
