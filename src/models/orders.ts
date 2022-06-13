@@ -4,6 +4,7 @@ import OrderInterface from '@interfaces/orders';
 import SubOrderInterface from '@interfaces/subOrders';
 import VnpayPaymentService from '@services/vnpayPayment';
 import dayjs from 'dayjs';
+import _ from 'lodash';
 import { BelongsToGetAssociationMixin, HasManyGetAssociationsMixin, Model, ModelScopeOptions, Op, Transaction, ModelValidateOptions, Sequelize, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import AdminModel from './admins';
@@ -86,6 +87,7 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
     {
       subOrders: [
         'id', 'warehouseId', 'weight', 'length', 'width', 'height', 'pickUpAt', 'shippingFeeMisa', 'shippingFee', 'deposit', 'deliveryType', 'deliveryInfo', 'note', 'shippingType', 'shippingAttributeType',
+        { otherDiscounts: ['key', 'value'] },
         { items: ['id', 'productVariantId', 'quantity'] },
       ],
     }]
@@ -519,6 +521,7 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
     if (!subOrders) return;
     subOrders.forEach((record: any) => {
       record.orderId = this.id;
+      record.totalOtherDiscount = _.sumBy(record.otherDiscounts, (record: any) => record.value);
     });
     const resultSubOrders = await SubOrderModel.bulkCreate(subOrders, {
       updateOnDuplicate: SubOrderModel.UPDATABLE_ON_DUPLICATE_PARAMETERS as (keyof SubOrderInterface)[],
