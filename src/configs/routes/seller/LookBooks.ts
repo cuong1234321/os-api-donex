@@ -16,10 +16,6 @@ const router = Router();
  *        description: "page"
  *        type: "string"
  *      - in: query
- *        name: "status"
- *        description: "status"
- *        type: "string"
- *      - in: query
  *        name: "freeWord"
  *        description: "Tìm kiếm theo tên"
  *        type: "string"

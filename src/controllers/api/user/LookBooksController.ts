@@ -12,13 +12,10 @@ class LookBookController {
       const offset = (parseInt(page, 10) - 1) * limit;
       const sortBy = req.query.sortBy || 'createdAt';
       const sortOrder = req.query.sortOrder || 'DESC';
-      const { status, freeWord } = req.query;
+      const { freeWord } = req.query;
       const scopes: any = [
         { method: ['bySortOrder', sortBy, sortOrder] },
       ];
-      if (status) {
-        scopes.push({ method: ['byStatus', status] });
-      }
       if (freeWord) { scopes.push({ method: ['byFreeWord', freeWord] }); }
       const { rows, count } = await LookBookModel.scope(scopes).findAndCountAll({ limit, offset });
       sendSuccess(res, { rows, pagination: { total: count, page, perPage: limit } });
@@ -31,6 +28,7 @@ class LookBookController {
     try {
       const lookBook = await LookBookModel.scope([
         { method: ['byId', req.params.lookBookId] },
+        { method: ['byStatus', LookBookModel.STATUS_ENUM.ACTIVE] },
       ]).findOne();
       if (!lookBook) { return sendError(res, 404, NoData); }
       await lookBook.setDataValue('medias', await lookBook.getMedias());
