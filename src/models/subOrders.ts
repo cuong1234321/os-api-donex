@@ -104,6 +104,7 @@ static readonly SALE_CHANNEL_KEY: any = {
 static readonly CANCEL_CASE = [SubOrderModel.STATUS_ENUM.DRAFT, SubOrderModel.STATUS_ENUM.PENDING, SubOrderModel.STATUS_ENUM.WAITING_TO_TRANSFER]
 
 static readonly CANCEL_STATUS = { PENDING: 'pending', APPROVED: 'approved', REJECTED: 'rejected' }
+static readonly PAYMENT_STATUS = { PENDING: 'pending', PAID: 'paid' }
 static readonly CANCELABLE_TYPE_ENUM = { USER: 'user', COLLABORATOR: 'collaborator', AGENCY: 'agency', DISTRIBUTOR: 'distributor' };
 
 static readonly UPDATABLE_ON_DUPLICATE_PARAMETERS = ['id', 'warehouseId', 'weight', 'length', 'width', 'height', 'pickUpAt', 'shippingFeeMisa',
@@ -113,9 +114,14 @@ static readonly UPDATABLE_PARAMETERS = ['status'];
 
 static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
   async afterCreate (record, options) {
-    const order = await OrderModel.findByPk(record.orderId, { transaction: options.transaction });
-    const totalOrder = await SubOrderModel.scope([{ method: ['byDate', dayjs().format('YYYY/MM/DD'), dayjs().format('YYYY/MM/DD')] }]).count();
-    await record.update({ code: `${SubOrderModel.SALE_CHANNEL_KEY[order.saleChannel]}${dayjs().format('YYMMDD')}${String(totalOrder + 1).padStart(4, '0')}` }, { transaction: options.transaction });
+    const order: any = await OrderModel.scope([
+      { method: ['byId', record.orderId] },
+      'withSubOrder',
+    ]).findOne({ transaction: options.transaction });
+    const subOrderIds = order.getDataValue('subOrders').map((index: any) => index.id);
+    const totalSubOrder = await SubOrderModel.scope([{ method: ['byDate', dayjs().startOf('day').format('YYYY/MM/DD'), dayjs().endOf('day').format('YYYY/MM/DD')] }]).count();
+    const code = `${SubOrderModel.SALE_CHANNEL_KEY[order.saleChannel]}${dayjs().format('YYMMDD')}${String(totalSubOrder + subOrderIds.indexOf(record.id) + 1).padStart(4, '0')}`;
+    await record.update({ code }, { transaction: options.transaction });
   },
   async afterDestroy (record) {
     record.deleteSubOrderDetails();
