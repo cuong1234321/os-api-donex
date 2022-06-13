@@ -83,7 +83,7 @@ router.get('/download', Authorization.permit(WarehouseReceiptController.construc
  *     parameters:
  *      - in: path
  *        name: "warehouseReceiptId"
- *        type: "number"
+ *        type: "string"
  *     responses:
  *       200:
  *         description: "Upload success"
