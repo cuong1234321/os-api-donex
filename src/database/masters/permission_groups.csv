@@ -30,3 +30,4 @@ id,title,key
 29,Quản lý hướng dẫn chọn size,SizeGuideController
 30,Quản lý nạp tiền,TopUpDepositController
 31,Quản lý rút tiền,WithdrawalRequestController
+32,Quản lý Look Book,LookBookController
