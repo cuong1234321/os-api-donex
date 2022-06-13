@@ -1,10 +1,12 @@
 import { NoData } from '@libs/errors';
 import { sendError, sendSuccess } from '@libs/response';
 import BillTemplateModel from '@models/billTemplates';
+import OrderModel from '@models/orders';
 import SubOrderModel from '@models/subOrders';
 import SendNotification from '@services/notification';
 import { Request, Response } from 'express';
 import handlebars from 'handlebars';
+import _ from 'lodash';
 
 class SubOrderController {
   public async index (req: Request, res: Response) {
@@ -114,6 +116,36 @@ class SubOrderController {
       const order = await subOrder.getOrder();
       await subOrder.update({ cancelStatus: SubOrderModel.CANCEL_STATUS.REJECTED, cancelRejectNote: req.body.cancelRejectNote }, { hooks: false, validate: false });
       SendNotification.notiCancelStatus(SubOrderModel.CANCEL_STATUS.REJECTED, order.orderableType, subOrder.code, order.orderableId);
+      sendSuccess(res, { subOrder });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async updateFee (req: Request, res: Response) {
+    try {
+      const { subOrderId } = req.params;
+      const subOrder = await SubOrderModel.findByPk(subOrderId);
+      if (!subOrder) { return sendError(res, 404, NoData); }
+      const order = await OrderModel.findByPk(subOrder.orderId);
+      const previousFee = subOrder.shippingFee;
+      const params = req.parameters.permit(SubOrderModel.UPDATABLE_FEE_PARAMETERS).value();
+      await subOrder.update(params, { validator: false, hooks: false });
+      await order.update({ shippingFee: order.shippingFee - previousFee + subOrder.shippingFee });
+      sendSuccess(res, { subOrder });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async updateOtherdiscount (req: Request, res: Response) {
+    try {
+      const { subOrderId } = req.params;
+      const subOrder = await SubOrderModel.findByPk(subOrderId);
+      if (!subOrder) { return sendError(res, 404, NoData); }
+      const params = req.parameters.permit(SubOrderModel.UPDATABLE_OTHER_DISCOUNT_PARAMETERS).value();
+      params.totalOtherDiscount = _.sumBy(params.otherDiscounts, (record: any) => record.value);
+      await subOrder.update(params, { validator: false, hooks: false });
       sendSuccess(res, { subOrder });
     } catch (error) {
       sendError(res, 500, error.message, error);

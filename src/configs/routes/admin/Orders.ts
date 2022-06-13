@@ -561,6 +561,17 @@ router.post('/calculator_vouchers', (req: Request, res: Response) => OrdersContr
  *                          description: "Số lượng"
  *                          default: "null"
  *                          require: true
+ *                  otherDiscounts:
+ *                    type: "array"
+ *                    items:
+ *                      type: "object"
+ *                      properties:
+ *                        key:
+ *                          type: "string"
+ *                          description: "ten giam gia"
+ *                        value:
+ *                          type: "integer"
+ *                          description: "gia tri"
  *     responses:
  *       200:
  *         description: "OK"

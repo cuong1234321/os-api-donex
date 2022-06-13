@@ -95,6 +95,115 @@ router.patch('/:subOrderId', (req: Request, res: Response) => SubOrderController
 
 /**
  * @openapi
+ * /a/sub_orders/{subOrderId}/update_fee:
+ *   patch:
+ *     tags:
+ *      - "[ADMIN] SUB ORDERS"
+ *     summary: update phi giao hang
+ *     parameters:
+ *      - in: path
+ *        name: "subOrderId"
+ *        description: ""
+ *        type: number
+ *      - in: "body"
+ *        name: "body"
+ *        description: "Thông tin subOrder"
+ *        schema:
+ *          type: "object"
+ *          properties:
+ *              weight:
+ *                type: "number"
+ *                description: "can nang"
+ *              length:
+ *                type: "number"
+ *                description: "chieu dai"
+ *              width:
+ *                type: "number"
+ *                description: "chieu rong"
+ *              height:
+ *                type: "integer"
+ *                description: "chieu cao"
+ *              pickUpAt:
+ *                type: "string"
+ *                description: "ngay giao hang YYYY/MM/DD"
+ *              shippingFeeMisa:
+ *                type: "number"
+ *                description: "phi GH tra DT"
+ *              shippingFee:
+ *                type: "number"
+ *                description: "phi GH thu khach"
+ *              deposit:
+ *                type: "number"
+ *                description: "Tien dat coc"
+ *              deliveryType:
+ *                type: "string"
+ *                description: "loai don vi van chuyen"
+ *                enum:
+ *                  - personal
+ *                  - partner
+ *              deliveryInfo:
+ *                type: "string"
+ *                description: "thong tin doi tac"
+ *              note:
+ *                type: "string"
+ *                description: "ghi chu giao hang"
+ *              shippingType:
+ *                type: "string"
+ *                description: "Doi tac van chuyen"
+ *              shippingAttributeType:
+ *                type: "string"
+ *                description: "Loai dich vu"
+ *     responses:
+ *       200:
+ *         description: "OK"
+ *       500:
+ *         description: "Internal error"
+ *     security:
+ *      - Bearer: []
+ */
+router.patch('/:subOrderId/update_fee', (req: Request, res: Response) => SubOrderController.updateFee(req, res));
+
+/**
+ * @openapi
+ * /a/sub_orders/{subOrderId}/update_other_discounts:
+ *   patch:
+ *     tags:
+ *      - "[ADMIN] SUB ORDERS"
+ *     summary: update giam gia khac
+ *     parameters:
+ *      - in: path
+ *        name: "subOrderId"
+ *        description: ""
+ *        type: number
+ *      - in: "body"
+ *        name: "body"
+ *        description: "Thông tin subOrder"
+ *        schema:
+ *          type: "object"
+ *          properties:
+ *            otherDiscounts:
+ *              type: "array"
+ *              items:
+ *                type: "object"
+ *                properties:
+ *                  key:
+ *                    type: "string"
+ *                    description: "ten giam gia"
+ *                  value:
+ *                    type: "integer"
+ *                    description: "gia tri"
+ *     responses:
+ *       200:
+ *         description: "OK"
+ *       500:
+ *         description: "Internal error"
+ *     security:
+ *      - Bearer: []
+ */
+router.patch('/:subOrderId/update_other_discounts', (req: Request, res: Response) => SubOrderController.updateOtherdiscount(req, res));
+
+/**
+ * @openapi
  * /a/sub_orders/{subOrderId}/bill:
  *   get:
  *     tags:

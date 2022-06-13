@@ -108,7 +108,12 @@ static readonly PAYMENT_STATUS = { PENDING: 'pending', PAID: 'paid' }
 static readonly CANCELABLE_TYPE_ENUM = { USER: 'user', COLLABORATOR: 'collaborator', AGENCY: 'agency', DISTRIBUTOR: 'distributor' };
 
 static readonly UPDATABLE_ON_DUPLICATE_PARAMETERS = ['id', 'warehouseId', 'weight', 'length', 'width', 'height', 'pickUpAt', 'shippingFeeMisa',
-  'shippingFee', 'deposit', 'deliveryType', 'deliveryInfo', 'note', 'shippingType', 'shippingAttributeType', 'subTotal', 'total'];
+  'shippingFee', 'deposit', 'deliveryType', 'deliveryInfo', 'note', 'shippingType', 'shippingAttributeType', 'subTotal', 'total', 'otherDiscounts', 'totalOtherDiscount'];
+
+static readonly UPDATABLE_FEE_PARAMETERS = ['weight', 'length', 'width', 'height', 'pickUpAt', 'shippingFeeMisa',
+  'shippingFee', 'deposit', 'deliveryType', 'deliveryInfo', 'note', 'shippingType', 'shippingAttributeType'];
+
+static readonly UPDATABLE_OTHER_DISCOUNT_PARAMETERS = [{ otherDiscounts: ['key', 'value'] }];
 
 static readonly UPDATABLE_PARAMETERS = ['status'];
 
@@ -159,10 +164,12 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
       if (!warehouse) {
         throw new ValidationErrorItem('Kho hàng không tồn tại', 'validateWarehouse', 'warehouseId', this.warehouseId);
       }
-      for (const warehouseVariant of warehouse.warehouseVariant) {
-        const item = this.items.find((record: any) => record.productVariantId === warehouseVariant.variantId);
-        if (item && item.quantity > warehouseVariant.quantity) {
-          throw new ValidationErrorItem('Sản phẩm kho hàng không hợp lệ', 'validateWarehouse', 'warehouseId', this.warehouseId);
+      if (this.items) {
+        for (const warehouseVariant of warehouse.warehouseVariant) {
+          const item = this.items.find((record: any) => record.productVariantId === warehouseVariant.variantId);
+          if (item && item.quantity > warehouseVariant.quantity) {
+            throw new ValidationErrorItem('Sản phẩm kho hàng không hợp lệ', 'validateWarehouse', 'warehouseId', this.warehouseId);
+          }
         }
       }
     },
