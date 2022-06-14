@@ -135,7 +135,7 @@ class WarehouseExportController {
       const fileName = `Bao-cao-danh-sach-xuat-kho-${time}.xlsx`;
       const sortBy = req.query.sortBy || 'createdAt';
       const sortOrder = req.query.sortOrder || 'DESC';
-      const { warehouseExportIds } = req.query;
+      const { warehouseExportIds, fromDate, toDate, type } = req.query;
       const scopes: any = [
         { method: ['bySorting', sortBy, sortOrder] },
         'withExportAbleName',
@@ -143,6 +143,13 @@ class WarehouseExportController {
         'withTotalPrice',
       ];
       if (warehouseExportIds) scopes.push({ method: ['byId', (warehouseExportIds as string).split(',')] });
+      if (type) scopes.push({ method: ['byType', type] });
+      if (!fromDate && !toDate) {
+        scopes.push({ method: ['byDate', dayjs().subtract(30, 'day').format('YYYY/MM/DD'), dayjs().format('YYYY/MM/DD')] });
+      }
+      if (fromDate && toDate) {
+        scopes.push({ method: ['byDate', fromDate, toDate] });
+      }
       const warehouseExports = await WarehouseExportModel.scope(scopes).findAll();
       const buffer: any = await XlsxService.downloadListWarehouseExports(warehouseExports);
       res.writeHead(200, [

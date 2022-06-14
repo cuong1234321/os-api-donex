@@ -73,7 +73,7 @@ class WarehouseExportModel extends Model<WarehouseExportInterface> implements Wa
       if (from) Object.assign(createdAtCondition, { [Op.gt]: dayjs(from as string).startOf('day').format() });
       if (to) Object.assign(createdAtCondition, { [Op.lte]: dayjs(to as string).endOf('day').format() });
       return {
-        where: { exportDate: createdAtCondition },
+        where: { createdAt: createdAtCondition },
       };
     },
     byType (type) {

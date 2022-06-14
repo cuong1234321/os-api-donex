@@ -58,6 +58,20 @@ router.get('/', Authorization.permit(WarehouseExportController.constructor.name,
  *      - in: query
  *        name: "warehouseExportIds"
  *        type: "string"
+ *      - in: query
+ *        name: "fromDate"
+ *        description: "Ngay bat dau YYYY/MM/DD"
+ *        type: "string"
+ *      - in: query
+ *        name: "toDate"
+ *        description: "Ngay ket thuc YYYY/MM/DD"
+ *        type: "string"
+ *      - in: query
+ *        name: "type"
+ *        description: ""
+ *        enum:
+ *         - sell
+ *         - others
  *     responses:
  *       200:
  *         description: "Upload success"

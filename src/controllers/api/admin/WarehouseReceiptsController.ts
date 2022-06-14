@@ -118,7 +118,7 @@ class WarehouseReceiptController {
     try {
       const time = dayjs().format('DD-MM-YY-hh:mm:ss');
       const fileName = `Bao-cao-danh-sach-nhap-kho-${time}.xlsx`;
-      const { warehouseReceiptIds } = req.query;
+      const { warehouseReceiptIds, fromDate, toDate, type } = req.query;
       const scopes: any = [
         'newest',
         'withImportAbleName',
@@ -126,6 +126,13 @@ class WarehouseReceiptController {
         'withTotalPrice',
       ];
       if (warehouseReceiptIds) scopes.push({ method: ['byId', (warehouseReceiptIds as string).split(',')] });
+      if (type) scopes.push({ method: ['byType', type] });
+      if (!fromDate && !toDate) {
+        scopes.push({ method: ['byDate', dayjs().subtract(30, 'day').format('YYYY/MM/DD'), dayjs().format('YYYY/MM/DD')] });
+      }
+      if (fromDate && toDate) {
+        scopes.push({ method: ['byDate', fromDate, toDate] });
+      }
       const warehouseReceipts = await WarehouseReceiptModel.scope(scopes).findAll();
       const buffer: any = await XlsxService.downloadListWarehouseReceipts(warehouseReceipts);
       res.writeHead(200, [
