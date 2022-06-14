@@ -41,7 +41,7 @@ class VnpayPaymentService {
       vnp_Locale: 'vn',
       vnp_OrderInfo: `${this.txnRef}`,
       vnp_OrderType: 'other',
-      vnp_ReturnUrl: `${process.env.CLIENT_DOMAIN}/callback/vnpay/payment-redirect`,
+      vnp_ReturnUrl: prefix === VnpayPaymentService.TXN_REF_PREFIX.ORDER ? `${process.env.CLIENT_DOMAIN}/callback/vnpay/payment-redirect` : process.env.APP_DOMAIN,
       vnp_TmnCode: process.env.VNPAY_TMNCODE,
       vnp_TxnRef: this.txnRef,
       vnp_Version: '2',
