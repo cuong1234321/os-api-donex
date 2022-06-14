@@ -1,5 +1,5 @@
 import UserModel from '@models/users';
-import { Op } from 'sequelize/types';
+import { Op } from 'sequelize';
 
 class ResetRankAction {
   public async resetRankUser () {
