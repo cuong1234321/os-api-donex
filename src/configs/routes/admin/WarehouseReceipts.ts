@@ -60,6 +60,21 @@ router.get('/', Authorization.permit(WarehouseReceiptController.constructor.name
  *      - in: query
  *        name: "warehouseReceiptIds"
  *        type: "string"
+ *      - in: query
+ *        name: "fromDate"
+ *        description: "Ngay bat dau YYYY/MM/DD"
+ *        type: "string"
+ *      - in: query
+ *        name: "toDate"
+ *        description: "Ngay ket thuc YYYY/MM/DD"
+ *        type: "string"
+ *      - in: query
+ *        name: "type"
+ *        description: ""
+ *        enum:
+ *         - orderRefund
+ *         - newGoods
+ *         - others
  *     responses:
  *       200:
  *         description: "Upload success"
