@@ -52,7 +52,7 @@ router.get('/', WithdrawalRequestController.index);
  *              type: "integer"
  *              description: "Số tiền"
  *            requestNote:
- *              type: "integer"
+ *              type: "string"
  *              description: "ghi chus"
  *     responses:
  *       200:
