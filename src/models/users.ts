@@ -38,6 +38,7 @@ class UserModel extends Model<UserInterface> implements UserInterface {
   public alreadyFinishOrder: boolean;
   public isBlackList: boolean;
   public lastOrderFinishedAt: Date;
+  public upgradeRankAt: Date;
   public createdAt?: Date;
   public updatedAt?: Date;
   public deletedAt?: Date;
@@ -241,6 +242,13 @@ class UserModel extends Model<UserInterface> implements UserInterface {
             [Op.gt]:
           coinReward,
           },
+        },
+      };
+    },
+    withUpgradeRankOutOfDate () {
+      return {
+        where: {
+          id: { [Op.in]: Sequelize.literal('(SELECT id from users where (CURDATE() - upgradeRankAt) >= 365 )') },
         },
       };
     },

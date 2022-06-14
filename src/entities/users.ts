@@ -87,6 +87,9 @@ const UserEntity = {
   lastOrderFinishedAt: {
     type: DataTypes.DATE,
   },
+  upgradeRankAt: {
+    type: DataTypes.DATE,
+  },
   isBlackList: {
     type: DataTypes.BOOLEAN, defaultValue: false,
   },
