@@ -153,6 +153,33 @@ class WarehouseExportModel extends Model<WarehouseExportInterface> implements Wa
         },
       };
     },
+    withAddress () {
+      return {
+        attributes: {
+          include: [
+            [
+              Sequelize.literal('(SELECT shippingAddress FROM orders WHERE orders.id = (SELECT orderId FROM sub_orders WHERE sub_orders.id = WarehouseExportModel.orderId))'),
+              'shippingAddress',
+            ],
+            [
+              Sequelize.literal('(SELECT title FROM m_provinces WHERE m_provinces.id = (SELECT shippingProvinceId FROM orders WHERE orders.id = ' +
+              '(SELECT orderId FROM sub_orders WHERE sub_orders.id = WarehouseExportModel.orderId)))'),
+              'shippingProvince',
+            ],
+            [
+              Sequelize.literal('(SELECT title FROM m_districts WHERE m_districts.id = (SELECT shippingDistrictId FROM orders WHERE orders.id = ' +
+              '(SELECT orderId FROM sub_orders WHERE sub_orders.id = WarehouseExportModel.orderId)))'),
+              'shippingDistrict',
+            ],
+            [
+              Sequelize.literal('(SELECT title FROM m_wards WHERE m_wards.id = (SELECT shippingWardId FROM orders WHERE orders.id = ' +
+              '(SELECT orderId FROM sub_orders WHERE sub_orders.id = WarehouseExportModel.orderId)))'),
+              'shippingWard',
+            ],
+          ],
+        },
+      };
+    },
   }
 
   public async updateExportVariants (exportVariants: any[], transaction?: Transaction) {
