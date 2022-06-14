@@ -37,6 +37,7 @@ class LookBookController {
       const { status, freeWord } = req.query;
       const scopes: any = [
         { method: ['bySortOrder', sortBy, sortOrder] },
+        'withoutParent',
       ];
       if (status) {
         scopes.push({ method: ['byStatus', status] });

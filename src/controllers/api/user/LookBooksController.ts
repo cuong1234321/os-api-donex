@@ -15,6 +15,7 @@ class LookBookController {
       const { freeWord } = req.query;
       const scopes: any = [
         { method: ['bySortOrder', sortBy, sortOrder] },
+        'withoutParent',
       ];
       if (freeWord) { scopes.push({ method: ['byFreeWord', freeWord] }); }
       const { rows, count } = await LookBookModel.scope(scopes).findAndCountAll({ limit, offset });

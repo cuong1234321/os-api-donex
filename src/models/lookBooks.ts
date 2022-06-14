@@ -102,6 +102,11 @@ class LookBookModel extends Model<LookBookInterface> implements LookBookInterfac
         ],
       };
     },
+    withoutParent () {
+      return {
+        where: { parentId: { [Op.is]: null } },
+      };
+    },
   }
 
   public static initialize (sequelize: Sequelize) {
