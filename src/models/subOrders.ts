@@ -884,6 +884,22 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
         ],
       };
     },
+    byFreeWord (freeWord, orderableType, orderableId) {
+      return {
+        where: {
+          [Op.and]: [
+            { code: { [Op.substring]: freeWord } },
+            {
+              id: {
+                [Op.in]: Sequelize.literal('(SELECT id from sub_orders where id in (SELECT subOrderId FROM order_items WHERE productVariantId IN ' +
+            `(SELECT id FROM product_variants WHERE product_variants.name like "%${freeWord}%")) ` +
+            `AND orderId In (SELECT id from orders WHERE orders.orderableType = "%${orderableType}%" AND orders.orderableId = "${orderableId}") )`),
+              },
+            },
+          ],
+        },
+      };
+    },
   }
 
   public static initialize (sequelize: Sequelize) {
