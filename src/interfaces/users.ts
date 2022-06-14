@@ -27,6 +27,7 @@ interface UserInterface {
   alreadyFinishOrder: boolean;
   isBlackList: boolean;
   lastOrderFinishedAt: Date;
+  upgradeRankAt: Date;
   createdAt?: Date,
   updatedAt?: Date,
   deletedAt?: Date,
