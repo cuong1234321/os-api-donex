@@ -91,6 +91,8 @@ static readonly DELIVERY_STATUS_ENUM = [
   'waitingToPay',
 ]
 
+static readonly DELIVERY_TYPE = { PERSONAL: 'personal', PARTNER: 'partner', PLATFORM: 'platform' }
+
 static readonly SALE_CHANNEL_KEY: any = {
   facebook: 'FB',
   lazada: 'LA',
