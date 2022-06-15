@@ -5,6 +5,8 @@ import SaleCampaignProductModel from '@models/saleCampaignProducts';
 import { Op } from 'sequelize';
 import SaleCampaignModel from '@models/saleCampaigns';
 import { NoData } from '@libs/errors';
+import OrderItemModel from '@models/orderItems';
+import settings from '@configs/settings';
 
 class ProductVariantController {
   public async index (req: Request, res: Response) {
@@ -58,6 +60,29 @@ class ProductVariantController {
         variants = await this.calculatorSaleCampaignPrice(variants, saleCampaign);
       }
       sendSuccess(res, variants);
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async report (req: Request, res: Response) {
+    try {
+      const page = req.query.page as string || '1';
+      const { freeWord, fromDate, toDate } = req.query;
+      const limit = parseInt(req.query.size as string) || parseInt(settings.defaultPerPage);
+      const offset = (parseInt(page, 10) - 1) * limit;
+      const sortBy = req.query.sortBy || 'createdAt';
+      const sortOrder = req.query.sortOrder || 'DESC';
+      const scopes: any = [
+        { method: ['bySortOrder', sortBy, sortOrder] },
+        'withBuyerName',
+        'withProductUnit',
+        'withSubOrderFinish',
+      ];
+      if (freeWord) { scopes.push({ method: ['byFreeWord', freeWord] }); }
+      if (fromDate && toDate) { scopes.push({ method: ['byCreatedAt', fromDate, toDate] }); }
+      const { rows, count } = await OrderItemModel.scope(scopes).findAndCountAll({ limit, offset });
+      sendSuccess(res, { rows, pagination: { total: count, page, perPage: limit } });
     } catch (error) {
       sendError(res, 500, error.message, error);
     }

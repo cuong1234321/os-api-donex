@@ -63,4 +63,41 @@ const router = Router();
  */
 router.get('/', (req: Request, res: Response) => ProductVariantController.index(req, res));
 
+/**
+ * @openapi
+ * /a/variants/report:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] PRODUCT VARIANTS"
+ *     summary: Danh sách sản phẩm con
+ *     description: Danh sách sản phẩm con
+ *     parameters:
+ *      - in: query
+ *        name: "page"
+ *        description: "page"
+ *        type: "string"
+ *      - in: query
+ *        name: "freeWord"
+ *        description: "Tìm kiếm theo tên"
+ *        type: "string"
+ *      - in: query
+ *        name: "fromDate"
+ *        description: "Từ ngày"
+ *        type: "date"
+ *      - in: query
+ *        name: "toDate"
+ *        description: "Tới ngày"
+ *        type: "date"
+ *     responses:
+ *       200:
+ *         description: "Upload success"
+ *       404:
+ *         description: Không tìm thấy dữ liệu
+ *       500:
+ *        description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/report', (req: Request, res: Response) => ProductVariantController.report(req, res));
+
 export default router;

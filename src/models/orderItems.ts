@@ -1,6 +1,7 @@
 import OrderItemEntity from '@entities/orderItems';
 import OrderItemInterface from '@interfaces/orderItems';
-import { Model, ModelScopeOptions, ModelValidateOptions, Sequelize } from 'sequelize';
+import dayjs from 'dayjs';
+import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import ProductModel from './products';
 import ProductVariantModel from './productVariants';
@@ -49,6 +50,59 @@ class OrderItemModel extends Model<OrderItemInterface> implements OrderItemInter
     bySubOrder (subOrderId) {
       return {
         where: { subOrderId },
+      };
+    },
+    bySortOrder (sortBy, sortOrder) {
+      return {
+        order: [[Sequelize.literal(sortBy), sortOrder]],
+      };
+    },
+    withSubOrderFinish () {
+      return {
+        include: [
+          {
+            model: SubOrderModel,
+            as: 'subOrder',
+            where: { status: SubOrderModel.STATUS_ENUM.WAITING_TO_TRANSFER },
+            required: true,
+            attributes: [],
+          },
+        ],
+      };
+    },
+    withBuyerName () {
+      return {
+        attributes: {
+          include: [
+            [Sequelize.literal('(SELECT shippingFullName FROM orders where id = (SELECT orderId FROM sub_orders WHERE id = (SELECT subOrderId FROM order_items WHERE id = OrderItemModel.id)))'), 'buyerName'],
+          ],
+        },
+      };
+    },
+    withProductUnit () {
+      return {
+        attributes: {
+          include: [
+            [Sequelize.literal('(SELECT unit FROM products where id = (SELECT productId FROM product_variants WHERE id = (SELECT productVariantId FROM order_items WHERE id = OrderItemModel.id)))'), 'unit'],
+            [Sequelize.literal('(SELECT name FROM product_variants where id = OrderItemModel.productVariantId)'), 'productName'],
+          ],
+        },
+      };
+    },
+    byCreatedAt (from, to) {
+      if (!from && !to) return { where: {} };
+      const createdAtCondition: any = {};
+      if (from) Object.assign(createdAtCondition, { [Op.gt]: dayjs(from as string).startOf('day').format() });
+      if (to) Object.assign(createdAtCondition, { [Op.lte]: dayjs(to as string).endOf('day').format() });
+      return {
+        where: { createdAt: createdAtCondition },
+      };
+    },
+    byFreeWord (freeWord) {
+      return {
+        where: {
+          id: { [Op.in]: [Sequelize.literal(`(SELECT id FROM order_items where productVariantId in (SELECT id FROM product_variants WHERE name like "%${freeWord}%"))`)] },
+        },
       };
     },
   }
