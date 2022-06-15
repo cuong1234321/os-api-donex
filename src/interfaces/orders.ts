@@ -43,6 +43,8 @@ interface OrderInterface {
   district?: MDistrictInterface;
   subOrders?: SubOrderInterface[];
   applicationDiscount?: number;
+  totalMoney?: number;
+  totalSubOrder?: number;
 };
 
 export default OrderInterface;

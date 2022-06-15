@@ -361,6 +361,52 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
         },
       };
     },
+    byCreatableType (creatableType) {
+      return {
+        where: {
+          creatableType,
+        },
+      };
+    },
+    byCreatedAt (from, to) {
+      if (!from && !to) return { where: {} };
+      const createdAtCondition: any = {};
+      if (from) Object.assign(createdAtCondition, { [Op.gt]: dayjs(from as string).startOf('day').format() });
+      if (to) Object.assign(createdAtCondition, { [Op.lte]: dayjs(to as string).endOf('day').format() });
+      return {
+        where: { createdAt: createdAtCondition },
+      };
+    },
+    bySortOrder (sortBy, sortOrder) {
+      return {
+        order: [[Sequelize.literal(sortBy), sortOrder]],
+      };
+    },
+    withOwner (freeWord) {
+      let conditions = {};
+      if (freeWord) {
+        conditions = {
+          [Op.or]: [
+            { fullName: { [Op.like]: `%${freeWord || ''}%` } },
+            { username: { [Op.like]: `%${freeWord || ''}%` } },
+            { phoneNumber: { [Op.like]: `%${freeWord || ''}%` } },
+          ],
+        };
+      }
+      return {
+        include: [
+          {
+            model: UserModel,
+            as: 'ownerUser',
+            required: true,
+            where: conditions,
+            attributes: {
+              exclude: ['password'],
+            },
+          },
+        ],
+      };
+    },
   }
 
   public async reloadWithDetail () {
