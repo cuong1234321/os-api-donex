@@ -11,6 +11,7 @@ import CollaboratorWorkingDayModel from '@models/collaboratorWorkingDays';
 import CollaboratorMediaModel from '@models/collaboratorMedia';
 import { Sequelize } from 'sequelize';
 import dayjs from 'dayjs';
+import XlsxService from '@services/xlsx';
 
 class CollaboratorController {
   public async index (req: Request, res: Response) {
@@ -255,6 +256,31 @@ class CollaboratorController {
       await collaborator.update({ password });
       MailerService.changePasswordUser(collaborator, password);
       sendSuccess(res, { });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async download (req: Request, res: Response) {
+    try {
+      const time = dayjs().format('DDMMYYhhmmss');
+      const fileName = `Bao-cao-seller-${time}.xlsx`;
+      const sortBy = req.query.sortBy || 'createdAt';
+      const sortOrder = req.query.sortOrder || 'DESC';
+      const { freeWord, status, type } = req.query;
+      const scopes: any = [
+        { method: ['bySorting', sortBy, sortOrder] },
+      ];
+      if (status) scopes.push({ method: ['byStatus', status] });
+      if (freeWord) scopes.push({ method: ['byFreeWord', freeWord] });
+      if (type) scopes.push({ method: ['byType', type] });
+      const sellers = await CollaboratorModel.scope(scopes).findAll();
+      const buffer: any = await XlsxService.downloadSellers(sellers);
+      res.writeHead(200, [
+        ['Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+        ['Content-Disposition', 'attachment; filename=' + `${fileName}`],
+      ]);
+      res.end(Buffer.from(buffer, 'base64'));
     } catch (error) {
       sendError(res, 500, error.message, error);
     }

@@ -62,6 +62,46 @@ router.get('/', Authorization.permit(UserController.constructor.name, 'index'), 
 
 /**
  * @openapi
+ * /a/users/download:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] USERS"
+ *     summary: Tải xuống danh sách khách hàng
+ *     description: Tải xuống Danh sách khách hàng
+ *     parameters:
+ *      - in: query
+ *        name: "freeWord"
+ *        description: "freeWord"
+ *        type: "string"
+ *      - in: query
+ *        name: "gender"
+ *        description: "gioi tinh"
+ *        type: "string"
+ *        enum:
+ *         - male
+ *         - female
+ *         - other
+ *      - in: query
+ *        name: "status"
+ *        description: "trang thai"
+ *        type: "string"
+ *        enum:
+ *          - active
+ *          - inactive
+ *     responses:
+ *       200:
+ *         description: "Upload success"
+ *       404:
+ *         description: Không tìm thấy dữ liệu
+ *       500:
+ *        description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/download', Authorization.permit(UserController.constructor.name, 'index'), UserController.download);
+
+/**
+ * @openapi
  * /a/users/{userId}:
  *   get:
  *     tags:

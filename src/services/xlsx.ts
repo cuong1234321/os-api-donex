@@ -516,6 +516,82 @@ class XlsxService {
     return await XlsxService.exportToExcel([{ sheetName: 'Danh sách phiếu nhập kho', sheetData: workSheet }]);
   }
 
+  public static async downloadUsers (users: any) {
+    dayjs.extend(utc);
+    dayjs.extend(timezone);
+    const GENDER_MAPPING: any = { male: 'nam', female: 'nữ', other: 'khác' };
+    const STATUS_MAPPING: any = { active: 'Đang hoạt động', inactive: 'tạm khoá' };
+    users = JSON.parse(JSON.stringify(users));
+    const title = [
+      [{ v: 'DANH SÁCH NGƯỜI DÙNG', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '18' } } }],
+    ];
+    const rows = users.map((record: any, index: any) => {
+      return [
+        { v: index + 1, s: { alignment: { horizontal: 'center' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: record.fullName || '', s: { alignment: { horizontal: 'left' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: record.phoneNumber, s: { alignment: { horizontal: 'left' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: record.gender ? GENDER_MAPPING[record.gender] : '', s: { alignment: { horizontal: 'left' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: record.email || '', s: { alignment: { horizontal: 'left' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: STATUS_MAPPING[record.status] || '', s: { alignment: { horizontal: 'left' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      ];
+    });
+    const headers = [
+      { v: 'STT', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'Khách hàng', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'Số điện thoại', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'Giới tính', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'Email', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'Trạng thái', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+    ];
+    rows.unshift(headers);
+    const workSheet = XLSX.utils.aoa_to_sheet([[]]);
+    XLSX.utils.sheet_add_aoa(workSheet, title, { origin: 'D2' });
+    XLSX.utils.sheet_add_aoa(workSheet, rows, { origin: 'A5' });
+    const wsColsOpts = [{ wch: 5 }, { wch: 25 }, { wch: 15 }, { wch: 15 }, { wch: 30 }, { wch: 20 }];
+    workSheet['!cols'] = wsColsOpts;
+    workSheet['!rows'] = [{}, { hpx: 30 }];
+    return await XlsxService.exportToExcel([{ sheetName: 'Danh sách người dùng', sheetData: workSheet }]);
+  }
+
+  public static async downloadSellers (sellers: any) {
+    dayjs.extend(utc);
+    dayjs.extend(timezone);
+    const STATUS_MAPPING: any = { pending: 'Chờ duyệt', active: 'Đang hoạt động', inactive: 'tạm khoá', rejected: 'Từ chối' };
+    const TYPE_MAPPING: any = { collaborator: 'Cộng tác viên', agency: 'Đại lý', distributor: 'Nhà phân phối' };
+    sellers = JSON.parse(JSON.stringify(sellers));
+    const title = [
+      [{ v: 'DANH SÁCH CTV/DL/NPP', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '18' } } }],
+    ];
+    const rows = sellers.map((record: any, index: any) => {
+      return [
+        { v: index + 1, s: { alignment: { horizontal: 'center' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: record.fullName || '', s: { alignment: { horizontal: 'left' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: TYPE_MAPPING[record.type], s: { alignment: { horizontal: 'left' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: record.phoneNumber, s: { alignment: { horizontal: 'left' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: record.email || '', s: { alignment: { horizontal: 'left' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: !record.parentId ? 'Có' : 'Không', s: { alignment: { horizontal: 'left' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: STATUS_MAPPING[record.status] || '', s: { alignment: { horizontal: 'left' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      ];
+    });
+    const headers = [
+      { v: 'STT', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'ĐL/CTV/NPP', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'Vai trò', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'Số điện thoại', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'Email', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'Thuộc Donex', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'Trạng thái', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+    ];
+    rows.unshift(headers);
+    const workSheet = XLSX.utils.aoa_to_sheet([[]]);
+    XLSX.utils.sheet_add_aoa(workSheet, title, { origin: 'D2' });
+    XLSX.utils.sheet_add_aoa(workSheet, rows, { origin: 'A5' });
+    const wsColsOpts = [{ wch: 5 }, { wch: 25 }, { wch: 15 }, { wch: 15 }, { wch: 30 }, { wch: 15 }, { wch: 20 }];
+    workSheet['!cols'] = wsColsOpts;
+    workSheet['!rows'] = [{}, { hpx: 30 }];
+    return await XlsxService.exportToExcel([{ sheetName: 'Danh sách người dùng', sheetData: workSheet }]);
+  }
+
   private static appendSingleSheet (data: any, wsColsOpts: XLSX.ColInfo[] = undefined) {
     const workSheetData = [
       ...data,

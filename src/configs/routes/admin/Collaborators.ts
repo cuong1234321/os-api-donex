@@ -56,6 +56,45 @@ router.get('/', Authorization.permit(CollaboratorsController.constructor.name, '
 
 /**
  * @openapi
+ * /a/collaborators/download:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] COLLABORATORS"
+ *     summary: Tải xuống danh sách danh CTV/DL/NPP
+ *     parameters:
+ *      - in: query
+ *        name: "status"
+ *        description: "status"
+ *        type: "string"
+ *        enum:
+ *          - pending
+ *          - active
+ *          - inactive
+ *          - rejected
+ *      - in: query
+ *        name: "freeWord"
+ *        description: "Tìm kiếm theo tên, username, sdt"
+ *        type: "string"
+ *      - in: query
+ *        name: "type"
+ *        description: "lọc theo loại CTV/DL/NPP"
+ *        type: "string"
+ *        enum:
+ *          - collaborator
+ *          - agency
+ *          - distributor
+ *     responses:
+ *       200:
+ *         description: "OK"
+ *       500:
+ *         description: "Internal error"
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/download', Authorization.permit(CollaboratorsController.constructor.name, 'index'), CollaboratorsController.download);
+
+/**
+ * @openapi
  * /a/collaborators:
  *   post:
  *     tags:
