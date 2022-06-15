@@ -125,8 +125,8 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
     ]).findOne({ transaction: options.transaction });
     const subOrderIds = order.getDataValue('subOrders').map((index: any) => index.id);
     const totalSubOrder = await SubOrderModel.scope([{ method: ['byDate', dayjs().startOf('day').format('YYYY/MM/DD'), dayjs().endOf('day').format('YYYY/MM/DD')] }]).count({ paranoid: false });
-    const code = `${SubOrderModel.SALE_CHANNEL_KEY[order.saleChannel]}${dayjs().format('YYMMDD')}${String(totalSubOrder + subOrderIds.indexOf(record.id) + 1).padStart(4, '0')}`;
-    await record.update({ code }, { transaction: options.transaction, validate: false });
+    const code = `${SubOrderModel.SALE_CHANNEL_KEY[order.saleChannel]}${dayjs().format('YYMMDD')}${String(totalSubOrder + subOrderIds.indexOf(record.id) + 2).padStart(4, '0')}`;
+    await record.update({ code }, { transaction: options.transaction, validate: false, hooks: false });
   },
   async afterDestroy (record) {
     record.deleteSubOrderDetails();
