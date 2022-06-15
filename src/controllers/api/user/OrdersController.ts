@@ -41,6 +41,7 @@ class OrderController {
         status: OrderModel.STATUS_ENUM.PENDING,
       };
       const orderFormat: any = await OrderDecorator.formatOrder(orderParams, voucher, ward, currentUser);
+      orderFormat.transportUnit = params.transportUnit;
       const result = await sequelize.transaction(async (transaction: Transaction) => {
         const order = await OrderModel.create(orderFormat, {
           include: [

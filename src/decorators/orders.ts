@@ -5,6 +5,7 @@ import OrderModel from '@models/orders';
 import ProductVariantModel from '@models/productVariants';
 import RankModel from '@models/ranks';
 import SaleCampaignModel from '@models/saleCampaigns';
+import SubOrderModel from '@models/subOrders';
 import SystemSettingModel from '@models/systemSetting';
 import UserModel from '@models/users';
 import VoucherConditionModel from '@models/voucherConditions';
@@ -14,7 +15,7 @@ import SaleCampaignProductDecorator from './saleCampaignProducts';
 
 class OrderDecorator {
   public static async formatOrder (order: any, voucher: any, ward: any, currentUser: any) {
-    const { subOrders, orderTotalFee, orderTotalBill, finalAmount, totalProduct, totalTax } = await this.getOrderAttributes(order.subOrders, ward);
+    const { subOrders, orderTotalFee, orderTotalBill, finalAmount, totalProduct, totalTax } = await this.getOrderAttributes(order.subOrders, ward, order);
     const systemSetting: any = (await SystemSettingModel.findOrCreate({
       where: { },
       defaults: { id: undefined },
@@ -56,7 +57,7 @@ class OrderDecorator {
     return order;
   }
 
-  private static async getOrderAttributes (subOrders: any, ward: any) {
+  private static async getOrderAttributes (subOrders: any, ward: any, order: any) {
     const warehouseIds = new Array(0);
     let orderTotalFee = 0;
     let orderTotalBill = 0;
@@ -71,6 +72,7 @@ class OrderDecorator {
     ];
     const saleCampaigns = await SaleCampaignModel.scope(scopes).findAll();
     for (const subOrder of subOrders) {
+      subOrder.shippingType = order.transportUnit;
       warehouseIds.push(subOrder.warehouseId);
       productVariantIds.push(subOrder.items.map((item: any) => item.productVariantId));
     }
@@ -92,7 +94,7 @@ class OrderDecorator {
       let shippingFee = 0;
       let total = 0;
       let subOrderFinalAmount = 0;
-      subOrder.deliveryType = 'platform';
+      subOrder.deliveryType = SubOrderModel.DELIVERY_TYPE.PARTNER;
       subOrder.warehouse = warehouses.find((record: any) => record.id === subOrder.warehouseId);
       subOrder.warehouseId = warehouses.find((record: any) => record.id === subOrder.warehouseId).id;
       for (const item of subOrder.items) {
