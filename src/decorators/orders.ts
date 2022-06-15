@@ -148,7 +148,6 @@ class OrderDecorator {
       orderTotalFee = 0;
     }
     let orderFinalAmount = finalAmount + orderTotalFee + totalTax;
-    const applicationDiscount = await this.calculatorOrderDiscount(voucher, orderFinalAmount);
     let coinDiscount = order.coinUsed ? (systemSetting.coinConversionLevel * order.coinUsed) : 0;
     if (orderFinalAmount < coinDiscount) {
       coinDiscount = orderFinalAmount;
@@ -187,17 +186,6 @@ class OrderDecorator {
     orderFinalAmount = order.subTotal;
     order.subTotal = 0;
     for (const subOrder of subOrders) {
-      const voucherDiscount = applicationDiscount ? Math.round((subOrder.subTotal / orderFinalAmount) * applicationDiscount) : 0;
-      subOrder.voucherDiscount = voucherDiscount;
-      subOrder.subTotal = subOrder.subTotal - voucherDiscount;
-      subOrder.totalDiscount = subOrder.totalDiscount + voucherDiscount;
-      order.subTotal = order.subTotal + subOrder.subTotal;
-      order.voucherDiscount = order.voucherDiscount + subOrder.voucherDiscount;
-      order.totalDiscount = order.totalDiscount + subOrder.voucherDiscount;
-    }
-    orderFinalAmount = order.subTotal;
-    order.subTotal = 0;
-    for (const subOrder of subOrders) {
       const rankDiscount = rankDiscountValue ? Math.round((subOrder.subTotal / orderFinalAmount) * rankDiscountValue) : 0;
       subOrder.rankDiscount = rankDiscount;
       subOrder.subTotal = subOrder.subTotal - rankDiscount;
@@ -205,6 +193,18 @@ class OrderDecorator {
       order.subTotal = order.subTotal + subOrder.subTotal;
       order.rankDiscount = order.rankDiscount + subOrder.rankDiscount;
       order.totalDiscount = order.totalDiscount + subOrder.rankDiscount;
+    }
+    orderFinalAmount = order.subTotal;
+    order.subTotal = 0;
+    const applicationDiscount = await this.calculatorOrderDiscount(voucher, orderFinalAmount);
+    for (const subOrder of subOrders) {
+      const voucherDiscount = applicationDiscount ? Math.round((subOrder.subTotal / orderFinalAmount) * applicationDiscount) : 0;
+      subOrder.voucherDiscount = voucherDiscount;
+      subOrder.subTotal = subOrder.subTotal - voucherDiscount;
+      subOrder.totalDiscount = subOrder.totalDiscount + voucherDiscount;
+      order.subTotal = order.subTotal + subOrder.subTotal;
+      order.voucherDiscount = order.voucherDiscount + subOrder.voucherDiscount;
+      order.totalDiscount = order.totalDiscount + subOrder.voucherDiscount;
     }
     order.totalBill = orderTotalBill;
     order.totalFee = orderTotalFee;
@@ -234,6 +234,7 @@ class OrderDecorator {
     } else {
       applicationDiscount = subtotal * (applicationCondition.discountValue / 100);
     };
+    if (applicationDiscount > subtotal) { applicationDiscount = subtotal; }
     return applicationDiscount;
   }
 
