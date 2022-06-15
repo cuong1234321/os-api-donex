@@ -113,6 +113,10 @@ const swaggerDefinition = {
       description: 'Quản lý phân quyền',
     },
     {
+      name: '[ADMIN] REPORTS',
+      description: 'Quản lý bao cao',
+    },
+    {
       name: '[ADMIN] SELLER LEVELS',
       description: 'Quản lý cấp CTV/DL/NPP',
     },

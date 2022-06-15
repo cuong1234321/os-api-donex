@@ -28,6 +28,7 @@ import PickShiftRouter from './PickShifts';
 import PrintPartnerOrderRouter from './printPartnerOrders';
 import RankRouter from './Ranks';
 import RoleRouter from './Roles';
+import ReportRouter from './Reports';
 import SessionsRouter from './Sessions';
 import SelectionRouter from './Selections';
 import SaleCampaignRouter from './SaleCampaigns';
@@ -78,6 +79,7 @@ router.use('/pick_shifts', adminPassport.authenticate('jwt', { session: false })
 router.use('/print_partner_orders', adminPassport.authenticate('jwt', { session: false }), PrintPartnerOrderRouter);
 router.use('/ranks', adminPassport.authenticate('jwt', { session: false }), RankRouter);
 router.use('/roles', adminPassport.authenticate('jwt', { session: false }), RoleRouter);
+router.use('/report', adminPassport.authenticate('jwt', { session: false }), ReportRouter);
 router.use('/sessions', SessionsRouter);
 router.use('/sale_campaigns', adminPassport.authenticate('jwt', { session: false }), SaleCampaignRouter);
 router.use('/system_setting', adminPassport.authenticate('jwt', { session: false }), SystemSettingRouter);

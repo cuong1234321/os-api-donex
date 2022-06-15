@@ -1,5 +1,6 @@
 import ProductVariantEntity from '@entities/productVariants';
 import ProductVariantInterface from '@interfaces/productVariants';
+import dayjs from 'dayjs';
 import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import CartItemModel from './cartItems';
@@ -257,6 +258,29 @@ class ProductVariantModel extends Model<ProductVariantInterface> implements Prod
                ' (SELECT optionId FROM product_variant_options WHERE product_variant_options.variantId = 99))'),
               'optionSizeId',
             ],
+          ],
+        },
+      };
+    },
+    byFreeWord (freeWord) {
+      return {
+        where: { name: { [Op.substring]: freeWord } },
+      };
+    },
+    bySorting (sortBy, sortOrder) {
+      return {
+        order: [[Sequelize.literal(sortBy), sortOrder]],
+      };
+    },
+    withTotalSale (fromDate, toDate) {
+      let conditions = '';
+      if (fromDate && toDate) {
+        conditions = ` AND createdAt > "${dayjs(fromDate).format()}" AND createdAt < "${dayjs(toDate).format()}"`;
+      }
+      return {
+        attributes: {
+          include: [
+            [Sequelize.cast(Sequelize.literal(`(SELECT sum(quantity) FROM order_items WHERE productVariantId = ProductVariantModel.id ${conditions})`), 'SIGNED'), 'totalSale'],
           ],
         },
       };

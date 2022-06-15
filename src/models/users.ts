@@ -252,6 +252,27 @@ class UserModel extends Model<UserInterface> implements UserInterface {
         },
       };
     },
+    withTotalSubOrder (fromDate, toDate) {
+      let conditions = '';
+      if (fromDate && toDate) {
+        conditions = ` AND createdAt > "${dayjs(fromDate).format()}" AND createdAt < "${dayjs(toDate).format()}"`;
+      }
+      return {
+        attributes: {
+          include: [
+            [Sequelize.cast(Sequelize.literal('(SELECT COUNT(*) FROM sub_orders WHERE orderId IN ' +
+            `(SELECT id FROM orders WHERE ownerId = UserModel.id) ${conditions})`), 'SIGNED'), 'totalSubOrder'],
+            [Sequelize.cast(Sequelize.literal('(SELECT SUM(subTotal) FROM sub_orders WHERE orderId IN ' +
+            `(SELECT id FROM orders WHERE ownerId = UserModel.id) ${conditions})`), 'SIGNED'), 'totalMoney'],
+          ],
+        },
+      };
+    },
+    bySorting (sortBy, sortOrder) {
+      return {
+        order: [[Sequelize.literal(sortBy), sortOrder]],
+      };
+    },
   }
 
   public async validPassword (password: string) {
