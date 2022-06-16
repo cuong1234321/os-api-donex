@@ -351,7 +351,7 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
         attributes: {
           include: [
             [
-              Sequelize.cast(Sequelize.literal('(SELECT SUM(order_items.saleCampaignDiscount * order_items.quantity) + SUM(sub_orders.coinDiscount + sub_orders.voucherDiscount + sub_orders.rankDiscount) FROM order_items ' +
+              Sequelize.cast(Sequelize.literal('(SELECT SUM(order_items.saleCampaignDiscount * order_items.quantity) + SUM(sub_orders.coinDiscount + sub_orders.voucherDiscount + sub_orders.rankDiscount + sub_orders.totalOtherDiscount) FROM order_items ' +
               'INNER JOIN sub_orders ON sub_orders.id = order_items.subOrderId AND sub_orders.status = "delivered" AND sub_orders.deletedAt IS NUll AND ' +
               `sub_orders.createdAt BETWEEN "${from}" AND "${to}" ` +
               'WHERE order_items.deletedAt IS NULL AND sub_orders.orderId IN (SELECT orders.id FROM orders WHERE orders.orderableType <> "user" AND orders.deletedAt IS NULL AND orders.orderableId = `CollaboratorModel`.id))'), 'SIGNED'),
@@ -400,7 +400,7 @@ class CollaboratorModel extends Model<CollaboratorInterface> implements Collabor
       return {
         where: {
           [Op.and]: [
-            Sequelize.where(Sequelize.cast(Sequelize.literal('(SELECT SUM(order_items.saleCampaignDiscount * order_items.quantity) + SUM(sub_orders.coinDiscount + sub_orders.voucherDiscount + sub_orders.rankDiscount) FROM order_items ' +
+            Sequelize.where(Sequelize.cast(Sequelize.literal('(SELECT SUM(order_items.saleCampaignDiscount * order_items.quantity) + SUM(sub_orders.coinDiscount + sub_orders.voucherDiscount + sub_orders.rankDiscount + sub_orders.totalOtherDiscount) FROM order_items ' +
             'INNER JOIN sub_orders ON sub_orders.id = order_items.subOrderId AND sub_orders.status = "delivered" AND sub_orders.deletedAt IS NUll AND ' +
             `sub_orders.createdAt BETWEEN "${fromDate}" AND "${toDate}" ` +
             'WHERE order_items.deletedAt IS NULL AND sub_orders.orderId IN (SELECT orders.id FROM orders WHERE orders.orderableType <> "user" AND orders.deletedAt IS NULL AND orders.orderableId = `CollaboratorModel`.id))'), 'SIGNED'),

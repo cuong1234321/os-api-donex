@@ -262,7 +262,7 @@ class AdminModel extends Model<AdminInterface> implements AdminInterface {
         attributes: {
           include: [
             [
-              Sequelize.cast(Sequelize.literal('(SELECT SUM(order_items.saleCampaignDiscount * order_items.quantity) + SUM(sub_orders.coinDiscount + sub_orders.voucherDiscount + sub_orders.rankDiscount) FROM order_items ' +
+              Sequelize.cast(Sequelize.literal('(SELECT SUM(order_items.saleCampaignDiscount * order_items.quantity) + SUM(sub_orders.coinDiscount + sub_orders.voucherDiscount + sub_orders.rankDiscount + sub_orders.totalOtherDiscount) FROM order_items ' +
               'INNER JOIN sub_orders ON sub_orders.id = order_items.subOrderId AND sub_orders.status = "delivered" AND sub_orders.deletedAt IS NUll ' +
               `${conditions} WHERE order_items.deletedAt IS NULL AND ` +
               'sub_orders.orderId IN (SELECT id FROM orders WHERE orders.creatableType = "admin" AND creatableId = AdminModel.id))'), 'SIGNED'),
@@ -308,7 +308,7 @@ class AdminModel extends Model<AdminInterface> implements AdminInterface {
       return {
         where: {
           [Op.and]: [
-            Sequelize.where(Sequelize.cast(Sequelize.literal('(SELECT SUM(order_items.saleCampaignDiscount * order_items.quantity) + SUM(sub_orders.coinDiscount + sub_orders.voucherDiscount + sub_orders.rankDiscount) FROM order_items ' +
+            Sequelize.where(Sequelize.cast(Sequelize.literal('(SELECT SUM(order_items.saleCampaignDiscount * order_items.quantity) + SUM(sub_orders.coinDiscount + sub_orders.voucherDiscount + sub_orders.rankDiscount + sub_orders.totalOtherDiscount) FROM order_items ' +
             'INNER JOIN sub_orders ON sub_orders.id = order_items.subOrderId AND sub_orders.status = "delivered" AND sub_orders.deletedAt IS NUll ' +
             `${conditions} WHERE order_items.deletedAt IS NULL AND ` +
             'sub_orders.orderId IN (SELECT id FROM orders WHERE orders.creatableType = "admin" AND creatableId = AdminModel.id))'), 'SIGNED'),
