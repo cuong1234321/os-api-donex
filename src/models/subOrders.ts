@@ -7,6 +7,7 @@ import dayjs from 'dayjs';
 import { BelongsToGetAssociationMixin, HasManyGetAssociationsMixin, Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, Transaction, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import sequelize from '@initializers/sequelize';
+import MailerService from '@services/mailer';
 import AdminModel from './admins';
 import CoinWalletChangeModel from './coinWalletChanges';
 import OrderItemModel from './orderItems';
@@ -129,6 +130,7 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
     const totalSubOrder = await SubOrderModel.scope([{ method: ['byDate', dayjs().startOf('day').format('YYYY/MM/DD'), dayjs().endOf('day').format('YYYY/MM/DD')] }]).count({ paranoid: false });
     const code = `${SubOrderModel.SALE_CHANNEL_KEY[order.saleChannel]}${dayjs().format('YYMMDD')}${String(totalSubOrder + subOrderIds.indexOf(record.id) + 2).padStart(4, '0')}`;
     await record.update({ code }, { transaction: options.transaction, validate: false, hooks: false });
+    await record.alertAdminWarehouse();
   },
   async afterDestroy (record) {
     record.deleteSubOrderDetails();
@@ -378,6 +380,15 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
     if (SubOrderModel.CANCEL_CASE.includes(this.previous('status')) && this.status === SubOrderModel.STATUS_ENUM.CANCEL) {
       await Order.cancelOrder(this);
       await SubOrderModel.createWarehouseImport(this);
+    }
+  }
+
+  private async alertAdminWarehouse () {
+    if (!this.warehouseId) { return; }
+    const warehouse = await WarehouseModel.findByPk(this.warehouseId);
+    const admins = await warehouse.getAdmins();
+    for (const admin of admins) {
+      await MailerService.subOrderCreate(admin, this);
     }
   }
 

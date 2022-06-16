@@ -2,7 +2,7 @@ import settings from '@configs/settings';
 import WarehouseEntity from '@entities/warehouses';
 import WarehouseInterface from '@interfaces/warehouses';
 import WarehouseVariantInterface from '@interfaces/warehouseVariants';
-import { HasManyGetAssociationsMixin, Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, ValidationErrorItem } from 'sequelize';
+import { BelongsToManyGetAssociationsMixin, HasManyGetAssociationsMixin, Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import AdminModel from './admins';
 import MDistrictModel from './mDistricts';
@@ -311,6 +311,7 @@ class WarehouseModel extends Model<WarehouseInterface> implements WarehouseInter
   }
 
   public getWarehouseVariants: HasManyGetAssociationsMixin<WarehouseVariantModel>
+  public getAdmins: BelongsToManyGetAssociationsMixin<AdminModel>
 
   public async checkDelete () {
     const warehouseVariants = await this.getWarehouseVariants();

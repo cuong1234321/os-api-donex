@@ -166,6 +166,20 @@ class MailerService {
     await this.sendMail(mailerOptions, 'adminImporterReport', templateArgs);
   }
 
+  public static async subOrderCreate (admin: any, subOrder: any) {
+    const mailerOptions: Mail.Options = {
+      from: 'Admin',
+      to: admin.email,
+      subject: '[DONEX-SPORT] Thông báo có đơn hàng mới',
+    };
+    const templateArgs = {
+      url: `https://donex-cms.flextech.asia/orders/${subOrder.id}/view`,
+      name: admin?.fullName,
+    };
+    const templateName = 'alertOrder';
+    await this.sendMail(mailerOptions, templateName, templateArgs);
+  }
+
   private static async sendMailChangePassword (name: string, password: string, mailerOptions: Mail.Options, host: string) {
     const templateArgs = {
       url: host,
