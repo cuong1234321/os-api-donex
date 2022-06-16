@@ -8,6 +8,8 @@ import { Sequelize } from 'sequelize';
 import MailerService from '@services/mailer';
 import RankModel from '@models/ranks';
 import SlugGeneration from '@libs/slugGeneration';
+import dayjs from 'dayjs';
+import XlsxService from '@services/xlsx';
 
 class UserController {
   public async index (req: Request, res: Response) {
@@ -129,6 +131,31 @@ class UserController {
       await user.update({ password });
       MailerService.changePasswordUser(user, password);
       sendSuccess(res, user);
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async download (req: Request, res: Response) {
+    try {
+      const time = dayjs().format('DDMMYYhhmmss');
+      const fileName = `Bao-cao-nguoi-dung-${time}.xlsx`;
+      const sortBy = req.query.sortBy || 'createdAt';
+      const sortOrder = req.query.sortOrder || 'DESC';
+      const { freeWord, gender, status } = req.query;
+      const scopes: any = [
+        { method: ['bySorting', sortBy, sortOrder] },
+      ];
+      if (freeWord) { scopes.push({ method: ['byFreeWord', freeWord] }); }
+      if (gender) { scopes.push({ method: ['byGender', gender] }); }
+      if (status) { scopes.push({ method: ['byStatus', status] }); }
+      const users = await UserModel.scope(scopes).findAll();
+      const buffer: any = await XlsxService.downloadUsers(users);
+      res.writeHead(200, [
+        ['Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+        ['Content-Disposition', 'attachment; filename=' + `${fileName}`],
+      ]);
+      res.end(Buffer.from(buffer, 'base64'));
     } catch (error) {
       sendError(res, 500, error.message, error);
     }
