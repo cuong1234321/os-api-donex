@@ -1,6 +1,7 @@
 import OrdersController from '@controllers/api/admin/OrdersController';
 import { Request, Response, Router } from 'express';
 import Authorization from '@middlewares/authorization';
+import { withoutSavingUploader } from '@middlewares/uploaders';
 
 const router = Router();
 
@@ -322,6 +323,34 @@ router.get('/:orderId', Authorization.permit(OrdersController.constructor.name, 
  *      - Bearer: []
  */
 router.post('/', Authorization.permit(OrdersController.constructor.name, 'create'), (req: Request, res: Response) => OrdersController.create(req, res));
+
+/**
+ * @openapi
+ * /a/orders/upload:
+ *   post:
+ *     tags:
+ *      - "[ADMIN] ORDERS"
+ *     summary: upload admin
+ *     consumes:
+ *      - "multipart/form-data"
+ *     produces:
+ *      - "application/json"
+ *     parameters:
+ *      - in: "formData"
+ *        name: "file"
+ *        description: "File upload"
+ *        required: true
+ *        allowMultiple: false
+ *        type: "file"
+ *     responses:
+ *       200:
+ *         description: Return data.
+ *       500:
+ *         description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.post('/upload', withoutSavingUploader.single('file'), OrdersController.uploadOrder);
 
 /**
  * @openapi

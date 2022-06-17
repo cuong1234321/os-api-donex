@@ -1,7 +1,7 @@
 import settings from '@configs/settings';
 import ApplySaleCampaignVariantDecorator from '@decorators/applySaleCampaignVariants';
 import sequelize from '@initializers/sequelize';
-import { NoData, orderProcessing, voucherIsCannotApply } from '@libs/errors';
+import { invalidParameter, MissingImportFile, NoData, orderProcessing, voucherIsCannotApply } from '@libs/errors';
 import { sendError, sendSuccess } from '@libs/response';
 import BillTemplateModel from '@models/billTemplates';
 import CollaboratorModel from '@models/collaborators';
@@ -21,6 +21,7 @@ import SlugGeneration from '@libs/slugGeneration';
 import VoucherConditionModel from '@models/voucherConditions';
 import VoucherModel from '@models/vouchers';
 import _ from 'lodash';
+import OrderImporterService from '@services/orderImporter';
 
 class OrderController {
   public async show (req: Request, res: Response) {
@@ -237,6 +238,21 @@ class OrderController {
       let params = req.body;
       params = await this.applyRankDiscount(params, params.totalQuantity, params.totalPrice);
       sendSuccess(res, { order: params });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async uploadOrder (req: Request, res: Response) {
+    try {
+      const file = req.file;
+      if (file.originalname.split('.').reverse()[0] !== 'xlsx') {
+        sendError(res, 400, MissingImportFile);
+      }
+      const adminImporter = new OrderImporterService(file);
+      const subOrder = await adminImporter.executeImport();
+      if (subOrder === false) { return sendError(res, 403, invalidParameter); }
+      sendSuccess(res, subOrder);
     } catch (error) {
       sendError(res, 500, error.message, error);
     }

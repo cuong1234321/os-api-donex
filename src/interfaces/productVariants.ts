@@ -20,6 +20,7 @@ interface ProductVariantInterface {
   colorTitle?: string;
   sizeTitle?: string;
   saleCampaignId?: number;
+  quantity?: number;
 };
 
 export default ProductVariantInterface;
