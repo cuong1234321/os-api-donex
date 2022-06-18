@@ -15,6 +15,7 @@ class ApplySaleCampaignVariantDecorator {
         totalPrice += item.sellingPrice * item.quantity;
         totalQuantity += item.quantity;
         item.saleCampaignDiscount = 0;
+        totalWeight += item.quantity * ((JSON.parse(JSON.stringify(variant))).product.weight);
       });
     } else {
       const scopes: any = [

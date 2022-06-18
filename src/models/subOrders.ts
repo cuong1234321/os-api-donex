@@ -154,8 +154,22 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
       }
     }
   },
-  async afterSave (record: any) {
-    if (!this.isNewRecord) { await record.checkStatusSubOrder(); }
+  async afterSave (record: any, options) {
+    if (!this.isNewRecord) {
+      await record.checkStatusSubOrder();
+    }
+    if ((record.status === SubOrderModel.STATUS_ENUM.PENDING) ||
+      (record.previous('status') === SubOrderModel.STATUS_ENUM.DRAFT && ![SubOrderModel.STATUS_ENUM.REJECT, SubOrderModel.STATUS_ENUM.CANCEL].includes(record.status))
+    ) {
+      const order = await OrderModel.scope([
+        { method: ['byId', record.orderId] },
+      ]).findOne({ transaction: options.transaction });
+      await SubOrderModel.createWarehouseExport(record, order);
+    }
+    if (record.previous('status') === SubOrderModel.STATUS_ENUM.PENDING && [SubOrderModel.STATUS_ENUM.REJECT, SubOrderModel.STATUS_ENUM.CANCEL].includes(record.status)) {
+      const warehouseExport = await WarehouseExportModel.scope([{ method: ['byOrderId', record.id] }]).findOne();
+      await warehouseExport.update({ status: WarehouseExportModel.STATUS_ENUM.CANCEL });
+    }
   },
 }
 
@@ -241,7 +255,8 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
       paymentTypeId: subOrder.shippingFee ? 2 : 1,
       insuranceValue: subOrder.subTotal > settings.maxInsuranceValue ? settings.maxInsuranceValue : subOrder.subTotal,
       pick_shift: subOrder.shippingAttributeType,
-      serviceTypeId: subOrder.shippingType,
+      // serviceTypeId: subOrder.shippingType,
+      serviceTypeId: 2,
       returnPhone: warehouse.phoneNumber,
     };
     for (const orderItem of orderItems) {
@@ -254,16 +269,14 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
           length: orderItem.variant?.product.length || 10,
           width: orderItem.variant?.product.width || 10,
           height: orderItem.variant?.product.height || 10,
+          weight: orderItem.variant?.product.weight || 10,
         },
       );
     }
     return params;
   }
 
-  public static async createWarehouseExport (subOrder: any) {
-    const order = await OrderModel.scope([
-      { method: ['byId', subOrder.orderId] },
-    ]).findOne();
+  public static async createWarehouseExport (subOrder: any, order: any) {
     const warehouseExportParams = SubOrderModel.formatWarehouseExport(subOrder, await subOrder.getItems(), order);
     await sequelize.transaction(async (transaction: Transaction) => {
       await WarehouseExportModel.create(warehouseExportParams, {
@@ -367,15 +380,6 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
       if (this.subTotal > settings.minMoneyUpRank && this.subTotal < settings.maxMoneyUpRank) {
         await user.update({ rank: UserModel.RANK_ENUM.VIP });
       }
-    }
-    if ((this.isNewRecord && this.status === SubOrderModel.STATUS_ENUM.PENDING) ||
-    (this.previous('status') === SubOrderModel.STATUS_ENUM.DRAFT && ![SubOrderModel.STATUS_ENUM.REJECT, SubOrderModel.STATUS_ENUM.CANCEL].includes(this.status))
-    ) {
-      await SubOrderModel.createWarehouseExport(this);
-    }
-    if (this.previous('status') === SubOrderModel.STATUS_ENUM.PENDING && [SubOrderModel.STATUS_ENUM.REJECT, SubOrderModel.STATUS_ENUM.CANCEL].includes(this.status)) {
-      const warehouseExport = await WarehouseExportModel.scope([{ method: ['byOrderId', this.id] }]).findOne();
-      await warehouseExport.update({ status: WarehouseExportModel.STATUS_ENUM.CANCEL });
     }
     if (SubOrderModel.CANCEL_CASE.includes(this.previous('status')) && this.status === SubOrderModel.STATUS_ENUM.CANCEL) {
       await Order.cancelOrder(this);
