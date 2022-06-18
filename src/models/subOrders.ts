@@ -131,6 +131,12 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
     const code = `${SubOrderModel.SALE_CHANNEL_KEY[order.saleChannel]}${dayjs().format('YYMMDD')}${String(totalSubOrder + subOrderIds.indexOf(record.id) + 2).padStart(4, '0')}`;
     await record.update({ code }, { transaction: options.transaction, validate: false, hooks: false });
     await record.alertAdminWarehouse();
+    if (record.status === SubOrderModel.STATUS_ENUM.PENDING) {
+      const order = await OrderModel.scope([
+        { method: ['byId', record.orderId] },
+      ]).findOne({ transaction: options.transaction });
+      await SubOrderModel.createWarehouseExport(record, record.items, order);
+    }
   },
   async afterDestroy (record) {
     record.deleteSubOrderDetails();
@@ -158,13 +164,12 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
     if (!this.isNewRecord) {
       await record.checkStatusSubOrder();
     }
-    if ((record.status === SubOrderModel.STATUS_ENUM.PENDING) ||
-      (record.previous('status') === SubOrderModel.STATUS_ENUM.DRAFT && ![SubOrderModel.STATUS_ENUM.REJECT, SubOrderModel.STATUS_ENUM.CANCEL].includes(record.status))
+    if ((record.previous('status') === SubOrderModel.STATUS_ENUM.DRAFT && ![SubOrderModel.STATUS_ENUM.REJECT, SubOrderModel.STATUS_ENUM.CANCEL].includes(record.status))
     ) {
       const order = await OrderModel.scope([
         { method: ['byId', record.orderId] },
-      ]).findOne({ transaction: options.transaction });
-      await SubOrderModel.createWarehouseExport(record, order);
+      ]).findOne();
+      await SubOrderModel.createWarehouseExport(record, await record.getItems(), order);
     }
     if (record.previous('status') === SubOrderModel.STATUS_ENUM.PENDING && [SubOrderModel.STATUS_ENUM.REJECT, SubOrderModel.STATUS_ENUM.CANCEL].includes(record.status)) {
       const warehouseExport = await WarehouseExportModel.scope([{ method: ['byOrderId', record.id] }]).findOne();
@@ -276,8 +281,8 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
     return params;
   }
 
-  public static async createWarehouseExport (subOrder: any, order: any) {
-    const warehouseExportParams = SubOrderModel.formatWarehouseExport(subOrder, await subOrder.getItems(), order);
+  public static async createWarehouseExport (subOrder: any, orderItems: any, order: any) {
+    const warehouseExportParams = SubOrderModel.formatWarehouseExport(subOrder, orderItems, order);
     await sequelize.transaction(async (transaction: Transaction) => {
       await WarehouseExportModel.create(warehouseExportParams, {
         include: [
