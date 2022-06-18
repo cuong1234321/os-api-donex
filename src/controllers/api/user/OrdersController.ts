@@ -77,7 +77,7 @@ class OrderController {
     try {
       const order = await OrderModel.scope([
         { method: ['byStatus', OrderModel.STATUS_ENUM.PENDING] },
-        { method: ['byOrderAble', req.currentUser.id, 'USER'] },
+        // { method: ['byOrderAble', req.currentUser.id, 'USER'] },
         { method: ['byPayment', OrderModel.PAYMENT_METHOD.VNPAY] },
         { method: ['byId', req.params.orderId] },
         'isNotPaid',

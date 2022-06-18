@@ -271,9 +271,9 @@ class OrderController {
       'withOrders',
       'withFinalAmount',
       'withWarehouseExportId',
-      { method: ['byWarehouse', adminWarehouses.map((record: any) => record.warehouseId)] },
       { method: ['bySortOrder', sortBy, sortOrder] },
     ];
+    if (currentAdmin.roleId !== 0) scopes.push({ method: ['byWarehouse', adminWarehouses.map((record: any) => record.warehouseId)] });
     if (code) scopes.push({ method: ['byCode', code] });
     if (paymentStatus) scopes.push({ method: ['byPaymentStatus', paymentStatus] });
     if (status) scopes.push({ method: ['byStatus', status] });
