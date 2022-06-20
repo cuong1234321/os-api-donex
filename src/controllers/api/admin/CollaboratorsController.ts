@@ -56,6 +56,7 @@ class CollaboratorController {
         await CollaboratorMediaModel.bulkCreate(collaboratorMedia, { transaction });
       });
       await collaborator.reloadCollaborator();
+      MailerService.createSeller(collaborator, collaboratorParams.password);
       sendSuccess(res, { collaborator });
     } catch (error) {
       sendError(res, 500, error.message, error);

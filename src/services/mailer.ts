@@ -110,6 +110,24 @@ class MailerService {
     await this.sendMail(mailerOptions, templateName, templateArgs);
   }
 
+  public static async createSeller (seller: any, passwordDefault: any) {
+    const mailerOptions: Mail.Options = {
+      from: 'Admin',
+      to: seller.email,
+      subject: '[DONEX-SPORT] Thông tin tài khoản CTV/DL/NPP',
+    };
+    const templateArgs = {
+      url: process.env.COLLABORATOR_HOST,
+      name: seller.fullName,
+      email: seller.email,
+      phoneNumber: seller.phoneNumber,
+      username: seller.username,
+      password: passwordDefault,
+    };
+    const templateName = 'sendAdminInfo';
+    await this.sendMail(mailerOptions, templateName, templateArgs);
+  }
+
   public static async changePasswordCollaborator (collaborator: any, password: string) {
     const mailerOptions: Mail.Options = {
       from: 'Admin',
