@@ -414,7 +414,7 @@ class OrderController {
     const condition = conditionRefs[0];
     order.voucherDiscount = 0;
     if (condition.discountType === VoucherConditionModel.DISCOUNT_TYPE_ENUM.CASH) {
-      const discount = condition.discountValue;
+      const discount = condition.discountValue > totalPrice ? totalPrice : condition.discountValue;
       order.voucherDiscount = discount;
       if (order.subOrders) {
         (order.subOrders).forEach((subOrder: any) => {

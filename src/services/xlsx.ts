@@ -703,6 +703,53 @@ class XlsxService {
     return await XlsxService.exportToExcel([{ sheetName: 'Báo cáo', sheetData: workSheet }]);
   }
 
+  public static async downloadWarehouseReports (warehouseReports: any) {
+    warehouseReports = JSON.parse(JSON.stringify(warehouseReports));
+    const title = [
+      [{ v: 'BÁO CÁO TỒN KHO', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '18' } } }],
+    ];
+    const rows = warehouseReports.map((record: any, index: any) => {
+      return [
+        { v: index + 1, s: { alignment: { horizontal: 'center' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: record?.warehouse?.name || '', s: { alignment: { horizontal: 'left' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: record?.variants?.skuCode || '', s: { alignment: { horizontal: 'left' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: record?.variants?.name || '', s: { alignment: { horizontal: 'left', wrapText: true }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: record?.variants?.unit || '', s: { alignment: { horizontal: 'left' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: record?.variants?.productCategoryName || '', s: { alignment: { horizontal: 'left' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: ((record?.totalQuantityImport || 0) + (record?.quantityTransferImport || 0) - (record?.totalQuantityExport || 0) - (record?.quantityTransferExport || 0) - (record?.quantityMovingTransfer || 0)).toLocaleString('de-DE'), s: { alignment: { horizontal: 'right' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: ((record?.totalQuantityImport || 0) + (record?.quantityTransferImport || 0)).toLocaleString('de-DE'), s: { alignment: { horizontal: 'right' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: ((record?.totalQuantityExport || 0) + (record?.quantityTransferExport || 0) + (record?.quantityMovingTransfer || 0)).toLocaleString('de-DE'), s: { alignment: { horizontal: 'right' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: ((record?.quantityMovingTransfer || 0)).toLocaleString('de-DE'), s: { alignment: { horizontal: 'right' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: ((record?.quantityComingTransfer || 0)).toLocaleString('de-DE'), s: { alignment: { horizontal: 'right' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      ];
+    });
+    const headers = [
+      { v: 'STT', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'Kho hàng', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'Mã SKU', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'Tên sản phẩm', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'Đơn vị', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'Danh mục', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'Số lượng tồn', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'Số lượng nhập', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'Số lượng xuất', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'Đang chuyển đi', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'Sắp nhận về', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+    ];
+    rows.unshift(headers);
+    const workSheet = XLSX.utils.aoa_to_sheet([[]]);
+    XLSX.utils.sheet_add_aoa(workSheet, title, { origin: 'A2' });
+    XLSX.utils.sheet_add_aoa(workSheet, rows, { origin: 'A5' });
+    const wsColsOpts = [{ wch: 5 }, { wch: 15 }, { wch: 15 }, { wch: 30 }, { wch: 10 }, { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 15 }];
+    const merges = [
+      { s: { r: 1, c: 0 }, e: { r: 1, c: 10 } },
+    ];
+    workSheet['!cols'] = wsColsOpts;
+    workSheet['!rows'] = [{}, { hpx: 30 }];
+    workSheet['!merges'] = merges;
+    return await XlsxService.exportToExcel([{ sheetName: 'Báo cáo', sheetData: workSheet }]);
+  }
+
   private static appendSingleSheet (data: any, wsColsOpts: XLSX.ColInfo[] = undefined) {
     const workSheetData = [
       ...data,
