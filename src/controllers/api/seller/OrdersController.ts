@@ -37,16 +37,19 @@ class OrderController {
         },
       }))[0];
       for (const subOrder of params.subOrders) {
-        const { items, totalPrice, totalQuantity } = await ApplySaleCampaignVariantDecorator.calculatorVariantPrice(subOrder.items, params.saleCampaignId);
+        const { items, totalPrice, totalQuantity, totalWeight } = await ApplySaleCampaignVariantDecorator.calculatorVariantPrice(subOrder.items, params.saleCampaignId);
         subOrder.items = items;
         subOrder.status = SubOrderModel.STATUS_ENUM.PENDING;
         subOrder.subTotal = totalPrice;
         subOrder.total = totalQuantity;
         subOrder.billId = billTemplate.id;
+        subOrder.weight = totalWeight;
         subTotal += totalPrice;
         total += totalQuantity;
         shippingFee += subOrder.shippingFee;
       }
+      params.orderableType = currentSeller.type;
+      params.orderableId = currentSeller.id;
       params = await this.applyRankDiscount(params, subTotal);
       if (params.appliedVoucherId) {
         const order = await this.applyVoucher(params, subTotal);
@@ -56,8 +59,6 @@ class OrderController {
       const result = await sequelize.transaction(async (transaction: Transaction) => {
         const order = await OrderModel.create({
           ...params,
-          orderableType: currentSeller.type,
-          orderableId: currentSeller.id,
           ownerId: currentSeller.id,
           total,
           subTotal,
