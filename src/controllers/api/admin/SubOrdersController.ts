@@ -1,12 +1,14 @@
 import { NoData } from '@libs/errors';
 import { sendError, sendSuccess } from '@libs/response';
 import BillTemplateModel from '@models/billTemplates';
+import OrderItemModel from '@models/orderItems';
 import OrderModel from '@models/orders';
 import SubOrderModel from '@models/subOrders';
 import SendNotification from '@services/notification';
 import { Request, Response } from 'express';
 import handlebars from 'handlebars';
 import _ from 'lodash';
+import { Sequelize } from 'sequelize';
 
 class SubOrderController {
   public async index (req: Request, res: Response) {
@@ -147,6 +149,22 @@ class SubOrderController {
       params.totalOtherDiscount = _.sumBy(params.otherDiscounts, (record: any) => record.value);
       await subOrder.update(params, { validator: false, hooks: false });
       sendSuccess(res, { subOrder });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async indexItems (req: Request, res: Response) {
+    try {
+      const { subOrderIds } = req.query;
+      const orderItems = await OrderItemModel.scope([
+        { method: ['bySubOrder', (subOrderIds as string).split(',')] },
+        'withTotalQuantity',
+        'withVariant',
+      ]).findAll({
+        group: Sequelize.col('OrderItemModel.productVariantId'),
+      });
+      sendSuccess(res, { orderItems });
     } catch (error) {
       sendError(res, 500, error.message, error);
     }

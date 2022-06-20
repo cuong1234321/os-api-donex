@@ -41,6 +41,30 @@ router.get('/', SubOrderController.index);
 
 /**
  * @openapi
+ * /a/sub_orders/item_variants:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] SUB ORDERS"
+ *     summary: danh sach chi tiet cac don hang con
+ *     parameters:
+ *      - in: query
+ *        name: "subOrderIds"
+ *        description: ""
+ *        type: "string"
+ *        default: ""
+ *        required: true
+ *     responses:
+ *       200:
+ *         description: "success"
+ *       500:
+ *         description: "failed"
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/item_variants', SubOrderController.indexItems);
+
+/**
+ * @openapi
  * /a/sub_orders/{subOrderId}:
  *   get:
  *     tags:
