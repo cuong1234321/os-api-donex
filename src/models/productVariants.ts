@@ -19,6 +19,7 @@ class ProductVariantModel extends Model<ProductVariantInterface> implements Prod
   public name: string;
   public slug: string;
   public skuCode: string;
+  public mainSku: string;
   public barCode: string;
   public buyPrice: number;
   public sellPrice: number;
@@ -30,6 +31,7 @@ class ProductVariantModel extends Model<ProductVariantInterface> implements Prod
   public deletedAt?: Date;
   public saleCampaignPrice?: number;
   public colorTitle?: string;
+  public supportingColorTitle?: string;
   public sizeTitle?: string;
   public product?: ProductModel;
 
@@ -153,6 +155,12 @@ class ProductVariantModel extends Model<ProductVariantInterface> implements Prod
               'INNER JOIN product_variant_options ON product_variant_options.optionId = product_options.id AND product_variant_options.deletedAt IS NULL ' +
               'WHERE product_variant_options.variantId = ProductVariantModel.id)'),
               'colorTitle',
+            ],
+            [
+              Sequelize.literal('(SELECT title FROM m_colors INNER JOIN product_options ON product_options.value = m_colors.id AND product_options.key = "supportingColor" AND product_options.deletedAt IS NULL ' +
+              'INNER JOIN product_variant_options ON product_variant_options.optionId = product_options.id AND product_variant_options.deletedAt IS NULL ' +
+              'WHERE product_variant_options.variantId = ProductVariantModel.id)'),
+              'supportingColorTitle',
             ],
             [
               Sequelize.literal('(SELECT code FROM m_sizes INNER JOIN product_options ON product_options.value = m_sizes.id AND product_options.key = "size" AND product_options.deletedAt IS NULL ' +

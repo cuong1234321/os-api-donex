@@ -9,7 +9,7 @@ const ProductOptionEntity = {
     type: DataTypes.INTEGER, allowNull: true,
   },
   key: {
-    type: DataTypes.ENUM({ values: ['size', 'color', 'form'] }),
+    type: DataTypes.ENUM({ values: ['size', 'color', 'form', 'supportingColor'] }),
     defaultValue: 'size',
   },
   value: {

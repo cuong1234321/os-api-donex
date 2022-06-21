@@ -243,6 +243,11 @@ router.get('/:productId', Authorization.permit(ProductController.constructor.nam
  *                  key:
  *                    type: "string"
  *                    description: "Tên thuộc tính"
+ *                    enum:
+ *                      - supportingColor
+ *                      - color
+ *                      - size
+ *                      - form
  *                  value:
  *                    type: "number"
  *                    description: "id thuộc tính"
@@ -569,6 +574,11 @@ router.delete('/:productId', Authorization.permit(ProductController.constructor.
  *                  key:
  *                    type: "string"
  *                    description: "Tên thuộc tính"
+ *                    enum:
+ *                      - supportingColor
+ *                      - color
+ *                      - size
+ *                      - form
  *                  value:
  *                    type: "number"
  *                    description: "id thuộc tính"

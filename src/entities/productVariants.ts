@@ -17,6 +17,9 @@ const ProductVariantEntity = {
   skuCode: {
     type: DataTypes.STRING(50), allowNull: true,
   },
+  mainSku: {
+    type: DataTypes.STRING(50), allowNull: true,
+  },
   barCode: {
     type: DataTypes.STRING(50), allowNull: true,
   },

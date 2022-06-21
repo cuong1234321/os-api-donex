@@ -496,6 +496,12 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
                 'colorTitle',
               ],
               [
+                Sequelize.literal('(SELECT title FROM m_colors INNER JOIN product_options ON product_options.value = m_colors.id AND product_options.key = "supportingColor" AND product_options.deletedAt IS NULL ' +
+                'INNER JOIN product_variant_options ON product_variant_options.optionId = product_options.id AND product_variant_options.deletedAt IS NULL ' +
+                'WHERE product_variant_options.variantId = variants.id)'),
+                'supportingColorTitle',
+              ],
+              [
                 Sequelize.literal('(SELECT code FROM m_sizes INNER JOIN product_options ON product_options.value = m_sizes.id AND product_options.key = "size" AND product_options.deletedAt IS NULL ' +
                 'INNER JOIN product_variant_options ON product_variant_options.optionId = product_options.id AND product_variant_options.deletedAt IS NULL ' +
                 'WHERE product_variant_options.variantId = variants.id)'),
@@ -589,6 +595,9 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
         if (option.key === ProductOptionModel.KEY_ENUM.COLOR) {
           option.setDataValue('valueName', colors.find((record: any) => record.id === option.value).colorCode);
         }
+        if (option.key === ProductOptionModel.KEY_ENUM.SUPPORTING_COLOR) {
+          option.setDataValue('valueName', colors.find((record: any) => record.id === option.value).colorCode);
+        }
         if (option.key === ProductOptionModel.KEY_ENUM.SIZE) {
           option.setDataValue('valueName', sizes.find((record: any) => record.id === option.value).code);
         }
@@ -645,15 +654,25 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
           });
         }
       });
-      const optionColor = optionRef.find((option: any) => option.key === ProductOptionModel.KEY_ENUM.COLOR);
+      const optionMainColor = optionRef.find((option: any) => option.key === ProductOptionModel.KEY_ENUM.COLOR);
+      const optionSupportingColor = optionRef.find((option: any) => option.key === ProductOptionModel.KEY_ENUM.SUPPORTING_COLOR);
       const optionSize = optionRef.find((option: any) => option.key === ProductOptionModel.KEY_ENUM.SIZE);
-      const color = optionColor ? colors.find((record: any) => record.id === optionColor.value) : null;
+      const mainColor = optionMainColor ? colors.find((record: any) => record.id === optionMainColor.value) : null;
+      const supportingColor = optionSupportingColor ? colors.find((record: any) => record.id === optionSupportingColor.value) : null;
       const size = optionSize ? sizes.find((record: any) => record.id === optionSize.value) : null;
       if (!variant.skuCode) {
         let skuCode = `${this.skuCode}`;
-        if (color) skuCode = skuCode + `-${color.code}`;
-        if (size) skuCode = skuCode + `-${size.code}`;
-        await variant.update({ skuCode: skuCode }, { transaction });
+        let mainSku = `${this.skuCode}`;
+        if (mainColor) {
+          skuCode = skuCode + `${mainColor.code}`;
+          mainSku = skuCode;
+        }
+        if (supportingColor) {
+          skuCode = skuCode + `${supportingColor.code}`;
+          mainSku = skuCode;
+        }
+        if (size) skuCode = skuCode + `${size.code}`;
+        await variant.update({ skuCode: skuCode, mainSku }, { transaction });
       }
     }
     const variationOptions = await ProductVariantOptionModel.bulkCreate(variantOptionAttributes, { transaction });
