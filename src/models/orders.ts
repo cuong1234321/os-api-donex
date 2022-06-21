@@ -449,6 +449,12 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
                     'colorTitle',
                   ],
                   [
+                    Sequelize.literal('(SELECT title FROM m_colors INNER JOIN product_options ON product_options.value = m_colors.id AND product_options.key = "supportingColor" AND product_options.deletedAt IS NULL ' +
+                    'INNER JOIN product_variant_options ON product_variant_options.optionId = product_options.id AND product_variant_options.deletedAt IS NULL ' +
+                    'WHERE product_variant_options.variantId = `items->variant`.id)'),
+                    'supportingColorTitle',
+                  ],
+                  [
                     Sequelize.literal('(SELECT code FROM m_sizes INNER JOIN product_options ON product_options.value = m_sizes.id AND product_options.key = "size" AND product_options.deletedAt IS NULL ' +
                     'INNER JOIN product_variant_options ON product_variant_options.optionId = product_options.id AND product_variant_options.deletedAt IS NULL ' +
                     'WHERE product_variant_options.variantId = `items->variant`.id)'),
@@ -498,6 +504,7 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
           skuCode: productVariant.skuCode,
           barCode: productVariant.barCode,
           colorTitle: productVariant.colorTitle,
+          supportingColorTitle: productVariant.supportingColorTitle,
           sizeTitle: productVariant.sizeTitle,
           product: {
             avatar: productVariant.product.getDataValue('thumbnail'),
@@ -547,6 +554,7 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
           skuCode: productVariant.skuCode,
           barCode: productVariant.barCode,
           colorTitle: productVariant.getDataValue('colorTitle'),
+          supportingColorTitle: productVariant.getDataValue('supportingColorTitle'),
           sizeTitle: productVariant.getDataValue('sizeTitle'),
           product: {
             avatar: productVariant.product.avatar,

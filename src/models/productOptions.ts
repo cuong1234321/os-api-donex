@@ -16,7 +16,7 @@ class ProductOptionModel extends Model<ProductOptionInterface> implements Produc
   public updatedAt?: Date;
   public deletedAt?: Date;
 
-  static readonly KEY_ENUM = { COLOR: 'color', SIZE: 'size', FORM: 'form' }
+  static readonly KEY_ENUM = { COLOR: 'color', SIZE: 'size', FORM: 'form', SUPPORTING_COLOR: 'supportingColor' }
 
   static readonly UPDATABLE_ON_DUPLICATE_PARAMETERS = ['id', 'name', 'optionMappingId'];
 
@@ -46,6 +46,7 @@ class ProductOptionModel extends Model<ProductOptionInterface> implements Produc
               Sequelize.literal('(SELECT' +
                 '(CASE product_options.key ' +
                 'WHEN "color" THEN (SELECT m_colors.colorCode from m_colors WHERE m_colors.id = product_options.value) ' +
+                'WHEN "supportingColor" THEN (SELECT m_colors.colorCode from m_colors WHERE m_colors.id = product_options.value) ' +
                 'WHEN "size" THEN (SELECT m_sizes.code from m_sizes WHERE m_sizes.id = product_options.value) ' +
                 'WHEN "form" THEN (SELECT m_forms.title from m_forms WHERE m_forms.id = product_options.value) ' +
                 'END) FROM product_options WHERE product_options.id = ProductOptionModel.id)'),
