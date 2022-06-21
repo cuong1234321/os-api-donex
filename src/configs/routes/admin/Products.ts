@@ -282,6 +282,12 @@ router.get('/:productId', Authorization.permit(ProductController.constructor.nam
  *                  source:
  *                    type: "string"
  *                    default: null
+ *                  type:
+ *                    type: "string"
+ *                    default: null
+ *                    enum:
+ *                    - image
+ *                    - video
  *     responses:
  *       200:
  *         description: Return data.

@@ -5,7 +5,7 @@ module.exports = {
     const salt = bcrypt.genSaltSync();
     const password = bcrypt.hashSync('admin001', salt);
     const admin = [{
-      id: 1,
+      id: undefined,
       fullName: 'Admin001',
       username: 'Admin001',
       phoneNumber: '0963866952',
