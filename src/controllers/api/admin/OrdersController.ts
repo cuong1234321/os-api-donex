@@ -69,6 +69,7 @@ class OrderController {
         subOrder.billId = billTemplate.id;
         subOrder.weight = totalWeight;
         subOrder.tax = settings.defaultTax * totalPrice / 100;
+        subOrder.adminConfirmId = currentAdmin.id;
         subTotal += totalPrice;
         total += totalQuantity;
         shippingFee += subOrder.shippingFee;

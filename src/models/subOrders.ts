@@ -156,7 +156,9 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
         const user = await UserModel.scope([
           { method: ['byId', order.ownerId] },
         ]).findOne();
-        user.update({ lastOrderFinishedAt: dayjs() });
+        if (user) {
+          user.update({ lastOrderFinishedAt: dayjs() });
+        }
       }
     }
   },
@@ -506,24 +508,17 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
     },
     byCreateAdminName (name) {
       return {
-        include: [{
-          model: OrderModel,
-          as: 'order',
-          required: true,
-          where: {
-            creatableType: OrderModel.CREATABLE_TYPE.ADMIN,
-          },
-          include: [
-            {
-              model: AdminModel,
-              as: 'creatableAdmin',
-              where: {
-                fullName: { [Op.like]: `%${name || ''}%` },
-              },
-              attributes: ['fullName'],
+        include: [
+          {
+            model: AdminModel,
+            as: 'admin',
+            required: true,
+            where: {
+              fullName: { [Op.like]: `%${name || ''}%` },
             },
-          ],
-        }],
+            attributes: [],
+          },
+        ],
       };
     },
     byShippingName (name) {
@@ -723,7 +718,7 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
           attributes: {
             include: [
               [
-                Sequelize.literal('(SELECT fullName FROM admins WHERE admins.id = order.creatableId)'),
+                Sequelize.literal('(SELECT fullName FROM admins WHERE admins.id = SubOrderModel.adminConfirmId)'),
                 'createAbleName',
               ],
               [Sequelize.literal('(SELECT title FROM m_districts WHERE id = order.shippingDistrictId)'), 'districtName'],
@@ -940,6 +935,7 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
     this.belongsTo(OrderModel, { as: 'order', foreignKey: 'orderId' });
     this.belongsTo(WarehouseModel, { as: 'warehouse', foreignKey: 'warehouseId' });
     this.hasMany(SubOrderShippingModel, { as: 'shippings', foreignKey: 'subOrderId' });
+    this.belongsTo(AdminModel, { as: 'admin', foreignKey: 'adminConfirmId' });
   }
 }
 
