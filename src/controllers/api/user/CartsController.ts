@@ -16,7 +16,6 @@ import SystemSettingModel from '@models/systemSetting';
 import UserModel from '@models/users';
 import RankModel from '@models/ranks';
 import ProductVariantModel from '@models/productVariants';
-import OrderModel from '@models/orders';
 
 class CartController {
   public async showCart (req: Request, res: Response) {
@@ -315,7 +314,7 @@ class CartController {
   private async applyRankDiscount (user: any, totalQuantity: number, totalPrice: number) {
     let rankDiscountValue = 0;
     let rank: any;
-    if (!user) { return rankDiscountValue; }
+    if (!user) { return { rankDiscountValue }; }
     if (user.rank === UserModel.RANK_ENUM.VIP) {
       rank = await RankModel.scope([
         { method: ['byType', UserModel.RANK_ENUM.VIP] },
@@ -334,25 +333,17 @@ class CartController {
       ]).findOne();
     }
     if (!rank) {
-      return rankDiscountValue;
+      return { rankDiscountValue };
     }
-    const valueDiscount = rank.conditions[0].discountValue;
+    const valueDiscount = rank ? rank.conditions[0].discountValue : 0;
     rankDiscountValue = totalPrice * (valueDiscount / 100);
+    if (rankDiscountValue > totalPrice) { rankDiscountValue = totalPrice; }
     return { rankDiscountValue, valueDiscount };
   }
 
   private async formatCartItem (warehouses: any, cartTotalBill: any, cartTotalFee: any, cartTotalTax: any, warehouseQuantity: any, cartItemQuantity: any, cart: any, currentUser: any, systemSetting: any, params: any) {
     const voucher = await this.validateVoucher(params, currentUser);
-    let isFreeShipping = false;
-    cart.setDataValue('isFreeShipping', isFreeShipping);
-    const { rankDiscountValue, valueDiscount }: any = await this.applyRankDiscount(currentUser, warehouseQuantity, (cartTotalBill + cartTotalTax));
-    if (((cartTotalBill + cartTotalTax) > settings.normalShippingDiscount || (valueDiscount < 20 && (cartTotalBill + cartTotalTax) > settings.rankShippingDiscount)) && params.paymentMethod !== OrderModel.PAYMENT_METHOD.COD) {
-      isFreeShipping = true;
-      cartTotalFee = 0;
-      cart.setDataValue('isFreeShipping', isFreeShipping);
-    }
     let cartSubTotal = cartTotalBill + cartTotalFee + cartTotalTax;
-    const applicationDiscount = await this.calculatorOrderDiscount(voucher, cartSubTotal);
     let coinDiscount = params.coins ? (systemSetting.coinConversionLevel * params.coins) : 0;
     if (cartSubTotal < coinDiscount) {
       coinDiscount = cartSubTotal;
@@ -371,11 +362,6 @@ class CartController {
         warehouse.setDataValue('totalFee', 0);
         warehouse.setDataValue('finalAmount', 0);
       } else {
-        if (isFreeShipping) {
-          warehouse.setDataValue('finalAmount', warehouse.getDataValue('finalAmount') - warehouse.getDataValue('totalFee'));
-          warehouse.setDataValue('freeDiscount', warehouse.getDataValue('totalFee'));
-          warehouse.setDataValue('totalFee', 0);
-        }
         const warehouseCoinDiscount = Math.round((warehouse.getDataValue('finalAmount') / cartSubTotal) * coinDiscount);
         warehouse.setDataValue('finalAmount', warehouse.getDataValue('finalAmount') - warehouseCoinDiscount);
         warehouse.setDataValue('coinDiscount', warehouseCoinDiscount);
@@ -386,17 +372,7 @@ class CartController {
     }
     cartSubTotal = cart.getDataValue('finalAmount');
     cart.setDataValue('finalAmount', 0);
-    for (const warehouse of warehouses) {
-      const voucherDiscount = applicationDiscount ? Math.round((warehouse.getDataValue('finalAmount') / cartSubTotal) * applicationDiscount) : 0;
-      warehouse.setDataValue('voucherDiscount', voucherDiscount);
-      warehouse.setDataValue('finalAmount', warehouse.getDataValue('finalAmount') - voucherDiscount);
-      warehouse.setDataValue('totalDiscount', warehouse.getDataValue('totalDiscount') + voucherDiscount);
-      cart.setDataValue('finalAmount', cart.getDataValue('finalAmount') + warehouse.getDataValue('finalAmount'));
-      cart.setDataValue('voucherDiscount', cart.getDataValue('voucherDiscount') + warehouse.getDataValue('voucherDiscount'));
-      cart.setDataValue('totalDiscount', cart.getDataValue('totalDiscount') + warehouse.getDataValue('voucherDiscount'));
-    }
-    cartSubTotal = cart.getDataValue('finalAmount');
-    cart.setDataValue('finalAmount', 0);
+    const { rankDiscountValue }: any = await this.applyRankDiscount(currentUser, warehouseQuantity, (cartTotalBill + cartTotalTax));
     for (const warehouse of warehouses) {
       const rankDiscount = rankDiscountValue ? Math.round((warehouse.getDataValue('finalAmount') / cartSubTotal) * rankDiscountValue) : 0;
       warehouse.setDataValue('rankDiscount', rankDiscount);
@@ -405,6 +381,18 @@ class CartController {
       cart.setDataValue('finalAmount', cart.getDataValue('finalAmount') + warehouse.getDataValue('finalAmount'));
       cart.setDataValue('rankDiscount', cart.getDataValue('rankDiscount') + warehouse.getDataValue('rankDiscount'));
       cart.setDataValue('totalDiscount', cart.getDataValue('totalDiscount') + warehouse.getDataValue('rankDiscount'));
+    }
+    cartSubTotal = cart.getDataValue('finalAmount');
+    cart.setDataValue('finalAmount', 0);
+    const applicationDiscount = await this.calculatorOrderDiscount(voucher, cartSubTotal);
+    for (const warehouse of warehouses) {
+      const voucherDiscount = applicationDiscount ? Math.round((warehouse.getDataValue('finalAmount') / cartSubTotal) * applicationDiscount) : 0;
+      warehouse.setDataValue('voucherDiscount', voucherDiscount);
+      warehouse.setDataValue('finalAmount', warehouse.getDataValue('finalAmount') - voucherDiscount);
+      warehouse.setDataValue('totalDiscount', warehouse.getDataValue('totalDiscount') + voucherDiscount);
+      cart.setDataValue('finalAmount', cart.getDataValue('finalAmount') + warehouse.getDataValue('finalAmount'));
+      cart.setDataValue('voucherDiscount', cart.getDataValue('voucherDiscount') + warehouse.getDataValue('voucherDiscount'));
+      cart.setDataValue('totalDiscount', cart.getDataValue('totalDiscount') + warehouse.getDataValue('voucherDiscount'));
     }
     cart.setDataValue('warehouses', warehouses);
     cart.setDataValue('totalBill', cartTotalBill);

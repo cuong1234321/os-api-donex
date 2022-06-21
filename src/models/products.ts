@@ -61,7 +61,7 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
     { categoryRefs: ['productCategoryId'] },
     { options: ['key', 'value', 'thumbnail', 'optionMappingId'] },
     { variants: ['name', 'buyPrice', 'sellPrice', 'stock', 'skuCode', { optionMappingIds: new Array(0) }] },
-    { medias: ['isThumbnail', 'source'] },
+    { medias: ['isThumbnail', 'source', 'type'] },
   ];
 
   static readonly UPDATABLE_PARAMETERS = [
