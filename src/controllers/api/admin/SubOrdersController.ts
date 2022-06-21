@@ -56,7 +56,7 @@ class SubOrderController {
       if (!subOrder) { return sendError(res, 404, NoData); }
       const order = await subOrder.getOrder();
       const previousStatus = subOrder.status;
-      if ([SubOrderModel.STATUS_ENUM.PENDING, SubOrderModel.STATUS_ENUM.DRAFT].includes(previousStatus) && params.status === SubOrderModel.STATUS_ENUM.WAITING_TO_TRANSFER) {
+      if ([SubOrderModel.STATUS_ENUM.PENDING].includes(previousStatus) && params.status === SubOrderModel.STATUS_ENUM.WAITING_TO_TRANSFER) {
         params.adminConfirmId = currentAdmin.id;
       }
       SendNotification.changStatusOrder(params.status, order.orderableType, subOrder.code, order.orderableId);

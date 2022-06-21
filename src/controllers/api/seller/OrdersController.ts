@@ -50,6 +50,8 @@ class OrderController {
       }
       params.orderableType = currentSeller.type;
       params.orderableId = currentSeller.id;
+      params.creatableType = currentSeller.type;
+      params.creatableId = currentSeller.id;
       params = await this.applyRankDiscount(params, subTotal);
       if (params.appliedVoucherId) {
         const order = await this.applyVoucher(params, subTotal);
