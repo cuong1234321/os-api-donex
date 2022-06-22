@@ -1,7 +1,10 @@
 import ProductOptionEntity from '@entities/productOptions';
 import ProductOptionInterface from '@interfaces/productOptions';
-import { Model, ModelScopeOptions, Sequelize } from 'sequelize';
+import { Model, ModelScopeOptions, ModelValidateOptions, Sequelize, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
+import MColorModel from './mColors';
+import MFormModel from './mForms';
+import MSizeModel from './mSizes';
 import ProductVariantOptionModel from './productVariantOptions';
 import ProductVariantModel from './productVariants';
 
@@ -21,6 +24,23 @@ class ProductOptionModel extends Model<ProductOptionInterface> implements Produc
   static readonly UPDATABLE_ON_DUPLICATE_PARAMETERS = ['id', 'name', 'optionMappingId'];
 
   static readonly hooks: Partial<ModelHooks<ProductOptionModel>> = { }
+
+  static readonly validations: ModelValidateOptions = {
+    async validateKeyValue () {
+      if (this.key === ProductOptionModel.KEY_ENUM.COLOR || this.key === ProductOptionModel.KEY_ENUM.SUPPORTING_COLOR) {
+        const color = await MColorModel.findByPk(this.value);
+        if (!color) throw new ValidationErrorItem('Mã màu không hợp lệ', 'validateKeyValue', 'value', this.value);
+      }
+      if (this.key === ProductOptionModel.KEY_ENUM.SIZE) {
+        const size = await MSizeModel.findByPk(this.value);
+        if (!size) throw new ValidationErrorItem('Mã kích cỡ không hợp lệ', 'validateKeyValue', 'value', this.value);
+      }
+      if (this.key === ProductOptionModel.KEY_ENUM.FORM) {
+        const form = await MFormModel.findByPk(this.value);
+        if (!form) throw new ValidationErrorItem('Mã form không hợp lệ', 'validateKeyValue', 'value', this.value);
+      }
+    },
+  }
 
   static readonly scopes: ModelScopeOptions = {
     byId (id) {
@@ -62,6 +82,7 @@ class ProductOptionModel extends Model<ProductOptionInterface> implements Produc
     this.init(ProductOptionEntity, {
       hooks: ProductOptionModel.hooks,
       scopes: ProductOptionModel.scopes,
+      validate: ProductOptionModel.validations,
       tableName: 'product_options',
       sequelize,
       paranoid: true,

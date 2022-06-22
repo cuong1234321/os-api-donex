@@ -95,6 +95,22 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
         }
       }
     },
+    async validateGender () {
+      if (this.gender) {
+        const gender = await ProductCategoryModel.scope([{ method: ['byType', ProductCategoryModel.TYPE_ENUM.GENDER] }]).findByPk(this.gender);
+        if (!gender) {
+          throw new ValidationErrorItem('Mã giới tính không hợp lệ.', 'validateGender', 'gender', this.gender);
+        }
+      }
+    },
+    async validateTypeProductId () {
+      if (this.typeProductId) {
+        const productType = await ProductCategoryModel.scope([{ method: ['byType', ProductCategoryModel.TYPE_ENUM.PRODUCT_TYPE] }]).findByPk(this.typeProductId);
+        if (!productType) {
+          throw new ValidationErrorItem('Loại sản phẩm không hợp lệ.', 'validateTypeProductId', 'typeProductId', this.typeProductId);
+        }
+      }
+    },
   }
 
   static readonly scopes: ModelScopeOptions = {
@@ -593,13 +609,13 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
     for (const variant of variants) {
       variant.getDataValue('options').forEach((option: any) => {
         if (option.key === ProductOptionModel.KEY_ENUM.COLOR) {
-          option.setDataValue('valueName', colors.find((record: any) => record.id === option.value).colorCode);
+          option.setDataValue('valueName', colors.find((record: any) => record.id === option.value)?.colorCode || null);
         }
         if (option.key === ProductOptionModel.KEY_ENUM.SUPPORTING_COLOR) {
-          option.setDataValue('valueName', colors.find((record: any) => record.id === option.value).colorCode);
+          option.setDataValue('valueName', colors.find((record: any) => record.id === option.value)?.colorCode || null);
         }
         if (option.key === ProductOptionModel.KEY_ENUM.SIZE) {
-          option.setDataValue('valueName', sizes.find((record: any) => record.id === option.value).code);
+          option.setDataValue('valueName', sizes.find((record: any) => record.id === option.value)?.code || null);
         }
       });
     }
