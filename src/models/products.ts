@@ -59,7 +59,7 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
     'name', 'description', 'shortDescription', 'status', 'gender', 'typeProductId', 'sizeGuide', 'isHighlight',
     'isNew', 'weight', 'length', 'width', 'height', 'unit', 'minStock', 'maxStock', 'sizeType',
     { categoryRefs: ['productCategoryId'] },
-    { options: ['key', 'value', 'thumbnail', 'optionMappingId'] },
+    { options: ['key', 'value', { thumbnail: ['source', 'type'] }, 'optionMappingId'] },
     { variants: ['name', 'buyPrice', 'sellPrice', 'stock', 'skuCode', { optionMappingIds: new Array(0) }] },
     { medias: ['isThumbnail', 'source', 'type'] },
   ];
@@ -68,7 +68,7 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
     'name', 'description', 'shortDescription', 'status', 'gender', 'typeProductId', 'sizeGuide', 'isHighlight',
     'isNew', 'weight', 'length', 'width', 'height', 'unit', 'minStock', 'maxStock', 'isHighlight', 'isNew', 'inFlashSale', 'sizeType',
     { categoryRefs: ['productCategoryId'] },
-    { options: ['id', 'key', 'value', 'optionMappingId'] },
+    { options: ['id', 'key', 'value', 'optionMappingId', { thumbnail: ['source', 'type'] }] },
     { variants: ['id', 'name', 'buyPrice', 'sellPrice', 'stock', 'skuCode', { optionMappingIds: new Array(0) }] },
     { medias: ['id', 'isThumbnail'] },
   ];
@@ -88,7 +88,7 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
 
   static readonly validations: ModelValidateOptions = {
     async uniqueSku () {
-      if (this.skuCode) {
+      if (this.skuCode && !this.deletedAt) {
         const existedRecord = await ProductModel.scope([{ method: ['bySkuCode', this.skuCode] }]).findOne();
         if (existedRecord && existedRecord.id !== this.id) {
           throw new ValidationErrorItem('Mã Sku chung đã được sử dụng.', 'uniqueSku', 'skuCode', this.skuCode);
@@ -96,7 +96,7 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
       }
     },
     async validateGender () {
-      if (this.gender) {
+      if (this.gender && !this.deletedAt) {
         const gender = await ProductCategoryModel.scope([{ method: ['byType', ProductCategoryModel.TYPE_ENUM.GENDER] }]).findByPk(this.gender);
         if (!gender) {
           throw new ValidationErrorItem('Mã giới tính không hợp lệ.', 'validateGender', 'gender', this.gender);
@@ -104,7 +104,7 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
       }
     },
     async validateTypeProductId () {
-      if (this.typeProductId) {
+      if (this.typeProductId && !this.deletedAt) {
         const productType = await ProductCategoryModel.scope([{ method: ['byType', ProductCategoryModel.TYPE_ENUM.PRODUCT_TYPE] }]).findByPk(this.typeProductId);
         if (!productType) {
           throw new ValidationErrorItem('Loại sản phẩm không hợp lệ.', 'validateTypeProductId', 'typeProductId', this.typeProductId);

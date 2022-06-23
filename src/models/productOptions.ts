@@ -13,7 +13,7 @@ class ProductOptionModel extends Model<ProductOptionInterface> implements Produc
   public productId: number;
   public key: string;
   public value: number;
-  public thumbnail: string;
+  public thumbnail: string[];
   public optionMappingId?: number;
   public createdAt?: Date;
   public updatedAt?: Date;

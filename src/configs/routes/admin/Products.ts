@@ -255,8 +255,14 @@ router.get('/:productId', Authorization.permit(ProductController.constructor.nam
  *                    type: "number"
  *                    description: "Mã phân loại con tự sinh"
  *                  thumbnail:
- *                    type: "string"
- *                    default: null
+ *                    type: "array"
+ *                    items:
+ *                      type: "object"
+ *                      properties:
+ *                        source:
+ *                          type: string
+ *                        type:
+ *                          type: string
  *            variants:
  *              type: "array"
  *              items:
@@ -585,6 +591,15 @@ router.delete('/:productId', Authorization.permit(ProductController.constructor.
  *                  optionMappingId:
  *                    type: "number"
  *                    description: "Mã phân loại con tự sinh"
+ *                  thumbnail:
+ *                    type: "array"
+ *                    items:
+ *                      type: "object"
+ *                      properties:
+ *                        source:
+ *                          type: string
+ *                        type:
+ *                          type: string
  *            variants:
  *              type: "array"
  *              items:

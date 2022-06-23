@@ -136,7 +136,7 @@ const SubOrderEntity = {
   otherDiscounts: {
     type: DataTypes.TEXT,
     defaultValue: '[]',
-    get (): (number)[] {
+    get (): (string)[] {
       return this.getDataValue('otherDiscounts') ? JSON.parse(this.getDataValue('otherDiscounts')) : null;
     },
     set (value: (string)[]) {
