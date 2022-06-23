@@ -94,5 +94,27 @@ class SendNotification {
     });
     await UserNotificationModel.bulkCreate(userNotifications);
   }
+
+  public static async successOrderUser (user: any, userType: any) {
+    const userNotification: any = {
+      userId: user.id,
+      userType,
+      type: UserNotificationModel.TYPE_ENUM.ORDER,
+      title: 'Đặt hàng thành công',
+      content: 'Đơn hàng của bạn đã được đặt thành công.',
+    };
+    await UserNotificationModel.create(userNotification);
+  }
+
+  public static async newOrderAdmin (admin: any, userType: any) {
+    const userNotification: any = {
+      userId: admin.id,
+      userType,
+      type: UserNotificationModel.TYPE_ENUM.ORDER,
+      title: 'Thông báo đơn hàng mới',
+      content: 'Hệ thống donex thông báo có đơn hàng mới về kho của bạn.',
+    };
+    await UserNotificationModel.create(userNotification);
+  }
 }
 export default SendNotification;

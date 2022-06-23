@@ -20,7 +20,7 @@ const ProductOptionEntity = {
     defaultValue: '[]',
     get (): (string)[] {
       const thumbnails = this.getDataValue('thumbnail') ? JSON.parse(this.getDataValue('thumbnail')) : [];
-      if (!thumbnails || thumbnails.length === 0) return;
+      if (!thumbnails || thumbnails.length === 0) return [];
       return thumbnails.map((record: any) => {
         return {
           source: record.type === 'image' ? `${settings.imageStorageHost}/${record.source}` : `${settings.videoStorageHost}/${record.source}`,

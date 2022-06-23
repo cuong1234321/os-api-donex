@@ -11,6 +11,8 @@ import { Request, Response } from 'express';
 import { Transaction } from 'sequelize/types';
 import CartModel from '@models/carts';
 import CartItemModel from '@models/cartItems';
+import SendNotification from '@services/notification';
+import UserNotificationsModel from '@models/userNotifications';
 
 class OrderController {
   public async create (req: Request, res: Response) {
@@ -66,6 +68,7 @@ class OrderController {
           productVariantIds.push(item.items.map((record: any) => record.productVariantId));
         }
         await CartItemModel.destroy({ where: { cartId: cart.id, warehouseId: warehouseIds, productVariantId: productVariantIds.flat(Infinity) } });
+        SendNotification.successOrderUser(currentUser, UserNotificationsModel.USER_TYPE_ENUM.USER);
       }
       sendSuccess(res, { order: result });
     } catch (error) {
