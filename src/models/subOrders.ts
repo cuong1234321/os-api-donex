@@ -8,6 +8,7 @@ import { BelongsToGetAssociationMixin, HasManyGetAssociationsMixin, Model, Model
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import sequelize from '@initializers/sequelize';
 import MailerService from '@services/mailer';
+import SendNotification from '@services/notification';
 import AdminModel from './admins';
 import CoinWalletChangeModel from './coinWalletChanges';
 import OrderItemModel from './orderItems';
@@ -20,6 +21,7 @@ import WarehouseExportVariantModel from './warehouseExportVariants';
 import WarehouseModel from './warehouses';
 import SubOrderShippingModel from './subOrderShippings';
 import WarehouseReceiptModel from './warehouseReceipts';
+import UserNotificationsModel from './userNotifications';
 
 class SubOrderModel extends Model<SubOrderInterface> implements SubOrderInterface {
 public id: number;
@@ -400,6 +402,9 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
     const admins = await warehouse.getAdmins();
     for (const admin of admins) {
       await MailerService.subOrderCreate(admin, this);
+      if (this.status === SubOrderModel.STATUS_ENUM.PENDING) {
+        SendNotification.newOrderAdmin(admin, UserNotificationsModel.USER_TYPE_ENUM.ADMIN);
+      }
     }
   }
 
