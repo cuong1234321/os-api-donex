@@ -118,6 +118,119 @@ router.get('/', (req: Request, res: Response) => OrderController.index(req, res)
 
 /**
  * @openapi
+ * /s/orders/affiliate:
+ *   get:
+ *     tags:
+ *      - "[SELLER] ORDERS"
+ *     summary: Danh sách order con affiliate
+ *     description: Danh sách order con affiliate
+ *     parameters:
+ *      - in: query
+ *        name: "page"
+ *        description: "page"
+ *        type: "number"
+ *      - in: query
+ *        name: "code"
+ *        description: "ma don"
+ *        type: "string"
+ *      - in: query
+ *        name: "paymentStatus"
+ *        description: "trang thai thanh toan"
+ *        type: "string"
+ *        enum:
+ *         - pending
+ *         - complete
+ *      - in: query
+ *        name: "status"
+ *        description: "trang thai van chuyen"
+ *        type: "string"
+ *      - in: query
+ *        name: "saleChannel"
+ *        description: "kenh ban hang"
+ *        type: "string"
+ *        enum:
+ *         - facebook
+ *         - lazada
+ *         - shopee
+ *         - tiki
+ *         - wholesale
+ *         - retail
+ *         - other
+ *      - in: query
+ *        name: "createAbleName"
+ *        description: "Nhan vien ban hang"
+ *        type: "string"
+ *      - in: query
+ *        name: "shippingName"
+ *        description: "Nguoi nhan"
+ *        type: "string"
+ *      - in: query
+ *        name: "subTotal"
+ *        description: "Tong thanh toan. operator[eq(=), gte(>=), lte(<=)]"
+ *        default: 'value,operator'
+ *        type: "string"
+ *      - in: query
+ *        name: "finalAmount"
+ *        description: "Còn phải thu. operator[eq(=), gte(>=), lte(<=)]"
+ *        default: 'value,operator'
+ *        type: "string"
+ *      - in: query
+ *        name: "pickUpAt"
+ *        description: "Ngay giao hang"
+ *        type: "YYYY/MM/DD"
+ *      - in: query
+ *        name: "phoneNumber"
+ *        description: "SDT nguoi nhan"
+ *        type: "string"
+ *      - in: query
+ *        name: "createdAt"
+ *        description: "Ngay tao don"
+ *        type: "YYYY/MM/DD"
+ *      - in: query
+ *        name: "shippingFee"
+ *        description: "Phi GH thu khach. operator[eq(=), gte(>=), lte(<=)]"
+ *        default: 'value,operator'
+ *        type: "string"
+ *      - in: query
+ *        name: "shippingType"
+ *        description: "Don vi van chuyen"
+ *        type: "string"
+ *      - in: query
+ *        name: "shippingCode"
+ *        description: "Ma van don"
+ *        type: "string"
+ *      - in: query
+ *        name: "orderPartnerCode"
+ *        description: "Ma don doi tac"
+ *        type: "string"
+ *      - in: query
+ *        name: "paymentMethod"
+ *        description: "Phuong thuc thanh toan"
+ *        type: "string"
+ *        enum:
+ *         - banking
+ *         - COD
+ *         - vnPay
+ *         - wallet
+ *      - in: query
+ *        name: "shippingFeeMisa"
+ *        description: "Phi giao hang. operator[eq(=), gte(>=), lte(<=)]"
+ *        default: 'value,operator'
+ *        type: "string"
+ *     responses:
+ *       200:
+ *         description: "success"
+ *       404:
+ *         description: Không tìm thấy dữ liệu
+ *       500:
+ *        description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/affiliate', (req: Request, res: Response) => OrderController.indexAffiliate(req, res));
+
+/**
+ * @openapi
  * /s/orders/{orderId}/sub_orders/{subOrderId}:
  *   get:
  *     tags:

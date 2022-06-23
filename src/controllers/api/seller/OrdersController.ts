@@ -91,10 +91,32 @@ class OrderController {
 
   public async index (req: Request, res: Response) {
     try {
+      const currentSeller = req.currentSeller;
       const page = parseInt(req.query.page as string || '1');
       const limit = parseInt(req.query.size as string || settings.defaultPerPage);
       const offset = (page - 1) * limit;
       const scopes = await this.listProductQueryBuilder(req);
+      scopes.push({ method: ['byOrderAble', currentSeller.id, currentSeller.type] });
+      const { rows, count } = await SubOrderModel.scope(scopes).findAndCountAll({
+        offset,
+        limit,
+        distinct: true,
+        col: 'SubOrderModel.id',
+      });
+      sendSuccess(res, { subOrders: rows, pagination: { total: count, page, perpage: limit } });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async indexAffiliate (req: Request, res: Response) {
+    try {
+      const currentSeller = req.currentSeller;
+      const page = parseInt(req.query.page as string || '1');
+      const limit = parseInt(req.query.size as string || settings.defaultPerPage);
+      const offset = (page - 1) * limit;
+      const scopes = await this.listProductQueryBuilder(req);
+      scopes.push({ method: ['byReferralCode', currentSeller.referralCode] });
       const { rows, count } = await SubOrderModel.scope(scopes).findAndCountAll({
         offset,
         limit,
@@ -162,14 +184,12 @@ class OrderController {
   private async listProductQueryBuilder (req: any) {
     const sortBy = req.query.sortBy || 'createdAt';
     const sortOrder = req.query.sortOrder || 'DESC';
-    const currentSeller = req.currentSeller;
     const {
       code, paymentStatus, createAbleName, status, saleChannel, shippingName,
       subTotal, finalAmount, pickUpAt, phoneNumber, createdAt, shippingFee, shippingType, shippingCode, orderPartnerCode, paymentMethod, shippingFeeMisa,
     } = req.query;
     const scopes: any = [
       'withOrders',
-      { method: ['byOrderAble', currentSeller.id, currentSeller.type] },
       { method: ['bySortOrder', sortBy, sortOrder] },
       'withFinalAmount',
     ];
