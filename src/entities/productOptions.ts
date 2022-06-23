@@ -17,12 +17,27 @@ const ProductOptionEntity = {
   },
   thumbnail: {
     type: DataTypes.TEXT,
-    allowNull: true,
-    get (): string {
-      const thumbnail = this.getDataValue('thumbnail') !== null
-        ? `${settings.imageStorageHost}/${this.getDataValue('thumbnail')}`
-        : null;
-      return thumbnail;
+    defaultValue: '[]',
+    get (): (string)[] {
+      const thumbnails = this.getDataValue('thumbnail') ? JSON.parse(this.getDataValue('thumbnail')) : [];
+      if (!thumbnails || thumbnails.length === 0) return;
+      return thumbnails.map((record: any) => {
+        return {
+          source: record.type === 'image' ? `${settings.imageStorageHost}/${record.source}` : `${settings.videoStorageHost}/${record.source}`,
+          type: record.type,
+        };
+      });
+    },
+    set (value: (any)[]) {
+      if (!value) { return this.setDataValue('thumbnail', []); };
+      value = value.map((record: any) => {
+        return {
+          source: record.type === 'image' ? record.source.replace(settings.imageStorageHost + '/', '') : record.source.replace(settings.videoStorageHost + '/', ''),
+          type: record.type,
+        };
+      });
+      const thumbnails = JSON.stringify(value);
+      this.setDataValue('thumbnail', thumbnails);
     },
   },
   optionMappingId: {

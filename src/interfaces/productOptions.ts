@@ -4,7 +4,7 @@ interface ProductOptionInterface {
   productId: number;
   key: string;
   value: number;
-  thumbnail: string;
+  thumbnail: string[];
   optionMappingId?: number;
   createdAt?: Date;
   updatedAt?: Date;

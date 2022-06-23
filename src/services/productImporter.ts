@@ -40,7 +40,7 @@ class ProductImporterService {
     SIZE_TYPE: 10,
     MAIN_COLOR: 11,
     SUPPORTING_COLOR: 12,
-    OPTION_IMAGE: 13,
+    OPTION_MEDIA: 13,
     SIZE: 14,
     SKU_VARIANT: 15,
     SKU_NAME: 16,
@@ -121,10 +121,10 @@ class ProductImporterService {
             categoryRefs: new Array(0),
             options: new Array(0),
             variants: new Array(0),
-            medias: await this.generateProductMedia(sheetData, processingRow),
+            medias: await this.generateProductMedia(sheetData, processingRow, 'product'),
           });
           if (sheetData[processingRow][ProductImporterService.COLUMN_INDEX.COLLECTION]) {
-            const collections: string[] = (sheetData[processingRow][ProductImporterService.COLUMN_INDEX.COLLECTION].trim().split(','));
+            const collections: string[] = ((sheetData[processingRow][ProductImporterService.COLUMN_INDEX.COLLECTION]).toString().split(','));
             if (collections.length > 0) {
               const categoryRefs = collections.map((record) => {
                 return {
@@ -155,7 +155,7 @@ class ProductImporterService {
             attributes[attributes.length - 1].options.push({
               key: ProductOptionModel.KEY_ENUM.COLOR,
               value: parseInt(sheetData[processingRow][ProductImporterService.COLUMN_INDEX.MAIN_COLOR]),
-              thumbnail: await this.uploadImage(sheetData[processingRow][ProductImporterService.COLUMN_INDEX.OPTION_IMAGE]),
+              thumbnail: await this.generateProductMedia(sheetData, processingRow, 'productOption'),
               optionMappingId: attributes[attributes.length - 1].options.length + 1,
             });
           }
@@ -168,7 +168,7 @@ class ProductImporterService {
             attributes[attributes.length - 1].options.push({
               key: ProductOptionModel.KEY_ENUM.SUPPORTING_COLOR,
               value: parseInt(sheetData[processingRow][ProductImporterService.COLUMN_INDEX.SUPPORTING_COLOR]),
-              thumbnail: null,
+              thumbnail: [],
               optionMappingId: attributes[attributes.length - 1].options.length + 1,
             });
           }
@@ -183,7 +183,7 @@ class ProductImporterService {
             attributes[attributes.length - 1].options.push({
               key: ProductOptionModel.KEY_ENUM.SIZE,
               value: size?.id || 100,
-              thumbnail: await this.uploadImage(sheetData[processingRow][ProductImporterService.COLUMN_INDEX.OPTION_IMAGE]),
+              thumbnail: [],
               optionMappingId: attributes[attributes.length - 1].options.length + 1,
             });
           }
@@ -216,10 +216,12 @@ class ProductImporterService {
     return attributes;
   }
 
-  private async generateProductMedia (sheetData: any, processingRow: number) {
+  private async generateProductMedia (sheetData: any, processingRow: number, mediaType: string) {
     let fileNames: string[] = [];
     const productMedias: any = [];
-    fileNames = [...fileNames, ...sheetData[processingRow][ProductImporterService.COLUMN_INDEX.MEDIA].split(',')];
+    fileNames = mediaType === 'product'
+      ? [...fileNames, ...sheetData[processingRow][ProductImporterService.COLUMN_INDEX.MEDIA].split(',')]
+      : [...fileNames, ...sheetData[processingRow][ProductImporterService.COLUMN_INDEX.OPTION_MEDIA].split(',')];
     fileNames = fileNames.map((name) => name.trim());
     for (const [index, name] of fileNames.entries()) {
       const file = this.entries.find((entry) => entry.entryName.split('/').reverse()[0] === name);
