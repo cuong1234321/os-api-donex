@@ -380,6 +380,9 @@ router.get('/:orderId/sub_orders/:subOrderId', (req: Request, res: Response) => 
  *                          description: "Số lượng"
  *                          default: "null"
  *                          require: true
+ *                        sellingPrice:
+ *                          type: "integer"
+ *                          description: "Giá"
  *     responses:
  *       200:
  *         description: "OK"

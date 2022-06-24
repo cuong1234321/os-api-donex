@@ -61,6 +61,30 @@ class ProductController {
     }
   }
 
+  public async listProducts (req: Request, res: Response) {
+    try {
+      const { currentSeller } = req;
+      const { warehouseId, productId, name, sku } = req.query;
+      const scopes: any = [
+        'withThumbnail',
+        'withVariantDetails',
+        'withPriceRange',
+      ];
+      if (productId) scopes.push({ method: ['byId', (productId as string).split(',')] });
+      if (warehouseId) scopes.push({ method: ['byWarehouseId', warehouseId] });
+      if (name) scopes.push({ method: ['byName', name] });
+      if (sku) scopes.push({ method: ['bySkuCode', sku] });
+      let products = await ProductModel.scope(scopes).findAll({
+        order: [['createdAt', 'DESC']],
+      });
+      const saleCampaigns = await this.getSaleCampaigns(currentSeller.type);
+      products = await SaleCampaignProductDecorator.calculatorVariantPrice(products, saleCampaigns);
+      sendSuccess(res, products);
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
   public async show (req: Request, res: Response) {
     try {
       const currentSeller = req.currentSeller;

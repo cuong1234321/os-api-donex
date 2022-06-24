@@ -86,6 +86,40 @@ router.get('/', (req: Request, res: Response) => ProductController.index(req, re
 
 /**
  * @openapi
+ * /s/products/list_products:
+ *   get:
+ *     tags:
+ *      - "[SELLER] PRODUCT"
+ *     summary: danh sach san pham to
+ *     parameters:
+ *      - in: query
+ *        name: "productId"
+ *        description: "Ma san pham ngan cach boi dau phay"
+ *        type: "string"
+ *      - in: query
+ *        name: "name"
+ *        description: "ten san pham"
+ *        type: "string"
+ *      - in: query
+ *        name: "warehouseId"
+ *        description: "Ma kho"
+ *        type: "number"
+ *      - in: query
+ *        name: "sku"
+ *        description: "Ma sku"
+ *        type: "number"
+ *     responses:
+ *       200:
+ *         description: "success"
+ *       500:
+ *         description: "failed"
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/list_products', (req: Request, res: Response) => ProductController.listProducts(req, res));
+
+/**
+ * @openapi
  * /s/products/{productId}:
  *   get:
  *     tags:

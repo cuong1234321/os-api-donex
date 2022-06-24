@@ -14,7 +14,7 @@ const OrderItemEntity = {
     type: DataTypes.INTEGER, allowNull: false,
   },
   sellingPrice: {
-    type: DataTypes.BIGINT, allowNull: true,
+    type: DataTypes.BIGINT, defaultValue: 0,
   },
   listedPrice: {
     type: DataTypes.BIGINT, allowNull: false,

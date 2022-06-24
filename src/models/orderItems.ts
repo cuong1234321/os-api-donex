@@ -1,7 +1,7 @@
 import OrderItemEntity from '@entities/orderItems';
 import OrderItemInterface from '@interfaces/orderItems';
 import dayjs from 'dayjs';
-import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize } from 'sequelize';
+import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import ProductModel from './products';
 import ProductVariantModel from './productVariants';
@@ -28,7 +28,13 @@ class OrderItemModel extends Model<OrderItemInterface> implements OrderItemInter
   static readonly hooks: Partial<ModelHooks<OrderItemModel>> = {
   }
 
-  static readonly validations: ModelValidateOptions = { }
+  static readonly validations: ModelValidateOptions = {
+    validateSellingprice () {
+      if (this.sellingPrice / this.listedPrice > 1 || this.sellingPrice / this.listedPrice < 0.65) {
+        throw new ValidationErrorItem('Giá bán không hợp lệ.', 'validateSellingprice', 'sellingPrice', this.sellingPrice);
+      }
+    },
+  }
 
   static readonly scopes: ModelScopeOptions = {
     withProductVariant () {
