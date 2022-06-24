@@ -25,13 +25,15 @@ class BannerModel extends Model<BannerInterface> implements BannerInterface {
 
   static readonly validations: ModelValidateOptions = {
     async limitBanner () {
-      const banners = await BannerModel.scope([
-        { method: ['byPosition', this.position] },
-        { method: ['byType', this.type] },
-        'active',
-      ]).findAll();
-      if (banners.length >= BannerModel.MAX_BANNERS_SHOW_ALLOWED[this.position as 'top' | 'right' | 'newProductSlide' | 'newProductBanner' |'flashSale' | 'highlight' | 'productList' | 'productDetail']) {
-        throw new ValidationErrorItem('Số lượng banner hiển thị đã đạt đến giới hạn tối đa.');
+      if (!this.previous('isHighLight') && this.isHighLight) {
+        const banners = await BannerModel.scope([
+          { method: ['byPosition', this.position] },
+          { method: ['byType', this.type] },
+          'active',
+        ]).findAll();
+        if (banners.length === BannerModel.MAX_BANNERS_SHOW_ALLOWED[this.position as 'top' | 'right' | 'newProductSlide' | 'newProductBanner' |'flashSale' | 'highlight' | 'productList' | 'productDetail']) {
+          throw new ValidationErrorItem('Số lượng banner hiển thị đã đạt đến giới hạn tối đa.');
+        }
       }
     },
 
