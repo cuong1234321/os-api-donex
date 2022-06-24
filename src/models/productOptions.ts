@@ -21,7 +21,7 @@ class ProductOptionModel extends Model<ProductOptionInterface> implements Produc
 
   static readonly KEY_ENUM = { COLOR: 'color', SIZE: 'size', FORM: 'form', SUPPORTING_COLOR: 'supportingColor' }
 
-  static readonly UPDATABLE_ON_DUPLICATE_PARAMETERS = ['id', 'name', 'optionMappingId'];
+  static readonly UPDATABLE_ON_DUPLICATE_PARAMETERS = ['id', 'name', 'optionMappingId', 'thumbnail'];
 
   static readonly hooks: Partial<ModelHooks<ProductOptionModel>> = { }
 
