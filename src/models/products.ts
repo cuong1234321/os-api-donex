@@ -518,6 +518,18 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
                 'supportingColorTitle',
               ],
               [
+                Sequelize.literal('(SELECT code FROM m_colors INNER JOIN product_options ON product_options.value = m_colors.id AND product_options.key = "color" AND product_options.deletedAt IS NULL ' +
+                'INNER JOIN product_variant_options ON product_variant_options.optionId = product_options.id AND product_variant_options.deletedAt IS NULL ' +
+                'WHERE product_variant_options.variantId = variants.id)'),
+                'colorCode',
+              ],
+              [
+                Sequelize.literal('(SELECT code FROM m_colors INNER JOIN product_options ON product_options.value = m_colors.id AND product_options.key = "supportingColor" AND product_options.deletedAt IS NULL ' +
+                'INNER JOIN product_variant_options ON product_variant_options.optionId = product_options.id AND product_variant_options.deletedAt IS NULL ' +
+                'WHERE product_variant_options.variantId = variants.id)'),
+                'supportingColorCode',
+              ],
+              [
                 Sequelize.literal('(SELECT code FROM m_sizes INNER JOIN product_options ON product_options.value = m_sizes.id AND product_options.key = "size" AND product_options.deletedAt IS NULL ' +
                 'INNER JOIN product_variant_options ON product_variant_options.optionId = product_options.id AND product_variant_options.deletedAt IS NULL ' +
                 'WHERE product_variant_options.variantId = variants.id)'),
@@ -637,7 +649,7 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
   public async generateSkuCode () {
     let code = '';
     const characters = '0123456789';
-    for (let i = 6; i > 0; --i) code += characters[Math.floor(Math.random() * characters.length)];
+    for (let i = 4; i > 0; --i) code += characters[Math.floor(Math.random() * characters.length)];
     const existCode = await ProductModel.scope([{ method: ['bySkuCode', code] }]).findOne();
     if (existCode) code = await this.generateSkuCode();
     return code;
