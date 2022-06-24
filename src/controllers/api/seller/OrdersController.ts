@@ -1,5 +1,4 @@
 import settings from '@configs/settings';
-import ApplySaleCampaignVariantDecorator from '@decorators/applySaleCampaignVariants';
 import sequelize from '@initializers/sequelize';
 import { NoData, voucherIsCannotApply } from '@libs/errors';
 import { sendError, sendSuccess } from '@libs/response';
@@ -8,6 +7,7 @@ import BillTemplateModel from '@models/billTemplates';
 import CollaboratorModel from '@models/collaborators';
 import OrderItemModel from '@models/orderItems';
 import OrderModel from '@models/orders';
+import ProductVariantModel from '@models/productVariants';
 import SellerLevelModel from '@models/sellerLevels';
 import SubOrderModel from '@models/subOrders';
 import VoucherConditionModel from '@models/voucherConditions';
@@ -36,8 +36,9 @@ class OrderController {
           status: BillTemplateModel.STATUS_ENUM.ACTIVE,
         },
       }))[0];
+      const variants = await ProductVariantModel.scope(['withProduct']).findAll();
       for (const subOrder of params.subOrders) {
-        const { items, totalPrice, totalQuantity, totalWeight } = await ApplySaleCampaignVariantDecorator.calculatorVariantPrice(subOrder.items, params.saleCampaignId);
+        const { items, totalPrice, totalQuantity, totalWeight } = await this.calculatorVariantPrice(subOrder.items, variants);
         subOrder.items = items;
         subOrder.status = SubOrderModel.STATUS_ENUM.PENDING;
         subOrder.subTotal = totalPrice;
@@ -87,6 +88,21 @@ class OrderController {
     } catch (error) {
       sendError(res, 500, error.message, error);
     }
+  }
+
+  private async calculatorVariantPrice (items: OrderItemModel[], variants: ProductVariantModel[]) {
+    let totalPrice = 0;
+    let totalQuantity = 0;
+    let totalWeight = 0;
+    items.forEach((item: any) => {
+      const variant = variants.find((record: any) => record.id === item.productVariantId);
+      item.listedPrice = variant.sellPrice;
+      totalPrice += item.sellingPrice * item.quantity;
+      totalQuantity += item.quantity;
+      item.saleCampaignDiscount = item.listedPrice - item.sellingPrice;
+      totalWeight += item.quantity * ((JSON.parse(JSON.stringify(variant))).product.weight);
+    });
+    return { items, totalPrice, totalQuantity, totalWeight };
   }
 
   public async index (req: Request, res: Response) {
