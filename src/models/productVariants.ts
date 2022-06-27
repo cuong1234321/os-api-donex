@@ -199,6 +199,11 @@ class ProductVariantModel extends Model<ProductVariantInterface> implements Prod
         where: { skuCode },
       };
     },
+    byMainSku (mainSku) {
+      return {
+        where: { mainSku },
+      };
+    },
     byProductId (productId) {
       return {
         where: { productId },
@@ -289,6 +294,43 @@ class ProductVariantModel extends Model<ProductVariantInterface> implements Prod
         attributes: {
           include: [
             [Sequelize.cast(Sequelize.literal(`(SELECT sum(quantity) FROM order_items WHERE productVariantId = ProductVariantModel.id ${conditions})`), 'SIGNED'), 'totalSale'],
+          ],
+        },
+      };
+    },
+    withQuantity (warehouseId) {
+      return {
+        attributes: {
+          include: [
+            [
+              Sequelize.cast(Sequelize.literal(`(SELECT quantity FROM warehouse_variants WHERE warehouseId = ${warehouseId} AND variantId = ProductVariantModel.id)`), 'SIGNED'),
+              'quantity',
+            ],
+          ],
+        },
+      };
+    },
+    withQuantityByMainSku (warehouseId) {
+      return {
+        attributes: {
+          include: [
+            [
+              Sequelize.cast(Sequelize.literal(`(SELECT SUM(quantity) FROM warehouse_variants WHERE warehouseId = ${warehouseId} AND variantId IN ` +
+              '(SELECT id FROM product_variants WHERE product_variants.mainSku = ProductVariantModel.mainSku))'), 'SIGNED'),
+              'totalQuantity',
+            ],
+          ],
+        },
+      };
+    },
+    withProductName () {
+      return {
+        attributes: {
+          include: [
+            [
+              Sequelize.literal('(SELECT name FROM products WHERE products.id = ProductVariantModel.productId)'),
+              'productName',
+            ],
           ],
         },
       };
