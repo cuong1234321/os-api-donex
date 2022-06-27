@@ -22,6 +22,7 @@ import PopupRouter from './Popups';
 import ProductVariantRouter from './ProductVariants';
 import ProductCategoryRouter from './ProductCategories';
 import ProductRouter from './Products';
+import ProductVerifyCodeRouter from './ProductVerifyCodes';
 import PasswordRouter from './Passwords';
 import PermissionGroupRouter from './PermissionGroups';
 import PickShiftRouter from './PickShifts';
@@ -73,6 +74,7 @@ router.use('/popups', adminPassport.authenticate('jwt', { session: false }), Pop
 router.use('/variants', adminPassport.authenticate('jwt', { session: false }), ProductVariantRouter);
 router.use('/product_categories', adminPassport.authenticate('jwt', { session: false }), ProductCategoryRouter);
 router.use('/products', adminPassport.authenticate('jwt', { session: false }), ProductRouter);
+router.use('/product_verify_codes', adminPassport.authenticate('jwt', { session: false }), ProductVerifyCodeRouter);
 router.use('/passwords', PasswordRouter);
 router.use('/permission_groups', adminPassport.authenticate('jwt', { session: false }), PermissionGroupRouter);
 router.use('/pick_shifts', adminPassport.authenticate('jwt', { session: false }), PickShiftRouter);

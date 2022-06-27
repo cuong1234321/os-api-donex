@@ -89,6 +89,10 @@ const swaggerDefinition = {
       description: 'Quản lý sản phẩm con',
     },
     {
+      name: '[ADMIN] PRODUCT VERIFY CODE',
+      description: 'Quản lý mã xác minh sản phẩm',
+    },
+    {
       name: '[ADMIN] POPUPS',
       description: 'Quản lý popup',
     },
