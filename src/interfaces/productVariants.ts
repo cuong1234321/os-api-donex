@@ -23,6 +23,7 @@ interface ProductVariantInterface {
   sizeTitle?: string;
   saleCampaignId?: number;
   quantity?: number;
+  detailReport?: ProductVariantInterface[];
 };
 
 export default ProductVariantInterface;
