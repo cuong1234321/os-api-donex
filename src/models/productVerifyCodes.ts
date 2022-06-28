@@ -1,6 +1,6 @@
 import ProductVerifyCodesEntity from '@entities/productVerifyCodes';
 import ProductVerifyCodesInterface from '@interfaces/productVerifyCodes';
-import { Model, ModelScopeOptions, ModelValidateOptions, Sequelize, ValidationErrorItem } from 'sequelize';
+import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 
 class ProductVerifyCodeModel extends Model<ProductVerifyCodesInterface> implements ProductVerifyCodesInterface {
@@ -11,6 +11,8 @@ class ProductVerifyCodeModel extends Model<ProductVerifyCodesInterface> implemen
 
   public createdAt?: Date;
   public updatedAt?: Date;
+
+  static readonly STATUS_ENUM = { USED: 'used', NOT_USE: 'notUse' }
 
   static readonly hooks: Partial<ModelHooks<ProductVerifyCodeModel>> = { }
 
@@ -31,6 +33,35 @@ class ProductVerifyCodeModel extends Model<ProductVerifyCodesInterface> implemen
         where: {
           verifyCode,
         },
+      };
+    },
+    byFreeWord (freeWord) {
+      return {
+        where: {
+          [Op.or]: [
+            { skuCode: freeWord },
+            { verifyCode: freeWord },
+          ],
+        },
+      };
+    },
+    isUsed () {
+      return {
+        where: {
+          appliedAt: { [Op.ne]: null },
+        },
+      };
+    },
+    isNotUse () {
+      return {
+        where: {
+          appliedAt: null,
+        },
+      };
+    },
+    bySorting (sortBy, sortOrder) {
+      return {
+        order: [[sortBy, sortOrder]],
       };
     },
   }

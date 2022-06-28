@@ -9,6 +9,8 @@ import { NoData } from '@libs/errors';
 import SaleCampaignProductDecorator from '@decorators/saleCampaignProducts';
 import SaleCampaignModel from '@models/saleCampaigns';
 import CollaboratorModel from '@models/collaborators';
+import ProductVerifyCodeModel from '@models/productVerifyCodes';
+import dayjs from 'dayjs';
 class ProductController {
   public async index (req: Request, res: Response) {
     try {
@@ -95,8 +97,10 @@ class ProductController {
   public async verifyProduct (req: Request, res: Response) {
     try {
       const { sku } = req.query;
+      const productVerifyCode = await ProductVerifyCodeModel.scope({ method: ['byVerifyCode', sku] }).findOne();
+      if (!productVerifyCode) { return sendError(res, 404, NoData); }
       let product: any = await ProductModel.scope([
-        { method: ['verifyProduct', sku] },
+        { method: ['verifyProduct', productVerifyCode.skuCode] },
         'isActive',
         'withThumbnail',
         'withPrice',
@@ -105,6 +109,7 @@ class ProductController {
       if (!product) { return sendError(res, 404, NoData); }
       const saleCampaigns = await this.getSaleCampaigns('USER');
       product = (await SaleCampaignProductDecorator.calculatorVariantPrice([product], saleCampaigns))[0];
+      await productVerifyCode.update({ appliedAt: dayjs() });
       sendSuccess(res, product);
     } catch (error) {
       sendError(res, 500, error.message, error);
