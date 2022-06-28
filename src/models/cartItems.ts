@@ -86,6 +86,10 @@ class CartItemModel extends Model<CartItemInterface> implements CartItemInterfac
                    ' (SELECT optionId FROM product_variant_options WHERE product_variant_options.variantId = 99))'),
                   'optionSizeId',
                 ],
+                [
+                  Sequelize.literal('(SELECT source FROM product_media WHERE productId = variants.productId LIMIT 1)'),
+                  'productThumbnail',
+                ],
               ],
             },
           },

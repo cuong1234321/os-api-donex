@@ -49,6 +49,10 @@ const swaggerDefinition = {
       description: 'tinh gia van chuyen',
     },
     {
+      name: '[ADMIN] FORMS',
+      description: 'Quản lý form',
+    },
+    {
       name: '[ADMIN] HISTORY EARNED POINT',
       description: 'lịch sử điểm thưởng',
     },
