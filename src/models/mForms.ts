@@ -8,7 +8,16 @@ class MFormModel extends Model<MFormInterface> implements MFormInterface {
   public createdAt?: Date;
   public updatedAt?: Date;
 
-  static readonly scopes: ModelScopeOptions = {}
+  static readonly CREATABLE_PARAMETERS = ['title']
+  static readonly UPDATABLE_PARAMETERS = ['title']
+
+  static readonly scopes: ModelScopeOptions = {
+    bySortOrder (sortBy, sortOrder) {
+      return {
+        order: [[sortBy, sortOrder]],
+      };
+    },
+  }
 
   public static initialize (sequelize: Sequelize) {
     this.init(MFormEntity, {
