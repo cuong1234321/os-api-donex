@@ -16,19 +16,24 @@ class NewsModel extends Model<NewsInterface> implements NewsInterface {
   public status: string;
   public slug: string;
   public views: number;
+  public index: number;
   public deletedAt: Date;
   public createdAt?: Date;
   public updatedAt?: Date;
 
   public static readonly STATUS_ENUM = { DRAFT: 'draft', ACTIVE: 'active', INACTIVE: 'inactive' }
-  public static readonly CREATABLE_PARAMETERS = ['title', 'content', 'newsCategoryId']
-  public static readonly UPDATABLE_PARAMETERS = ['title', 'content', 'newsCategoryId']
+  public static readonly CREATABLE_PARAMETERS = ['title', 'content', 'newsCategoryId', 'index']
+  public static readonly UPDATABLE_PARAMETERS = ['title', 'content', 'newsCategoryId', 'index']
 
   static readonly hooks: Partial<ModelHooks<NewsModel>> = {
-    beforeSave (record: any) {
+    async beforeSave (record: any) {
       record.slug = SlugGeneration.execute(record.title);
       if (record.dataValues.status === NewsModel.STATUS_ENUM.ACTIVE && record._previousDataValues.status !== NewsModel.STATUS_ENUM.ACTIVE) {
         record.publicAt = dayjs();
+      }
+      if (record.isNewRecord && !record.index) {
+        const lastIndexRecord = await NewsModel.scope({ method: ['bySortOrder', 'index', 'DESC'] }).findOne();
+        record.index = lastIndexRecord.index + 1;
       }
     },
   }
@@ -75,7 +80,7 @@ class NewsModel extends Model<NewsInterface> implements NewsInterface {
     },
     bySortOrder (sortBy, sortOrder) {
       return {
-        order: [[Sequelize.literal(sortBy), sortOrder]],
+        order: [[sortBy, sortOrder]],
       };
     },
   }

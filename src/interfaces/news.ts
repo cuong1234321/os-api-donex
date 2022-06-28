@@ -8,6 +8,7 @@ interface NewsInterface {
   status: string;
   slug: string;
   views: number;
+  index: number;
   deletedAt: Date;
   createdAt?: Date;
   updatedAt?: Date;

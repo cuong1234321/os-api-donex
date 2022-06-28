@@ -1,3 +1,4 @@
+import settings from '@configs/settings';
 import { DataTypes } from 'sequelize';
 
 const NewsCategoriesEntity = {
@@ -14,6 +15,23 @@ const NewsCategoriesEntity = {
   },
   slug: {
     type: DataTypes.STRING(255), allowNull: true,
+  },
+  index: {
+    type: DataTypes.INTEGER, defaultValue: 0,
+  },
+  thumbnail: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+    get (): string {
+      const thumbnail = this.getDataValue('thumbnail') === null
+        ? null
+        : `${settings.imageStorageHost}/${this.getDataValue('thumbnail')}`;
+      return thumbnail;
+    },
+    set (value: string) {
+      value = value.replace(settings.imageStorageHost + '/', '');
+      return value;
+    },
   },
   deletedAt: {
     type: DataTypes.DATE,

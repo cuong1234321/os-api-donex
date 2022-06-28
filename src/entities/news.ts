@@ -47,6 +47,9 @@ const NewsEntity = {
   views: {
     type: DataTypes.INTEGER, defaultValue: 0,
   },
+  index: {
+    type: DataTypes.INTEGER, defaultValue: 0,
+  },
   deletedAt: {
     type: DataTypes.DATE,
   },

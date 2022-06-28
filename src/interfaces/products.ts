@@ -26,6 +26,7 @@ interface ProductInterface {
   skuCode: string,
   barCode: string,
   sizeType: string,
+  index: number;
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;

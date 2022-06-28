@@ -9,7 +9,7 @@ class NewsCategoryController {
       const { freeWord } = req.query;
       const newsCategories = await NewsCategoryModel.scope([
         { method: ['byFreeWord', freeWord] },
-        'newest',
+        { method: ['bySortOrder', 'index', 'DESC'] },
       ]).findAll();
       sendSuccess(res, newsCategories);
     } catch (error) {

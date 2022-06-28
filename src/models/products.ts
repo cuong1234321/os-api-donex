@@ -42,6 +42,7 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
   public skuCode: string;
   public barCode: string;
   public sizeType: string;
+  public index: number;
 
   public createdAt?: Date;
   public updatedAt?: Date;
@@ -57,7 +58,7 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
 
   static readonly CREATABLE_PARAMETERS = [
     'name', 'description', 'shortDescription', 'status', 'gender', 'typeProductId', 'sizeGuide', 'isHighlight',
-    'isNew', 'weight', 'length', 'width', 'height', 'unit', 'minStock', 'maxStock', 'sizeType',
+    'isNew', 'weight', 'length', 'width', 'height', 'unit', 'minStock', 'maxStock', 'sizeType', 'index',
     { categoryRefs: ['productCategoryId'] },
     { options: ['key', 'value', { thumbnail: ['source', 'type'] }, 'optionMappingId'] },
     { variants: ['name', 'buyPrice', 'sellPrice', 'stock', 'skuCode', { optionMappingIds: new Array(0) }] },
@@ -66,7 +67,7 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
 
   static readonly UPDATABLE_PARAMETERS = [
     'name', 'description', 'shortDescription', 'status', 'gender', 'typeProductId', 'sizeGuide', 'isHighlight',
-    'isNew', 'weight', 'length', 'width', 'height', 'unit', 'minStock', 'maxStock', 'isHighlight', 'isNew', 'inFlashSale', 'sizeType',
+    'isNew', 'weight', 'length', 'width', 'height', 'unit', 'minStock', 'maxStock', 'isHighlight', 'isNew', 'inFlashSale', 'sizeType', 'index',
     { categoryRefs: ['productCategoryId'] },
     { options: ['id', 'key', 'value', 'optionMappingId', { thumbnail: ['source', 'type'] }] },
     { variants: ['id', 'name', 'buyPrice', 'sellPrice', 'stock', 'skuCode', { optionMappingIds: new Array(0) }] },
@@ -79,6 +80,10 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
         record.skuCode = await record.generateSkuCode();
       }
       record.barCode = await record.generateBarCode();
+      if (!record.index) {
+        const lastIndexRecord = await ProductModel.findOne({ order: [['index', 'DESC']] });
+        record.index = lastIndexRecord.index + 1;
+      }
     },
     async afterDestroy (record) {
       await record.deleteProductDetail();
@@ -295,6 +300,7 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
       };
     },
     bySorting (orderConditions) {
+      orderConditions.push(['index', 'DESC']);
       return {
         attributes: {
           include: [
@@ -413,7 +419,7 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
       };
     },
     bySortOrder (orderConditions) {
-      orderConditions.push([Sequelize.literal('createdAt'), 'DESC']);
+      orderConditions.push(['index', 'DESC']);
       return {
         attributes: {
           include: [

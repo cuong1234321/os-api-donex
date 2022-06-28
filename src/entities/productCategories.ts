@@ -35,6 +35,9 @@ const ProductCategoryEntity = {
   misaId: {
     type: DataTypes.STRING(255), allowNull: true,
   },
+  index: {
+    type: DataTypes.INTEGER, defaultValue: 0,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },
