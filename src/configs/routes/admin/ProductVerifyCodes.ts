@@ -6,6 +6,46 @@ const router = Router();
 
 /**
  * @openapi
+ * /a/product_verify_codes/:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] PRODUCT VERIFY CODE"
+ *     summary: Danh sach ma xac minh
+ *     description: Danh sach ma xac minh
+ *     parameters:
+ *      - in: query
+ *        name: "page"
+ *        description: "page"
+ *        type: "number"
+ *      - in: query
+ *        name: "size"
+ *        description: "size"
+ *        type: "number"
+ *      - in: query
+ *        name: "freeWord"
+ *        description: "tim theo ma sku, ma xac minh"
+ *        type: "string"
+ *      - in: query
+ *        name: "status"
+ *        description: "trang thai"
+ *        type: "string"
+ *        enum:
+ *          - used
+ *          - notUse
+ *     responses:
+ *       200:
+ *         description: "Upload success"
+ *       404:
+ *         description: Không tìm thấy dữ liệu
+ *       500:
+ *        description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/', ProductVerifyCodeController.index);
+
+/**
+ * @openapi
  * /a/product_verify_codes/upload:
  *   post:
  *     tags:

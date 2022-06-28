@@ -62,7 +62,7 @@ router.use('/bank_accounts', adminPassport.authenticate('jwt', { session: false 
 router.use('/collaborators', adminPassport.authenticate('jwt', { session: false }), adminPassport.authenticate('jwt', { session: false }), CollaboratorsRouter);
 router.use('/dashboard', adminPassport.authenticate('jwt', { session: false }), DashboardRouter);
 router.use('/fees', FeeRouter);
-router.use('/forms', FormRouter);
+router.use('/forms', adminPassport.authenticate('jwt', { session: false }), FormRouter);
 router.use('/history_earned_points', adminPassport.authenticate('jwt', { session: false }), HistoryEarnedPointRouter);
 router.use('/incomes', adminPassport.authenticate('jwt', { session: false }), IncomeReportRouter);
 router.use('/notifications', adminPassport.authenticate('jwt', { session: false }), MarketingNotificationsRouter);
