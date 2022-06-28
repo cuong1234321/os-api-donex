@@ -68,6 +68,12 @@ router.get('/:newsCategoryId', Authorization.permit(NewsCategoryController.const
  *              type: "string"
  *              description: "Tên danh mục"
  *              default: "Name example"
+ *            index:
+ *              type: "number"
+ *              description: "thu tu uu tien"
+ *            thumbnail:
+ *              type: "string"
+ *              description: "src anh"
  *     responses:
  *       200:
  *         description: Return data.
@@ -104,6 +110,12 @@ router.post('/', Authorization.permit(NewsCategoryController.constructor.name, '
  *              type: "string"
  *              description: "Tên danh mục"
  *              default: "Name example"
+ *            index:
+ *              type: "number"
+ *              description: "thu tu uu tien"
+ *            thumbnail:
+ *              type: "string"
+ *              description: "thu tu uu tien"
  *     responses:
  *       200:
  *         description: Return data.

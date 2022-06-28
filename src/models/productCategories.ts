@@ -13,18 +13,25 @@ class ProductCategoryModel extends Model<ProductCategoryInterface> implements Pr
   public thumbnail: string;
   public type: string;
   public misaId?: string;
+  public index: number;
   public createdAt?: Date;
   public updatedAt?: Date;
   public deletedAt?: Date;
 
   static readonly TYPE_ENUM = { NONE: 'none', COLLECTION: 'collection', GENDER: 'gender', PRODUCT_TYPE: 'productType' };
 
-  static readonly CREATABLE_PARAMETERS = ['parentId', 'name', 'type'];
-  static readonly UPDATABLE_PARAMETERS = ['parentId', 'name', 'thumbnail'];
+  static readonly CREATABLE_PARAMETERS = ['parentId', 'name', 'type', 'index'];
+  static readonly UPDATABLE_PARAMETERS = ['parentId', 'name', 'thumbnail', 'index'];
 
   static readonly hooks: Partial<ModelHooks<ProductCategoryModel>> = {
     async afterDestroy (record) {
       await record.destroyCateChild();
+    },
+    async beforeCreate (record) {
+      if (!record.index) {
+        const lastIndexRecord = await ProductCategoryModel.scope({ method: ['bySortOrder', 'index', 'DESC'] }).findOne();
+        record.index = lastIndexRecord.index + 1;
+      }
     },
   }
 
@@ -61,10 +68,15 @@ class ProductCategoryModel extends Model<ProductCategoryInterface> implements Pr
         order: [['createdAt', 'DESC']],
       };
     },
+    bySortOrder (sortBy, sortOrder) {
+      return {
+        order: [[sortBy, sortOrder]],
+      };
+    },
   }
 
   public static async getHierarchy (type: any) {
-    const scopes: any = ['newest'];
+    const scopes: any = [{ method: ['bySortOrder', 'index', 'DESC'] }];
     if (type) scopes.push({ method: ['byType', type] });
     const productCategories = await ProductCategoryModel.scope(scopes).findAll();
     const parentNodes = productCategories.filter(productCategory => productCategory.parentId === null);

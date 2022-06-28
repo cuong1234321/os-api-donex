@@ -9,19 +9,26 @@ class NewsCategoryModel extends Model<NewsCategoriesInterface> implements NewsCa
   public id: number;
   public title: string;
   public slug: string;
+  public thumbnail: string;
+  public index: number;
   public deletedAt: Date;
   public createdAt?: Date;
   public updatedAt?: Date;
 
-  public static readonly CREATABLE_PARAMETERS = ['title']
-  public static readonly UPDATABLE_PARAMETERS = ['title']
+  public static readonly CREATABLE_PARAMETERS = ['title', 'index', 'thumbnail']
+  public static readonly UPDATABLE_PARAMETERS = ['title', 'index', 'thumbnail']
 
   static readonly hooks: Partial<ModelHooks<NewsCategoryModel>> = {
     async afterDestroy (record, options) {
       await NewsModel.destroy({ where: { newsCategoryId: record.id }, individualHooks: true, transaction: options.transaction });
     },
-    beforeSave (record: any) {
+    async beforeSave (record: any) {
       record.slug = SlugGeneration.execute(record.title);
+
+      if (record.isNewRecord && !record.index) {
+        const lastIndexRecord = await NewsCategoryModel.scope({ method: ['bySortOrder', 'index', 'DESC'] }).findOne();
+        record.index = lastIndexRecord.index + 1;
+      }
     },
   }
 
@@ -36,6 +43,11 @@ class NewsCategoryModel extends Model<NewsCategoriesInterface> implements NewsCa
     newest () {
       return {
         order: [['createdAt', 'DESC']],
+      };
+    },
+    bySortOrder (sortBy, sortOrder) {
+      return {
+        order: [[sortBy, sortOrder]],
       };
     },
   }

@@ -91,6 +91,9 @@ const ProductEntity = {
   barCode: {
     type: DataTypes.STRING(50), allowNull: true,
   },
+  index: {
+    type: DataTypes.INTEGER, defaultValue: 0,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },

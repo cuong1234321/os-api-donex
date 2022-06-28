@@ -13,6 +13,7 @@ class NewsController {
       const { categoryId, freeWord } = req.query;
       const scopes: any = [
         { method: ['byStatus', NewsModel.STATUS_ENUM.ACTIVE] },
+        { method: ['bySortOrder', 'index', 'DESC'] },
       ];
       if (categoryId) scopes.push({ method: ['byCategory', categoryId] });
       if (freeWord) scopes.push({ method: ['byFreeWord', freeWord] });

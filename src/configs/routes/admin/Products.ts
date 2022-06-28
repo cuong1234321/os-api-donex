@@ -227,6 +227,9 @@ router.get('/:productId', Authorization.permit(ProductController.constructor.nam
  *               - clothes
  *               - children
  *               - shoes
+ *            index:
+ *              type: "number"
+ *              description: "thu tu uu tien"
  *            categoryRefs:
  *              type: "array"
  *              items:
@@ -561,6 +564,9 @@ router.delete('/:productId', Authorization.permit(ProductController.constructor.
  *               - clothes
  *               - children
  *               - shoes
+ *            index:
+ *              type: "number"
+ *              description: "thu tu uu tien"
  *            categoryRefs:
  *              type: "array"
  *              items:

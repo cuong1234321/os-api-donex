@@ -27,6 +27,9 @@ const router = Router();
  *              type: "string"
  *              description: "Tên danh mục"
  *              default: "Name example"
+ *            index:
+ *              type: "number"
+ *              description: "thu tu uu tien"
  *     responses:
  *       200:
  *         description: Return data.
@@ -144,6 +147,9 @@ router.patch('/:productCategoryId/upload_thumbnail', Authorization.permit(Produc
 *              type: "integer"
 *              description: "id danh mục cha"
 *              default: null
+*            index:
+*              type: "number"
+*              description: "thu tu uu tien"
 *     responses:
 *       200:
 *         description: "Upload success"
