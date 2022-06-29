@@ -24,6 +24,8 @@ interface SystemSettingInterface {
   accessToken?: string;
   companyCode?: string;
   tawktoScriptUrl?: string;
+  seoSetting?: string;
+  robot?: string;
   createdAt?: Date;
   updatedAt?: Date;
 };

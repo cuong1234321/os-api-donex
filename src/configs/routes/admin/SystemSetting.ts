@@ -83,6 +83,12 @@ router.get('/', Authorization.permit(SystemSettingsController.constructor.name, 
  *            tawktoScriptUrl:
  *              type: "string"
  *              description: "tawktoScriptUrl"
+ *            seoSetting:
+ *              type: "string"
+ *              description: "SEO"
+ *            robot:
+ *              type: "string"
+ *              description: "robot"
  *     responses:
  *       200:
  *         description: Success

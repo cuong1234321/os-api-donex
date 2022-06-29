@@ -28,6 +28,8 @@ class SystemSettingModel extends Model<SystemSettingInterface> implements System
   public accessToken?: string;
   public companyCode?: string;
   public tawktoScriptUrl?: string;
+  public seoSetting?: string;
+  public robot?: string;
   public createdAt?: Date;
   public updatedAt?: Date;
 

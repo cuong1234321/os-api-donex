@@ -176,7 +176,7 @@ router.post('/', Authorization.permit(LookBookController.constructor.name, 'crea
  *     security:
  *      - Bearer: []
  */
-router.patch('/:lookBookId', Authorization.permit(LookBookController.constructor.name, 'update,uploadThumbnail,active,inactive'), LookBookController.update);
+router.patch('/:lookBookId', Authorization.permit(LookBookController.constructor.name, 'update'), LookBookController.update);
 
 /**
  * @openapi

@@ -76,6 +76,12 @@ const SystemSettingEntity = {
   tawktoScriptUrl: {
     type: DataTypes.STRING(255), allowNull: true,
   },
+  seoSetting: {
+    type: DataTypes.TEXT, allowNull: true,
+  },
+  robot: {
+    type: DataTypes.TEXT, allowNull: true,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },
