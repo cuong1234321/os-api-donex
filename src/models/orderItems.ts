@@ -111,6 +111,33 @@ class OrderItemModel extends Model<OrderItemInterface> implements OrderItemInter
         },
       };
     },
+    withTotalQuantity () {
+      return {
+        attributes: {
+          include: [
+            [Sequelize.cast(Sequelize.fn('SUM', Sequelize.col('OrderItemModel.quantity')), 'SIGNED'), 'totalQuantity'],
+          ],
+        },
+      };
+    },
+    withVariant () {
+      return {
+        include: [
+          {
+            model: ProductVariantModel,
+            as: 'variant',
+            attributes: {
+              include: [
+                [
+                  Sequelize.literal('(SELECT products.unit FROM products WHERE products.id = `variant`.productId)'),
+                  'unit',
+                ],
+              ],
+            },
+          },
+        ],
+      };
+    },
   }
 
   public static initialize (sequelize: Sequelize) {
