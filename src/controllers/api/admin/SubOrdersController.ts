@@ -5,6 +5,8 @@ import OrderItemModel from '@models/orderItems';
 import OrderModel from '@models/orders';
 import SubOrderModel from '@models/subOrders';
 import SendNotification from '@services/notification';
+import XlsxService from '@services/xlsx';
+import dayjs from 'dayjs';
 import { Request, Response } from 'express';
 import handlebars from 'handlebars';
 import _ from 'lodash';
@@ -165,6 +167,30 @@ class SubOrderController {
         group: Sequelize.col('OrderItemModel.productVariantId'),
       });
       sendSuccess(res, { orderItems });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async download (req: Request, res: Response) {
+    try {
+      const time = dayjs().format('DD-MM-YY-hh:mm:ss');
+      const fileName = `Bao-cao-danh-sach-san-pham-${time}.xlsx`;
+      const { subOrderIds } = req.query;
+      const orderItems = await OrderItemModel.scope([
+        { method: ['bySubOrder', (subOrderIds as string).split(',')] },
+        'withTotalQuantity',
+        'withVariant',
+      ]).findAll({
+        group: Sequelize.col('OrderItemModel.productVariantId'),
+      });
+      const buffer: any = await XlsxService.downloadListOrderItems(orderItems);
+      res.writeHead(200, [
+        ['Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+        ['Content-Disposition', 'attachment; filename=' + `${fileName}`],
+      ]);
+      res.end(Buffer.from(buffer, 'base64'));
+      sendSuccess(res, {});
     } catch (error) {
       sendError(res, 500, error.message, error);
     }

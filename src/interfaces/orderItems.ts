@@ -33,6 +33,7 @@ interface OrderItemInterface {
     }
   };
   variant? : ProductVariantInterface;
+  totalQuantity?: number;
 };
 
 export default OrderItemInterface;

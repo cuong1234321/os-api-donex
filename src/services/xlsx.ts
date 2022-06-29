@@ -5,6 +5,7 @@ import timezone from 'dayjs/plugin/timezone';
 import XLSX from 'xlsx-js-style';
 import settings from '@configs/settings';
 import _ from 'lodash';
+import OrderItemModel from '@models/orderItems';
 
 class XlsxService {
   static readonly DEFAULT_BORDER_OPTIONS = { top: { style: 'thin' }, bottom: { style: 'thin' }, left: { style: 'thin' }, right: { style: 'thin' } }
@@ -748,6 +749,42 @@ class XlsxService {
     workSheet['!rows'] = [{}, { hpx: 30 }];
     workSheet['!merges'] = merges;
     return await XlsxService.exportToExcel([{ sheetName: 'Báo cáo', sheetData: workSheet }]);
+  }
+
+  public static async downloadListOrderItems (orderItems: OrderItemModel[]) {
+    dayjs.extend(utc);
+    dayjs.extend(timezone);
+    const title = [
+      [{ v: 'DANH SÁCH SẢN PHẨM', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '18' } } }],
+    ];
+    const rows = orderItems.map((record: OrderItemModel, index: number) => {
+      return [
+        { v: index + 1, s: { alignment: { horizontal: 'center' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: record.variant.skuCode || '', s: { alignment: { horizontal: 'left' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: record.variant.name || '', s: { alignment: { horizontal: 'left' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: record.variant.getDataValue('unit') || '', s: { alignment: { horizontal: 'left' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: (record.getDataValue('totalQuantity') || 0).toLocaleString('de-DE'), s: { alignment: { horizontal: 'rifht' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: (record.sellingPrice || 0).toLocaleString('de-DE'), s: { alignment: { horizontal: 'rifht' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: (record.getDataValue('totalQuantity') * record.sellingPrice || 0).toLocaleString('de-DE'), s: { alignment: { horizontal: 'rifht' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      ];
+    });
+    const headers = [
+      { v: 'STT', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'Mã SKU', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'Tên hàng hóa', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'Đơn vị tính', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'Số lượng', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'Đơn giá', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'Tiền hàng', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+    ];
+    rows.unshift(headers);
+    const workSheet = XLSX.utils.aoa_to_sheet([[]]);
+    XLSX.utils.sheet_add_aoa(workSheet, title, { origin: 'D2' });
+    XLSX.utils.sheet_add_aoa(workSheet, rows, { origin: 'A5' });
+    const wsColsOpts = [{ wch: 5 }, { wch: 15 }, { wch: 25 }, { wch: 15 }, { wch: 15 }, { wch: 20 }, { wch: 20 }];
+    workSheet['!cols'] = wsColsOpts;
+    workSheet['!rows'] = [{}, { hpx: 30 }];
+    return await XlsxService.exportToExcel([{ sheetName: 'Danh sách sản phẩm', sheetData: workSheet }]);
   }
 
   private static appendSingleSheet (data: any, wsColsOpts: XLSX.ColInfo[] = undefined) {

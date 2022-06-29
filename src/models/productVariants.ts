@@ -34,6 +34,7 @@ class ProductVariantModel extends Model<ProductVariantInterface> implements Prod
   public supportingColorTitle?: string;
   public sizeTitle?: string;
   public product?: ProductModel;
+  public unit?: string;
 
   static readonly UPDATABLE_ON_DUPLICATE_PARAMETERS = ['id', 'sku', 'buyPrice', 'sellPrice', 'stock', { optionMappingIds: new Array(0) }];
 
@@ -270,6 +271,10 @@ class ProductVariantModel extends Model<ProductVariantInterface> implements Prod
               Sequelize.literal('(SELECT id FROM product_options WHERE `key` = ' + ` "${ProductOptionModel.KEY_ENUM.SIZE}" AND id IN ` +
                ' (SELECT optionId FROM product_variant_options WHERE product_variant_options.variantId = 99))'),
               'optionSizeId',
+            ],
+            [
+              Sequelize.literal('(SELECT source FROM product_media WHERE productId = ProductVariantModel.productId LIMIT 1)'),
+              'productThumbnail',
             ],
           ],
         },
