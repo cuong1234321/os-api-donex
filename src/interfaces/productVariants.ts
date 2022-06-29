@@ -24,6 +24,7 @@ interface ProductVariantInterface {
   saleCampaignId?: number;
   quantity?: number;
   detailReport?: ProductVariantInterface[];
+  unit?: string;
 };
 
 export default ProductVariantInterface;

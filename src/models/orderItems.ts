@@ -22,6 +22,7 @@ class OrderItemModel extends Model<OrderItemInterface> implements OrderItemInter
   public deletedAt?: Date;
 
   public variant?: ProductVariantModel;
+  public totalQuantity?: number;
 
   static readonly UPDATABLE_ON_DUPLICATE_PARAMETERS = ['id', 'productVariantId', 'quantity', 'saleCampaignId', 'sellingPrice'];
 
