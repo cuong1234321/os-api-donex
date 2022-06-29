@@ -1,4 +1,4 @@
-import { NoData } from '@libs/errors';
+import { MissingImportFile, NoData } from '@libs/errors';
 import { sendSuccess, sendError } from '@libs/response';
 import WarehouseReceiptModel from '@models/warehouseReceipts';
 import { Request, Response } from 'express';
@@ -8,6 +8,7 @@ import WarehouseReceiptVariantModel from '@models/warehouseReceiptVariants';
 import settings from '@configs/settings';
 import XlsxService from '@services/xlsx';
 import dayjs from 'dayjs';
+import WarehouseReceiptImporterService from '@services/warehouseReceiptImporter';
 
 class WarehouseReceiptController {
   public async create (req: Request, res: Response) {
@@ -140,6 +141,20 @@ class WarehouseReceiptController {
         ['Content-Disposition', 'attachment; filename=' + `${fileName}`],
       ]);
       res.end(Buffer.from(buffer, 'base64'));
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async upload (req: Request, res: Response) {
+    try {
+      const file = req.file;
+      if (file.originalname.split('.').reverse()[0] !== 'xlsx') {
+        sendError(res, 400, MissingImportFile);
+      }
+      const warehouseReceiptImporter = new WarehouseReceiptImporterService(file);
+      const warehouseReceipts = await warehouseReceiptImporter.executeImport();
+      sendSuccess(res, { warehouseReceipts });
     } catch (error) {
       sendError(res, 500, error.message, error);
     }
