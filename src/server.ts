@@ -1,6 +1,7 @@
 /* eslint-disable import/first */
 require('module-alias/register');
 import path from 'path';
+import fs from 'fs';
 import express from 'express';
 import compression from 'compression';
 import session from 'express-session';
@@ -16,6 +17,7 @@ import VoucherApplicationsAction from '@jobs/VoucherApplicationsAction';
 import birthdayActions from '@jobs/BirthdayActions';
 import resetCoinActions from '@jobs/resetCoinActions';
 import resetRankActions from '@jobs/resetRankActions';
+import SitemapAction from '@jobs/updateSitemap';
 import swaggerDocument from './swagger/doc';
 
 const port = process.env.PORT || 3000;
@@ -44,6 +46,19 @@ app.use('/api', routes);
 cron.schedule('0,10,20,30,40,50 * * * *', async () => {
   try {
     await VoucherApplicationsAction.SendVoucher();
+  } catch (error) {
+    console.log(error.message);
+  }
+});
+
+cron.schedule('0 0 * * *', async () => {
+  try {
+    const sitemap = await SitemapAction.create();
+    if (process.env.SITEMAP_STORAGE) {
+      fs.writeFile(path.join(__dirname, process.env.SITEMAP_STORAGE), sitemap, 'utf8', function (err) {
+        if (err) { throw err; } else { console.log('Ghi file sitemap thanh cong!'); }
+      });
+    }
   } catch (error) {
     console.log(error.message);
   }
