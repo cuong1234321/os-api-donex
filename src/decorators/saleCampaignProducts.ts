@@ -1,11 +1,10 @@
-import ProductModel from '@models/products';
 import ProductVariantModel from '@models/productVariants';
 import SaleCampaignProductModel from '@models/saleCampaignProducts';
 import SaleCampaignModel from '@models/saleCampaigns';
 import _ from 'lodash';
 
 class SaleCampaignProductDecorator {
-  public static async calculatorVariantPrice (products: ProductModel[], saleCampaigns: SaleCampaignModel[]) {
+  public static async calculatorVariantPrice (products: any, saleCampaigns: SaleCampaignModel[]) {
     const saleCampaignIds = saleCampaigns.map(record => record.id);
     const listSaleCampaignProducts = await SaleCampaignProductModel.scope([
       { method: ['bySaleCampaignId', saleCampaignIds] },
