@@ -19,7 +19,7 @@ const SaleCampaignEntity = {
     defaultValues: 'reduceByAmount',
   },
   value: {
-    type: DataTypes.BIGINT, allowNull: false,
+    type: DataTypes.BIGINT, allowNull: true,
   },
   isActive: {
     type: DataTypes.BOOLEAN, defaultValue: true,

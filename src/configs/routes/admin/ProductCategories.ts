@@ -30,6 +30,14 @@ const router = Router();
  *            index:
  *              type: "number"
  *              description: "thu tu uu tien"
+ *            type:
+ *              type: "type"
+ *              description: ""
+ *              enum:
+ *                - none
+ *                - collection
+ *                - gender
+ *                - productType
  *     responses:
  *       200:
  *         description: Return data.

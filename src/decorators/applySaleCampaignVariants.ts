@@ -27,20 +27,10 @@ class ApplySaleCampaignVariantDecorator {
       items.forEach((item: any) => {
         const variant = variants.find((record: any) => record.id === item.productVariantId);
         item.listedPrice = variant.sellPrice;
-        if (saleCampaign.productVariants.find((record: any) => record.productVariantId === item.productVariantId)) {
+        const saleCampaignProduct = saleCampaign.productVariants.find((record: any) => record.productVariantId === item.productVariantId);
+        if (saleCampaignProduct) {
           item.saleCampaignId = saleCampaignId;
-          if (saleCampaign.calculatePriceType === SaleCampaignModel.CALCULATE_PRICE_TYPE.REDUCE_BY_AMOUNT) {
-            item.sellingPrice = variant.sellPrice - saleCampaign.value;
-          }
-          if (saleCampaign.calculatePriceType === SaleCampaignModel.CALCULATE_PRICE_TYPE.INCREASE_BY_AMOUNT) {
-            item.sellingPrice = variant.sellPrice + saleCampaign.value;
-          }
-          if (saleCampaign.calculatePriceType === SaleCampaignModel.CALCULATE_PRICE_TYPE.REDUCE_BY_PERCENT) {
-            item.sellingPrice = variant.sellPrice - (variant.sellPrice * saleCampaign.value / 100);
-          }
-          if (saleCampaign.calculatePriceType === SaleCampaignModel.CALCULATE_PRICE_TYPE.INCREASE_BY_PERCENT) {
-            item.sellingPrice = variant.sellPrice + (variant.sellPrice * saleCampaign.value / 100);
-          }
+          item.sellingPrice = saleCampaignProduct.price;
         } else {
           item.sellingPrice = variant.sellPrice;
         }

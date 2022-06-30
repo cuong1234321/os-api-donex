@@ -12,8 +12,13 @@ class ProductCategoryController {
         const cateParent = await ProductCategoryModel.findByPk(params.parentId);
         if (!cateParent) { return sendError(res, 404, NoData); }
         params.type = cateParent.type;
-      } else {
-        params.type = ProductCategoryModel.TYPE_ENUM.NONE;
+      }
+      if (params.type === ProductCategoryModel.TYPE_ENUM.PRODUCT_TYPE && !params.parentId) {
+        const productType = await ProductCategoryModel.scope([
+          { method: ['byType', ProductCategoryModel.TYPE_ENUM.PRODUCT_TYPE] },
+          'notChildren',
+        ]).findOne();
+        params.parentId = productType.id;
       }
       const productCategory = await ProductCategoryModel.create(params);
       sendSuccess(res, { productCategory });
