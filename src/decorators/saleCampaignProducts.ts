@@ -5,6 +5,7 @@ import _ from 'lodash';
 
 class SaleCampaignProductDecorator {
   public static async calculatorVariantPrice (products: any, saleCampaigns: SaleCampaignModel[]) {
+    if (saleCampaigns.length === 0) return products;
     const saleCampaignIds = saleCampaigns.map(record => record.id);
     const listSaleCampaignProducts = await SaleCampaignProductModel.scope([
       { method: ['bySaleCampaignId', saleCampaignIds] },
@@ -29,6 +30,7 @@ class SaleCampaignProductDecorator {
   }
 
   public static async calculatorProductVariantPrice (variants: ProductVariantModel[], saleCampaigns: SaleCampaignModel[]) {
+    if (saleCampaigns.length === 0) return variants;
     const saleCampaignIds = saleCampaigns.map(record => record.id);
     const listSaleCampaignProducts = await SaleCampaignProductModel.scope([
       { method: ['bySaleCampaignId', saleCampaignIds] },
