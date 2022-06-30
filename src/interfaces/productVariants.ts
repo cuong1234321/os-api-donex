@@ -25,6 +25,7 @@ interface ProductVariantInterface {
   quantity?: number;
   detailReport?: ProductVariantInterface[];
   unit?: string;
+  newPrice?: number;
 };
 
 export default ProductVariantInterface;

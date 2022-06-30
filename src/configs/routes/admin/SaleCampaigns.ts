@@ -1,5 +1,6 @@
 import SaleCampaignsController from '@controllers/api/admin/SaleCampaignsController';
 import Authorization from '@middlewares/authorization';
+import { withoutSavingUploader } from '@middlewares/uploaders';
 import { Router } from 'express';
 
 const router = Router();
@@ -95,6 +96,34 @@ const router = Router();
  *      - Bearer: []
  */
 router.post('/', Authorization.permit(SaleCampaignsController.constructor.name, 'create'), SaleCampaignsController.create);
+
+/**
+ * @openapi
+ * /a/sale_campaigns/upload:
+ *   post:
+ *     tags:
+ *      - "[ADMIN] SALE CAMPAIGN"
+ *     summary: upload
+ *     consumes:
+ *      - "multipart/form-data"
+ *     produces:
+ *      - "application/json"
+ *     parameters:
+ *      - in: "formData"
+ *        name: "file"
+ *        description: "File upload"
+ *        required: true
+ *        allowMultiple: false
+ *        type: "file"
+ *     responses:
+ *       200:
+ *         description: Return data.
+ *       500:
+ *         description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.post('/upload', withoutSavingUploader.single('file'), SaleCampaignsController.upload);
 
 /**
  * @openapi
