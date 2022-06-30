@@ -11,6 +11,10 @@ const SaleCampaignProductEntity = {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
+  price: {
+    type: DataTypes.BIGINT,
+    defaultValue: 0,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },

@@ -32,7 +32,7 @@ class SaleCampaignModel extends Model<SaleCampaignInterface> implements SaleCamp
     'isApplyToDistributor', 'isApplyToAgency', 'isApplyToCollaborator', 'isApplyToUser', 'appliedAt', 'appliedTo',
     {
       productVariants: [
-        'productVariantId',
+        'productVariantId', 'price',
       ],
     }]
 
@@ -40,7 +40,7 @@ class SaleCampaignModel extends Model<SaleCampaignInterface> implements SaleCamp
     'isApplyToDistributor', 'isApplyToAgency', 'isApplyToCollaborator', 'isApplyToUser', 'appliedAt', 'appliedTo',
     {
       productVariants: [
-        'id', 'productVariantId',
+        'id', 'productVariantId', 'price',
       ],
     }]
 
@@ -92,34 +92,6 @@ class SaleCampaignModel extends Model<SaleCampaignInterface> implements SaleCamp
       ]).findAll();
       if (variantIds.length !== productVariants.length) {
         throw new ValidationErrorItem('Sản phẩm áp dụng bảng giá không tồn tại', 'validateProductVariant', 'productVariants', this.productVariants);
-      }
-    },
-    async validateSaleCampaignProductUniqueActive () {
-      if (!this.productVariants?.length) return;
-      const variantIds = this.productVariants.map((variant: any) => variant.productVariantId);
-      const scopes: any = [
-        { method: ['byId', variantIds] },
-        { method: ['withSaleCampaignActiveSameTime', this.appliedAt, this.appliedTo] },
-      ];
-      const conditions: any = [];
-      if (this.isApplyToDistributor) { conditions.push({ isApplyToDistributor: true }); }
-      if (this.isApplyToAgency) { conditions.push({ isApplyToAgency: true }); }
-      if (this.isApplyToCollaborator) { conditions.push({ isApplyToCollaborator: true }); }
-      if (this.isApplyToUser) { conditions.push({ isApplyToUser: true }); }
-      const productVariants = await SaleCampaignProductModel.scope(scopes).findAll({
-        include: [
-          {
-            model: SaleCampaignModel,
-            as: 'saleCampaign',
-            required: true,
-            where: {
-              [Op.or]: conditions,
-            },
-          },
-        ],
-      });
-      if (productVariants.length > 0) {
-        throw new ValidationErrorItem('Bảng giá áp dụng cho sản phẩm không hợp lệ', 'validateSaleCampaignProductUniqueActive', 'productVariants', this.productVariants);
       }
     },
   }

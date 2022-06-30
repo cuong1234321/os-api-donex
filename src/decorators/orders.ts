@@ -116,7 +116,7 @@ class OrderDecorator {
       subOrder.weight = weight;
       subOrder.subOrderTotalBill = subOrderTotalBill;
       subOrder.total = total;
-      subOrder.tax = subOrderTotalBill * (8 / 100);
+      subOrder.tax = subOrderTotalBill * (0 / 100);
       subOrder.subTotal = subOrderFinalAmount;
       const feeParams = {
         serviceTypeId: 2,
@@ -135,7 +135,7 @@ class OrderDecorator {
       orderTotalBill = orderTotalBill + subOrderTotalBill;
       finalAmount = finalAmount + subOrderFinalAmount;
       totalProduct = totalProduct + total;
-      totalTax = totalTax + subOrderTotalBill * (8 / 100);
+      totalTax = totalTax + subOrderTotalBill * (0 / 100);
     }
     return { subOrders, orderTotalFee, orderTotalBill, finalAmount, totalProduct, totalTax };
   }

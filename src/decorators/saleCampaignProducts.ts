@@ -1,60 +1,48 @@
+import ProductModel from '@models/products';
+import ProductVariantModel from '@models/productVariants';
+import SaleCampaignProductModel from '@models/saleCampaignProducts';
 import SaleCampaignModel from '@models/saleCampaigns';
+import _ from 'lodash';
 
 class SaleCampaignProductDecorator {
-  public static async calculatorVariantPrice (products: any, saleCampaigns: any) {
-    for (const saleCampaign of saleCampaigns) {
-      for (const product of products) {
-        const sellPrices = [];
-        const variants = Array.isArray(product.getDataValue('variants')) ? product.getDataValue('variants') : [product.getDataValue('variants')];
-        for (const variant of variants) {
-          variant.setDataValue('saleCampaignPrice', variant.sellPrice);
-          if (saleCampaign.productVariants.find((record: any) => record.productVariantId === variant.id)) {
-            if (saleCampaign.calculatePriceType === SaleCampaignModel.CALCULATE_PRICE_TYPE.REDUCE_BY_AMOUNT) {
-              variant.setDataValue('saleCampaignPrice', variant.sellPrice - saleCampaign.value);
-            }
-            if (saleCampaign.calculatePriceType === SaleCampaignModel.CALCULATE_PRICE_TYPE.INCREASE_BY_AMOUNT) {
-              variant.setDataValue('saleCampaignPrice', variant.sellPrice + saleCampaign.value);
-            }
-            if (saleCampaign.calculatePriceType === SaleCampaignModel.CALCULATE_PRICE_TYPE.REDUCE_BY_PERCENT) {
-              variant.setDataValue('saleCampaignPrice', variant.sellPrice - (variant.sellPrice * saleCampaign.value / 100));
-            }
-            if (saleCampaign.calculatePriceType === SaleCampaignModel.CALCULATE_PRICE_TYPE.INCREASE_BY_PERCENT) {
-              variant.setDataValue('saleCampaignPrice', variant.sellPrice + (variant.sellPrice * saleCampaign.value / 100));
-            }
-          }
-          if (variant.getDataValue('saleCampaignPrice') < 0) variant.setDataValue('saleCampaignPrice', 0);
-          sellPrices.push(variant.getDataValue('saleCampaignPrice'));
+  public static async calculatorVariantPrice (products: ProductModel[], saleCampaigns: SaleCampaignModel[]) {
+    const saleCampaignIds = saleCampaigns.map(record => record.id);
+    const listSaleCampaignProducts = await SaleCampaignProductModel.scope([
+      { method: ['bySaleCampaignId', saleCampaignIds] },
+    ]).findAll();
+    for (const product of products) {
+      const sellPrices = [];
+      const variants = product.getDataValue('variants');
+      for (const variant of variants) {
+        variant.setDataValue('saleCampaignPrice', variant.sellPrice);
+        const saleCampaignProducts = listSaleCampaignProducts.filter((record) => record.productVariantId === variant.id);
+        if (saleCampaignProducts.length > 0) {
+          const minSaleCampaignProduct = _.minBy(saleCampaignProducts, (record) => record.price);
+          variant.setDataValue('saleCampaignPrice', minSaleCampaignProduct.price);
         }
-        if (Array.isArray(product.getDataValue('variants'))) {
-          product.setDataValue('minPrice', Math.min(...sellPrices));
-          product.setDataValue('maxPrice', Math.max(...sellPrices));
-        }
+        if (variant.getDataValue('saleCampaignPrice') < 0) variant.setDataValue('saleCampaignPrice', 0);
+        sellPrices.push(variant.getDataValue('saleCampaignPrice'));
       }
+      product.setDataValue('minPrice', Math.min(...sellPrices));
+      product.setDataValue('maxPrice', Math.max(...sellPrices));
     }
     return products;
   }
 
-  public static async calculatorProductVariantPrice (variants: any, saleCampaigns: any) {
-    for (const saleCampaign of saleCampaigns) {
-      for (const variant of variants) {
-        variant.setDataValue('saleCampaignPrice', variant.sellPrice);
-        if (saleCampaign.productVariants.find((record: any) => record.productVariantId === variant.id)) {
-          if (saleCampaign.calculatePriceType === SaleCampaignModel.CALCULATE_PRICE_TYPE.REDUCE_BY_AMOUNT) {
-            variant.setDataValue('saleCampaignPrice', variant.sellPrice - saleCampaign.value);
-          }
-          if (saleCampaign.calculatePriceType === SaleCampaignModel.CALCULATE_PRICE_TYPE.INCREASE_BY_AMOUNT) {
-            variant.setDataValue('saleCampaignPrice', variant.sellPrice + saleCampaign.value);
-          }
-          if (saleCampaign.calculatePriceType === SaleCampaignModel.CALCULATE_PRICE_TYPE.REDUCE_BY_PERCENT) {
-            variant.setDataValue('saleCampaignPrice', variant.sellPrice - (variant.sellPrice * saleCampaign.value / 100));
-          }
-          if (saleCampaign.calculatePriceType === SaleCampaignModel.CALCULATE_PRICE_TYPE.INCREASE_BY_PERCENT) {
-            variant.setDataValue('saleCampaignPrice', variant.sellPrice + (variant.sellPrice * saleCampaign.value / 100));
-          }
-        }
-        if (variant.getDataValue('saleCampaignPrice') < 0) variant.setDataValue('saleCampaignPrice', 0);
-        variant.setDataValue('saleCampaignId', saleCampaign.id);
+  public static async calculatorProductVariantPrice (variants: ProductVariantModel[], saleCampaigns: SaleCampaignModel[]) {
+    const saleCampaignIds = saleCampaigns.map(record => record.id);
+    const listSaleCampaignProducts = await SaleCampaignProductModel.scope([
+      { method: ['bySaleCampaignId', saleCampaignIds] },
+    ]).findAll();
+    for (const variant of variants) {
+      variant.setDataValue('saleCampaignPrice', variant.sellPrice);
+      const saleCampaignProducts = listSaleCampaignProducts.filter((record) => record.productVariantId === variant.id);
+      if (saleCampaignProducts.length > 0) {
+        const minSaleCampaignProduct = _.minBy(saleCampaignProducts, (record) => record.price);
+        variant.setDataValue('saleCampaignPrice', minSaleCampaignProduct.price);
+        variant.setDataValue('saleCampaignId', minSaleCampaignProduct.saleCampaignId);
       }
+      if (variant.getDataValue('saleCampaignPrice') < 0) variant.setDataValue('saleCampaignPrice', 0);
     }
     return variants;
   }

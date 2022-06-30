@@ -9,11 +9,14 @@ class SaleCampaignProductModel extends Model<SaleCampaignProductInterface> imple
   public id: number;
   public saleCampaignId: number;
   public productVariantId: number;
+  public price: number;
   public createdAt?: Date;
   public updatedAt?: Date;
   public deletedAt?: Date;
 
-  static readonly UPDATABLE_ON_DUPLICATE_PARAMETERS = ['id', 'productVariantId'];
+  public saleCampaign?: SaleCampaignModel;
+
+  static readonly UPDATABLE_ON_DUPLICATE_PARAMETERS = ['id', 'productVariantId', 'price'];
 
   static readonly hooks: Partial<ModelHooks<SaleCampaignProductModel>> = { }
 
@@ -53,6 +56,11 @@ class SaleCampaignProductModel extends Model<SaleCampaignProductInterface> imple
     byId (id) {
       return {
         where: { id },
+      };
+    },
+    bySaleCampaignId (saleCampaignId) {
+      return {
+        where: { saleCampaignId },
       };
     },
   }

@@ -81,6 +81,9 @@ const router = Router();
  *                    type: "number"
  *                    description: "id variants"
  *                    default: "null"
+ *                  price:
+ *                    type: "number"
+ *                    description: "gia"
  *     responses:
  *       200:
  *         description: Return data.
@@ -171,6 +174,9 @@ router.post('/', Authorization.permit(SaleCampaignsController.constructor.name, 
  *                    type: "number"
  *                    description: "id variants"
  *                    default: "null"
+ *                  price:
+ *                    type: "number"
+ *                    description: "gia"
  *     responses:
  *       200:
  *         description: Return data.

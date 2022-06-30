@@ -30,7 +30,7 @@ const ProductCategoryEntity = {
     },
   },
   type: {
-    type: DataTypes.STRING(255), allowNull: true,
+    type: DataTypes.STRING(255), defaultValue: 'none',
   },
   misaId: {
     type: DataTypes.STRING(255), allowNull: true,
