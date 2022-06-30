@@ -1,9 +1,10 @@
 import settings from '@configs/settings';
 import sequelize from '@initializers/sequelize';
-import { NoData } from '@libs/errors';
+import { MissingImportFile, NoData } from '@libs/errors';
 import { sendError, sendSuccess } from '@libs/response';
 import SaleCampaignProductModel from '@models/saleCampaignProducts';
 import SaleCampaignModel from '@models/saleCampaigns';
+import SaleCampaignImporterService from '@services/saleCampaignImporter';
 import { Request, Response } from 'express';
 import { Transaction } from 'sequelize/types';
 
@@ -127,6 +128,20 @@ class SaleCampaignController {
         col: 'SaleCampaignModel.id',
       });
       sendSuccess(res, { rows, pagination: { total: count, page, perPage: limit, offset } });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async upload (req: Request, res: Response) {
+    try {
+      const file = req.file;
+      if (file.originalname.split('.').reverse()[0] !== 'xlsx') {
+        sendError(res, 400, MissingImportFile);
+      }
+      const adminImporter = new SaleCampaignImporterService(file);
+      const saleCampaignProducts = await adminImporter.executeImport();
+      sendSuccess(res, { saleCampaignProducts });
     } catch (error) {
       sendError(res, 500, error.message, error);
     }
