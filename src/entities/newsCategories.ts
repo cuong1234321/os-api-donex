@@ -30,6 +30,7 @@ const NewsCategoriesEntity = {
     },
     set (value: string) {
       value = value.replace(settings.imageStorageHost + '/', '');
+      this.setDataValue('thumbnail', value);
       return value;
     },
   },

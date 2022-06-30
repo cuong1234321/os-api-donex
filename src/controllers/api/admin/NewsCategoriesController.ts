@@ -41,6 +41,7 @@ class NewsCategoryController {
     try {
       const params = req.parameters.permit(NewsCategoryModel.UPDATABLE_PARAMETERS).value();
       const newsCategory = await NewsCategoryModel.findByPk(req.params.newsCategoryId);
+      if (!newsCategory) { return sendError(res, 404, NoData); }
       await newsCategory.update(params);
       sendSuccess(res, newsCategory);
     } catch (error) {
