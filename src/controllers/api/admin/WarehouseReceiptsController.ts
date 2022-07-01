@@ -159,6 +159,15 @@ class WarehouseReceiptController {
       sendError(res, 500, error.message, error);
     }
   }
+
+  public async downloadTemplate (req: Request, res: Response) {
+    try {
+      const file = 'public/Nhap-kho.xlsx';
+      res.download(file, 'Form tải lên nhập kho (Mẫu).xlsx');
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
 }
 
 export default new WarehouseReceiptController();

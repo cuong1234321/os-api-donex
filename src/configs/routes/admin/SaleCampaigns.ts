@@ -127,6 +127,23 @@ router.post('/upload', withoutSavingUploader.single('file'), SaleCampaignsContro
 
 /**
  * @openapi
+ * /a/sale_campaigns/download_template:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] SALE CAMPAIGN"
+ *     summary: Tải xuống template bang gia
+ *     responses:
+ *       200:
+ *         description: "Upload success"
+ *       500:
+ *         description: "Upload failed"
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/download_template', SaleCampaignsController.downloadTemplate);
+
+/**
+ * @openapi
  * /a/sale_campaigns/{saleCampaignId}:
  *   patch:
  *     tags:

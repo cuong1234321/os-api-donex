@@ -259,6 +259,15 @@ class OrderController {
     }
   }
 
+  public async downloadTemplate (req: Request, res: Response) {
+    try {
+      const file = 'public/Nhap-don-hang.xlsx';
+      res.download(file, 'Form tải lên nhập đơn hàng (Mẫu).xlsx');
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
   private async listProductQueryBuilder (req: any) {
     const sortBy = req.query.sortBy || 'createdAt';
     const sortOrder = req.query.sortOrder || 'DESC';

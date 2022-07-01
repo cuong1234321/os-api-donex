@@ -41,6 +41,15 @@ class ProductVerifyCodeController {
       sendError(res, 500, error.message, error);
     }
   }
+
+  public async downloadTemplate (req: Request, res: Response) {
+    try {
+      const file = 'public/Danh-sach-ma-xac-minh.xlsx';
+      res.download(file, 'Form tải lên Mã xác minh (Mẫu).xlsx');
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
 }
 
 export default new ProductVerifyCodeController();
