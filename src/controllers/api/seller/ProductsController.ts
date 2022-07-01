@@ -69,6 +69,7 @@ class ProductController {
         'withThumbnail',
         'withVariantDetails',
         'withPriceRange',
+        { method: ['byStatus', ProductModel.STATUS_ENUM.ACTIVE] },
       ];
       if (productId) scopes.push({ method: ['byId', (productId as string).split(',')] });
       if (warehouseId) scopes.push({ method: ['byWarehouseId', warehouseId] });
