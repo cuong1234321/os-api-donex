@@ -340,6 +340,19 @@ class ProductVariantModel extends Model<ProductVariantInterface> implements Prod
         },
       };
     },
+    withProductCategoryName () {
+      return {
+        attributes: {
+          include: [
+            [
+              Sequelize.literal('(SELECT name FROM product_categories INNER JOIN product_category_refs ON product_categories.id = product_category_refs.productCategoryId ' +
+              'WHERE product_category_refs.productId = ProductVariantModel.productId AND product_categories.type = "none" LIMIT 1)'),
+              'productCategoryName',
+            ],
+          ],
+        },
+      };
+    },
   }
 
   public async deleteVariantOption () {
