@@ -65,6 +65,12 @@ router.get('/', Authorization.permit(NewsController.constructor.name, 'index'), 
  *            index:
  *              type: "number"
  *              description: "thu tu uu tien"
+ *            shortDescription:
+ *              type: "string"
+ *              description: "Mô tả ngắn"
+ *            seo:
+ *              type: "string"
+ *              description: "seo"
  *     responses:
  *       200:
  *         description: Return data.
@@ -107,6 +113,12 @@ router.post('/', Authorization.permit(NewsController.constructor.name, 'create,u
  *            index:
  *              type: "number"
  *              description: "thu tu uu tien"
+ *            shortDescription:
+ *              type: "string"
+ *              description: "Mô tả ngắn"
+ *            seo:
+ *              type: "string"
+ *              description: "seo"
  *     responses:
  *       200:
  *         description: Return data.

@@ -50,6 +50,12 @@ const NewsEntity = {
   index: {
     type: DataTypes.INTEGER, defaultValue: 0,
   },
+  shortDescription: {
+    type: DataTypes.TEXT, allowNull: true,
+  },
+  seo: {
+    type: DataTypes.TEXT, allowNull: true,
+  },
   deletedAt: {
     type: DataTypes.DATE,
   },

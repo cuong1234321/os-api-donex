@@ -9,6 +9,8 @@ interface NewsInterface {
   slug: string;
   views: number;
   index: number;
+  shortDescription: string;
+  seo: string;
   deletedAt: Date;
   createdAt?: Date;
   updatedAt?: Date;

@@ -17,13 +17,15 @@ class NewsModel extends Model<NewsInterface> implements NewsInterface {
   public slug: string;
   public views: number;
   public index: number;
+  public shortDescription: string;
+  public seo: string;
   public deletedAt: Date;
   public createdAt?: Date;
   public updatedAt?: Date;
 
   public static readonly STATUS_ENUM = { DRAFT: 'draft', ACTIVE: 'active', INACTIVE: 'inactive' }
-  public static readonly CREATABLE_PARAMETERS = ['title', 'content', 'newsCategoryId', 'index']
-  public static readonly UPDATABLE_PARAMETERS = ['title', 'content', 'newsCategoryId', 'index']
+  public static readonly CREATABLE_PARAMETERS = ['title', 'content', 'newsCategoryId', 'index', 'shortDescription', 'seo']
+  public static readonly UPDATABLE_PARAMETERS = ['title', 'content', 'newsCategoryId', 'index', 'shortDescription', 'seo']
 
   static readonly hooks: Partial<ModelHooks<NewsModel>> = {
     async beforeSave (record: any) {
