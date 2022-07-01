@@ -144,8 +144,8 @@ class VoucherModel extends Model<VoucherInterface> implements VoucherInterface {
             as: 'application',
             required: true,
             where: {
-              expiredAt: { [Op.gte]: dayjs() },
-              appliedAt: { [Op.lte]: dayjs() },
+              expiredAt: { [Op.gte]: dayjs().format('YYYY/MM/DD HH:mm') },
+              appliedAt: { [Op.lte]: dayjs().format('YYYY/MM/DD HH:mm') },
               [Op.or]: [
                 Sequelize.literal(`FIND_IN_SET('${paymentMethod}', REPLACE(REPLACE(REPLACE(application.paymentMethod, '[', ''), ']', ''), '"', '')) <> 0`),
               ],
