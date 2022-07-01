@@ -46,6 +46,23 @@ router.get('/', ProductVerifyCodeController.index);
 
 /**
  * @openapi
+ * /a/product_verify_codes/download_template:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] PRODUCT VERIFY CODE"
+ *     summary: Tải xuống template
+ *     responses:
+ *       200:
+ *         description: "Upload success"
+ *       500:
+ *         description: "Upload failed"
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/download_template', ProductVerifyCodeController.downloadTemplate);
+
+/**
+ * @openapi
  * /a/product_verify_codes/upload:
  *   post:
  *     tags:

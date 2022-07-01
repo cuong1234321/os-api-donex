@@ -144,6 +144,23 @@ router.get('/download', Authorization.permit(OrdersController.constructor.name, 
 
 /**
  * @openapi
+ * /a/orders/download_template:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] ORDERS"
+ *     summary: Tải xuống template
+ *     responses:
+ *       200:
+ *         description: "Upload success"
+ *       500:
+ *         description: "Upload failed"
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/download_template', OrdersController.downloadTemplate);
+
+/**
+ * @openapi
  * /a/orders/{orderId}:
  *   get:
  *     tags:

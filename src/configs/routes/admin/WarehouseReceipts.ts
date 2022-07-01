@@ -90,6 +90,23 @@ router.get('/download', Authorization.permit(WarehouseReceiptController.construc
 
 /**
  * @openapi
+ * /a/warehouse_receipts/download_template:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] WAREHOUSE RECEIPTS"
+ *     summary: Tải xuống template
+ *     responses:
+ *       200:
+ *         description: "Upload success"
+ *       500:
+ *         description: "Upload failed"
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/download_template', Authorization.permit(WarehouseReceiptController.constructor.name, 'index'), WarehouseReceiptController.downloadTemplate);
+
+/**
+ * @openapi
  * /a/warehouse_receipts/{warehouseReceiptId}:
  *   get:
  *     tags:
