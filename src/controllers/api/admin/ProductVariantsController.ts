@@ -16,6 +16,7 @@ class ProductVariantController {
         'withOptions',
         'withUnit',
         'withWarehouseVariant',
+        'withProductCategoryName',
       ];
       if (category) scopes.push({ method: ['byCategory', (category as string).split(',')] });
       if (productId) scopes.push({ method: ['byProduct', (productId as string).split(',')] });
@@ -63,21 +64,11 @@ class ProductVariantController {
     }
   }
 
-  private async calculatorSaleCampaignPrice (variants: any, saleCampaign: any) {
-    variants.forEach((variant: any) => {
-      if (saleCampaign.productVariants.find((record: any) => record.productVariantId === variant.id)) {
-        if (saleCampaign.calculatePriceType === SaleCampaignModel.CALCULATE_PRICE_TYPE.REDUCE_BY_AMOUNT) {
-          variant.setDataValue('saleCampaignPrice', variant.sellPrice - saleCampaign.value);
-        }
-        if (saleCampaign.calculatePriceType === SaleCampaignModel.CALCULATE_PRICE_TYPE.INCREASE_BY_AMOUNT) {
-          variant.setDataValue('saleCampaignPrice', variant.sellPrice + saleCampaign.value);
-        }
-        if (saleCampaign.calculatePriceType === SaleCampaignModel.CALCULATE_PRICE_TYPE.REDUCE_BY_PERCENT) {
-          variant.setDataValue('saleCampaignPrice', variant.sellPrice - (variant.sellPrice * saleCampaign.value / 100));
-        }
-        if (saleCampaign.calculatePriceType === SaleCampaignModel.CALCULATE_PRICE_TYPE.INCREASE_BY_PERCENT) {
-          variant.setDataValue('saleCampaignPrice', variant.sellPrice + (variant.sellPrice * saleCampaign.value / 100));
-        }
+  private async calculatorSaleCampaignPrice (variants: ProductVariantModel[], saleCampaign: SaleCampaignModel) {
+    variants.forEach((variant) => {
+      const saleCampaignProduct = saleCampaign.productVariants.find((record: any) => record.productVariantId === variant.id);
+      if (saleCampaignProduct) {
+        variant.setDataValue('saleCampaignPrice', saleCampaignProduct.price);
       } else {
         variant.setDataValue('saleCampaignPrice', variant.sellPrice);
       }
