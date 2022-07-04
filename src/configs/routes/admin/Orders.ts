@@ -331,6 +331,9 @@ router.get('/:orderId', Authorization.permit(OrdersController.constructor.name, 
  *                        value:
  *                          type: "integer"
  *                          description: "gia tri"
+ *                        percent:
+ *                          type: "number"
+ *                          description: "%"
  *     responses:
  *       200:
  *         description: "OK"
@@ -618,6 +621,9 @@ router.post('/calculator_vouchers', (req: Request, res: Response) => OrdersContr
  *                        value:
  *                          type: "integer"
  *                          description: "gia tri"
+ *                        percent:
+ *                          type: "number"
+ *                          description: "%"
  *     responses:
  *       200:
  *         description: "OK"

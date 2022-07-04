@@ -77,7 +77,7 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
     {
       subOrders: [
         'warehouseId', 'weight', 'length', 'width', 'height', 'pickUpAt', 'shippingFeeMisa', 'shippingFee', 'deposit', 'deliveryType', 'deliveryInfo', 'note', 'shippingType', 'shippingAttributeType',
-        { otherDiscounts: ['key', 'value'] },
+        { otherDiscounts: ['key', 'value', 'percent'] },
         { items: ['productVariantId', 'quantity'] },
       ],
     }]
@@ -87,7 +87,7 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
     {
       subOrders: [
         'id', 'warehouseId', 'weight', 'length', 'width', 'height', 'pickUpAt', 'shippingFeeMisa', 'shippingFee', 'deposit', 'deliveryType', 'deliveryInfo', 'note', 'shippingType', 'shippingAttributeType',
-        { otherDiscounts: ['key', 'value'] },
+        { otherDiscounts: ['key', 'value', 'percent'] },
         { items: ['id', 'productVariantId', 'quantity'] },
       ],
     }]
