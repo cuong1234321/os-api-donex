@@ -39,6 +39,9 @@ const WarehouseEntity = {
   warehouseManager: {
     type: DataTypes.STRING(255), allowNull: true,
   },
+  ghnStoreId: {
+    type: DataTypes.STRING(255), allowNull: true,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },

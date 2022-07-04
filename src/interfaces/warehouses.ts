@@ -14,6 +14,7 @@ interface WarehouseInterface {
   wardId: number;
   phoneNumber: string;
   warehouseManager: string;
+  ghnStoreId: string;
   createdAt?: Date,
   updatedAt?: Date,
   deletedAt?: Date,

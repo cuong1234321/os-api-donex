@@ -4,6 +4,7 @@ import WarehouseInterface from '@interfaces/warehouses';
 import WarehouseVariantInterface from '@interfaces/warehouseVariants';
 import { BelongsToManyGetAssociationsMixin, HasManyGetAssociationsMixin, Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
+import Store from '@repositories/models/stores';
 import AdminModel from './admins';
 import MDistrictModel from './mDistricts';
 import MProvinceModel from './mProvinces';
@@ -26,6 +27,7 @@ class WarehouseModel extends Model<WarehouseInterface> implements WarehouseInter
   public wardId: number;
   public phoneNumber: string;
   public warehouseManager: string;
+  public ghnStoreId: string;
   public createdAt?: Date;
   public updatedAt?: Date;
   public deletedAt?: Date;
@@ -50,10 +52,26 @@ class WarehouseModel extends Model<WarehouseInterface> implements WarehouseInter
   public finalAmount?: number;
 
   static readonly CREATABLE_PARAMETERS = ['name', 'type', 'description', 'code', 'wardId', 'districtId', 'provinceId', 'address', 'phoneNumber', 'warehouseManager']
-  static readonly UPDATABLE_PARAMETERS = ['name', 'type', 'description', 'code', 'status', 'wardId', 'districtId', 'provinceId', 'address', 'phoneNumber', 'warehouseManager']
+  static readonly UPDATABLE_PARAMETERS = ['name', 'type', 'description', 'code', 'status', 'wardId', 'districtId', 'provinceId', 'address', 'phoneNumber', 'warehouseManager', 'ghnStoreId']
 
   static readonly STATUS_ENUM = { INACTIVE: 'inactive', ACTIVE: 'active' }
-  static readonly hooks: Partial<ModelHooks<WarehouseModel>> = {}
+  static readonly hooks: Partial<ModelHooks<WarehouseModel>> = {
+    async beforeSave (record) {
+      const district = await MDistrictModel.findByPk(record.districtId);
+      const ward = await MWardModel.findByPk(record.wardId);
+      if (district && ward) {
+        const paramStore = {
+          ghnDistrictId: parseInt(district.ghnDistrictId),
+          ghnWardCode: ward.ghnWardCode,
+          name: record.name,
+          phone: record.phoneNumber || '',
+          address: record.address,
+        };
+        const store = await Store.createStore(paramStore);
+        record.ghnStoreId = store?.shop_id;
+      }
+    },
+  }
 
   static readonly validations: ModelValidateOptions = {
     async uniqueName () {

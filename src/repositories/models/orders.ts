@@ -10,7 +10,7 @@ class Order {
         url: `${process.env.GHN_ENPOINT}/shipping-order/create`,
         headers: {
           Token: process.env.GHN_TOKEN_API,
-          ShopId: parseInt(process.env.GHN_SHOP_ID),
+          ShopId: data.ghnStoreId || parseInt(process.env.GHN_SHOP_ID),
         },
         data: {
           to_name: data.fullName,

@@ -267,6 +267,7 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
       // serviceTypeId: subOrder.shippingType,
       serviceTypeId: 2,
       returnPhone: warehouse.phoneNumber,
+      ghnStoreId: warehouse.ghnStoreId,
     };
     for (const orderItem of orderItems) {
       params.items.push(
