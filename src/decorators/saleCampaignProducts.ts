@@ -12,7 +12,7 @@ class SaleCampaignProductDecorator {
     ]).findAll();
     for (const product of products) {
       const sellPrices = [];
-      const variants = product.getDataValue('variants');
+      const variants = Array.isArray(product.getDataValue('variants')) ? product.getDataValue('variants') : [product.getDataValue('variants')];
       for (const variant of variants) {
         variant.setDataValue('saleCampaignPrice', variant.sellPrice);
         const saleCampaignProducts = listSaleCampaignProducts.filter((record) => record.productVariantId === variant.id);
