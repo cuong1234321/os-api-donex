@@ -192,6 +192,8 @@ router.get('/:warehouseReceiptId/download', Authorization.permit(WarehouseReceip
  *               - orderRefund
  *               - newGoods
  *               - others
+ *            discount:
+ *              type: "number"
  *            warehouseReceiptVariants:
  *              type: "array"
  *              items:
@@ -291,6 +293,8 @@ router.post('/upload', withoutSavingUploader.single('file'), WarehouseReceiptCon
  *               - orderRefund
  *               - newGoods
  *               - others
+ *            discount:
+ *              type: "number"
  *            warehouseReceiptVariants:
  *              type: "array"
  *              items:

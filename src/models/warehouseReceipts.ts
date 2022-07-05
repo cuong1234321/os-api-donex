@@ -6,6 +6,7 @@ import { ModelHooks } from 'sequelize/types/lib/hooks';
 import ProductOptionModel from './productOptions';
 import ProductModel from './products';
 import ProductVariantModel from './productVariants';
+import SubOrderModel from './subOrders';
 import WarehouseReceiptVariantModel from './warehouseReceiptVariants';
 import WarehouseModel from './warehouses';
 
@@ -19,15 +20,16 @@ class WarehouseReceiptModel extends Model<WarehouseReceiptInterface> implements 
   public orderId: number;
   public deliverer: string;
   public note: string;
+  public discount: number;
   public createdAt?: Date;
   public updatedAt?: Date;
   public deletedAt?: Date;
 
-  static readonly CREATABLE_PARAMETERS = ['importDate', 'type', 'importAbleType', 'importAble', 'orderId', 'deliverer', 'note',
+  static readonly CREATABLE_PARAMETERS = ['importDate', 'type', 'importAbleType', 'importAble', 'orderId', 'deliverer', 'note', 'discount',
     { warehouseReceiptVariants: ['warehouseId', 'variantId', 'quantity', 'price', 'totalPrice'] },
   ]
 
-  static readonly UPDATABLE_PARAMETERS = ['importDate', 'type', 'importAbleType', 'importAble', 'orderId', 'deliverer', 'note',
+  static readonly UPDATABLE_PARAMETERS = ['importDate', 'type', 'importAbleType', 'importAble', 'orderId', 'deliverer', 'note', 'discount',
     { warehouseReceiptVariants: ['id', 'warehouseId', 'variantId', 'quantity', 'price', 'totalPrice'] },
   ]
 
@@ -133,6 +135,13 @@ class WarehouseReceiptModel extends Model<WarehouseReceiptInterface> implements 
         },
       };
     },
+    isReturnOrder () {
+      return {
+        where: {
+          orderId: { [Op.ne]: null },
+        },
+      };
+    },
   }
 
   public async updateReceiptVariants (receiptVariants: any[], transaction?: Transaction) {
@@ -210,6 +219,7 @@ class WarehouseReceiptModel extends Model<WarehouseReceiptInterface> implements 
   public static associate () {
     this.hasMany(WarehouseReceiptVariantModel, { as: 'warehouseReceiptVariants', foreignKey: 'warehouseReceiptId' });
     this.hasMany(WarehouseReceiptVariantModel, { as: 'receiptVariants', foreignKey: 'warehouseReceiptId' });
+    this.belongsTo(SubOrderModel, { as: 'subOrder', foreignKey: 'orderId' });
   }
 }
 
