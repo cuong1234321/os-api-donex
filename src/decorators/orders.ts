@@ -170,12 +170,10 @@ class OrderDecorator {
         subOrder.coinUsed = Math.round((subOrder.coinDiscount / systemSetting.coinConversionLevel));
       } else {
         if (order.isFreeShipping) {
-          subOrder.subTotal = subOrder.subTotal - subOrder.shippingFee;
           subOrder.shippingDiscount = subOrder.shippingFee;
           subOrder.shippingFee = 0;
         }
         const warehouseCoinDiscount = Math.round((subOrder.subTotal / orderFinalAmount) * coinDiscount);
-        subOrder.subTotal = subOrder.subTotal - warehouseCoinDiscount;
         subOrder.coinDiscount = warehouseCoinDiscount;
         subOrder.totalDiscount = subOrder.totalDiscount + warehouseCoinDiscount;
         subOrder.coinUsed = Math.round((subOrder.coinDiscount / systemSetting.coinConversionLevel));
@@ -188,7 +186,6 @@ class OrderDecorator {
     for (const subOrder of subOrders) {
       const rankDiscount = rankDiscountValue ? Math.round((subOrder.subTotal / orderFinalAmount) * rankDiscountValue) : 0;
       subOrder.rankDiscount = rankDiscount;
-      subOrder.subTotal = subOrder.subTotal - rankDiscount;
       subOrder.totalDiscount = subOrder.totalDiscount + rankDiscount;
       order.subTotal = order.subTotal + subOrder.subTotal;
       order.rankDiscount = order.rankDiscount + subOrder.rankDiscount;
@@ -200,7 +197,6 @@ class OrderDecorator {
     for (const subOrder of subOrders) {
       const voucherDiscount = applicationDiscount ? Math.round((subOrder.subTotal / orderFinalAmount) * applicationDiscount) : 0;
       subOrder.voucherDiscount = voucherDiscount;
-      subOrder.subTotal = subOrder.subTotal - voucherDiscount;
       subOrder.totalDiscount = subOrder.totalDiscount + voucherDiscount;
       order.subTotal = order.subTotal + subOrder.subTotal;
       order.voucherDiscount = order.voucherDiscount + subOrder.voucherDiscount;

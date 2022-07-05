@@ -240,6 +240,9 @@ router.patch('/:subOrderId/update_fee', (req: Request, res: Response) => SubOrde
  *                  value:
  *                    type: "integer"
  *                    description: "gia tri"
+ *                  percent:
+ *                    type: "number"
+ *                    description: "%"
  *     responses:
  *       200:
  *         description: "OK"
