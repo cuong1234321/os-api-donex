@@ -24,7 +24,7 @@ class GhnCallBackController {
     return_sorting: 'delivered',
     returning: 'delivered',
     return_fail: 'delivered',
-    returned: 'delivered',
+    returned: 'returned',
     cancel: 'cancel',
     damage: 'cancel',
     lost: 'cancel',
@@ -34,7 +34,7 @@ class GhnCallBackController {
     try {
       const params = req.body;
       console.log('-------------------callback ghn', params);
-      if (params.Type === 'Switch_status') {
+      if (params.Type.toLowerCase() === 'switch_status') {
         const subOrder = await SubOrderModel.scope([
           { method: ['byOrderPartnerCode', params.OrderCode] },
         ]).findOne();

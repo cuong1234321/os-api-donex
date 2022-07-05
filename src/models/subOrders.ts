@@ -118,7 +118,7 @@ static readonly UPDATABLE_ON_DUPLICATE_PARAMETERS = ['id', 'warehouseId', 'weigh
 static readonly UPDATABLE_FEE_PARAMETERS = ['weight', 'length', 'width', 'height', 'pickUpAt', 'shippingFeeMisa',
   'shippingFee', 'deposit', 'deliveryType', 'deliveryInfo', 'note', 'shippingType', 'shippingAttributeType'];
 
-static readonly UPDATABLE_OTHER_DISCOUNT_PARAMETERS = [{ otherDiscounts: ['key', 'value'] }];
+static readonly UPDATABLE_OTHER_DISCOUNT_PARAMETERS = [{ otherDiscounts: ['key', 'value', 'percent'] }];
 
 static readonly UPDATABLE_PARAMETERS = ['status'];
 
@@ -259,13 +259,13 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
       length: subOrder.length,
       height: subOrder.height,
       width: subOrder.width,
-      codAmount: order.paidAt ? 0 : subOrder.subTotal,
+      codAmount: order.paidAt ? 0 : (subOrder.subTotal - subOrder.rankDiscount - subOrder.voucherDiscount - subOrder.coinDiscount - subOrder.totalOtherDiscount - subOrder.deposit),
       items: [],
       paymentTypeId: subOrder.shippingFee ? 2 : 1,
       insuranceValue: subOrder.subTotal > settings.maxInsuranceValue ? settings.maxInsuranceValue : subOrder.subTotal,
       pick_shift: subOrder.shippingAttributeType,
       // serviceTypeId: subOrder.shippingType,
-      serviceTypeId: 2,
+      serviceId: parseInt(subOrder.shippingAttributeType || '53320') || 53320,
       returnPhone: warehouse.phoneNumber,
       ghnStoreId: warehouse.ghnStoreId,
     };
