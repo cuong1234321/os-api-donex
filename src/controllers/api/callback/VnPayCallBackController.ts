@@ -18,7 +18,6 @@ class VnPayCallBackController {
         case VnpayPaymentService.TXN_REF_PREFIX.ORDER:
           orderableInstance = await OrderModel.scope([
             { method: ['byTransactionId', params.vnp_TxnRef] },
-            'isNotFail',
           ]).findOne();
           orderValue = orderableInstance?.subTotal;
           paidAt = orderableInstance?.paidAt;
@@ -26,13 +25,13 @@ class VnPayCallBackController {
         default:
           orderableInstance = await TopUpDepositModel.scope([
             { method: ['byPayment', params.vnp_TxnRef] },
-            'isNotFail',
           ]).findOne();
           orderValue = orderableInstance?.amount;
           paidAt = orderableInstance?.portalConfirmAt;
           break;
       }
-      if (!orderableInstance) return res.status(200).json({ Message: 'Order Not Found', RspCode: '02' });
+      if (!orderableInstance) return res.status(200).json({ Message: 'Order Not Found', RspCode: '01' });
+      if (orderableInstance.status === 'fail') return res.status(200).json({ Message: 'Order Not Found', RspCode: '02' });
       if (Math.ceil(orderValue + (orderValue * (settings.vnPayDefaultFeePercent / 100)) + settings.vnPayDefaultFee) * 100 !== parseInt(params.vnp_Amount, 10)) return res.status(200).json({ Message: 'Invalid amount', RspCode: '04' });
       if (!(await orderableInstance.validSignature(params))) return res.status(200).json({ Message: 'Invalid Checksum', RspCode: '97' });
       if (paidAt) return res.status(200).json({ Message: 'Order already confirmed', RspCode: '02' });
