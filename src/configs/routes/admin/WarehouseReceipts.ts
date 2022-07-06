@@ -1,5 +1,5 @@
 import WarehouseReceiptController from '@controllers/api/admin/WarehouseReceiptsController';
-import { Router } from 'express';
+import { Request, Response, Router } from 'express';
 import Authorization from '@middlewares/authorization';
 import { withoutSavingUploader } from '@middlewares/uploaders';
 
@@ -222,7 +222,7 @@ router.get('/:warehouseReceiptId/download', Authorization.permit(WarehouseReceip
  *     security:
  *      - Bearer: []
  */
-router.post('/', Authorization.permit(WarehouseReceiptController.constructor.name, 'create'), WarehouseReceiptController.create);
+router.post('/', Authorization.permit(WarehouseReceiptController.constructor.name, 'create'), (req: Request, res: Response) => WarehouseReceiptController.create(req, res));
 
 /**
  * @openapi

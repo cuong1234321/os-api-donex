@@ -7,6 +7,7 @@ class SystemSettingModel extends Model<SystemSettingInterface> implements System
   public androidAppLink?: string;
   public iosAppLink?: string;
   public coinConversionLevel?: number;
+  public coinFinishOrder?: number;
   public hotline?: number;
   public hotlineUser?: number;
   public hotlineAgency?: number;

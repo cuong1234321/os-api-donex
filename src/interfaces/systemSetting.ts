@@ -3,6 +3,7 @@ interface SystemSettingInterface {
   androidAppLink?: string;
   iosAppLink?: string;
   coinConversionLevel?: number;
+  coinFinishOrder?: number;
   hotline?: number;
   hotlineUser?: number;
   hotlineAgency?: number;

@@ -1,3 +1,4 @@
+import WarehouseReceiptVariantModel from '@models/warehouseReceiptVariants';
 
 interface WarehouseReceiptInterface {
   id: number,
@@ -10,6 +11,8 @@ interface WarehouseReceiptInterface {
   deliverer: string,
   note: string,
   discount: number;
+
+  warehouseReceiptVariants?: WarehouseReceiptVariantModel[],
   createdAt?: Date,
   updatedAt?: Date,
   deletedAt?: Date,

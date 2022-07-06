@@ -9,6 +9,7 @@ import { ModelHooks } from 'sequelize/types/lib/hooks';
 import sequelize from '@initializers/sequelize';
 import MailerService from '@services/mailer';
 import SendNotification from '@services/notification';
+import _ from 'lodash';
 import AdminModel from './admins';
 import CoinWalletChangeModel from './coinWalletChanges';
 import OrderItemModel from './orderItems';
@@ -369,7 +370,7 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
       defaults: { id: undefined },
     }))[0];
     const order = await this.getOrder();
-    if (this.isNewRecord || !order?.ownerId || !order.paidAt) return;
+    if (this.isNewRecord || !order?.ownerId) return;
     if (this.previous('status') !== SubOrderModel.STATUS_ENUM.REFUND && this.status === SubOrderModel.STATUS_ENUM.REFUND) {
       const params: any = {
         id: undefined,
@@ -381,10 +382,23 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
       };
       await CoinWalletChangeModel.create(params);
     }
-    if (this.previous('status') !== SubOrderModel.STATUS_ENUM.FINISH && this.status === SubOrderModel.STATUS_ENUM.FINISH) {
+    if (this.previous('status') !== SubOrderModel.STATUS_ENUM.FINISH && (this.status === SubOrderModel.STATUS_ENUM.FINISH || this.status === SubOrderModel.STATUS_ENUM.DELIVERED)) {
       const user = await UserModel.scope([
         { method: ['byId', order.ownerId] },
       ]).findOne();
+      if (order.orderableType === OrderModel.ORDERABLE_TYPE.USER) {
+        const orderItems = (await this.getItems()).filter((record) => record.saleCampaignDiscount === 0);
+        const totalPriceListed = _.sumBy(orderItems, (record) => record.sellingPrice);
+        const params: any = {
+          id: undefined,
+          userId: order.orderableId,
+          type: CoinWalletChangeModel.TYPE_ENUM.ADD,
+          mutableType: CoinWalletChangeModel.MUTABLE_TYPE.ORDER,
+          mutableId: this.id,
+          amount: Math.round(totalPriceListed * systemSetting.coinFinishOrder / 100),
+        };
+        await CoinWalletChangeModel.create(params);
+      }
       if (user.alreadyFinishOrder) return;
       await user.update({ alreadyFinishOrder: true });
       if (this.subTotal > settings.minMoneyUpRank && this.subTotal < settings.maxMoneyUpRank) {

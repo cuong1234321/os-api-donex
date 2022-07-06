@@ -44,6 +44,9 @@ router.get('/', Authorization.permit(SystemSettingsController.constructor.name, 
  *            coinConversionLevel:
  *              type: "integer"
  *              description: "mức chuyển đổi"
+ *            coinFinishOrder:
+ *              type: "number"
+ *              description: "mức chuyển đổi từ tiền sang xu"
  *            hotline:
  *              type: "integer"
  *              description: "số hotline 24/7"
