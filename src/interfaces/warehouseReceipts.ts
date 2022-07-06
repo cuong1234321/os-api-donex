@@ -9,6 +9,7 @@ interface WarehouseReceiptInterface {
   orderId: number,
   deliverer: string,
   note: string,
+  discount: number;
   createdAt?: Date,
   updatedAt?: Date,
   deletedAt?: Date,

@@ -28,6 +28,9 @@ const WarehouseReceiptEntity = {
   note: {
     type: DataTypes.TEXT, allowNull: true,
   },
+  discount: {
+    type: DataTypes.BIGINT, defaultValue: 0,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },

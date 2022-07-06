@@ -155,4 +155,45 @@ router.get('/variant_sale', ReportsController.reportVariantSale);
  */
 router.get('/used_coin', ReportsController.reportUsedCoinReward);
 
+/**
+ * @openapi
+ * /a/report/return_orders:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] REPORTS"
+ *     summary: Bao cao don hang tra lai
+ *     description: Bao cao don hang tra lai
+ *     parameters:
+ *      - in: query
+ *        name: "page"
+ *        description: "page"
+ *        type: number
+ *      - in: query
+ *        name: "size"
+ *        description: "size"
+ *        type: number
+ *      - in: query
+ *        name: "freeWord"
+ *        description: "Tìm kiếm theo tên"
+ *        type: "string"
+ *      - in: query
+ *        name: "fromDate"
+ *        description: "Từ ngày"
+ *        type: "date"
+ *      - in: query
+ *        name: "toDate"
+ *        description: "Tới ngày"
+ *        type: "date"
+ *     responses:
+ *       200:
+ *         description: "Upload success"
+ *       404:
+ *         description: Không tìm thấy dữ liệu
+ *       500:
+ *        description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/return_orders', ReportsController.returnedOder);
+
 export default router;
