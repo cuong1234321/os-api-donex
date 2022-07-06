@@ -6,6 +6,8 @@ import ProductVariantModel from '@models/productVariants';
 import UserModel from '@models/users';
 import WarehouseReceiptModel from '@models/warehouseReceipts';
 import WarehouseReceiptVariantModel from '@models/warehouseReceiptVariants';
+import XlsxService from '@services/xlsx';
+import dayjs from 'dayjs';
 import { Request, Response } from 'express';
 
 class ReportController {
@@ -118,6 +120,38 @@ class ReportController {
       }
       const { rows, count } = await WarehouseReceiptVariantModel.scope(scopes).findAndCountAll({ limit, offset, distinct: true, col: 'WarehouseReceiptVariantModel.id' });
       sendSuccess(res, { orderItems: rows, pagination: { total: count, page, perPage: limit } });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async downloadReturnedOder (req: Request, res: Response) {
+    try {
+      const time = dayjs().format('DD-MM-YY-hh:mm:ss');
+      const fileName = `Bao-cao-phieu-tra-hang-${time}.xlsx`;
+      const { freeWord, fromDate, toDate } = req.query;
+      const sortBy = req.query.sortBy || 'createdAt';
+      const sortOrder = req.query.sortOrder || 'DESC';
+      const warehouseReceipts = await WarehouseReceiptModel.scope([
+        'isReturnOrder',
+      ]).findAll({ attributes: ['id'] });
+      const scopes: any = [
+        'withVariantDetail',
+        'withSubOrder',
+        { method: ['byWarehouseReceipt', warehouseReceipts.map(record => record.id)] },
+        { method: ['byDate', fromDate, toDate] },
+        { method: ['bySortOrder', sortBy, sortOrder] },
+      ];
+      if (freeWord) {
+        scopes.push({ method: ['byFreeWord', freeWord] });
+      }
+      const warehouseReceiptVariants = await WarehouseReceiptVariantModel.scope(scopes).findAll();
+      const buffer: any = await XlsxService.downloadReturnOrderReports(warehouseReceiptVariants);
+      res.writeHead(200, [
+        ['Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+        ['Content-Disposition', 'attachment; filename=' + `${fileName}`],
+      ]);
+      res.end(Buffer.from(buffer, 'base64'));
     } catch (error) {
       sendError(res, 500, error.message, error);
     }

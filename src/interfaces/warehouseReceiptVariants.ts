@@ -1,3 +1,4 @@
+import WarehouseReceiptInterface from './warehouseReceipts';
 
 interface WarehouseReceiptVariantInterface {
   id: number,
@@ -10,6 +11,11 @@ interface WarehouseReceiptVariantInterface {
   createdAt?: Date,
   updatedAt?: Date,
   deletedAt?: Date,
+
+  skuCode?: string;
+  name?: string;
+  unit?: string;
+  warehouseReceipt?: WarehouseReceiptInterface;
 };
 
 export default WarehouseReceiptVariantInterface;

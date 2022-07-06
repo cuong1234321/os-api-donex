@@ -74,6 +74,7 @@ public deletedAt?: Date;
 
 public warehouse?: WarehouseModel;
 public items?: OrderItemModel[];
+public shippingFullName?: string;
 
 static readonly STATUS_ENUM = {
   DRAFT: 'draft',

@@ -21,6 +21,11 @@ class WarehouseReceiptVariantModel extends Model<WarehouseReceiptVariantInterfac
   public updatedAt?: Date;
   public deletedAt?: Date;
 
+  public warehouseReceipt?: WarehouseReceiptModel;
+  public skuCode?: string;
+  public name?: string;
+  public unit?: string;
+
   static readonly UPDATABLE_ON_DUPLICATE_PARAMETERS = ['id', 'variantId', 'warehouseId', 'quantity', 'price', 'totalPrice']
 
   static readonly hooks: Partial<ModelHooks<WarehouseReceiptVariantModel>> = {
