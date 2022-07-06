@@ -13,6 +13,9 @@ const SystemSettingEntity = {
   coinConversionLevel: {
     type: DataTypes.INTEGER, allowNull: true, defaultValue: 1000,
   },
+  coinFinishOrder: {
+    type: DataTypes.FLOAT, defaultValue: 0.5,
+  },
   hotline: {
     type: DataTypes.INTEGER, allowNull: true,
   },

@@ -1,7 +1,7 @@
 import WarehouseReceiptEntity from '@entities/warehouseReceipts';
 import WarehouseReceiptInterface from '@interfaces/warehouseReceipts';
 import dayjs from 'dayjs';
-import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, Transaction, ValidationErrorItem } from 'sequelize';
+import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, Transaction } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import ProductOptionModel from './productOptions';
 import ProductModel from './products';
@@ -21,6 +21,7 @@ class WarehouseReceiptModel extends Model<WarehouseReceiptInterface> implements 
   public deliverer: string;
   public note: string;
   public discount: number;
+  public warehouseReceiptVariants?: WarehouseReceiptVariantModel[];
   public createdAt?: Date;
   public updatedAt?: Date;
   public deletedAt?: Date;
@@ -35,17 +36,11 @@ class WarehouseReceiptModel extends Model<WarehouseReceiptInterface> implements 
 
   static readonly IMPORTABLE_TYPE: any = { ORDER: 'order' };
 
+  static readonly TYPE_ENUM: any = { ORDER_REFUND: 'orderRefund', NEW_GOODS: 'newGoods', OTHERS: 'others' }
+
   static readonly hooks: Partial<ModelHooks<WarehouseReceiptModel>> = {}
 
   static readonly validations: ModelValidateOptions = {
-    async uniqueOrderId () {
-      if (this.orderId) {
-        const existedRecord = await WarehouseReceiptModel.scope([{ method: ['byOrderId', this.orderId] }]).findOne();
-        if (existedRecord && existedRecord.id !== this.id) {
-          throw new ValidationErrorItem('Đơn hàng này đã được tạo phiếu nhập kho.', 'uniqueOrderId', 'orderId', this.orderId);
-        }
-      }
-    },
   }
 
   static readonly scopes: ModelScopeOptions = {

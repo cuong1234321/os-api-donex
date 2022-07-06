@@ -9,6 +9,9 @@ import settings from '@configs/settings';
 import XlsxService from '@services/xlsx';
 import dayjs from 'dayjs';
 import WarehouseReceiptImporterService from '@services/warehouseReceiptImporter';
+import SubOrderModel from '@models/subOrders';
+import CoinWalletChangeModel from '@models/coinWalletChanges';
+import SystemSettingModel from '@models/systemSetting';
 
 class WarehouseReceiptController {
   public async create (req: Request, res: Response) {
@@ -23,6 +26,12 @@ class WarehouseReceiptController {
           ],
           transaction,
         });
+        if (warehouse.type === WarehouseReceiptModel.TYPE_ENUM.ORDER_REFUND) {
+          const coinWalletChange = await this.subtractCoin(warehouse.getDataValue('warehouseReceiptVariants'), warehouse.orderId);
+          if (coinWalletChange) {
+            await CoinWalletChangeModel.create(coinWalletChange, { transaction });
+          }
+        }
         return warehouse;
       });
       sendSuccess(res, { warehouseReceipt: result });
@@ -166,6 +175,32 @@ class WarehouseReceiptController {
       res.download(file, 'Form tải lên nhập kho (Mẫu).xlsx');
     } catch (error) {
       sendError(res, 500, error.message, error);
+    }
+  }
+
+  private async subtractCoin (warehouseReceiptVariants: WarehouseReceiptVariantModel[], subOrderId: number) {
+    const subOrder = await SubOrderModel.findByPk(subOrderId);
+    const order = await subOrder.getOrder();
+    const orderItems = (await subOrder.getItems()).filter((record) => record.saleCampaignDiscount === 0);
+    if (orderItems.length > 0) {
+      const systemSetting: any = (await SystemSettingModel.findOrCreate({
+        where: { },
+        defaults: { id: undefined },
+      }))[0];
+      let totalPrice = 0;
+      warehouseReceiptVariants.forEach(warehouseReceiptVariant => {
+        const orderItem = orderItems.find((record) => record.productVariantId === warehouseReceiptVariant.variantId);
+        totalPrice += orderItem.listedPrice * warehouseReceiptVariant.quantity;
+      });
+      const params: any = {
+        id: undefined,
+        userId: order.orderableId,
+        type: CoinWalletChangeModel.TYPE_ENUM.SUBTRACT,
+        mutableType: CoinWalletChangeModel.MUTABLE_TYPE.ORDER,
+        mutableId: subOrder.id,
+        amount: Math.round(totalPrice * systemSetting.coinFinishOrder / 100),
+      };
+      return params;
     }
   }
 }
