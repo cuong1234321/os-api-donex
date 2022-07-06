@@ -196,4 +196,37 @@ router.get('/used_coin', ReportsController.reportUsedCoinReward);
  */
 router.get('/return_orders', ReportsController.returnedOder);
 
+/**
+ * @openapi
+ * /a/report/return_orders/download:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] REPORTS"
+ *     summary: Tai xuong bao cao don hang tra lai
+ *     description: tai xuong bao cao don hang tra lai
+ *     parameters:
+ *      - in: query
+ *        name: "freeWord"
+ *        description: "Tìm kiếm theo tên"
+ *        type: "string"
+ *      - in: query
+ *        name: "fromDate"
+ *        description: "Từ ngày"
+ *        type: "date"
+ *      - in: query
+ *        name: "toDate"
+ *        description: "Tới ngày"
+ *        type: "date"
+ *     responses:
+ *       200:
+ *         description: "Upload success"
+ *       404:
+ *         description: Không tìm thấy dữ liệu
+ *       500:
+ *        description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/return_orders/download', ReportsController.downloadReturnedOder);
+
 export default router;

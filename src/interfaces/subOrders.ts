@@ -55,6 +55,7 @@ interface SubOrderInterface {
   order?: OrderInterface;
   warehouse?: WarehouseInterface;
   bill?: BillTemplateInterface;
+  shippingFullName?: string;
 };
 
 export default SubOrderInterface;

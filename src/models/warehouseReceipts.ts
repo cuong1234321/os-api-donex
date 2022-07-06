@@ -26,6 +26,8 @@ class WarehouseReceiptModel extends Model<WarehouseReceiptInterface> implements 
   public updatedAt?: Date;
   public deletedAt?: Date;
 
+  public subOrder?: SubOrderModel;
+
   static readonly CREATABLE_PARAMETERS = ['importDate', 'type', 'importAbleType', 'importAble', 'orderId', 'deliverer', 'note', 'discount',
     { warehouseReceiptVariants: ['warehouseId', 'variantId', 'quantity', 'price', 'totalPrice'] },
   ]
