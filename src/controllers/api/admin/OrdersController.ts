@@ -33,6 +33,7 @@ class OrderController {
         'withVoucher',
         'withOrderAbleName',
         'withsaleCampaign',
+        'withTotalCoinDiscount',
       ]).findOne();
       if (!order) { return sendError(res, 404, NoData); }
       order.setDataValue('subOrders', await order.getSubOrderDetail());

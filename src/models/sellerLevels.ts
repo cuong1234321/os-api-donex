@@ -1,6 +1,6 @@
 import SellerLevelEntity from '@entities/sellerLevels';
 import SellerLevelInterface from '@interfaces/sellerLevels';
-import { Model, ModelScopeOptions, ModelValidateOptions, Sequelize, ValidationErrorItem } from 'sequelize';
+import { Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import CollaboratorModel from './collaborators';
 
@@ -79,6 +79,13 @@ class SellerLevelModel extends Model<SellerLevelInterface> implements SellerLeve
     bySorting (sortBy, sortOrder) {
       return {
         order: [[Sequelize.literal(sortBy), sortOrder]],
+      };
+    },
+    byLteConditionValue (value) {
+      return {
+        where: {
+          conditionValue: { [Op.lte]: value },
+        },
       };
     },
   }

@@ -173,7 +173,7 @@ class OrderDecorator {
           subOrder.shippingDiscount = subOrder.shippingFee;
           subOrder.shippingFee = 0;
         }
-        const warehouseCoinDiscount = Math.round((subOrder.subTotal / orderFinalAmount) * coinDiscount);
+        const warehouseCoinDiscount = Math.round((subOrder.subTotal / finalAmount) * coinDiscount);
         subOrder.coinDiscount = warehouseCoinDiscount;
         subOrder.totalDiscount = subOrder.totalDiscount + warehouseCoinDiscount;
         subOrder.coinUsed = Math.round((subOrder.coinDiscount / systemSetting.coinConversionLevel));

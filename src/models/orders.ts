@@ -407,6 +407,18 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
         ],
       };
     },
+    withTotalCoinDiscount () {
+      return {
+        attributes: {
+          include: [
+            [
+              Sequelize.literal('(SELECT SUM(coinDiscount) FROM sub_orders WHERE sub_orders.deletedAt IS NULL AND orderId = OrderModel.id)'),
+              'coinDiscount',
+            ],
+          ],
+        },
+      };
+    },
   }
 
   public async reloadWithDetail () {
