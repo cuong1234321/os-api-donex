@@ -127,19 +127,12 @@ class TopUpDepositModel extends Model<TopUpDepositInterface> implements TopUpDep
     },
     byDepositorFreeWord (freeWord) {
       return {
-        include: [
-          {
-            model: CollaboratorModel,
-            as: 'seller',
-            where: {
-              [Op.or]: [
-                { phoneNumber: { [Op.like]: `%${freeWord || ''}%` } },
-                { fullName: { [Op.like]: `%${freeWord || ''}%` } },
-              ],
-            },
-            required: true,
-          },
-        ],
+        where: {
+          [Op.or]: [
+            { code: freeWord },
+            { ownerId: { [Op.in]: Sequelize.literal(`(SELECT id FROM collaborators WHERE phoneNumber LIKE "%${freeWord}%" OR fullName LIKE "%${freeWord}%")`) } },
+          ],
+        },
       };
     },
     withSeller () {
