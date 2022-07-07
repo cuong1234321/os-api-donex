@@ -135,7 +135,7 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
     },
     async afterCreate (record) {
       if (record.appliedVoucherId) {
-        await VoucherModel.update({ discount: record.applicationDiscount, activeAt: dayjs() }, { where: { id: record.appliedVoucherId } });
+        await VoucherModel.update({ discount: _.sumBy(record.subOrders, (subOrder) => subOrder.voucherDiscount), activeAt: dayjs() }, { where: { id: record.appliedVoucherId } });
       }
       await record.subtractUserCoin();
     },
