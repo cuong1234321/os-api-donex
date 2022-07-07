@@ -4,7 +4,7 @@ import OrderItemInterface from '@interfaces/orderItems';
 import SubOrderInterface from '@interfaces/subOrders';
 import Order from '@repositories/models/orders';
 import dayjs from 'dayjs';
-import { BelongsToGetAssociationMixin, HasManyGetAssociationsMixin, Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, Transaction, ValidationErrorItem } from 'sequelize';
+import { BelongsToGetAssociationMixin, HasManyGetAssociationsMixin, Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, Transaction, ValidationErrorItem, QueryTypes } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import sequelize from '@initializers/sequelize';
 import MailerService from '@services/mailer';
@@ -23,6 +23,9 @@ import WarehouseModel from './warehouses';
 import SubOrderShippingModel from './subOrderShippings';
 import WarehouseReceiptModel from './warehouseReceipts';
 import UserNotificationsModel from './userNotifications';
+import RankModel from './ranks';
+import CollaboratorModel from './collaborators';
+import SellerLevelModel from './sellerLevels';
 
 class SubOrderModel extends Model<SubOrderInterface> implements SubOrderInterface {
 public id: number;
@@ -383,11 +386,11 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
       };
       await CoinWalletChangeModel.create(params);
     }
-    if (this.previous('status') !== SubOrderModel.STATUS_ENUM.FINISH && (this.status === SubOrderModel.STATUS_ENUM.FINISH || this.status === SubOrderModel.STATUS_ENUM.DELIVERED)) {
-      const user = await UserModel.scope([
-        { method: ['byId', order.ownerId] },
-      ]).findOne();
+    if (this.previous('status') !== SubOrderModel.STATUS_ENUM.FINISH && (this.status === SubOrderModel.STATUS_ENUM.FINISH || this.status === SubOrderModel.STATUS_ENUM.DELIVERED) && order.orderableId) {
       if (order.orderableType === OrderModel.ORDERABLE_TYPE.USER) {
+        const user = await UserModel.scope([
+          { method: ['byId', order.ownerId] },
+        ]).findOne();
         const orderItems = (await this.getItems()).filter((record) => record.saleCampaignDiscount === 0);
         const totalPriceListed = _.sumBy(orderItems, (record) => record.sellingPrice);
         const params: any = {
@@ -399,11 +402,25 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
           amount: Math.round(totalPriceListed * systemSetting.coinFinishOrder / 100),
         };
         await CoinWalletChangeModel.create(params);
-      }
-      if (user.alreadyFinishOrder) return;
-      await user.update({ alreadyFinishOrder: true });
-      if (this.subTotal > settings.minMoneyUpRank && this.subTotal < settings.maxMoneyUpRank) {
-        await user.update({ rank: UserModel.RANK_ENUM.VIP });
+        await user.update({ alreadyFinishOrder: true });
+        const rankVip = await RankModel.scope([
+          { method: ['byType', RankModel.TYPE_ENUM.VIP] },
+        ]).findOne();
+        if (this.subTotal > rankVip.orderValueFrom) {
+          await user.update({ rank: UserModel.RANK_ENUM.VIP });
+        }
+      } else {
+        const seller = await CollaboratorModel.findByPk(order.orderableId);
+        const totalIncome: any = await sequelize.query(`(SELECT SUM(sub_orders.subTotal) as totalIncome FROM sub_orders INNER JOIN orders ON orders.id = sub_orders.orderId 
+        WHERE sub_orders.deletedAt IS NULL AND orders.deletedAt IS NULL AND sub_orders.status = "${SubOrderModel.STATUS_ENUM.DELIVERED}" AND orders.orderableId = ${order.orderableId})`, { type: QueryTypes.SELECT });
+        const sellerLevels = await SellerLevelModel.scope([
+          { method: ['byType', order.orderableType] },
+          { method: ['bySorting', 'conditionValue', 'DESC'] },
+          { method: ['byLteConditionValue', totalIncome[0].totalIncome] },
+        ]).findAll();
+        if (sellerLevels.length > 0) {
+          await seller.update({ currentRank: sellerLevels[0].id });
+        }
       }
     }
     if (SubOrderModel.CANCEL_CASE.includes(this.previous('status')) && this.status === SubOrderModel.STATUS_ENUM.CANCEL) {
@@ -417,7 +434,7 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
     const warehouse = await WarehouseModel.findByPk(this.warehouseId);
     const admins = await warehouse.getAdmins();
     for (const admin of admins) {
-      await MailerService.subOrderCreate(admin, this);
+      MailerService.subOrderCreate(admin, this);
       if (this.status === SubOrderModel.STATUS_ENUM.PENDING) {
         SendNotification.newOrderAdmin(admin, UserNotificationsModel.USER_TYPE_ENUM.ADMIN);
       }
@@ -681,7 +698,7 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
       return {
         where: {
           [Op.and]: [
-            Sequelize.where(Sequelize.literal('(SELECT (subTotal + shippingFee - deposit - rankDiscount - voucherDiscount - totalOtherDiscount) FROM sub_orders WHERE id = SubOrderModel.id)'), {
+            Sequelize.where(Sequelize.literal('(SELECT (subTotal + shippingFee - deposit - rankDiscount - voucherDiscount - totalOtherDiscount - coinDiscount) FROM sub_orders WHERE id = SubOrderModel.id)'), {
               [Op.between]: [value, value],
             }),
           ],
@@ -692,7 +709,7 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
       return {
         where: {
           [Op.and]: [
-            Sequelize.where(Sequelize.literal('(SELECT (subTotal + shippingFee - deposit - rankDiscount - voucherDiscount - totalOtherDiscount) FROM sub_orders WHERE id = SubOrderModel.id)'), {
+            Sequelize.where(Sequelize.literal('(SELECT (subTotal + shippingFee - deposit - rankDiscount - voucherDiscount - totalOtherDiscount - coinDiscount) FROM sub_orders WHERE id = SubOrderModel.id)'), {
               [Op.lte]: value,
             }),
           ],
@@ -703,7 +720,7 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
       return {
         where: {
           [Op.and]: [
-            Sequelize.where(Sequelize.literal('(SELECT (subTotal + shippingFee - deposit - rankDiscount - voucherDiscount - totalOtherDiscount) FROM sub_orders WHERE id = SubOrderModel.id)'), {
+            Sequelize.where(Sequelize.literal('(SELECT (subTotal + shippingFee - deposit - rankDiscount - voucherDiscount - totalOtherDiscount - coinDiscount) FROM sub_orders WHERE id = SubOrderModel.id)'), {
               [Op.gte]: value,
             }),
           ],
@@ -724,7 +741,7 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
         attributes: {
           include: [
             [
-              Sequelize.literal('(SELECT (subTotal + shippingFee + tax - deposit - rankDiscount - voucherDiscount - totalOtherDiscount) FROM sub_orders WHERE id = SubOrderModel.id)'),
+              Sequelize.literal('(SELECT (subTotal + shippingFee + tax - deposit - rankDiscount - voucherDiscount - totalOtherDiscount - coinDiscount) FROM sub_orders WHERE id = SubOrderModel.id)'),
               'finalAmount',
             ],
           ],
