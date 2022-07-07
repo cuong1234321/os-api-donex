@@ -1,4 +1,5 @@
 import ProductVerifyCodeController from '@controllers/api/admin/ProductVerifyCodesController';
+import authorization from '@middlewares/authorization';
 import { withoutSavingUploader } from '@middlewares/uploaders';
 import { Router } from 'express';
 
@@ -42,7 +43,7 @@ const router = Router();
  *     security:
  *      - Bearer: []
  */
-router.get('/', ProductVerifyCodeController.index);
+router.get('/', authorization.permit(ProductVerifyCodeController.constructor.name, 'index'), ProductVerifyCodeController.index);
 
 /**
  * @openapi
@@ -59,7 +60,7 @@ router.get('/', ProductVerifyCodeController.index);
  *     security:
  *      - Bearer: []
  */
-router.get('/download_template', ProductVerifyCodeController.downloadTemplate);
+router.get('/download_template', authorization.permit(ProductVerifyCodeController.constructor.name, 'create'), ProductVerifyCodeController.downloadTemplate);
 
 /**
  * @openapi
@@ -87,6 +88,6 @@ router.get('/download_template', ProductVerifyCodeController.downloadTemplate);
  *     security:
  *      - Bearer: []
  */
-router.post('/upload', withoutSavingUploader.single('file'), ProductVerifyCodeController.upload);
+router.post('/upload', authorization.permit(ProductVerifyCodeController.constructor.name, 'create'), withoutSavingUploader.single('file'), ProductVerifyCodeController.upload);
 
 export default router;

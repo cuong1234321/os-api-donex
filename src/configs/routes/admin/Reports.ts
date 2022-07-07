@@ -1,4 +1,5 @@
 import ReportsController from '@controllers/api/admin/ReportsController';
+import authorization from '@middlewares/authorization';
 import { Router } from 'express';
 
 const router = Router();
@@ -194,7 +195,7 @@ router.get('/used_coin', ReportsController.reportUsedCoinReward);
  *     security:
  *      - Bearer: []
  */
-router.get('/return_orders', ReportsController.returnedOder);
+router.get('/return_orders', authorization.permit(ReportsController.constructor.name, 'returnReport'), ReportsController.returnedOder);
 
 /**
  * @openapi
@@ -227,6 +228,6 @@ router.get('/return_orders', ReportsController.returnedOder);
  *     security:
  *      - Bearer: []
  */
-router.get('/return_orders/download', ReportsController.downloadReturnedOder);
+router.get('/return_orders/download', authorization.permit(ReportsController.constructor.name, 'returnReport'), ReportsController.downloadReturnedOder);
 
 export default router;
