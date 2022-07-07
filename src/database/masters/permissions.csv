@@ -139,3 +139,11 @@ id,groupId,title,key
 138,32,Quản lý Look Book xóa,delete
 139,32,Quản lý Look Book xem,show
 140,32,Quản lý Look Book danh sách,index
+141,33,Báo cáo phiếu trả hàng,returnReport
+142,34,Quản lý form dáng thêm,create
+143,34,Quản lý form dáng sửa,update
+144,34,Quản lý form dáng xóa,delete
+145,34,Quản lý form dáng xem,show
+146,34,Quản lý form dáng danh sách,index
+147,35,Quản lý mã xác thực sản phẩm thêm,create
+148,35,Quản lý mã xác thực sản phẩm danh sách,index

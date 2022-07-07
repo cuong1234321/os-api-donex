@@ -1,4 +1,5 @@
 import FormController from '@controllers/api/admin/FormsController';
+import authorization from '@middlewares/authorization';
 import { Router } from 'express';
 
 const router = Router();
@@ -18,7 +19,7 @@ const router = Router();
  *     security:
  *      - Bearer: []
  */
-router.get('/', FormController.index);
+router.get('/', authorization.permit(FormController.constructor.name, 'index'), FormController.index);
 
 /**
  * @openapi
@@ -43,7 +44,7 @@ router.get('/', FormController.index);
  *     security:
  *      - Bearer: []
  */
-router.get('/:formId', FormController.show);
+router.get('/:formId', authorization.permit(FormController.constructor.name, 'show'), FormController.show);
 
 /**
  * @openapi
@@ -74,7 +75,7 @@ router.get('/:formId', FormController.show);
  *      - Bearer: []
  */
 
-router.post('/', FormController.create);
+router.post('/', authorization.permit(FormController.constructor.name, 'create'), FormController.create);
 
 /**
  * @openapi
@@ -109,7 +110,7 @@ router.post('/', FormController.create);
  *     security:
  *      - Bearer: []
  */
-router.patch('/:formId', FormController.update);
+router.patch('/:formId', authorization.permit(FormController.constructor.name, 'update'), FormController.update);
 
 /**
  * @openapi
@@ -134,6 +135,6 @@ router.patch('/:formId', FormController.update);
  *     security:
  *      - Bearer: []
  */
-router.delete('/:formId', FormController.delete);
+router.delete('/:formId', authorization.permit(FormController.constructor.name, 'delete'), FormController.delete);
 
 export default router;
