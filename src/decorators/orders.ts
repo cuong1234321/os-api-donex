@@ -241,18 +241,18 @@ class OrderDecorator {
     if (user.rank === UserModel.RANK_ENUM.VIP) {
       rank = await RankModel.scope([
         { method: ['byType', UserModel.RANK_ENUM.VIP] },
-        { method: ['byCondition', totalQuantity] },
+        { method: ['byRangeCondition', totalQuantity] },
         'byDateEarnDiscount',
       ]).findOne();
       if (!rank) {
         rank = await RankModel.scope([
-          { method: ['byCondition', totalQuantity] },
+          { method: ['byRangeCondition', totalQuantity] },
           { method: ['byType', UserModel.RANK_ENUM.BASIC] },
         ]).findOne();
       }
     } else {
       rank = await RankModel.scope([
-        { method: ['byCondition', totalQuantity] },
+        { method: ['byRangeCondition', totalQuantity] },
       ]).findOne();
     }
     if (!rank) {
