@@ -12,6 +12,7 @@ import WarehouseReceiptImporterService from '@services/warehouseReceiptImporter'
 import SubOrderModel from '@models/subOrders';
 import CoinWalletChangeModel from '@models/coinWalletChanges';
 import SystemSettingModel from '@models/systemSetting';
+import _ from 'lodash';
 
 class WarehouseReceiptController {
   public async create (req: Request, res: Response) {
@@ -27,9 +28,13 @@ class WarehouseReceiptController {
           transaction,
         });
         if (warehouse.type === WarehouseReceiptModel.TYPE_ENUM.ORDER_REFUND) {
-          const coinWalletChange = await this.subtractCoin(warehouse.getDataValue('warehouseReceiptVariants'), warehouse.orderId);
-          if (coinWalletChange) {
-            await CoinWalletChangeModel.create(coinWalletChange, { transaction });
+          const subtractCoinWalletChange = await this.subtractCoin(warehouse.getDataValue('warehouseReceiptVariants'), warehouse.orderId);
+          const addCoinWalletChange = await this.addCoin(warehouse.getDataValue('warehouseReceiptVariants'), warehouse.orderId);
+          if (subtractCoinWalletChange?.amount && subtractCoinWalletChange.amount < 0) {
+            await CoinWalletChangeModel.create(subtractCoinWalletChange, { transaction });
+          }
+          if (addCoinWalletChange?.amount && addCoinWalletChange.amount > 0) {
+            await CoinWalletChangeModel.create(addCoinWalletChange, { transaction });
           }
         }
         return warehouse;
@@ -181,6 +186,7 @@ class WarehouseReceiptController {
   private async subtractCoin (warehouseReceiptVariants: WarehouseReceiptVariantModel[], subOrderId: number) {
     const subOrder = await SubOrderModel.findByPk(subOrderId);
     const order = await subOrder.getOrder();
+    if (!order.orderableId) { return; }
     const orderItems = (await subOrder.getItems()).filter((record) => record.saleCampaignDiscount === 0);
     if (orderItems.length > 0) {
       const systemSetting: any = (await SystemSettingModel.findOrCreate({
@@ -198,10 +204,30 @@ class WarehouseReceiptController {
         type: CoinWalletChangeModel.TYPE_ENUM.SUBTRACT,
         mutableType: CoinWalletChangeModel.MUTABLE_TYPE.ORDER,
         mutableId: subOrder.id,
-        amount: Math.round(totalPrice * systemSetting.coinFinishOrder / 100),
+        amount: 0 - Math.round(totalPrice * systemSetting.coinFinishOrder / 100),
       };
       return params;
     }
+  }
+
+  private async addCoin (warehouseReceiptVariants: WarehouseReceiptVariantModel[], subOrderId: number) {
+    const subOrder = await SubOrderModel.findByPk(subOrderId);
+    const order = await subOrder.getOrder();
+    if (!order.orderableId) { return; }
+    const totalPrice = _.sumBy(warehouseReceiptVariants, (record) => record.totalPrice);
+    const systemSetting: any = (await SystemSettingModel.findOrCreate({
+      where: { },
+      defaults: { id: undefined },
+    }))[0];
+    const params: any = {
+      id: undefined,
+      userId: order.orderableId,
+      type: CoinWalletChangeModel.TYPE_ENUM.ADD,
+      mutableType: CoinWalletChangeModel.MUTABLE_TYPE.ORDER_REFUND,
+      mutableId: subOrder.id,
+      amount: Math.round(totalPrice / (systemSetting.coinConversionLevel || 1000)),
+    };
+    return params;
   }
 }
 

@@ -1,5 +1,6 @@
 import CoinWalletChangeModel from '@models/coinWalletChanges';
 import UserModel from '@models/users';
+import SendNotification from '@services/notification';
 
 class ResetCoinAction {
   public async latOrderOutOfDate () {
@@ -20,6 +21,7 @@ class ResetCoinAction {
       });
     }
     await CoinWalletChangeModel.bulkCreate(coinWalletChangeParams);
+    await SendNotification.deleteCoinReward(users, 'user');
   }
 }
 

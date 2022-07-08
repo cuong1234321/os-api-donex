@@ -34,3 +34,4 @@ id,title,key
 33,Quản lý báo cáo,ReportController
 34,Quản lý form dáng,FormController
 35,Quản lý mã xác thực sản phẩm,ProductVerifyCodeController
+36,Quản lý báo cáo doanh thu,IncomeReportController
