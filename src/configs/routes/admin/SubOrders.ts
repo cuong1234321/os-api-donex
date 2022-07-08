@@ -255,6 +255,28 @@ router.patch('/:subOrderId/update_other_discounts', (req: Request, res: Response
 
 /**
  * @openapi
+ * /a/sub_orders/{subOrderId}/update_affiliate_status:
+ *   patch:
+ *     tags:
+ *      - "[ADMIN] SUB ORDERS"
+ *     summary: update trang thai doi soat affiliate
+ *     parameters:
+ *      - in: path
+ *        name: "subOrderId"
+ *        description: ""
+ *        type: number
+ *     responses:
+ *       200:
+ *         description: "OK"
+ *       500:
+ *         description: "Internal error"
+ *     security:
+ *      - Bearer: []
+ */
+router.patch('/:subOrderId/update_affiliate_status', (req: Request, res: Response) => SubOrderController.updateAffiliateStatus(req, res));
+
+/**
+ * @openapi
  * /a/sub_orders/{subOrderId}/bill:
  *   get:
  *     tags:

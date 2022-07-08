@@ -1,6 +1,9 @@
+import sequelize from '@initializers/sequelize';
 import { NoData } from '@libs/errors';
 import { sendError, sendSuccess } from '@libs/response';
 import BillTemplateModel from '@models/billTemplates';
+import CollaboratorModel from '@models/collaborators';
+import MoneyWalletChangeModel from '@models/moneyWalletChanges';
 import OrderItemModel from '@models/orderItems';
 import OrderModel from '@models/orders';
 import SubOrderModel from '@models/subOrders';
@@ -10,7 +13,7 @@ import dayjs from 'dayjs';
 import { Request, Response } from 'express';
 import handlebars from 'handlebars';
 import _ from 'lodash';
-import { Sequelize } from 'sequelize';
+import { Sequelize, Transaction } from 'sequelize';
 
 class SubOrderController {
   public async index (req: Request, res: Response) {
@@ -191,6 +194,36 @@ class SubOrderController {
       ]);
       res.end(Buffer.from(buffer, 'base64'));
       sendSuccess(res, {});
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async updateAffiliateStatus (req: Request, res: Response) {
+    try {
+      const { subOrderId } = req.params;
+      const subOrder = await SubOrderModel.scope([
+        'isAffiliateOrder',
+      ]).findByPk(subOrderId);
+      if (!subOrder || subOrder.affiliateStatus === SubOrderModel.AFFILIATE_STATUS.CONFIRM) {
+        return sendError(res, 404, NoData);
+      }
+      const order = await subOrder.getOrder();
+      const seller = await CollaboratorModel.scope([
+        { method: ['byReferral', order.referralCode] },
+      ]).findOne();
+      await sequelize.transaction(async (transaction: Transaction) => {
+        await subOrder.update({ affiliateStatus: SubOrderModel.AFFILIATE_STATUS.CONFIRM }, { validate: false, hooks: false, transaction });
+        const moneyWalletChange: any = {
+          ownerId: seller.id,
+          type: MoneyWalletChangeModel.TYPE_ENUM.ADD,
+          mutableType: MoneyWalletChangeModel.MUTABLE_TYPE.ORDER,
+          mutableId: subOrder.id,
+          amount: subOrder.affiliateDiscount,
+        };
+        await MoneyWalletChangeModel.create(moneyWalletChange, { transaction });
+      });
+      sendSuccess(res, { subOrder });
     } catch (error) {
       sendError(res, 500, error.message, error);
     }
