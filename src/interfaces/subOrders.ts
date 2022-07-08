@@ -47,6 +47,7 @@ interface SubOrderInterface {
   otherDiscounts: string[];
   totalOtherDiscount: number;
   adminConfirmId: number;
+  affiliateStatus: string;
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;

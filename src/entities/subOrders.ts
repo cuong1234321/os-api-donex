@@ -153,6 +153,10 @@ const SubOrderEntity = {
     type: DataTypes.INTEGER,
     allowNull: true,
   },
+  affiliateStatus: {
+    type: DataTypes.ENUM({ values: ['pending', 'confirm'] }),
+    defaultValue: 'pending',
+  },
   createdAt: {
     type: DataTypes.DATE,
   },

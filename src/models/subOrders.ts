@@ -67,6 +67,7 @@ public cancelableId: number;
 public cancelRejectNote: string;
 public tax: number;
 public affiliateDiscount: number;
+public affiliateStatus: string;
 public expectedDeliveryTime: Date;
 public otherDiscounts: string[];
 public totalOtherDiscount: number;
@@ -116,6 +117,8 @@ static readonly CANCEL_CASE = [SubOrderModel.STATUS_ENUM.DRAFT, SubOrderModel.ST
 static readonly CANCEL_STATUS = { PENDING: 'pending', APPROVED: 'approved', REJECTED: 'rejected' }
 static readonly PAYMENT_STATUS = { PENDING: 'pending', PAID: 'paid' }
 static readonly CANCELABLE_TYPE_ENUM = { USER: 'user', COLLABORATOR: 'collaborator', AGENCY: 'agency', DISTRIBUTOR: 'distributor' };
+
+static readonly AFFILIATE_STATUS = { PENDING: 'pending', CONFIRM: 'confirm' }
 
 static readonly UPDATABLE_ON_DUPLICATE_PARAMETERS = ['id', 'warehouseId', 'weight', 'length', 'width', 'height', 'pickUpAt', 'shippingFeeMisa',
   'shippingFee', 'deposit', 'deliveryType', 'deliveryInfo', 'note', 'shippingType', 'shippingAttributeType', 'subTotal', 'total', 'otherDiscounts', 'totalOtherDiscount'];
@@ -953,6 +956,19 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
             },
           ],
         },
+      };
+    },
+    isAffiliateOrder () {
+      return {
+        include: [
+          {
+            model: OrderModel,
+            as: 'order',
+            where: {
+              referralCode: { [Op.ne]: null },
+            },
+          },
+        ],
       };
     },
   }
