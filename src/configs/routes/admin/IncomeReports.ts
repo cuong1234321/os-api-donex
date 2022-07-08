@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import IncomeReportController from '@controllers/api/admin/IncomeReportsController';
+import authorization from '@middlewares/authorization';
 
 const router = Router();
 
@@ -52,7 +53,7 @@ const router = Router();
  *     security:
  *      - Bearer: []
  */
-router.get('/sellers', IncomeReportController.sellerIncome);
+router.get('/sellers', authorization.permit(IncomeReportController.constructor.name, 'index'), IncomeReportController.sellerIncome);
 
 /**
  * @openapi
@@ -111,7 +112,7 @@ router.get('/sellers', IncomeReportController.sellerIncome);
  *     security:
  *      - Bearer: []
  */
-router.get('/employees', IncomeReportController.employeeIncome);
+router.get('/employees', authorization.permit(IncomeReportController.constructor.name, 'index'), IncomeReportController.employeeIncome);
 
 /**
   * @openapi
@@ -167,7 +168,7 @@ router.get('/employees', IncomeReportController.employeeIncome);
   *     security:
   *      - Bearer: []
   */
-router.get('/warehouses', IncomeReportController.warehouseIncome);
+router.get('/warehouses', authorization.permit(IncomeReportController.constructor.name, 'index'), IncomeReportController.warehouseIncome);
 
 /**
  * @openapi
@@ -218,7 +219,7 @@ router.get('/warehouses', IncomeReportController.warehouseIncome);
  *     security:
  *      - Bearer: []
  */
-router.get('/employees/download', IncomeReportController.downloadEmployeeIncome);
+router.get('/employees/download', authorization.permit(IncomeReportController.constructor.name, 'index'), IncomeReportController.downloadEmployeeIncome);
 
 /**
  * @openapi
@@ -261,7 +262,7 @@ router.get('/employees/download', IncomeReportController.downloadEmployeeIncome)
  *     security:
  *      - Bearer: []
  */
-router.get('/sellers/download', IncomeReportController.downloadSellerIncome);
+router.get('/sellers/download', authorization.permit(IncomeReportController.constructor.name, 'index'), IncomeReportController.downloadSellerIncome);
 
 /**
   * @openapi
@@ -309,6 +310,6 @@ router.get('/sellers/download', IncomeReportController.downloadSellerIncome);
   *     security:
   *      - Bearer: []
   */
-router.get('/warehouses/download', IncomeReportController.downloadWarehouseIncome);
+router.get('/warehouses/download', authorization.permit(IncomeReportController.constructor.name, 'index'), IncomeReportController.downloadWarehouseIncome);
 
 export default router;

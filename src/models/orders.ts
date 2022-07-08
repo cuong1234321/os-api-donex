@@ -612,7 +612,7 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
   }
 
   private async subtractUserCoin () {
-    if (!this.coinUsed) return;
+    if (!this.coinUsed || this.coinUsed === 0) return;
     if (this.orderableType !== OrderModel.ORDERABLE_TYPE.USER) return;
     await CoinWalletChangeModel.create(
       { id: undefined, userId: this.orderableId, type: CoinWalletChangeModel.TYPE_ENUM.SUBTRACT, mutableType: CoinWalletChangeModel.MUTABLE_TYPE.ORDER, mutableId: this.id, amount: 0 - this.coinUsed },
