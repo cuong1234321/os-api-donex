@@ -80,6 +80,19 @@ class RankModel extends Model<RankInterface> implements RankInterface {
         },
       };
     },
+    byRangeCondition (totalQuantity) {
+      return {
+        include: [{
+          model: RankConditionModel,
+          as: 'conditions',
+          where: {
+            orderAmountTo: { [Op.gte]: totalQuantity },
+            orderAmountFrom: { [Op.lte]: totalQuantity },
+          },
+        }],
+        order: [['conditions', 'orderAmountTo', 'DESC']],
+      };
+    },
   }
 
   public static initialize (sequelize: Sequelize) {
