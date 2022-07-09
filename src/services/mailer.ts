@@ -213,6 +213,21 @@ class MailerService {
     await this.sendMail(mailerOptions, templateName, templateArgs);
   }
 
+  public static async importAffiliateStatusReport (totalRows: number, totalImported: number, failToImportIndex: {[key: number]: string}, targetEmail: string) {
+    const mailerOptions: Mail.Options = {
+      from: 'Admin',
+      to: targetEmail,
+      subject: '[Hệ thống DONEX] Báo cáo tải lên đơn hàng đối soát.',
+    };
+    const templateArgs = {
+      totalRows,
+      totalImported,
+      failToImportIndex,
+    };
+    const templateName = 'importAffiliateStatusReport';
+    await this.sendMail(mailerOptions, templateName, templateArgs);
+  }
+
   private static async sendMailChangePassword (name: string, password: string, mailerOptions: Mail.Options, host: string) {
     const templateArgs = {
       url: host,

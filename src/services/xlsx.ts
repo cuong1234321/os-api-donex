@@ -48,6 +48,7 @@ class XlsxService {
         { v: subOrder.orderPartnerCode || '', s: { alignment: { horizontal: 'center' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
         { v: PAYMENT_METHOD_MAPPING[order.getDataValue('paymentMethod')], s: { alignment: { horizontal: 'center' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
         { v: subOrder.shippingFeeMisa || 0, s: { alignment: { horizontal: 'center' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: order.referralCode || '', s: { alignment: { horizontal: 'left' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
       ];
     });
     const headers = [
@@ -68,9 +69,10 @@ class XlsxService {
       { v: 'Mã đơn đối tác', s: { alignment: { horizontal: 'center' }, font: { bold: true }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
       { v: 'PTTT', s: { alignment: { horizontal: 'center' }, font: { bold: true }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
       { v: 'Phí giao hàng', s: { alignment: { horizontal: 'center' }, font: { bold: true }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'Đơn affiliate', s: { alignment: { horizontal: 'center' }, font: { bold: true }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
     ];
     rows.unshift(headers);
-    const wsColsOpts = [{ wch: 20 }, { wch: 20 }, { wch: 25 }, { wch: 25 }, { wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 20 }];
+    const wsColsOpts = [{ wch: 20 }, { wch: 20 }, { wch: 25 }, { wch: 25 }, { wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 20 }];
     const workSheet = XlsxService.appendSingleSheet(rows, wsColsOpts);
     return await XlsxService.exportToExcel([{ sheetName: 'Báo cáo', sheetData: workSheet }]);
   }

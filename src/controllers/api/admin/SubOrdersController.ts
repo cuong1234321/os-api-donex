@@ -1,5 +1,5 @@
 import sequelize from '@initializers/sequelize';
-import { NoData } from '@libs/errors';
+import { MissingImportFile, NoData } from '@libs/errors';
 import { sendError, sendSuccess } from '@libs/response';
 import BillTemplateModel from '@models/billTemplates';
 import CollaboratorModel from '@models/collaborators';
@@ -9,6 +9,7 @@ import OrderModel from '@models/orders';
 import SubOrderModel from '@models/subOrders';
 import SendNotification from '@services/notification';
 import XlsxService from '@services/xlsx';
+import AffiliateStatusImporterWorker from '@workers/affiliateStatusImporter';
 import dayjs from 'dayjs';
 import { Request, Response } from 'express';
 import handlebars from 'handlebars';
@@ -224,6 +225,21 @@ class SubOrderController {
         await MoneyWalletChangeModel.create(moneyWalletChange, { transaction });
       });
       sendSuccess(res, { subOrder });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async uploadAffiliateStatus (req: Request, res: Response) {
+    try {
+      const currentAdmin = req.currentAdmin || { id: 1 };
+      const file = req.file;
+      if (file.originalname.split('.').reverse()[0] !== 'xlsx') {
+        sendError(res, 400, MissingImportFile);
+      }
+      const productImporterWorker = new AffiliateStatusImporterWorker(file.originalname, file, currentAdmin);
+      await productImporterWorker.scheduleJob();
+      sendSuccess(res, {});
     } catch (error) {
       sendError(res, 500, error.message, error);
     }
