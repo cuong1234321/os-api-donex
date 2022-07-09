@@ -1,4 +1,5 @@
 import SubOrderController from '@controllers/api/admin/SubOrdersController';
+import { withoutSavingUploader } from '@middlewares/uploaders';
 import { Request, Response, Router } from 'express';
 
 const router = Router();
@@ -346,5 +347,33 @@ router.patch('/:subOrderId/approve_cancel', SubOrderController.approveCancel);
   *      - Bearer: []
   */
 router.patch('/:subOrderId/reject_cancel', SubOrderController.rejectCancel);
+
+/**
+ * @openapi
+ * /a/sub_orders/upload_affiliate_status:
+ *   post:
+ *     tags:
+ *      - "[ADMIN] SUB ORDERS"
+ *     summary: cap nhat trang thanh doi soat
+ *     consumes:
+ *      - "multipart/form-data"
+ *     produces:
+ *      - "application/json"
+ *     parameters:
+ *      - in: "formData"
+ *        name: "file"
+ *        description: "File upload"
+ *        required: true
+ *        allowMultiple: false
+ *        type: "file"
+ *     responses:
+ *       200:
+ *         description: Return data.
+ *       500:
+ *         description: Lỗi không xác định
+ *     security:
+ *      - Bearer: []
+ */
+router.post('/upload_affiliate_status', withoutSavingUploader.single('file'), SubOrderController.uploadAffiliateStatus);
 
 export default router;
