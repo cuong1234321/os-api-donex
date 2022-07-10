@@ -48,6 +48,7 @@ interface SubOrderInterface {
   totalOtherDiscount: number;
   adminConfirmId: number;
   affiliateStatus: string;
+  adminOrderStatus: string;
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;
@@ -57,6 +58,7 @@ interface SubOrderInterface {
   warehouse?: WarehouseInterface;
   bill?: BillTemplateInterface;
   shippingFullName?: string;
+  finalAmount?: number;
 };
 
 export default SubOrderInterface;

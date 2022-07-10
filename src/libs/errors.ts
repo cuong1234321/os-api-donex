@@ -111,3 +111,8 @@ export const AddressIsNotValid = {
   code: 320,
   message: 'Your shipping address is not valid',
 };
+
+export const notEnoughMoney = {
+  code: 330,
+  message: 'Seller\'s wallet does not have enough money',
+};

@@ -1,10 +1,11 @@
 import settings from '@configs/settings';
 import sequelize from '@initializers/sequelize';
-import { NoData, voucherIsCannotApply } from '@libs/errors';
+import { NoData, notEnoughMoney, voucherIsCannotApply } from '@libs/errors';
 import { sendError, sendSuccess } from '@libs/response';
 import SlugGeneration from '@libs/slugGeneration';
 import BillTemplateModel from '@models/billTemplates';
 import CollaboratorModel from '@models/collaborators';
+import MoneyWalletChangeModel from '@models/moneyWalletChanges';
 import OrderItemModel from '@models/orderItems';
 import OrderModel from '@models/orders';
 import ProductVariantModel from '@models/productVariants';
@@ -192,6 +193,49 @@ class OrderController {
       params.orderableType = currentSeller.type;
       params = await this.applyRankDiscount(params, params.totalPrice);
       sendSuccess(res, { order: params });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async confirmAdminOrderStatus (req: Request, res: Response) {
+    try {
+      const currentSeller = req.currentSeller;
+      const { orderId, subOrderId } = req.params;
+      const order = await OrderModel.scope([
+        { method: ['byId', orderId] },
+        { method: ['byOrderAble', currentSeller.id, currentSeller.type] },
+      ]).findOne();
+      const subOrder = await SubOrderModel.scope([
+        { method: ['byId', subOrderId] },
+        'withFinalAmount',
+      ]).findOne();
+      if (!order || !subOrder) {
+        return sendError(res, 404, NoData);
+      }
+      if (currentSeller.accumulatedMoney < (await subOrder).getDataValue('finalAmount')) {
+        return sendError(res, 403, notEnoughMoney);
+      }
+      await sequelize.transaction(async (transaction: Transaction) => {
+        await subOrder.update({
+          paymentStatus: SubOrderModel.PAYMENT_STATUS.PAID,
+          status: SubOrderModel.STATUS_ENUM.PENDING,
+          adminOrderStatus: SubOrderModel.ADMIN_ORDER_STATUS.CONFIRM,
+        }, {
+          transaction,
+          hooks: true,
+          validate: false,
+        });
+        const moneyWalletChange: any = {
+          ownerId: currentSeller.id,
+          type: MoneyWalletChangeModel.TYPE_ENUM.SUBTRACT,
+          mutableType: MoneyWalletChangeModel.MUTABLE_TYPE.ADMIN_ORDER,
+          mutableId: subOrder.id,
+          amount: 0 - subOrder.getDataValue('finalAmount'),
+        };
+        await MoneyWalletChangeModel.create(moneyWalletChange, { transaction });
+      });
+      sendSuccess(res, { subOrder });
     } catch (error) {
       sendError(res, 500, error.message, error);
     }

@@ -253,6 +253,15 @@ router.get('/:orderId', Authorization.permit(OrdersController.constructor.name, 
  *              description: "địa chỉ mua hàng"
  *              default: "string"
  *              require: true
+ *            paymentMethod:
+ *              type: "string"
+ *              description: "Phương thức thanh toán"
+ *              default: 'COD'
+ *              enum:
+ *                - COD
+ *                - banking
+ *                - vnPay
+ *                - wallet
  *            subOrders:
  *              type: "array"
  *              items:
@@ -537,6 +546,15 @@ router.post('/calculator_vouchers', (req: Request, res: Response) => OrdersContr
  *              description: "địa chỉ mua hàng"
  *              default: "string"
  *              require: true
+ *            paymentMethod:
+ *              type: "string"
+ *              description: "Phương thức thanh toán"
+ *              default: 'COD'
+ *              enum:
+ *                - COD
+ *                - banking
+ *                - vnPay
+ *                - wallet
  *            subOrders:
  *              type: "array"
  *              items:

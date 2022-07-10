@@ -73,7 +73,7 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
   ]
 
   static readonly ADMIN_CREATABLE_PARAMETERS = ['orderableType', 'appliedVoucherId', 'orderableId', 'saleChannel', 'shippingFullName', 'shippingProvinceId',
-    'shippingDistrictId', 'shippingPhoneNumber', 'shippingWardId', 'shippingAddress', 'saleCampaignId',
+    'shippingDistrictId', 'shippingPhoneNumber', 'shippingWardId', 'shippingAddress', 'saleCampaignId', 'paymentMethod',
     {
       subOrders: [
         'warehouseId', 'weight', 'length', 'width', 'height', 'pickUpAt', 'shippingFeeMisa', 'shippingFee', 'deposit', 'deliveryType', 'deliveryInfo', 'note', 'shippingType', 'shippingAttributeType',
@@ -83,7 +83,7 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
     }]
 
   static readonly ADMIN_UPDATABLE_PARAMETERS = ['orderableType', 'appliedVoucherId', 'orderableId', 'saleChannel', 'shippingFullName', 'shippingProvinceId',
-    'shippingDistrictId', 'shippingPhoneNumber', 'shippingWardId', 'shippingAddress', 'saleCampaignId', 'status',
+    'shippingDistrictId', 'shippingPhoneNumber', 'shippingWardId', 'shippingAddress', 'saleCampaignId', 'status', 'paymentMethod',
     {
       subOrders: [
         'id', 'warehouseId', 'weight', 'length', 'width', 'height', 'pickUpAt', 'shippingFeeMisa', 'shippingFee', 'deposit', 'deliveryType', 'deliveryInfo', 'note', 'shippingType', 'shippingAttributeType',
@@ -416,6 +416,13 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
               'coinDiscount',
             ],
           ],
+        },
+      };
+    },
+    byAdminOrderStatus (adminOrderStatus) {
+      return {
+        where: {
+          adminOrderStatus,
         },
       };
     },

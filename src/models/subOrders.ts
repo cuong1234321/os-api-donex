@@ -72,6 +72,7 @@ public expectedDeliveryTime: Date;
 public otherDiscounts: string[];
 public totalOtherDiscount: number;
 public adminConfirmId: number;
+public adminOrderStatus: string;
 public createdAt?: Date;
 public updatedAt?: Date;
 public deletedAt?: Date;
@@ -79,6 +80,7 @@ public deletedAt?: Date;
 public warehouse?: WarehouseModel;
 public items?: OrderItemModel[];
 public shippingFullName?: string;
+public finalAmount?: number;
 
 static readonly STATUS_ENUM = {
   DRAFT: 'draft',
@@ -121,12 +123,13 @@ static readonly CANCELABLE_TYPE_ENUM = { USER: 'user', COLLABORATOR: 'collaborat
 static readonly AFFILIATE_STATUS = { PENDING: 'pending', CONFIRM: 'confirm' }
 
 static readonly UPDATABLE_ON_DUPLICATE_PARAMETERS = ['id', 'warehouseId', 'weight', 'length', 'width', 'height', 'pickUpAt', 'shippingFeeMisa',
-  'shippingFee', 'deposit', 'deliveryType', 'deliveryInfo', 'note', 'shippingType', 'shippingAttributeType', 'subTotal', 'total', 'otherDiscounts', 'totalOtherDiscount'];
+  'shippingFee', 'deposit', 'deliveryType', 'deliveryInfo', 'note', 'shippingType', 'shippingAttributeType', 'subTotal', 'total', 'otherDiscounts', 'totalOtherDiscount', 'rankDiscount', 'voucherDiscount'];
 
 static readonly UPDATABLE_FEE_PARAMETERS = ['weight', 'length', 'width', 'height', 'pickUpAt', 'shippingFeeMisa',
   'shippingFee', 'deposit', 'deliveryType', 'deliveryInfo', 'note', 'shippingType', 'shippingAttributeType'];
 
 static readonly UPDATABLE_OTHER_DISCOUNT_PARAMETERS = [{ otherDiscounts: ['key', 'value', 'percent'] }];
+public static readonly ADMIN_ORDER_STATUS = { PENDING: 'pending', CONFIRM: 'confirm', REJECT: 'reject' }
 
 static readonly UPDATABLE_PARAMETERS = ['status'];
 
@@ -176,8 +179,7 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
     if (!this.isNewRecord) {
       await record.checkStatusSubOrder();
     }
-    if ((record.previous('status') === SubOrderModel.STATUS_ENUM.DRAFT && ![SubOrderModel.STATUS_ENUM.REJECT, SubOrderModel.STATUS_ENUM.CANCEL].includes(record.status))
-    ) {
+    if ((record.previous('status') === SubOrderModel.STATUS_ENUM.DRAFT && ![SubOrderModel.STATUS_ENUM.REJECT, SubOrderModel.STATUS_ENUM.CANCEL, SubOrderModel.STATUS_ENUM.DRAFT].includes(record.status))) {
       const order = await OrderModel.scope([
         { method: ['byId', record.orderId] },
       ]).findOne();
