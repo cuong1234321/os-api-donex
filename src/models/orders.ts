@@ -651,7 +651,7 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
       default:
         break;
     }
-    await this.update({ transactionId });
+    await this.update({ transactionId }, { validate: false });
     return result;
   }
 
