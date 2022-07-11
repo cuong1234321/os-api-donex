@@ -12,6 +12,7 @@ import CoinWalletChangeModel from './coinWalletChanges';
 import MDistrictModel from './mDistricts';
 import MProvinceModel from './mProvinces';
 import MWardModel from './mWards';
+import OrderFeedbackModel from './orderFeedbacks';
 import OrderItemModel from './orderItems';
 import ProductVariantModel from './productVariants';
 import SaleCampaignModel from './saleCampaigns';
@@ -502,6 +503,10 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
               [Sequelize.literal('(SELECT title FROM m_provinces WHERE id = warehouse.provinceId)'), 'provinceName'],
             ],
           },
+        },
+        {
+          model: OrderFeedbackModel,
+          as: 'orderFeedbacks',
         },
       ],
     });

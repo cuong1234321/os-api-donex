@@ -26,6 +26,7 @@ import UserNotificationsModel from './userNotifications';
 import RankModel from './ranks';
 import CollaboratorModel from './collaborators';
 import SellerLevelModel from './sellerLevels';
+import OrderFeedbackModel from './orderFeedbacks';
 
 class SubOrderModel extends Model<SubOrderInterface> implements SubOrderInterface {
 public id: number;
@@ -992,6 +993,7 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
     this.belongsTo(WarehouseModel, { as: 'warehouse', foreignKey: 'warehouseId' });
     this.hasMany(SubOrderShippingModel, { as: 'shippings', foreignKey: 'subOrderId' });
     this.belongsTo(AdminModel, { as: 'admin', foreignKey: 'adminConfirmId' });
+    this.hasMany(OrderFeedbackModel, { as: 'orderFeedbacks', foreignKey: 'subOrderId' });
   }
 }
 

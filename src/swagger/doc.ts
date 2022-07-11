@@ -49,6 +49,10 @@ const swaggerDefinition = {
       description: 'tinh gia van chuyen',
     },
     {
+      name: '[ADMIN] FEEDBACKS',
+      description: 'Quản lý yêu cầu phản hồi',
+    },
+    {
       name: '[ADMIN] FORMS',
       description: 'Quản lý form',
     },
@@ -227,6 +231,10 @@ const swaggerDefinition = {
     {
       name: '[USER] FEE',
       description: 'Tính giá van chuyen',
+    },
+    {
+      name: '[USER] FEEDBACKS',
+      description: 'Quản lý yêu cầu phản hồi',
     },
     {
       name: '[USER] HOMEPAGE',

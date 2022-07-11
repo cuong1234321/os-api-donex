@@ -30,6 +30,7 @@ import UserRouter from './Users';
 import UserNotificationRouter from './UserNotifications';
 import UserVoucherRouter from './Vouchers';
 import UploadRouter from './Uploads';
+import OrderFeedbackRouter from './OrderFeedbacks';
 
 const router = Router();
 
@@ -49,6 +50,7 @@ router.use('/news', NewsRouter);
 router.use('/news_categories', NewsCategoryRouter);
 router.use('/look_books', LookBookRouter);
 router.use('/orders', OrderRouter);
+router.use('/order_feedbacks', userPassport.authenticate('jwt', { session: false }), OrderFeedbackRouter);
 router.use('/passwords', PasswordRouter);
 router.use('/popups', PopupRouter);
 router.use('/products', ProductRouter);
