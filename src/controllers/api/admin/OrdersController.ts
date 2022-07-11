@@ -1,7 +1,7 @@
 import settings from '@configs/settings';
 import ApplySaleCampaignVariantDecorator from '@decorators/applySaleCampaignVariants';
 import sequelize from '@initializers/sequelize';
-import { invalidParameter, MissingImportFile, NoData, orderProcessing, voucherIsCannotApply } from '@libs/errors';
+import { invalidParameter, MissingImportFile, NoData, notEnoughMoney, orderProcessing, voucherIsCannotApply } from '@libs/errors';
 import { sendError, sendSuccess } from '@libs/response';
 import BillTemplateModel from '@models/billTemplates';
 import CollaboratorModel from '@models/collaborators';
@@ -50,6 +50,7 @@ class OrderController {
       let total = 0;
       let subTotal = 0;
       let shippingFee = 0;
+      let totalDiscount = 0;
       const billTemplate = (await BillTemplateModel.findOrCreate({
         where: {
           status: BillTemplateModel.STATUS_ENUM.ACTIVE,
@@ -75,13 +76,25 @@ class OrderController {
         total += totalQuantity;
         shippingFee += subOrder.shippingFee;
         subOrder.totalOtherDiscount = _.sumBy(subOrder.otherDiscounts, (record: any) => record.value);
+        totalDiscount = totalDiscount + (subOrder.deposit || 0) + (subOrder.totalOtherDiscount || 0);
+        if (params.orderableType === OrderModel.ORDERABLE_TYPE.USER) {
+          params.paymentMethod = OrderModel.PAYMENT_METHOD.COD;
+          subOrder.adminOrderStatus = SubOrderModel.ADMIN_ORDER_STATUS.CONFIRM;
+        }
       }
       params = await this.applyRankDiscount(params, total, subTotal);
-      params.paymentMethod = OrderModel.PAYMENT_METHOD.COD;
       if (params.appliedVoucherId) {
         const order = await this.applyVoucher(params, subTotal);
         if (!order) { return sendError(res, 404, voucherIsCannotApply); }
         params = order;
+      }
+      totalDiscount = totalDiscount + params.rankDiscount + (params?.voucherDiscount || 0);
+      const finalAmount = subTotal + shippingFee - totalDiscount;
+      if (params.orderableType !== OrderModel.ORDERABLE_TYPE.USER && params.paymentMethod === OrderModel.PAYMENT_METHOD.WALLET) {
+        const seller = await CollaboratorModel.findByPk(params.orderableId);
+        if (seller.accumulatedMoney < finalAmount) {
+          return sendError(res, 403, notEnoughMoney);
+        }
       }
       const result = await sequelize.transaction(async (transaction: Transaction) => {
         const order = await OrderModel.create({
@@ -148,6 +161,7 @@ class OrderController {
       let total = 0;
       let subTotal = 0;
       let shippingFee = 0;
+      let totalDiscount = 0;
       for (const subOrder of params.subOrders) {
         const { items, totalPrice, totalQuantity, totalWeight } = await ApplySaleCampaignVariantDecorator.calculatorVariantPrice(subOrder.items, params.saleCampaignId);
         subOrder.items = items;
@@ -159,6 +173,11 @@ class OrderController {
         subTotal += totalPrice;
         total += totalQuantity;
         shippingFee += subOrder.shippingFee;
+        totalDiscount = totalDiscount + (subOrder.deposit || 0) + (subOrder.totalOtherDiscount || 0);
+        if (params.orderableType === OrderModel.ORDERABLE_TYPE.USER) {
+          params.paymentMethod = OrderModel.PAYMENT_METHOD.COD;
+          subOrder.adminOrderStatus = SubOrderModel.ADMIN_ORDER_STATUS.CONFIRM;
+        }
       }
       params = await this.applyRankDiscount(params, total, subTotal);
       if (params.appliedVoucherId) {
@@ -166,9 +185,18 @@ class OrderController {
         if (!order) { return sendError(res, 404, voucherIsCannotApply); }
         params = order;
       }
+      totalDiscount = totalDiscount + params.rankDiscount + (params?.voucherDiscount || 0);
+      const finalAmount = subTotal + shippingFee - totalDiscount;
+      if (params.orderableType !== OrderModel.ORDERABLE_TYPE.USER && params.paymentMethod === OrderModel.PAYMENT_METHOD.WALLET) {
+        const seller = await CollaboratorModel.findByPk(params.orderableId);
+        if (seller.accumulatedMoney < finalAmount) {
+          return sendError(res, 403, notEnoughMoney);
+        }
+      }
       await sequelize.transaction(async (transaction: Transaction) => {
         await order.update({
           ...params,
+          ownerId: params.orderableId,
           total,
           subTotal,
           shippingFee,

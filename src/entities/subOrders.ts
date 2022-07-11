@@ -157,6 +157,10 @@ const SubOrderEntity = {
     type: DataTypes.ENUM({ values: ['pending', 'confirm'] }),
     defaultValue: 'pending',
   },
+  adminOrderStatus: {
+    type: DataTypes.ENUM({ values: ['pending', 'confirm', 'reject'] }),
+    defaultValue: 'pending',
+  },
   createdAt: {
     type: DataTypes.DATE,
   },

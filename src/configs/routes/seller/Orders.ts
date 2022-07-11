@@ -458,4 +458,28 @@ router.post('/calculator_ranks', (req: Request, res: Response) => OrderControlle
   */
 router.post('/calculator_vouchers', (req: Request, res: Response) => OrderController.calculatorVoucher(req, res));
 
+/**
+  * @openapi
+  * /s/orders/{orderId}/sub_orders/{subOrderId}/confirm_admin_order_status:
+  *   patch:
+  *     tags:
+  *      - "[SELLER] ORDERS"
+  *     summary: xac nhan don hang dat ho
+  *     parameters:
+  *      - in: "path"
+  *        name: "orderId"
+  *        description: "Thông tin order"
+  *      - in: "path"
+  *        name: "subOrderId"
+  *        description: "Thông tin order"
+  *     responses:
+  *       200:
+  *         description: "OK"
+  *       500:
+  *         description: "Internal error"
+  *     security:
+  *      - Bearer: []
+  */
+router.patch('/:orderId/sub_orders/:subOrderId/confirm_admin_order_status', (req: Request, res: Response) => OrderController.confirmAdminOrderStatus(req, res));
+
 export default router;

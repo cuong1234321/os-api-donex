@@ -28,6 +28,7 @@ class MoneyWalletChangeModel extends Model<MoneyWalletChangeInterface> implement
     REFERRAL: 'referral',
     AFFILIATE_COMMISSION: 'affiliateCommission',
     ORDER: 'order',
+    ADMIN_ORDER: 'adminOrder',
   }
 
   static readonly hooks: Partial<ModelHooks<MoneyWalletChangeModel>> = {
