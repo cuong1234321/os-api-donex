@@ -8,6 +8,7 @@ interface ProductCategoryInterface {
   type: string;
   index: number;
   misaId?: string;
+  sizeType: string;
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;

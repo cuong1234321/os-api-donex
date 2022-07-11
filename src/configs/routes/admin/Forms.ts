@@ -64,6 +64,10 @@ router.get('/:formId', authorization.permit(FormController.constructor.name, 'sh
  *              type: "string"
  *              description: "Tên form"
  *              default: "Name example"
+ *            slug:
+ *              type: "string"
+ *              description: "slug"
+ *              default: "name_example"
  *     responses:
  *       200:
  *         description: Return data.
@@ -100,6 +104,10 @@ router.post('/', authorization.permit(FormController.constructor.name, 'create')
  *              type: "string"
  *              description: "Tên form"
  *              default: "Name example"
+ *            slug:
+ *              type: "string"
+ *              description: "slug"
+ *              default: "name_example"
  *     responses:
  *       200:
  *         description: Return data.

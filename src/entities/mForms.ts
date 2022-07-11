@@ -7,6 +7,9 @@ const MFormEntity = {
   title: {
     type: DataTypes.STRING(255), allowNull: false,
   },
+  slug: {
+    type: DataTypes.STRING(255), allowNull: true,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },

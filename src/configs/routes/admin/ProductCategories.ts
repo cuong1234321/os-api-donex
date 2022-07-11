@@ -27,6 +27,16 @@ const router = Router();
  *              type: "string"
  *              description: "Tên danh mục"
  *              default: "Name example"
+ *            slug:
+ *              type: "string"
+ *              description: "slug"
+ *              default: "name-example"
+ *            sizeType:
+ *              type: "string"
+ *              description: ""
+ *              enum:
+ *                - clothes
+ *                - shoes
  *            index:
  *              type: "number"
  *              description: "thu tu uu tien"
@@ -158,6 +168,16 @@ router.patch('/:productCategoryId/upload_thumbnail', Authorization.permit(Produc
 *            index:
 *              type: "number"
 *              description: "thu tu uu tien"
+*            slug:
+*              type: "string"
+*              description: "slug"
+*              default: "name-example"
+*            sizeType:
+*              type: "string"
+*              description: ""
+*              enum:
+*                - clothes
+*                - shoes
 *     responses:
 *       200:
 *         description: "Upload success"

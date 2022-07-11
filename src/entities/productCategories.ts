@@ -38,6 +38,10 @@ const ProductCategoryEntity = {
   index: {
     type: DataTypes.INTEGER, defaultValue: 0,
   },
+  sizeType: {
+    type: DataTypes.ENUM({ values: ['shoes', 'clothes'] }),
+    defaultValue: 'clothes',
+  },
   createdAt: {
     type: DataTypes.DATE,
   },
