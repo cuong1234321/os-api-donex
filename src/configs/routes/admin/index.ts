@@ -19,6 +19,7 @@ import NewsRouter from './News';
 import MoneyWalletChangeRouter from './MoneyWalletChanges';
 import LookBookRouter from './LookBooks';
 import OrderRouter from './Orders';
+import OrderFeedbackRouter from './OrderFeedbacks';
 import PopupRouter from './Popups';
 import ProductVariantRouter from './ProductVariants';
 import ProductCategoryRouter from './ProductCategories';
@@ -71,6 +72,7 @@ router.use('/news', adminPassport.authenticate('jwt', { session: false }), NewsR
 router.use('/money_wallet_changes', adminPassport.authenticate('jwt', { session: false }), MoneyWalletChangeRouter);
 router.use('/look_books', adminPassport.authenticate('jwt', { session: false }), LookBookRouter);
 router.use('/orders', adminPassport.authenticate('jwt', { session: false }), adminPassport.authenticate('jwt', { session: false }), OrderRouter);
+router.use('/order_feedbacks', adminPassport.authenticate('jwt', { session: false }), OrderFeedbackRouter);
 router.use('/sub_orders', adminPassport.authenticate('jwt', { session: false }), adminPassport.authenticate('jwt', { session: false }), SubOrderRouter);
 router.use('/popups', adminPassport.authenticate('jwt', { session: false }), PopupRouter);
 router.use('/variants', adminPassport.authenticate('jwt', { session: false }), ProductVariantRouter);
