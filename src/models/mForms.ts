@@ -5,11 +5,12 @@ import MFormInterface from '@interfaces/mForms';
 class MFormModel extends Model<MFormInterface> implements MFormInterface {
   public id: number;
   public title: string;
+  public slug: string;
   public createdAt?: Date;
   public updatedAt?: Date;
 
-  static readonly CREATABLE_PARAMETERS = ['title']
-  static readonly UPDATABLE_PARAMETERS = ['title']
+  static readonly CREATABLE_PARAMETERS = ['title', 'slug']
+  static readonly UPDATABLE_PARAMETERS = ['title', 'slug']
 
   static readonly scopes: ModelScopeOptions = {
     bySortOrder (sortBy, sortOrder) {

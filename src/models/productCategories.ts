@@ -14,14 +14,15 @@ class ProductCategoryModel extends Model<ProductCategoryInterface> implements Pr
   public type: string;
   public misaId?: string;
   public index: number;
+  public sizeType: string;
   public createdAt?: Date;
   public updatedAt?: Date;
   public deletedAt?: Date;
 
   static readonly TYPE_ENUM = { NONE: 'none', COLLECTION: 'collection', GENDER: 'gender', PRODUCT_TYPE: 'productType' };
 
-  static readonly CREATABLE_PARAMETERS = ['parentId', 'name', 'type', 'index'];
-  static readonly UPDATABLE_PARAMETERS = ['parentId', 'name', 'thumbnail', 'index'];
+  static readonly CREATABLE_PARAMETERS = ['parentId', 'name', 'type', 'index', 'sizeType'];
+  static readonly UPDATABLE_PARAMETERS = ['parentId', 'name', 'thumbnail', 'index', 'sizeType'];
 
   static readonly hooks: Partial<ModelHooks<ProductCategoryModel>> = {
     async afterDestroy (record) {

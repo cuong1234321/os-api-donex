@@ -31,7 +31,7 @@ router.get('/:feedbackId', OrderFeedbacksController.show);
  *   patch:
  *     tags:
  *      - "[ADMIN] FEEDBACKS"
- *     summary: "xem chi tiet 1 phan hoi"
+ *     summary: "xu ly phan hoi"
  *     parameters:
  *      - in: path
  *        name: "feedbackId"
