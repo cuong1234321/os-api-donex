@@ -413,7 +413,7 @@ class OrderModel extends Model<OrderInterface> implements OrderInterface {
         attributes: {
           include: [
             [
-              Sequelize.literal('(SELECT SUM(coinDiscount) FROM sub_orders WHERE sub_orders.deletedAt IS NULL AND orderId = OrderModel.id)'),
+              Sequelize.cast(Sequelize.literal('(SELECT SUM(coinDiscount) FROM sub_orders WHERE sub_orders.deletedAt IS NULL AND orderId = OrderModel.id)'), 'SIGNED'),
               'coinDiscount',
             ],
           ],
