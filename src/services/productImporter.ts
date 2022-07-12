@@ -10,6 +10,8 @@ import ProductOptionModel from '@models/productOptions';
 import ProductVariantModel from '@models/productVariants';
 import MSizeModel from '@models/mSizes';
 import ProductCategoryRefModel from '@models/productCategoryRefs';
+import ProductCategoryModel from '@models/productCategories';
+import MFormModel from '@models/mForms';
 import VideoUploaderService from './videoUploader';
 import ImageUploaderService from './imageUploader';
 
@@ -68,7 +70,7 @@ class ProductImporterService {
     const failToImportIndex: {[key: number]: string} = {};
     const productAttributes = await this.readProducts();
     const importedProducts: ProductModel[] = [];
-    for (const [index, attribute] of productAttributes.entries()) {
+    for (const attribute of productAttributes) {
       try {
         await sequelize.transaction(async (transaction: Transaction) => {
           const product = await ProductModel.create(attribute, {
@@ -88,7 +90,7 @@ class ProductImporterService {
         errorLogger.addContext('requestType', 'ProductImporterLogging');
         errorLogger.error(error);
         if (error instanceof ValidationError) {
-          failToImportIndex[index + 1] = error.errors.map((e) => e.message).join('; ');
+          failToImportIndex[attribute.index] = error.errors.map((e) => e.message).join('; ');
         }
       }
     }
@@ -100,6 +102,8 @@ class ProductImporterService {
     const sheetData = this.xlsxFile[0].data;
     const rowsToProcess = _.range(ProductImporterService.SKIPPED_ROWS, sheetData.length);
     const sizes = await MSizeModel.findAll();
+    const categories = await ProductCategoryModel.findAll();
+    const forms = await MFormModel.findAll();
     const commonCode = [];
     for (const processingRow of rowsToProcess) {
       if (sheetData[processingRow][ProductImporterService.COLUMN_INDEX.INDEX]) {
@@ -107,11 +111,11 @@ class ProductImporterService {
           commonCode.push(sheetData[processingRow][ProductImporterService.COLUMN_INDEX.SKU]);
           attributes.push({
             skuCode: sheetData[processingRow][ProductImporterService.COLUMN_INDEX.SKU],
-            gender: sheetData[processingRow][ProductImporterService.COLUMN_INDEX.GENDER],
-            typeProductId: sheetData[processingRow][ProductImporterService.COLUMN_INDEX.PRODUCT_TYPE],
+            gender: (categories.find((record) => record.type === ProductCategoryModel.TYPE_ENUM.GENDER && record.slug === (sheetData[processingRow][ProductImporterService.COLUMN_INDEX.GENDER]).trim()))?.id || 0,
+            typeProductId: (categories.find((record) => record.type === ProductCategoryModel.TYPE_ENUM.PRODUCT_TYPE && record.slug === (sheetData[processingRow][ProductImporterService.COLUMN_INDEX.PRODUCT_TYPE]).trim()))?.id || 0,
             unit: sheetData[processingRow][ProductImporterService.COLUMN_INDEX.UNIT],
             name: sheetData[processingRow][ProductImporterService.COLUMN_INDEX.NAME],
-            sizeType: ProductImporterService.SIZE_TYPE_ENUM[sheetData[processingRow][ProductImporterService.COLUMN_INDEX.SIZE_TYPE]],
+            sizeType: sheetData[processingRow][ProductImporterService.COLUMN_INDEX.SIZE_TYPE].trim(),
             description: sheetData[processingRow][ProductImporterService.COLUMN_INDEX.DESCRIPTION],
             shortDescription: sheetData[processingRow][ProductImporterService.COLUMN_INDEX.SHORT_DESCRIPTION],
             weight: sheetData[processingRow][ProductImporterService.COLUMN_INDEX.WEIGHT],
@@ -121,14 +125,16 @@ class ProductImporterService {
             categoryRefs: new Array(0),
             options: new Array(0),
             variants: new Array(0),
+            index: sheetData[processingRow][ProductImporterService.COLUMN_INDEX.INDEX],
             medias: await this.generateProductMedia(sheetData, processingRow, 'product'),
           });
           if (sheetData[processingRow][ProductImporterService.COLUMN_INDEX.COLLECTION]) {
-            const collections: string[] = ((sheetData[processingRow][ProductImporterService.COLUMN_INDEX.COLLECTION]).toString().split(','));
+            const collections: string[] = ((sheetData[processingRow][ProductImporterService.COLUMN_INDEX.COLLECTION]).toString().trim().split(','));
             if (collections.length > 0) {
               const categoryRefs = collections.map((record) => {
+                const collection = categories.find((category) => category.type === ProductCategoryModel.TYPE_ENUM.COLLECTION && category.slug === record);
                 return {
-                  productCategoryId: record,
+                  productCategoryId: collection?.id || 0,
                 };
               });
               attributes[attributes.length - 1].categoryRefs = categoryRefs;
@@ -136,13 +142,13 @@ class ProductImporterService {
           }
           if (sheetData[processingRow][ProductImporterService.COLUMN_INDEX.CATEGORY]) {
             attributes[attributes.length - 1].categoryRefs.push({
-              productCategoryId: sheetData[processingRow][ProductImporterService.COLUMN_INDEX.CATEGORY],
+              productCategoryId: (categories.find((record) => record.type === ProductCategoryModel.TYPE_ENUM.NONE && record.slug === (sheetData[processingRow][ProductImporterService.COLUMN_INDEX.CATEGORY]).toString().trim()))?.id || 0,
             });
           }
           if (sheetData[processingRow][ProductImporterService.COLUMN_INDEX.FORM]) {
             attributes[attributes.length - 1].options.push({
               key: 'form',
-              value: sheetData[processingRow][ProductImporterService.COLUMN_INDEX.FORM],
+              value: (forms.find((record) => record.slug === sheetData[processingRow][ProductImporterService.COLUMN_INDEX.FORM].toString().trim()))?.id || 0,
               optionMappingId: attributes[attributes.length - 1].options.length + 1,
             });
           }

@@ -116,6 +116,11 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
         }
       }
     },
+    async validateSizeType () {
+      if (this.sizeType && !this.deletedAt && !['clothes', 'shoes', 'children'].includes(this.sizeType)) {
+        throw new ValidationErrorItem('Loại size không hợp lệ.', 'validateSizeType', 'sizeType', this.sizeType);
+      }
+    },
   }
 
   static readonly scopes: ModelScopeOptions = {
