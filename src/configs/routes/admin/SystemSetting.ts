@@ -92,6 +92,27 @@ router.get('/', Authorization.permit(SystemSettingsController.constructor.name, 
  *            robot:
  *              type: "string"
  *              description: "robot"
+ *            header:
+ *              type: "string"
+ *              description: "header"
+ *            contact:
+ *              type: "string"
+ *              description: "robot"
+ *            footer:
+ *              type: "string"
+ *              description: "footer"
+ *            mediaSocial:
+ *              type: "string"
+ *              description: "mang xa hoi, kenh ban hang"
+ *            supportInfo:
+ *              type: "string"
+ *              description: "thong tin ho tro"
+ *            suggestionKeyword:
+ *              type: "string"
+ *              description: "tu khoa goi y"
+ *            storeInfo:
+ *              type: "string"
+ *              description: "dia diem cua hang"
  *     responses:
  *       200:
  *         description: Success

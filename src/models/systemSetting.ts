@@ -31,6 +31,13 @@ class SystemSettingModel extends Model<SystemSettingInterface> implements System
   public tawktoScriptUrl?: string;
   public seoSetting?: string;
   public robot?: string;
+  public header?: string;
+  public footer?: string;
+  public mediaSocial?: string;
+  public contact?: string;
+  public supportInfo?: string;
+  public suggestionKeyword?: string;
+  public storeInfo?: string;
   public createdAt?: Date;
   public updatedAt?: Date;
 
