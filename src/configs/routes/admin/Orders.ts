@@ -110,6 +110,17 @@ const router = Router();
  *        description: "Phi giao hang. operator[eq(=), gte(>=), lte(<=)]"
  *        default: 'value,operator'
  *        type: "string"
+ *      - in: query
+ *        name: "affiliateStatus"
+ *        description: "Trang thai doi soat"
+ *        type: "string"
+ *        enum:
+ *          - pending
+ *          - confirm
+ *      - in: query
+ *        name: "orderCode"
+ *        description: "Ma don to"
+ *        type: "string"
  *     responses:
  *       200:
  *         description: "success"

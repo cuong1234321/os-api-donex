@@ -85,6 +85,34 @@ const SystemSettingEntity = {
   robot: {
     type: DataTypes.TEXT, allowNull: true,
   },
+  header: {
+    type: DataTypes.TEXT,
+    defaultValue: '[]',
+  },
+  footer: {
+    type: DataTypes.TEXT,
+    defaultValue: '[]',
+  },
+  mediaSocial: {
+    type: DataTypes.TEXT,
+    defaultValue: '[]',
+  },
+  contact: {
+    type: DataTypes.TEXT,
+    defaultValue: '[]',
+  },
+  supportInfo: {
+    type: DataTypes.TEXT,
+    defaultValue: '[]',
+  },
+  suggestionKeyword: {
+    type: DataTypes.TEXT,
+    defaultValue: '[]',
+  },
+  storeInfo: {
+    type: DataTypes.TEXT,
+    defaultValue: '[]',
+  },
   createdAt: {
     type: DataTypes.DATE,
   },

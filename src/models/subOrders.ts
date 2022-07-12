@@ -974,6 +974,27 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
         ],
       };
     },
+    byAffiliateStatus (affiliateStatus) {
+      return {
+        where: {
+          affiliateStatus,
+        },
+      };
+    },
+    byOrderCode (code) {
+      return {
+        include: [
+          {
+            model: OrderModel,
+            as: 'order',
+            required: true,
+            where: {
+              code,
+            },
+          },
+        ],
+      };
+    },
   }
 
   public static initialize (sequelize: Sequelize) {

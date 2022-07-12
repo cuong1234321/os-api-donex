@@ -27,6 +27,13 @@ interface SystemSettingInterface {
   tawktoScriptUrl?: string;
   seoSetting?: string;
   robot?: string;
+  header?: string;
+  footer?: string;
+  mediaSocial?: string;
+  contact?: string;
+  supportInfo?: string;
+  suggestionKeyword?: string;
+  storeInfo?: string;
   createdAt?: Date;
   updatedAt?: Date;
 };

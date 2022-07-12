@@ -305,6 +305,7 @@ class OrderController {
     const {
       code, paymentStatus, createAbleName, status, saleChannel, shippingName,
       subTotal, finalAmount, pickUpAt, phoneNumber, createdAt, shippingFee, shippingType, shippingCode, orderPartnerCode, paymentMethod, shippingFeeMisa,
+      orderCode, affiliateStatus,
     } = req.query;
     const scopes: any = [
       'withOrders',
@@ -322,6 +323,8 @@ class OrderController {
     if (pickUpAt) scopes.push({ method: ['byPickUpAt', pickUpAt] });
     if (phoneNumber) scopes.push({ method: ['byPhoneNumber', phoneNumber] });
     if (createdAt) scopes.push({ method: ['byCreatedAt', createdAt] });
+    if (affiliateStatus) scopes.push({ method: ['byAffiliateStatus', affiliateStatus] });
+    if (orderCode) scopes.push({ method: ['byOrderCode', orderCode] });
     if (shippingType) {
       const auth = await Auth.misaLogin();
       const shippingPartners = await ShippingPartner.index(auth);
