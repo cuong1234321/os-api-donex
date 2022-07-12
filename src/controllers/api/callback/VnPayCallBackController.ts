@@ -9,6 +9,7 @@ import { Request, Response } from 'express';
 class VnPayCallBackController {
   static readonly ORDERABLE_TYPE = { ORDER: 'order', TOP_UP_DEPOSIT: 'topUpDeposit' }
   public async paymentConfirmCallback (req: Request, res: Response) {
+    console.log('---------------', req.ip);
     try {
       const params = req.parameters.permit(VnpayPaymentService.QUERYABLE_PARAMETERS).value();
       let orderableInstance: TopUpDepositModel | OrderModel;
