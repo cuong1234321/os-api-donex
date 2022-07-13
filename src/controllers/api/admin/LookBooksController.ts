@@ -84,7 +84,7 @@ class LookBookController {
       const params = req.parameters.permit(LookBookModel.UPDATABLE_PARAMETERS).value();
       await sequelize.transaction(async (transaction: Transaction) => {
         await lookBook.updateMedias(params.medias, transaction);
-        await lookBook.updateChildren(params.medias, transaction);
+        await lookBook.updateChildren(params.children, transaction);
         await lookBook.update(params, { transaction });
       });
       sendSuccess(res, lookBook);
