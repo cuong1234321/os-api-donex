@@ -10,7 +10,7 @@ class LookBookMediaModel extends Model<LookBookMediaInterface> implements LookBo
   public createdAt?: Date;
   public updatedAt?: Date;
 
-  static readonly UPDATABLE_ON_DUPLICATE_PARAMETERS: ['id', 'source']
+  static readonly UPDATABLE_ON_DUPLICATE_PARAMETERS = ['id', 'source']
 
   static readonly validations: ModelValidateOptions = { }
 
