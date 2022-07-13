@@ -15,6 +15,7 @@ import VoucherConditionModel from '@models/voucherConditions';
 import VoucherModel from '@models/vouchers';
 import Auth from '@repositories/models/auth';
 import ShippingPartner from '@repositories/models/shippingPartners';
+import SendNotification from '@services/notification';
 import { Request, Response } from 'express';
 import { Transaction } from 'sequelize/types';
 
@@ -26,6 +27,7 @@ class OrderController {
       let total = 0;
       let subTotal = 0;
       let shippingFee = 0;
+      let totalDiscount = 0;
       const billTemplate = (await BillTemplateModel.findOrCreate({
         where: {
           status: BillTemplateModel.STATUS_ENUM.ACTIVE,
@@ -49,6 +51,7 @@ class OrderController {
         subTotal += totalPrice;
         total += totalQuantity;
         shippingFee += subOrder.shippingFee;
+        totalDiscount = totalDiscount + (subOrder.deposit || 0) + (subOrder.totalOtherDiscount || 0);
       }
       params.orderableType = currentSeller.type;
       params.orderableId = currentSeller.id;
@@ -59,6 +62,13 @@ class OrderController {
         const order = await this.applyVoucher(params, subTotal);
         if (!order) { return sendError(res, 404, voucherIsCannotApply); }
         params = order;
+      }
+      totalDiscount = totalDiscount + params.rankDiscount + (params?.voucherDiscount || 0);
+      const finalAmount = subTotal + shippingFee - totalDiscount;
+      if (params.paymentMethod === OrderModel.PAYMENT_METHOD.WALLET) {
+        if (currentSeller.accumulatedMoney < finalAmount) {
+          return sendError(res, 403, notEnoughMoney);
+        }
       }
       const result = await sequelize.transaction(async (transaction: Transaction) => {
         const order = await OrderModel.create({
@@ -208,12 +218,13 @@ class OrderController {
       ]).findOne();
       const subOrder = await SubOrderModel.scope([
         { method: ['byId', subOrderId] },
+        { method: ['byAdminOrderStatus', SubOrderModel.ADMIN_ORDER_STATUS.PENDING] },
         'withFinalAmount',
       ]).findOne();
       if (!order || !subOrder) {
         return sendError(res, 404, NoData);
       }
-      if (currentSeller.accumulatedMoney < (await subOrder).getDataValue('finalAmount')) {
+      if (order.paymentMethod === OrderModel.PAYMENT_METHOD.WALLET && currentSeller.accumulatedMoney < (await subOrder).getDataValue('finalAmount')) {
         return sendError(res, 403, notEnoughMoney);
       }
       await sequelize.transaction(async (transaction: Transaction) => {
@@ -235,6 +246,7 @@ class OrderController {
         };
         await MoneyWalletChangeModel.create(moneyWalletChange, { transaction });
       });
+      SendNotification.confirmAdminOrderToSeller(order.creatableId, subOrder.code);
       sendSuccess(res, { subOrder });
     } catch (error) {
       sendError(res, 500, error.message, error);

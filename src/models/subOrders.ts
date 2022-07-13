@@ -981,6 +981,13 @@ static readonly hooks: Partial<ModelHooks<SubOrderModel>> = {
         },
       };
     },
+    byAdminOrderStatus (adminOrderStatus) {
+      return {
+        where: {
+          adminOrderStatus,
+        },
+      };
+    },
     byOrderCode (code) {
       return {
         include: [

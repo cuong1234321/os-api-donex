@@ -116,5 +116,27 @@ class SendNotification {
     };
     await UserNotificationModel.create(userNotification);
   }
+
+  public static async adminOrderToSeller (sellerId: number, userType: string) {
+    const userNotification: any = {
+      userId: sellerId,
+      userType,
+      type: UserNotificationModel.TYPE_ENUM.ORDER,
+      title: 'Quản trị viên đã tạo đơn mới cho bạn.',
+      content: 'Hệ thống donex thông báo quản trị viên đã tạo đơn mới cho bạn. Bạn hãy vào danh sách đơn hàng để xác nhận đơn hàng.',
+    };
+    await UserNotificationModel.create(userNotification);
+  }
+
+  public static async confirmAdminOrderToSeller (adminId: number, subOrderCode: string) {
+    const userNotification: any = {
+      userId: adminId,
+      userType: 'admin',
+      type: UserNotificationModel.TYPE_ENUM.ORDER,
+      title: 'CTV/ĐL/NPP đã xác nhận đơn đặt hộ.',
+      content: `Đơn hàng ${subOrderCode} đã được CTV/ĐL/NPP xác nhận đặt hộ.`,
+    };
+    await UserNotificationModel.create(userNotification);
+  }
 }
 export default SendNotification;

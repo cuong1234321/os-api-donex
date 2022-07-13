@@ -22,6 +22,7 @@ import VoucherConditionModel from '@models/voucherConditions';
 import VoucherModel from '@models/vouchers';
 import _ from 'lodash';
 import OrderImporterService from '@services/orderImporter';
+import SendNotification from '@services/notification';
 
 class OrderController {
   public async show (req: Request, res: Response) {
@@ -123,6 +124,9 @@ class OrderController {
         });
         return order;
       });
+      if (params.orderableType !== OrderModel.ORDERABLE_TYPE.USER) {
+        SendNotification.adminOrderToSeller(params.orderableId, params.orderableType);
+      }
       sendSuccess(res, { order: result });
     } catch (error) {
       sendError(res, 500, error.message, error);

@@ -27,7 +27,7 @@ class LookBookModel extends Model<LookBookInterface> implements LookBookInterfac
     { children: ['id', 'title', 'description', 'thumbnail'] },
   ]
 
-  static readonly UPDATABLE_ON_DUPLICATE_PARAMETERS: ['id', 'title', 'description', 'thumbnail']
+  static readonly UPDATABLE_ON_DUPLICATE_PARAMETERS = ['id', 'title', 'description', 'thumbnail']
   public static readonly STATUS_ENUM = { ACTIVE: 'active', INACTIVE: 'inactive' }
 
   static readonly hooks: Partial<ModelHooks<LookBookModel>> = {
