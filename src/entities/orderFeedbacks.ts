@@ -19,9 +19,12 @@ const OrderFeedBackEntity = {
     type: DataTypes.INTEGER, allowNull: true,
   },
   status: {
-    type: DataTypes.ENUM({ values: ['pending', 'confirm'] }), defaultValue: 'pending',
+    type: DataTypes.ENUM({ values: ['pending', 'confirm', 'reject'] }), defaultValue: 'pending',
   },
   content: {
+    type: DataTypes.TEXT, allowNull: true,
+  },
+  rejectReason: {
     type: DataTypes.TEXT, allowNull: true,
   },
   createdAt: {
