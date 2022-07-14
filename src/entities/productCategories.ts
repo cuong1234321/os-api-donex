@@ -28,6 +28,11 @@ const ProductCategoryEntity = {
         : null;
       return thumbnail;
     },
+    set (value: string) {
+      value = value.replace(settings.imageStorageHost + '/', '');
+      this.setDataValue('thumbnail', value);
+      return value;
+    },
   },
   type: {
     type: DataTypes.STRING(255), defaultValue: 'none',
