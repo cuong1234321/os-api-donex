@@ -113,5 +113,56 @@ class WarehouseReportController {
       sendError(res, 500, error.message, error);
     }
   }
+
+  public async downloadInventoryReport (req: Request, res: Response) {
+    try {
+      const time = dayjs().format('DDMMYYhhmmss');
+      const fileName = `Bao-cao-ton-kho-${time}.xlsx`;
+      const { warehouseId } = req.params;
+      const { freeWord, categoryId } = req.query;
+      const mainScope: any = [
+        'withOptions',
+        'withUnit',
+        'withProductName',
+        { method: ['withQuantityByMainSku', warehouseId] },
+        { method: ['byWarehouse', warehouseId] },
+      ];
+      if (freeWord) {
+        mainScope.push({ method: ['byFreeWord', freeWord] });
+      }
+      if (categoryId) {
+        mainScope.push({ method: ['byCategory', categoryId] });
+      }
+      const productVariants = await ProductVariantModel.scope(mainScope).findAll({
+        group: Sequelize.col('ProductVariantModel.mainSku'),
+      });
+      const mainSkus = productVariants.map((record) => record.mainSku);
+      const detailScope: any = [
+        { method: ['byMainSku', mainSkus] },
+        { method: ['withQuantity', warehouseId] },
+        'withOptions',
+        { method: ['byWarehouse', warehouseId] },
+      ];
+      if (freeWord) {
+        detailScope.push({ method: ['byFreeWord', freeWord] });
+      }
+      if (categoryId) {
+        detailScope.push({ method: ['byCategory', categoryId] });
+      }
+      const getAllvariants = await ProductVariantModel.scope(detailScope).findAll();
+      productVariants.forEach((row) => {
+        const detailReport = getAllvariants.filter((record) => record.mainSku === row.mainSku);
+        row.setDataValue('detailReport', detailReport);
+      });
+      const buffer: any = await XlsxService.inventoryReports(productVariants);
+      res.writeHead(200, [
+        ['Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+        ['Content-Disposition', 'attachment; filename=' + `${fileName}`],
+      ]);
+      res.end(Buffer.from(buffer, 'base64'));
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
 }
 export default new WarehouseReportController();

@@ -126,4 +126,34 @@ router.get('/download', Authorization.permit(WarehouseReportController.construct
  */
 router.get('/warehouses/:warehouseId', Authorization.permit(WarehouseReportController.constructor.name, 'index'), WarehouseReportController.inventoryReport);
 
+/**
+ * @openapi
+ * /a/warehouse_reports/warehouses/{warehouseId}/download:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] WAREHOUSE REPORT"
+ *     summary: Tai xuong bao cao ton kho
+ *     parameters:
+ *      - in: path
+ *        name: "warehouseId"
+ *        description: "id kho hang"
+ *        type: "number"
+ *      - in: query
+ *        name: "categoryId"
+ *        description: "Danh mục"
+ *        type: "number"
+ *      - in: query
+ *        name: "freeWord"
+ *        description: "Tìm kiếm theo tên, sku"
+ *        type: "string"
+ *     responses:
+ *       200:
+ *         description: "OK"
+ *       500:
+ *         description: "Internal error"
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/warehouses/:warehouseId/download', Authorization.permit(WarehouseReportController.constructor.name, 'index'), WarehouseReportController.downloadInventoryReport);
+
 export default router;
