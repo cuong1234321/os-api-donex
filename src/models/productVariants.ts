@@ -35,6 +35,7 @@ class ProductVariantModel extends Model<ProductVariantInterface> implements Prod
   public sizeTitle?: string;
   public product?: ProductModel;
   public unit?: string;
+  public productName?: string;
 
   static readonly UPDATABLE_ON_DUPLICATE_PARAMETERS = ['id', 'sku', 'buyPrice', 'sellPrice', 'stock', { optionMappingIds: new Array(0) }];
 
