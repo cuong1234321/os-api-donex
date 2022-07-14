@@ -11,13 +11,14 @@ class OrderFeedbackModel extends Model<OrderFeedbackInterface> implements OrderF
   public adminConfirmId: number;
   public content: string;
   public status: string;
+  public rejectReason: string;
   public createdAt?: Date;
   public updatedAt?: Date;
 
   static readonly CREATABLE_PARAMETERS = ['subOrderId', 'content']
 
   static readonly CREATABLE_TYPE = { USER: 'user', COLLABORATOR: 'collaborator', AGENCY: 'agency', DISTRIBUTOR: 'distributor' }
-  static readonly STATUS_ENUM = { PENDING: 'user', CONFIRM: 'confirm' }
+  static readonly STATUS_ENUM = { PENDING: 'user', CONFIRM: 'confirm', REJECT: 'reject' }
 
   static readonly scopes: ModelScopeOptions = {
     byCreatable (creatableType, creatableId) {

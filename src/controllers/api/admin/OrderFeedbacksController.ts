@@ -31,6 +31,21 @@ class OrderFeedbackController {
       sendError(res, 500, error.message, error);
     }
   }
+
+  public async reject (req: Request, res: Response) {
+    try {
+      const { currentAdmin } = req;
+      const { feedbackId } = req.params;
+      const feedback = await OrderFeedbackModel.findByPk(feedbackId);
+      if (!feedback) {
+        return sendError(res, 404, NoData);
+      }
+      await feedback.update({ status: OrderFeedbackModel.STATUS_ENUM.REJECT, adminConfirmId: currentAdmin.id, rejectReason: req.body.rejectReason });
+      sendSuccess(res, { feedback });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
 }
 
 export default new OrderFeedbackController();
