@@ -59,7 +59,7 @@ class LookBookModel extends Model<LookBookInterface> implements LookBookInterfac
 
   public async updateChildren (lookBookChildrenAttributes: any[], transaction?: Transaction) {
     if (!lookBookChildrenAttributes) return;
-    lookBookChildrenAttributes.forEach((record) => { record.lookBookId = this.id; });
+    lookBookChildrenAttributes.forEach((record) => { record.parentId = this.id; });
     const children = await LookBookModel.bulkCreate(lookBookChildrenAttributes, {
       updateOnDuplicate: LookBookModel.UPDATABLE_ON_DUPLICATE_PARAMETERS as (keyof LookBookInterface)[],
       individualHooks: true,
