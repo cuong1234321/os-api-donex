@@ -235,6 +235,8 @@ class CartController {
           width: 10,
           toWardCode: ward.ghnWardCode,
         };
+        const serviceTypes = (await Fee.getServicePack(feeParams)).data;
+        feeParams.serviceTypeId = serviceTypes.find((record: any) => record.service_type_id === 2) ? 2 : 1;
         const fee = await Fee.calculate(feeParams);
         if (fee.code === 400) { totalFee = 0; } else { totalFee = fee.data.total; }
       }
