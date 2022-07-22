@@ -31,7 +31,7 @@ class ProductCategoryModel extends Model<ProductCategoryInterface> implements Pr
     async beforeCreate (record) {
       if (!record.index) {
         const lastIndexRecord = await ProductCategoryModel.scope({ method: ['bySortOrder', 'index', 'DESC'] }).findOne();
-        record.index = lastIndexRecord.index + 1;
+        record.index = lastIndexRecord ? lastIndexRecord.index + 1 : 1;
       }
     },
   }

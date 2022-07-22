@@ -27,7 +27,7 @@ class NewsCategoryModel extends Model<NewsCategoriesInterface> implements NewsCa
 
       if (record.isNewRecord && !record.index) {
         const lastIndexRecord = await NewsCategoryModel.scope({ method: ['bySortOrder', 'index', 'DESC'] }).findOne();
-        record.index = lastIndexRecord.index + 1;
+        record.index = lastIndexRecord ? lastIndexRecord.index + 1 : 1;
       }
     },
   }
