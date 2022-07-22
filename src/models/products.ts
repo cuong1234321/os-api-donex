@@ -82,7 +82,11 @@ class ProductModel extends Model<ProductInterface> implements ProductInterface {
       record.barCode = await record.generateBarCode();
       if (!record.index) {
         const lastIndexRecord = await ProductModel.findOne({ order: [['index', 'DESC']] });
-        record.index = lastIndexRecord.index + 1;
+        if (!lastIndexRecord) {
+          record.index = 1;
+        } else {
+          record.index = lastIndexRecord.index + 1;
+        }
       }
     },
     async afterDestroy (record) {
