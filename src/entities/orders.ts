@@ -95,6 +95,9 @@ const OrderEntity = {
   referralCode: {
     type: DataTypes.STRING(255), allowNull: true,
   },
+  finalAmount: {
+    type: DataTypes.BIGINT, defaultValue: 0,
+  },
   createdAt: {
     type: DataTypes.DATE,
   },

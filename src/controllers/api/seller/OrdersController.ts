@@ -77,6 +77,7 @@ class OrderController {
           total,
           subTotal,
           shippingFee,
+          finalAmount,
         }, {
           include: [
             {

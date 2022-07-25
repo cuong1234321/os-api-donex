@@ -34,6 +34,7 @@ interface OrderInterface {
   rankDiscount: number;
   transportUnit: string;
   referralCode: string;
+  finalAmount: number;
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;

@@ -207,6 +207,7 @@ class OrderDecorator {
     order.totalTax = totalTax;
     order.total = totalProduct;
     order.subOrders = subOrders;
+    order.finalAmount = order.subTotal + (order.totalFee || 0) - (applicationDiscount || 0) - (rankDiscountValue || 0);
     return order;
   }
 
