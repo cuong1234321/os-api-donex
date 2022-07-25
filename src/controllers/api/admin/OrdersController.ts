@@ -106,6 +106,7 @@ class OrderController {
           total,
           subTotal,
           shippingFee,
+          finalAmount,
         }, {
           include: [
             {
@@ -204,6 +205,7 @@ class OrderController {
           total,
           subTotal,
           shippingFee,
+          finalAmount,
         }, { transaction });
         await order.updateSubOrders(params.subOrders, transaction);
       });
