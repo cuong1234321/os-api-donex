@@ -142,7 +142,7 @@ class WarehouseReceiptController {
       ];
       if (warehouseReceiptIds) scopes.push({ method: ['byId', (warehouseReceiptIds as string).split(',')] });
       if (type) scopes.push({ method: ['byType', type] });
-      if (!fromDate && !toDate) {
+      if (!fromDate && !toDate && !warehouseReceiptIds) {
         scopes.push({ method: ['byDate', dayjs().subtract(30, 'day').format('YYYY/MM/DD'), dayjs().format('YYYY/MM/DD')] });
       }
       if (fromDate && toDate) {
