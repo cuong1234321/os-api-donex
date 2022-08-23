@@ -21,8 +21,8 @@ class ProductCategoryModel extends Model<ProductCategoryInterface> implements Pr
 
   static readonly TYPE_ENUM = { NONE: 'none', COLLECTION: 'collection', GENDER: 'gender', PRODUCT_TYPE: 'productType' };
 
-  static readonly CREATABLE_PARAMETERS = ['parentId', 'name', 'type', 'index', 'sizeType'];
-  static readonly UPDATABLE_PARAMETERS = ['parentId', 'name', 'thumbnail', 'index', 'sizeType'];
+  static readonly CREATABLE_PARAMETERS = ['parentId', 'name', 'type', 'index', 'sizeType', 'slug'];
+  static readonly UPDATABLE_PARAMETERS = ['parentId', 'name', 'thumbnail', 'index', 'sizeType', 'slug'];
 
   static readonly hooks: Partial<ModelHooks<ProductCategoryModel>> = {
     async afterDestroy (record) {
