@@ -15,9 +15,9 @@ class ProductCategoryController {
         if (!cateParent) { return sendError(res, 404, NoData); }
         params.type = cateParent.type;
       }
-      if (params.type === ProductCategoryModel.TYPE_ENUM.PRODUCT_TYPE && !params.parentId) {
+      if ([ProductCategoryModel.TYPE_ENUM.PRODUCT_TYPE, ProductCategoryModel.TYPE_ENUM.COLLECTION, ProductCategoryModel.TYPE_ENUM.GENDER].includes(params.type) && !params.parentId) {
         const productType = await ProductCategoryModel.scope([
-          { method: ['byType', ProductCategoryModel.TYPE_ENUM.PRODUCT_TYPE] },
+          { method: ['byType', params.type] },
           'notChildren',
         ]).findOne();
         params.parentId = productType.id;

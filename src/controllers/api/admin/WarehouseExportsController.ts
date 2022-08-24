@@ -144,7 +144,7 @@ class WarehouseExportController {
       ];
       if (warehouseExportIds) scopes.push({ method: ['byId', (warehouseExportIds as string).split(',')] });
       if (type) scopes.push({ method: ['byType', type] });
-      if (!fromDate && !toDate) {
+      if (!fromDate && !toDate && !warehouseExportIds) {
         scopes.push({ method: ['byDate', dayjs().subtract(30, 'day').format('YYYY/MM/DD'), dayjs().format('YYYY/MM/DD')] });
       }
       if (fromDate && toDate) {
