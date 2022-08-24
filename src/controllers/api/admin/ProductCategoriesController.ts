@@ -3,6 +3,8 @@ import { sendError, sendSuccess } from '@libs/response';
 import { NoData } from '@libs/errors';
 import ProductCategoryModel from '@models/productCategories';
 import ImageUploaderService from '@services/imageUploader';
+import dayjs from 'dayjs';
+import XlsxService from '@services/xlsx';
 
 class ProductCategoryController {
   public async create (req: Request, res: Response) {
@@ -79,6 +81,25 @@ class ProductCategoryController {
       if (!productCategory) return sendError(res, 404, NoData);
       await productCategory.destroy();
       sendSuccess(res, { });
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async download (req: Request, res: Response) {
+    try {
+      const { type } = req.query;
+      const time = dayjs().format('DD-MM-YY-hh:mm:ss');
+      const fileName = `Danh-sach-danh-muc-${time}.xlsx`;
+      const scopes: any = [];
+      if (type) scopes.push({ method: ['byType', type] });
+      const categories = await ProductCategoryModel.scope(scopes).findAll();
+      const buffer: any = await XlsxService.downloadCategories(categories);
+      res.writeHead(200, [
+        ['Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+        ['Content-Disposition', 'attachment; filename=' + `${fileName}`],
+      ]);
+      res.end(Buffer.from(buffer, 'base64'));
     } catch (error) {
       sendError(res, 500, error.message, error);
     }

@@ -88,6 +88,32 @@ router.get('/', Authorization.permit(ProductCategoryController.constructor.name,
   ProductCategoryController.index);
 
 /**
+* @openapi
+* /a/product_categories/download:
+*   get:
+*     tags:
+*      - "[ADMIN] PRODUCT CATEGORY"
+*     summary: Tải xuống danh sách danh muc
+*     parameters:
+*      - in: "query"
+*        name: "type"
+*        description: "Loai danh muc"
+*        enum:
+*         - none
+*         - gender
+*         - collection
+*         - productType
+*     responses:
+*       200:
+*         description: "success"
+*       500:
+*         description: "failed"
+*     security:
+*      - Bearer: []
+*/
+router.get('/download', Authorization.permit(ProductCategoryController.constructor.name, 'index'), ProductCategoryController.download);
+
+/**
  * @openapi
  * /a/product_categories/{productCategoryId}:
  *   get:

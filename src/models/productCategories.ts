@@ -1,6 +1,6 @@
 import ProductCategoryEntity from '@entities/productCategories';
 import ProductCategoryInterface from '@interfaces/productCategories';
-import { BelongsToManyGetAssociationsMixin, HasManyGetAssociationsMixin, Model, ModelScopeOptions, ModelValidateOptions, Op, Sequelize, ValidationErrorItem } from 'sequelize';
+import { BelongsToManyGetAssociationsMixin, HasManyGetAssociationsMixin, Model, ModelScopeOptions, ModelValidateOptions, Sequelize, ValidationErrorItem } from 'sequelize';
 import { ModelHooks } from 'sequelize/types/lib/hooks';
 import ProductCategoryRefModel from './productCategoryRefs';
 import ProductModel from './products';
@@ -119,11 +119,6 @@ class ProductCategoryModel extends Model<ProductCategoryInterface> implements Pr
 
   public async destroyCateChild () {
     await ProductCategoryModel.destroy({ where: { parentId: this.id }, individualHooks: true });
-    if (this.type === ProductCategoryModel.TYPE_ENUM.NONE) {
-      const products = await this.getProducts();
-      const productIds = products.map((result: any) => result.id);
-      await ProductCategoryModel.destroy({ where: { id: { [Op.in]: productIds } }, individualHooks: true });
-    }
   }
 
   public static initialize (sequelize: Sequelize) {

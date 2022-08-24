@@ -23,6 +23,23 @@ router.get('/', authorization.permit(FormController.constructor.name, 'index'), 
 
 /**
  * @openapi
+ * /a/forms/download:
+ *   get:
+ *     tags:
+ *      - "[ADMIN] FORMS"
+ *     summary: Lấy danh sách form
+ *     responses:
+ *       200:
+ *         description: "OK"
+ *       500:
+ *         description: "Internal error"
+ *     security:
+ *      - Bearer: []
+ */
+router.get('/download', authorization.permit(FormController.constructor.name, 'index'), FormController.download);
+
+/**
+ * @openapi
  * /a/forms/{formId}:
  *   get:
  *     tags:
