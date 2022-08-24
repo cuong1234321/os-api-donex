@@ -2,6 +2,8 @@ import { sendError, sendSuccess } from '@libs/response';
 import { Request, Response } from 'express';
 import { NoData } from '@libs/errors';
 import MFormModel from '@models/mForms';
+import dayjs from 'dayjs';
+import XlsxService from '@services/xlsx';
 
 class FormController {
   public async index (req: Request, res: Response) {
@@ -53,6 +55,22 @@ class FormController {
       if (!form) { return sendError(res, 404, NoData); }
       await form.destroy();
       sendSuccess(res, {});
+    } catch (error) {
+      sendError(res, 500, error.message, error);
+    }
+  }
+
+  public async download (req: Request, res: Response) {
+    try {
+      const time = dayjs().format('DD-MM-YY-hh:mm:ss');
+      const fileName = `Danh-sach-form-${time}.xlsx`;
+      const forms = await MFormModel.findAll();
+      const buffer: any = await XlsxService.downloadForms(forms);
+      res.writeHead(200, [
+        ['Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+        ['Content-Disposition', 'attachment; filename=' + `${fileName}`],
+      ]);
+      res.end(Buffer.from(buffer, 'base64'));
     } catch (error) {
       sendError(res, 500, error.message, error);
     }

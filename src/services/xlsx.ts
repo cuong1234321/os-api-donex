@@ -8,6 +8,10 @@ import _ from 'lodash';
 import OrderItemModel from '@models/orderItems';
 import WarehouseReceiptVariantModel from '@models/warehouseReceiptVariants';
 import ProductVariantModel from '@models/productVariants';
+import ProductCategoryModel from '@models/productCategories';
+import MFormModel from '@models/mForms';
+import MColorModel from '@models/mColors';
+import MSizeModel from '@models/mSizes';
 
 class XlsxService {
   static readonly DEFAULT_BORDER_OPTIONS = { top: { style: 'thin' }, bottom: { style: 'thin' }, left: { style: 'thin' }, right: { style: 'thin' } }
@@ -907,6 +911,130 @@ class XlsxService {
     workSheet['!rows'] = [{}, { hpx: 30 }];
     workSheet['!merges'] = merges;
     return await XlsxService.exportToExcel([{ sheetName: 'Báo cáo tồn kho', sheetData: workSheet }]);
+  }
+
+  public static async downloadCategories (categories: ProductCategoryModel[]) {
+    const CATEGORY_MAPPING: any = { gender: 'Giới tính', collection: 'Bộ sưu tập', productType: 'Loại sản phẩm', none: 'Danh mục' };
+    const title = [
+      [{ v: 'DANH SÁCH DANH MỤC', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '18' } } }],
+    ];
+    const rows = categories.map((record, index: number) => {
+      return [
+        { v: index + 1, s: { alignment: { horizontal: 'center' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: CATEGORY_MAPPING[record.type] || '', s: { alignment: { horizontal: 'left' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: record.name || '', s: { alignment: { horizontal: 'left' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: record.slug || '', s: { alignment: { horizontal: 'left' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      ];
+    });
+    const headers = [
+      { v: 'STT', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'Type', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'Tên', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'Code', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+    ];
+    rows.unshift(headers);
+    const workSheet = XLSX.utils.aoa_to_sheet([[]]);
+    XLSX.utils.sheet_add_aoa(workSheet, title, { origin: 'A2' });
+    XLSX.utils.sheet_add_aoa(workSheet, rows, { origin: 'A5' });
+    const wsColsOpts = [{ wch: 5 }, { wch: 20 }, { wch: 20 }, { wch: 20 }];
+    const merges = [
+      { s: { r: 1, c: 0 }, e: { r: 1, c: 3 } },
+    ];
+    workSheet['!cols'] = wsColsOpts;
+    workSheet['!rows'] = [{}, { hpx: 30 }];
+    workSheet['!merges'] = merges;
+    return await XlsxService.exportToExcel([{ sheetName: 'Danh sách danh mục', sheetData: workSheet }]);
+  }
+
+  public static async downloadForms (forms: MFormModel[]) {
+    const title = [
+      [{ v: 'DANH SÁCH FORM', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '18' } } }],
+    ];
+    const rows = forms.map((record, index: number) => {
+      return [
+        { v: index + 1, s: { alignment: { horizontal: 'center' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: record.title || '', s: { alignment: { horizontal: 'left' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: record.slug || '', s: { alignment: { horizontal: 'left' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      ];
+    });
+    const headers = [
+      { v: 'STT', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'Tên form dáng', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'Code', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+    ];
+    rows.unshift(headers);
+    const workSheet = XLSX.utils.aoa_to_sheet([[]]);
+    XLSX.utils.sheet_add_aoa(workSheet, title, { origin: 'A2' });
+    XLSX.utils.sheet_add_aoa(workSheet, rows, { origin: 'A5' });
+    const wsColsOpts = [{ wch: 5 }, { wch: 20 }, { wch: 20 }, { wch: 20 }];
+    const merges = [
+      { s: { r: 1, c: 0 }, e: { r: 1, c: 2 } },
+    ];
+    workSheet['!cols'] = wsColsOpts;
+    workSheet['!rows'] = [{}, { hpx: 30 }];
+    workSheet['!merges'] = merges;
+    return await XlsxService.exportToExcel([{ sheetName: 'Danh sách form', sheetData: workSheet }]);
+  }
+
+  public static async downloadMColors (mColors: MColorModel[]) {
+    const title = [
+      [{ v: 'DANH SÁCH MÀU SẮC', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '18' } } }],
+    ];
+    const rows = mColors.map((record, index: number) => {
+      return [
+        { v: index + 1, s: { alignment: { horizontal: 'center' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: record.title || '', s: { alignment: { horizontal: 'left' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: record.code || '', s: { alignment: { horizontal: 'center' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      ];
+    });
+    const headers = [
+      { v: 'STT', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'Tên', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'Code', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+    ];
+    rows.unshift(headers);
+    const workSheet = XLSX.utils.aoa_to_sheet([[]]);
+    XLSX.utils.sheet_add_aoa(workSheet, title, { origin: 'A2' });
+    XLSX.utils.sheet_add_aoa(workSheet, rows, { origin: 'A5' });
+    const wsColsOpts = [{ wch: 5 }, { wch: 20 }, { wch: 20 }, { wch: 20 }];
+    const merges = [
+      { s: { r: 1, c: 0 }, e: { r: 1, c: 2 } },
+    ];
+    workSheet['!cols'] = wsColsOpts;
+    workSheet['!rows'] = [{}, { hpx: 30 }];
+    workSheet['!merges'] = merges;
+    return await XlsxService.exportToExcel([{ sheetName: 'Danh sách màu sắc', sheetData: workSheet }]);
+  }
+
+  public static async downloadMSizes (mSizes: MSizeModel[]) {
+    const SIZE_TYPE_MAPPING: any = { clothes: 'Quần áo', children: 'Trẻ em', shoes: 'Giày' };
+    const title = [
+      [{ v: 'DANH SÁCH SIZE', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '18' } } }],
+    ];
+    const rows = mSizes.map((record, index: number) => {
+      return [
+        { v: index + 1, s: { alignment: { horizontal: 'center' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: SIZE_TYPE_MAPPING[record.type] || '', s: { alignment: { horizontal: 'left' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: record.code || '', s: { alignment: { horizontal: 'center' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      ];
+    });
+    const headers = [
+      { v: 'STT', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'Loại size', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: 'Code', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+    ];
+    rows.unshift(headers);
+    const workSheet = XLSX.utils.aoa_to_sheet([[]]);
+    XLSX.utils.sheet_add_aoa(workSheet, title, { origin: 'A2' });
+    XLSX.utils.sheet_add_aoa(workSheet, rows, { origin: 'A5' });
+    const wsColsOpts = [{ wch: 5 }, { wch: 20 }, { wch: 20 }, { wch: 20 }];
+    const merges = [
+      { s: { r: 1, c: 0 }, e: { r: 1, c: 2 } },
+    ];
+    workSheet['!cols'] = wsColsOpts;
+    workSheet['!rows'] = [{}, { hpx: 30 }];
+    workSheet['!merges'] = merges;
+    return await XlsxService.exportToExcel([{ sheetName: 'Danh sách size', sheetData: workSheet }]);
   }
 
   private static getQuantityBySize (variants: any, sizeTitle: string) {

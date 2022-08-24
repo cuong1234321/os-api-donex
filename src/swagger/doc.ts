@@ -77,6 +77,14 @@ const swaggerDefinition = {
       description: 'Quản lý Look Book',
     },
     {
+      name: '[ADMIN] MCOLORS',
+      description: 'Quản lý màu sắc',
+    },
+    {
+      name: '[ADMIN] MSIZES',
+      description: 'Quản lý size',
+    },
+    {
       name: '[ADMIN] ORDERS',
       description: 'Quản lý đơn hàng',
     },
