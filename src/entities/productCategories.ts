@@ -29,6 +29,7 @@ const ProductCategoryEntity = {
       return thumbnail;
     },
     set (value: string) {
+      if (!value) return;
       value = value.replace(settings.imageStorageHost + '/', '');
       this.setDataValue('thumbnail', value);
       return value;
