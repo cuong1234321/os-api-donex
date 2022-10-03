@@ -10,6 +10,8 @@ interface WarehouseTransferInterface {
   createdAt?: Date,
   updatedAt?: Date,
   deletedAt?: Date,
+
+  productVariantGroupByMainSku?: any;
 };
 
 export default WarehouseTransferInterface;

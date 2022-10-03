@@ -17,6 +17,9 @@ class WarehouseTransferVariantModel extends Model<WarehouseTransferVariantInterf
   public updatedAt?: Date;
   public deletedAt?: Date;
 
+  public mainSku?: string;
+  public sizeTitle?: string;
+
   static readonly hooks: Partial<ModelHooks<WarehouseTransferVariantModel>> = {
     async afterSave (record, options) {
       const warehouseTransfer = await WarehouseTransferModel.findByPk(record.warehouseTransferId, { transaction: options.transaction });
@@ -50,6 +53,32 @@ class WarehouseTransferVariantModel extends Model<WarehouseTransferVariantInterf
     byWarehouseTransfer (warehouseTransferId) {
       return {
         where: { warehouseTransferId },
+      };
+    },
+    withMainSkuVariant () {
+      return {
+        attributes: {
+          include: [
+            [
+              Sequelize.literal('(SELECT mainSku FROM product_variants WHERE id = WarehouseTransferVariantModel.variantId)'),
+              'mainSku',
+            ],
+          ],
+        },
+      };
+    },
+    withOptions () {
+      return {
+        attributes: {
+          include: [
+            [
+              Sequelize.literal('(SELECT code FROM m_sizes INNER JOIN product_options ON product_options.value = m_sizes.id AND product_options.key = "size" AND product_options.deletedAt IS NULL ' +
+              'INNER JOIN product_variant_options ON product_variant_options.optionId = product_options.id AND product_variant_options.deletedAt IS NULL ' +
+              'WHERE product_variant_options.variantId = WarehouseTransferVariantModel.variantId LIMIT 1)'),
+              'sizeTitle',
+            ],
+          ],
+        },
       };
     },
   }

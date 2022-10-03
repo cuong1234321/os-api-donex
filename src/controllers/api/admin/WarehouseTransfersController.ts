@@ -8,6 +8,9 @@ import WarehouseTransferVariantModel from '@models/warehouseTransferVariants';
 import { NoData } from '@libs/errors';
 import XlsxService from '@services/xlsx';
 import dayjs from 'dayjs';
+import _ from 'lodash';
+import ProductVariantModel from '@models/productVariants';
+import { Sequelize } from 'sequelize';
 
 class WarehouseTransferController {
   public async create (req: Request, res: Response) {
@@ -42,6 +45,8 @@ class WarehouseTransferController {
       const warehouseTransfer = await WarehouseTransferModel.scope(scopes).findOne();
       if (!warehouseTransfer) { return sendError(res, 404, NoData); }
       await warehouseTransfer.reloadWithDetail();
+      const productVariants = await this.getProductVariantGroupByMainSku(warehouseTransfer);
+      warehouseTransfer.setDataValue('productVariantGroupByMainSku', productVariants);
       sendSuccess(res, warehouseTransfer);
     } catch (error) {
       sendError(res, 500, error.message, error);
@@ -119,8 +124,8 @@ class WarehouseTransferController {
       ];
       const warehouseTransfer = await WarehouseTransferModel.scope(scopes).findOne();
       if (!warehouseTransfer) { return sendError(res, 404, NoData); }
-      await warehouseTransfer.reloadWithDetail();
-      const buffer: any = await XlsxService.downloadWarehouseTransfer(warehouseTransfer);
+      const productVariants = await this.getProductVariantGroupByMainSku(warehouseTransfer);
+      const buffer: any = await XlsxService.downloadWarehouseTransfer(warehouseTransfer, productVariants);
       res.writeHead(200, [
         ['Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
         ['Content-Disposition', 'attachment; filename=' + `${fileName}`],
@@ -129,6 +134,41 @@ class WarehouseTransferController {
     } catch (error) {
       sendError(res, 500, error.message, error);
     }
+  }
+
+  private async getProductVariantGroupByMainSku (warehouseTransfer: WarehouseTransferModel) {
+    const warehouseTransferVariants = await WarehouseTransferVariantModel.scope([
+      { method: ['byWarehouseTransfer', warehouseTransfer.id] },
+      'withMainSkuVariant',
+      'withOptions',
+    ]).findAll();
+    const variantIds = _.map(warehouseTransferVariants, 'variantId');
+    const productVariants = await ProductVariantModel.scope([
+      { method: ['byId', variantIds] },
+      'withOptions',
+      'withUnit',
+      'withProductName',
+    ]).findAll({
+      group: Sequelize.col('ProductVariantModel.mainSku'),
+    });
+    productVariants.forEach(variant => {
+      const quantityByEachSize: any = {};
+      const sizeSVariants = warehouseTransferVariants.filter(record => record.getDataValue('mainSku') === variant.mainSku && ['S', '38'].includes(record.getDataValue('sizeTitle')));
+      const sizeMVariants = warehouseTransferVariants.filter(record => record.getDataValue('mainSku') === variant.mainSku && ['M', '6', '39'].includes(record.getDataValue('sizeTitle')));
+      const sizeLVariants = warehouseTransferVariants.filter(record => record.getDataValue('mainSku') === variant.mainSku && ['L', '8', '40'].includes(record.getDataValue('sizeTitle')));
+      const sizeXLVariants = warehouseTransferVariants.filter(record => record.getDataValue('mainSku') === variant.mainSku && ['XL', '10', '41'].includes(record.getDataValue('sizeTitle')));
+      const size2XLVariants = warehouseTransferVariants.filter(record => record.getDataValue('mainSku') === variant.mainSku && ['2XL', '12', '42'].includes(record.getDataValue('sizeTitle')));
+      const size3XLVariants = warehouseTransferVariants.filter(record => record.getDataValue('mainSku') === variant.mainSku && ['3XL', '14', '43'].includes(record.getDataValue('sizeTitle')));
+      quantityByEachSize.S = _.sumBy(sizeSVariants, 'quantity');
+      quantityByEachSize.M = _.sumBy(sizeMVariants, 'quantity');
+      quantityByEachSize.L = _.sumBy(sizeLVariants, 'quantity');
+      quantityByEachSize.XL = _.sumBy(sizeXLVariants, 'quantity');
+      quantityByEachSize.XXL = _.sumBy(size2XLVariants, 'quantity');
+      quantityByEachSize.XXXL = _.sumBy(size3XLVariants, 'quantity');
+      quantityByEachSize.totalQuantity = quantityByEachSize.S + quantityByEachSize.M + quantityByEachSize.L + quantityByEachSize.XL + quantityByEachSize.XXL + quantityByEachSize.XXXL;
+      variant.setDataValue('quantityBySizes', quantityByEachSize);
+    });
+    return productVariants;
   }
 }
 
