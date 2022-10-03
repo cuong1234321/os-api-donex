@@ -27,6 +27,7 @@ interface ProductVariantInterface {
   unit?: string;
   newPrice?: number;
   productName?: string;
+  quantityBySizes?: any;
 };
 
 export default ProductVariantInterface;

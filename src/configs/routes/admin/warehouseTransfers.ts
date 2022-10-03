@@ -72,7 +72,7 @@ router.get('/', Authorization.permit(WarehouseTransferController.constructor.nam
  *     security:
  *      - Bearer: []
  */
-router.get('/:warehouseTransferId', Authorization.permit(WarehouseTransferController.constructor.name, 'show'), WarehouseTransferController.show);
+router.get('/:warehouseTransferId', Authorization.permit(WarehouseTransferController.constructor.name, 'show'), WarehouseTransferController.show.bind(WarehouseTransferController));
 
 /**
  * @openapi
@@ -96,7 +96,7 @@ router.get('/:warehouseTransferId', Authorization.permit(WarehouseTransferContro
  *     security:
  *      - Bearer: []
  */
-router.get('/:warehouseTransferId/download', Authorization.permit(WarehouseTransferController.constructor.name, 'index'), WarehouseTransferController.download);
+router.get('/:warehouseTransferId/download', Authorization.permit(WarehouseTransferController.constructor.name, 'index'), WarehouseTransferController.download.bind(WarehouseTransferController));
 
 /**
  * @openapi

@@ -296,32 +296,38 @@ class XlsxService {
     return await XlsxService.exportToExcel([{ sheetName: 'Báo cáo xuất kho', sheetData: workSheet }]);
   }
 
-  public static async downloadWarehouseTransfer (warehouseTransfer: any) {
+  public static async downloadWarehouseTransfer (warehouseTransfer: any, productVariants: any) {
     dayjs.extend(utc);
     dayjs.extend(timezone);
     warehouseTransfer = JSON.parse(JSON.stringify(warehouseTransfer));
+    productVariants = JSON.parse(JSON.stringify(productVariants));
     const companyName = [
       [{ v: 'Công ty TNHH DONEXPRO Việt Nam', s: { alignment: { horizontal: 'left' }, font: { bold: true, name: 'Times New Roman' } } }],
     ];
     const dateVN = dayjs(warehouseTransfer.transferDate).tz('Asia/Ho_Chi_Minh');
     const information = [
-      [{ v: 'PHIẾU CHUYỂN KHO', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '18' } } }],
+      [{ v: 'PHIẾU XUẤT ĐIỀU CHUYỂN', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '18' } } }],
       [{ v: `Ngày ${dateVN.format('DD')} tháng ${dateVN.format('MM')} năm ${dateVN.format('YYYY')}`, s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' } } }],
       [{ v: `Số: ${settings.warehouseTransferCode}${String(warehouseTransfer.id).padStart(6, '0')}`, s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' } } }],
       [{ v: `Người vận chuyển: ${warehouseTransfer?.deliverer || ''}`, s: { alignment: { horizontal: 'left' }, font: { bold: false, name: 'Times New Roman', sz: '12' } } }],
       [{ v: `Diễn giải: ${warehouseTransfer?.note || ''}`, s: { alignment: { horizontal: 'left' }, font: { bold: false, name: 'Times New Roman', sz: '12' } } }],
+      [{ v: `Mã kho xuất: ${warehouseTransfer?.fromWarehouseName || ''}`, s: { alignment: { horizontal: 'left' }, font: { bold: false, name: 'Times New Roman', sz: '12' } } }],
+      [{ v: `Mã kho nhập: ${warehouseTransfer?.toWarehouseName || ''}`, s: { alignment: { horizontal: 'left' }, font: { bold: false, name: 'Times New Roman', sz: '12' } } }],
     ];
-    const rows = (warehouseTransfer.warehouseTransferVariants).map((record: any, index: any) => {
+    const rows = (productVariants).map((record: any, index: any) => {
+      const color = record.colorTitle + (record.supportingColorTitle ? ` phối ${record.supportingColorTitle}` : '');
       return [
         { v: index + 1, s: { alignment: { horizontal: 'center' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
-        { v: record.variant.skuCode, s: { alignment: { horizontal: 'left' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
-        { v: record.variant.name, s: { alignment: { horizontal: 'left' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
-        { v: warehouseTransfer.fromWarehouseName, s: { alignment: { horizontal: 'left' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
-        { v: warehouseTransfer.toWarehouseName, s: { alignment: { horizontal: 'left' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
-        { v: record.variant.product.unit, s: { alignment: { horizontal: 'left' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
-        { v: parseInt(record.quantity, 10).toLocaleString('de-DE'), s: { alignment: { horizontal: 'right' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
-        { v: parseInt(record.price, 10).toLocaleString('de-DE'), s: { alignment: { horizontal: 'right' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
-        { v: parseInt(record.totalPrice, 10).toLocaleString('de-DE'), s: { alignment: { horizontal: 'right' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: record.productName + ' ' + color, s: { alignment: { horizontal: 'left' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: record.mainSku, s: { alignment: { horizontal: 'left' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: record.unit, s: { alignment: { horizontal: 'center' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: record.quantityBySizes.S || 0, s: { alignment: { horizontal: 'right' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: record.quantityBySizes.M || 0, s: { alignment: { horizontal: 'right' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: record.quantityBySizes.L || 0, s: { alignment: { horizontal: 'right' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: record.quantityBySizes.XL || 0, s: { alignment: { horizontal: 'right' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: record.quantityBySizes.XXL || 0, s: { alignment: { horizontal: 'right' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: record.quantityBySizes.XXXL || 0, s: { alignment: { horizontal: 'right' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: record.quantityBySizes.totalQuantity || 0, s: { alignment: { horizontal: 'right' }, font: { name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
       ];
     });
     rows.push([
@@ -331,24 +337,70 @@ class XlsxService {
       { v: '', s: { border: XlsxService.DEFAULT_BORDER_OPTIONS } },
       { v: '', s: { border: XlsxService.DEFAULT_BORDER_OPTIONS } },
       { v: '', s: { border: XlsxService.DEFAULT_BORDER_OPTIONS } },
-      { v: parseInt(warehouseTransfer.totalQuantity, 10).toLocaleString('de-DE'), s: { alignment: { horizontal: 'right' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: '', s: { border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: '', s: { border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: '', s: { border: XlsxService.DEFAULT_BORDER_OPTIONS } },
       { v: '', s: { alignment: { horizontal: 'right' }, font: { name: 'Times New Roman' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
-      { v: parseInt(warehouseTransfer.totalPrice, 10).toLocaleString('de-DE'), s: { alignment: { horizontal: 'right' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      { v: parseInt(warehouseTransfer.totalQuantity, 10).toLocaleString('de-DE'), s: { alignment: { horizontal: 'right' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
     ]);
     const headers = [
-      { v: 'STT', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
-      { v: 'Mã SKU', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
-      { v: 'Tên hàng hóa', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
-      { v: 'Kho xuất', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
-      { v: 'Kho nhập', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
-      { v: 'ĐVT', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
-      { v: 'Số lượng', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
-      { v: 'Đơn giá', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
-      { v: 'Thành tiền', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      [
+        { v: 'STT', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: 'Tên vật tư', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: 'Mã vật tư', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: 'ĐVT', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: 'Size cỡ', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: '', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: '', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: '', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: '', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: '', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: 'Số lượng', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      ],
+      [
+        { v: '', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: '', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: '', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: '', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: 'S', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: { top: { style: 'thin' }, left: { style: 'thin' }, right: { style: 'thin' } } } },
+        { v: 'M', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: { top: { style: 'thin' }, left: { style: 'thin' }, right: { style: 'thin' } } } },
+        { v: 'L', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: { top: { style: 'thin' }, left: { style: 'thin' }, right: { style: 'thin' } } } },
+        { v: 'XL', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: { top: { style: 'thin' }, left: { style: 'thin' }, right: { style: 'thin' } } } },
+        { v: '2XL', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: { top: { style: 'thin' }, left: { style: 'thin' }, right: { style: 'thin' } } } },
+        { v: '3XL', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: { top: { style: 'thin' }, left: { style: 'thin' }, right: { style: 'thin' } } } },
+        { v: '', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      ],
+      [
+        { v: '', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: '', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: '', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: '', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: '', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: { left: { style: 'thin' }, right: { style: 'thin' } } } },
+        { v: '6', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: { left: { style: 'thin' }, right: { style: 'thin' } } } },
+        { v: '8', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: { left: { style: 'thin' }, right: { style: 'thin' } } } },
+        { v: '10', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: { left: { style: 'thin' }, right: { style: 'thin' } } } },
+        { v: '12', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: { left: { style: 'thin' }, right: { style: 'thin' } } } },
+        { v: '14', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: { left: { style: 'thin' }, right: { style: 'thin' } } } },
+        { v: '', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      ],
+      [
+        { v: '', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: '', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: '', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: '', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+        { v: '38', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: { left: { style: 'thin' }, right: { style: 'thin' } } } },
+        { v: '39', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: { left: { style: 'thin' }, right: { style: 'thin' } } } },
+        { v: '40', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: { left: { style: 'thin' }, right: { style: 'thin' } } } },
+        { v: '41', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: { left: { style: 'thin' }, right: { style: 'thin' } } } },
+        { v: '42', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: { left: { style: 'thin' }, right: { style: 'thin' } } } },
+        { v: '43', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: { left: { style: 'thin' }, right: { style: 'thin' } } } },
+        { v: '', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' }, border: XlsxService.DEFAULT_BORDER_OPTIONS } },
+      ],
     ];
-    rows.unshift(headers);
     const footers = [
       [
+        {},
+        {},
         {},
         {},
         {},
@@ -360,40 +412,55 @@ class XlsxService {
       [
         {},
         { v: 'Người lập phiếu', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' } } },
-        { v: 'Người Người yêu cầu', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' } } },
-        { v: 'Thủ kho xuất', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' } } },
-        { v: 'Người vận chuyển', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' } } },
+        { v: 'Người nhận hàng', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' } } },
+        { v: 'Thủ kho', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' } } },
         {},
-        { v: 'Thủ kho nhập', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' } } },
+        { v: 'Kế toán trưởng', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' } } },
+        {},
+        {},
+        { v: 'Thủ trưởng đơn vị', s: { alignment: { horizontal: 'center' }, font: { bold: true, name: 'Times New Roman', sz: '12' } } },
       ],
       [
         {},
         { v: '(Ký, họ tên)', s: { alignment: { horizontal: 'center' }, font: { italic: true, name: 'Times New Roman', sz: '12' } } },
         { v: '(Ký, họ tên)', s: { alignment: { horizontal: 'center' }, font: { italic: true, name: 'Times New Roman', sz: '12' } } },
         { v: '(Ký, họ tên)', s: { alignment: { horizontal: 'center' }, font: { italic: true, name: 'Times New Roman', sz: '12' } } },
+        {},
         { v: '(Ký, họ tên)', s: { alignment: { horizontal: 'center' }, font: { italic: true, name: 'Times New Roman', sz: '12' } } },
+        {},
         {},
         { v: '(Ký, họ tên)', s: { alignment: { horizontal: 'center' }, font: { italic: true, name: 'Times New Roman', sz: '12' } } },
       ],
     ];
     const workSheet = XLSX.utils.aoa_to_sheet(companyName);
     XLSX.utils.sheet_add_aoa(workSheet, information, { origin: 'A5' });
-    XLSX.utils.sheet_add_aoa(workSheet, rows, { origin: 'A12' });
-    XLSX.utils.sheet_add_aoa(workSheet, footers, { origin: `A${rows.length + 14}` });
+    XLSX.utils.sheet_add_aoa(workSheet, headers, { origin: 'A14' });
+    XLSX.utils.sheet_add_aoa(workSheet, rows, { origin: 'A18' });
+    XLSX.utils.sheet_add_aoa(workSheet, footers, { origin: `A${rows.length + 19}` });
     const merges = [
-      { s: { r: 4, c: 0 }, e: { r: 4, c: 8 } },
-      { s: { r: 5, c: 0 }, e: { r: 5, c: 8 } },
-      { s: { r: 6, c: 0 }, e: { r: 6, c: 8 } },
-      { s: { r: 7, c: 0 }, e: { r: 7, c: 8 } },
-      { s: { r: 8, c: 0 }, e: { r: 8, c: 8 } },
-      { s: { r: 9, c: 0 }, e: { r: 9, c: 8 } },
-      { s: { r: rows.length + 13, c: 6 }, e: { r: rows.length + 13, c: 7 } },
-      { s: { r: rows.length + 14, c: 6 }, e: { r: rows.length + 14, c: 7 } },
-      { s: { r: rows.length + 14, c: 4 }, e: { r: rows.length + 14, c: 5 } },
-      { s: { r: rows.length + 15, c: 4 }, e: { r: rows.length + 15, c: 5 } },
-      { s: { r: rows.length + 15, c: 6 }, e: { r: rows.length + 15, c: 7 } },
+      { s: { r: 4, c: 0 }, e: { r: 4, c: 10 } },
+      { s: { r: 5, c: 0 }, e: { r: 5, c: 10 } },
+      { s: { r: 6, c: 0 }, e: { r: 6, c: 10 } },
+      { s: { r: 7, c: 0 }, e: { r: 7, c: 10 } },
+      { s: { r: 8, c: 0 }, e: { r: 8, c: 10 } },
+      { s: { r: 9, c: 0 }, e: { r: 9, c: 10 } },
+      { s: { r: 10, c: 0 }, e: { r: 10, c: 10 } },
+      { s: { r: 11, c: 0 }, e: { r: 11, c: 10 } },
+      // merge header
+      { s: { r: 13, c: 0 }, e: { r: 16, c: 0 } },
+      { s: { r: 13, c: 1 }, e: { r: 16, c: 1 } },
+      { s: { r: 13, c: 2 }, e: { r: 16, c: 2 } },
+      { s: { r: 13, c: 3 }, e: { r: 16, c: 3 } },
+      { s: { r: 13, c: 10 }, e: { r: 16, c: 10 } },
+      { s: { r: 13, c: 4 }, e: { r: 13, c: 9 } },
+      // merge footer
+      { s: { r: rows.length + 19, c: 5 }, e: { r: rows.length + 19, c: 6 } },
+      { s: { r: rows.length + 20, c: 5 }, e: { r: rows.length + 20, c: 6 } },
+      { s: { r: rows.length + 18, c: 8 }, e: { r: rows.length + 18, c: 10 } },
+      { s: { r: rows.length + 19, c: 8 }, e: { r: rows.length + 19, c: 10 } },
+      { s: { r: rows.length + 20, c: 8 }, e: { r: rows.length + 20, c: 10 } },
     ];
-    const wsColsOpts = [{ wch: 10 }, { wch: 20 }, { wch: 50 }, { wch: 25 }, { wch: 25 }, { wch: 15 }, { wch: 15 }, { wch: 20 }, { wch: 20 }];
+    const wsColsOpts = [{ wch: 10 }, { wch: 40 }, { wch: 20 }, { wch: 25 }, { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 }];
     workSheet['!merges'] = merges;
     workSheet['!cols'] = wsColsOpts;
     workSheet['!rows'] = [{}, {}, {}, {}, { hpx: 30 }];

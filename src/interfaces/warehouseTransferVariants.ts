@@ -9,6 +9,9 @@ interface WarehouseTransferVariantInterface {
   createdAt?: Date,
   updatedAt?: Date,
   deletedAt?: Date,
+
+  mainSku?: string;
+  sizeTitle?: string;
 };
 
 export default WarehouseTransferVariantInterface;
